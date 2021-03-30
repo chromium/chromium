@@ -211,9 +211,6 @@ gpu::gles2::PassthroughProgramCache::ProgramCacheValue::program_cache_
 # Populated manually - on-stack pointer + a large number of non-PA pointees
 base::AutoReset::scoped_variable_
 
-# Populated manually - pointing to a string literal
-base::TaskAnnotator::ScopedSetIpcHash::ipc_interface_name_
-
 # Populated manually - on-stack pointee
 base::StackAllocator::source_
 
