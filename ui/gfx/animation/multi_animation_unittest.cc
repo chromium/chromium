@@ -129,4 +129,38 @@ TEST(MultiAnimationTest, Cycle) {
   EXPECT_EQ(.5, animation.GetCurrentValue());
 }
 
+// Make sure MultiAnimation::GetCurrentValue is derived from the start and end
+// of the current MultiAnimation::Part.
+TEST(MultiAnimationTest, GetCurrentValueDerivedFromStartAndEndOfCurrentPart) {
+  // Create a MultiAnimation with two parts. The second part goes from 0.8 to
+  // 0.4 instead of the default 0 -> 1.
+  constexpr double kSecondPartStart = 0.8;
+  constexpr double kSecondPartEnd = 0.4;
+  MultiAnimation::Parts parts;
+  parts.push_back(MultiAnimation::Part(base::TimeDelta::FromMilliseconds(100),
+                                       Tween::LINEAR));
+  parts.push_back(MultiAnimation::Part(base::TimeDelta::FromMilliseconds(100),
+                                       Tween::EASE_OUT, kSecondPartStart,
+                                       kSecondPartEnd));
+
+  MultiAnimation animation(parts, MultiAnimation::kDefaultTimerInterval);
+  animation.set_continuous(false);
+  AnimationContainerElement* as_element =
+      static_cast<AnimationContainerElement*>(&animation);
+  as_element->SetStartTime(base::TimeTicks());
+
+  // Step to 150, which is half way through the second part.
+  as_element->Step(base::TimeTicks() + base::TimeDelta::FromMilliseconds(150));
+  const double current_animation_value =
+      Tween::CalculateValue(Tween::EASE_OUT, .5);
+  EXPECT_DOUBLE_EQ(Tween::DoubleValueBetween(current_animation_value,
+                                             kSecondPartStart, kSecondPartEnd),
+                   animation.GetCurrentValue());
+
+  // Step to 200 which is at the end. The final value should now be kPartEnd as
+  // the animation is not continuous.
+  as_element->Step(base::TimeTicks() + base::TimeDelta::FromMilliseconds(200));
+  EXPECT_DOUBLE_EQ(kSecondPartEnd, animation.GetCurrentValue());
+}
+
 }  // namespace gfx

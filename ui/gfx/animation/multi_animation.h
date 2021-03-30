@@ -28,28 +28,50 @@ class ANIMATION_EXPORT MultiAnimation : public Animation {
   // part_start: the amount of time to offset this part by when calculating the
   // initial percentage.
   // total_length: the total length used to calculate the percentange completed.
+  // start_value: the animation value at the beginning of this part of the
+  // animation. Defaults to 0.
+  // end_value: the animation value at the end of this part of the animation.
+  // Defaults to 1.
   //
   // In most cases |part_start| is empty and |total_length| = |part_length|. But
   // you can adjust the start/total for different effects. For example, to run a
   // part for 200ms with a % between .25 and .75 use the following three values:
   // part_length = 200, part_start = 100, total_length = 400.
+  //
+  // |start_value| and |end_value| can be used to chain multiple animations into
+  // a single function. A common use case is a MultiAnimation that consists of
+  // these parts: 0->1 (fade-in), 1->1 (hold) and 1->0 (fade out).
   struct Part {
     Part() : Part(base::TimeDelta(), Tween::ZERO) {}
-    Part(base::TimeDelta part_length, Tween::Type type)
-        : Part(part_length, base::TimeDelta(), part_length, type) {}
+    Part(base::TimeDelta part_length,
+         Tween::Type type,
+         double start_value = 0.0,
+         double end_value = 1.0)
+        : Part(part_length,
+               base::TimeDelta(),
+               part_length,
+               type,
+               start_value,
+               end_value) {}
     Part(base::TimeDelta part_length,
          base::TimeDelta part_start,
          base::TimeDelta total_length,
-         Tween::Type type)
+         Tween::Type type,
+         double start_value = 0.0,
+         double end_value = 1.0)
         : part_length(part_length),
           part_start(part_start),
           total_length(total_length),
-          type(type) {}
+          type(type),
+          start_value(start_value),
+          end_value(end_value) {}
 
     base::TimeDelta part_length;
     base::TimeDelta part_start;
     base::TimeDelta total_length;
     Tween::Type type;
+    double start_value;
+    double end_value;
   };
   using Parts = std::vector<Part>;
 
@@ -87,14 +109,14 @@ class ANIMATION_EXPORT MultiAnimation : public Animation {
   // Total time of all the parts.
   const base::TimeDelta cycle_time_;
 
-  // Current value for the animation.
-  double current_value_;
+  // Animation state for the current part.
+  double current_part_state_ = 0.0;
 
   // Index of the current part.
-  size_t current_part_index_;
+  size_t current_part_index_ = 0;
 
   // See description above setter.
-  bool continuous_;
+  bool continuous_ = true;
 
   DISALLOW_COPY_AND_ASSIGN(MultiAnimation);
 };

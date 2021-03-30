@@ -277,11 +277,17 @@ ReadLaterButton::HighlightColorAnimation::HighlightColorAnimation(
       highlight_color_animation_(
           std::vector<gfx::MultiAnimation::Part>{
               gfx::MultiAnimation::Part(kHighlightShowDuration,
-                                        gfx::Tween::FAST_OUT_SLOW_IN),
+                                        gfx::Tween::FAST_OUT_SLOW_IN,
+                                        0.0,
+                                        1.0),
               gfx::MultiAnimation::Part(kHighlightDuration,
-                                        gfx::Tween::Type::LINEAR),
+                                        gfx::Tween::Type::LINEAR,
+                                        1.0,
+                                        1.0),
               gfx::MultiAnimation::Part(kHighlightHideDuration,
-                                        gfx::Tween::FAST_OUT_SLOW_IN)},
+                                        gfx::Tween::FAST_OUT_SLOW_IN,
+                                        1.0,
+                                        0.0)},
           gfx::MultiAnimation::kDefaultTimerInterval) {
   highlight_color_animation_.set_delegate(this);
   highlight_color_animation_.set_continuous(false);
@@ -344,27 +350,9 @@ SkColor ReadLaterButton::HighlightColorAnimation::FadeWithAnimation(
   if (!highlight_color_animation_.is_animating())
     return original_color;
 
-  switch (highlight_color_animation_.current_part_index()) {
-    case 0:
-      // Fade in.
-      return gfx::Tween::ColorValueBetween(
-          highlight_color_animation_.GetCurrentValue(), original_color,
-          target_color);
-      break;
-    case 1:
-      // Highlight shown.
-      return target_color;
-      break;
-    case 2:
-      // Fade out.
-      return gfx::Tween::ColorValueBetween(
-          highlight_color_animation_.GetCurrentValue(), target_color,
-          original_color);
-      break;
-    default:
-      NOTREACHED();
-  }
-  return original_color;
+  return gfx::Tween::ColorValueBetween(
+      highlight_color_animation_.GetCurrentValue(), original_color,
+      target_color);
 }
 
 void ReadLaterButton::HighlightColorAnimation::ClearHighlightColor() {
