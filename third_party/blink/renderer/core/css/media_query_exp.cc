@@ -289,13 +289,19 @@ bool MediaQueryExp::IsDeviceDependent() const {
 bool MediaQueryExp::IsWidthDependent() const {
   return media_feature_ == media_feature_names::kWidthMediaFeature ||
          media_feature_ == media_feature_names::kMinWidthMediaFeature ||
-         media_feature_ == media_feature_names::kMaxWidthMediaFeature;
+         media_feature_ == media_feature_names::kMaxWidthMediaFeature ||
+         media_feature_ == media_feature_names::kAspectRatioMediaFeature ||
+         media_feature_ == media_feature_names::kMinAspectRatioMediaFeature ||
+         media_feature_ == media_feature_names::kMaxAspectRatioMediaFeature;
 }
 
 bool MediaQueryExp::IsHeightDependent() const {
   return media_feature_ == media_feature_names::kHeightMediaFeature ||
          media_feature_ == media_feature_names::kMinHeightMediaFeature ||
-         media_feature_ == media_feature_names::kMaxHeightMediaFeature;
+         media_feature_ == media_feature_names::kMaxHeightMediaFeature ||
+         media_feature_ == media_feature_names::kAspectRatioMediaFeature ||
+         media_feature_ == media_feature_names::kMinAspectRatioMediaFeature ||
+         media_feature_ == media_feature_names::kMaxAspectRatioMediaFeature;
 }
 
 MediaQueryExp::MediaQueryExp(const MediaQueryExp& other)
