@@ -5,6 +5,7 @@
 #include "extensions/browser/extension_web_contents_observer.h"
 
 #include "base/check.h"
+#include "base/types/pass_key.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -12,6 +13,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_frame_host.h"
 #include "extensions/browser/extension_prefs.h"
@@ -20,7 +22,6 @@
 #include "extensions/browser/kiosk/kiosk_delegate.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/renderer_startup_helper.h"
-#include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -165,11 +166,14 @@ void ExtensionWebContentsObserver::RenderFrameDeleted(
   ProcessManager::Get(browser_context_)
       ->UnregisterRenderFrameHost(render_frame_host);
   ExtensionApiFrameIdMap::Get()->OnRenderFrameDeleted(render_frame_host);
+  ContentScriptTracker::RenderFrameDeleted(
+      base::PassKey<ExtensionWebContentsObserver>(), render_frame_host);
 }
 
 void ExtensionWebContentsObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
-  URLLoaderFactoryManager::ReadyToCommitNavigation(navigation_handle);
+  ContentScriptTracker::ReadyToCommitNavigation(
+      base::PassKey<ExtensionWebContentsObserver>(), navigation_handle);
 
   const ExtensionRegistry* const registry =
       ExtensionRegistry::Get(browser_context_);

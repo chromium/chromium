@@ -54,40 +54,6 @@ class DidCommitNavigationInterceptor : public WebContentsObserver {
   DISALLOW_COPY_AND_ASSIGN(DidCommitNavigationInterceptor);
 };
 
-// A helper class to run a predefined callback just before processing the
-// DidCommitProvisionalLoad IPC for |deferred_url|.
-class CommitMessageDelayer : public DidCommitNavigationInterceptor {
- public:
-  using DidCommitCallback = base::OnceCallback<void(RenderFrameHost*)>;
-
-  // Starts monitoring |web_contents| for DidCommit IPC and executes
-  // |deferred_action| for each DidCommit IPC that matches |deferred_url|.
-  explicit CommitMessageDelayer(WebContents* web_contents,
-                                const GURL& deferred_url,
-                                DidCommitCallback deferred_action);
-  ~CommitMessageDelayer() override;
-
-  // Waits until DidCommit IPC arrives for |deferred_url|, then calls
-  // |deferred_action|, then handles the IPC, then returns.
-  void Wait();
-
- private:
-  // DidCommitNavigationInterceptor:
-  bool WillProcessDidCommitNavigation(
-      RenderFrameHost* render_frame_host,
-      NavigationRequest* navigation_request,
-      mojom::DidCommitProvisionalLoadParamsPtr* params,
-      mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
-      override;
-
-  std::unique_ptr<base::RunLoop> run_loop_;
-
-  const GURL deferred_url_;
-  DidCommitCallback deferred_action_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommitMessageDelayer);
-};
-
 }  // namespace content
 
 #endif  // CONTENT_TEST_DID_COMMIT_NAVIGATION_INTERCEPTOR_H_

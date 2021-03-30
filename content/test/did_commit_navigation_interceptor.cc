@@ -69,32 +69,4 @@ void DidCommitNavigationInterceptor::RenderFrameDeleted(
   DCHECK(did_remove);
 }
 
-CommitMessageDelayer::CommitMessageDelayer(WebContents* web_contents,
-                                           const GURL& deferred_url,
-                                           DidCommitCallback deferred_action)
-    : DidCommitNavigationInterceptor(web_contents),
-      deferred_url_(deferred_url),
-      deferred_action_(std::move(deferred_action)) {}
-
-CommitMessageDelayer::~CommitMessageDelayer() = default;
-
-void CommitMessageDelayer::Wait() {
-  run_loop_ = std::make_unique<base::RunLoop>();
-  run_loop_->Run();
-  run_loop_.reset();
-}
-
-bool CommitMessageDelayer::WillProcessDidCommitNavigation(
-    RenderFrameHost* render_frame_host,
-    NavigationRequest* navigation_request,
-    mojom::DidCommitProvisionalLoadParamsPtr* params,
-    mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params) {
-  if ((**params).url == deferred_url_) {
-    std::move(deferred_action_).Run(render_frame_host);
-    if (run_loop_)
-      run_loop_->Quit();
-  }
-  return true;
-}
-
 }  // namespace content

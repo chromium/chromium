@@ -122,6 +122,8 @@ static_library("test_support") {
     "../public/test/browser_test_utils.h",
     "../public/test/browsing_data_remover_test_util.cc",
     "../public/test/browsing_data_remover_test_util.h",
+    "../public/test/commit_message_delayer.cc",
+    "../public/test/commit_message_delayer.h",
     "../public/test/content_mock_cert_verifier.cc",
     "../public/test/content_mock_cert_verifier.h",
     "../public/test/content_test_suite_base.cc",

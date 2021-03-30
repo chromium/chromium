@@ -12,15 +12,16 @@
 #include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
 #include "base/pickle.h"
+#include "base/types/pass_key.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_web_contents_observer.h"
-#include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "ipc/ipc_message.h"
@@ -56,7 +57,8 @@ class Handler : public content::WebContentsObserver {
   using ScriptsExecutedOnceCallback = base::OnceCallback<
       void(content::WebContents*, const ExecutingScriptsMap&, const GURL&)>;
 
-  Handler(ScriptsExecutedOnceCallback observer,
+  Handler(base::PassKey<ScriptExecutor> pass_key,
+          ScriptsExecutedOnceCallback observer,
           content::WebContents* web_contents,
           mojom::ExecuteCodeParamsPtr params,
           ScriptExecutor::FrameScope scope,
@@ -115,7 +117,7 @@ class Handler : public content::WebContentsObserver {
     }
 
     for (content::RenderFrameHost* frame : pending_render_frames_)
-      SendExecuteCode(params.Clone(), frame);
+      SendExecuteCode(pass_key, params.Clone(), frame);
 
     if (pending_render_frames_.empty())
       Finish();
@@ -164,11 +166,12 @@ class Handler : public content::WebContentsObserver {
 
   // Sends an ExecuteCode message to the given frame host, and increments
   // the number of pending messages.
-  void SendExecuteCode(mojom::ExecuteCodeParamsPtr params,
+  void SendExecuteCode(base::PassKey<ScriptExecutor> pass_key,
+                       mojom::ExecuteCodeParamsPtr params,
                        content::RenderFrameHost* frame) {
     DCHECK(frame->IsRenderFrameLive());
     DCHECK(base::Contains(pending_render_frames_, frame));
-    URLLoaderFactoryManager::WillExecuteCode(frame, host_id_);
+    ContentScriptTracker::WillExecuteCode(pass_key, frame, host_id_);
     ExtensionWebContentsObserver::GetForWebContents(web_contents())
         ->GetLocalFrame(frame)
         ->ExecuteCode(std::move(params),
@@ -327,8 +330,8 @@ void ScriptExecutor::ExecuteScript(const mojom::HostID& host_id,
     params->injection_key = GenerateInjectionKey(host_id, script_url, code);
 
   // Handler handles IPCs and deletes itself on completion.
-  new Handler(observer_, web_contents_, std::move(params), frame_scope,
-              frame_ids, std::move(callback));
+  new Handler(base::PassKey<ScriptExecutor>(), observer_, web_contents_,
+              std::move(params), frame_scope, frame_ids, std::move(callback));
 }
 
 }  // namespace extensions

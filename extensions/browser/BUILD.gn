@@ -88,6 +88,8 @@ source_set("browser_sources") {
     "content_hash_reader.h",
     "content_hash_tree.cc",
     "content_hash_tree.h",
+    "content_script_tracker.cc",
+    "content_script_tracker.h",
     "content_verifier.cc",
     "content_verifier.h",
     "content_verifier/content_hash.cc",
@@ -487,11 +489,11 @@ source_set("browser_tests") {
     "api/system_storage/system_storage_eject_apitest.cc",
     "api/usb/usb_apitest.cc",
     "browsertest_util_browsertest.cc",
+    "content_script_matching_browsertest.cc",
     "guest_view/app_view/app_view_apitest.cc",
     "guest_view/web_view/web_view_apitest.cc",
     "guest_view/web_view/web_view_apitest.h",
     "guest_view/web_view/web_view_media_access_apitest.cc",
-    "url_loader_factory_manager_browsertest.cc",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

@@ -4,25 +4,20 @@
 
 #include "extensions/browser/url_loader_factory_manager.h"
 
-#include <algorithm>
-#include <memory>
-#include <string>
 #include <utility>
 #include <vector>
 
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/web_contents.h"
+#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
-#include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/script_constants.h"
-#include "extensions/common/user_script.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -117,138 +112,24 @@ void MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
       std::move(request_initiators), push_to_renderer_now);
 }
 
-// If |match_about_blank| is true, then traverses parent/opener chain until the
-// first non-about-scheme document and returns its url.  Otherwise, simply
-// returns |document_url|.
-//
-// This function approximates
-// ScriptContext::GetEffectiveDocumentURLForInjection() from the renderer side.
-// Unlike the renderer code, this just iterates up frame tree, and doesn't look
-// at the effective or precursor origin of the frame. This is okay, because our
-// only caller (DoesContentScriptMatchNavigatingFrame()) expects false
-// positives.
-GURL GetEffectiveDocumentURL(content::RenderFrameHost* frame,
-                             const GURL& document_url,
-                             bool match_about_blank) {
-  base::flat_set<content::RenderFrameHost*> already_visited_frames;
-
-  // Common scenario. If |match_about_blank| is false (as is the case in most
-  // extensions), or if the frame is not an about:-page, just return
-  // |document_url| (supposedly the URL of the frame).
-  if (!match_about_blank || !document_url.SchemeIs(url::kAboutScheme))
-    return document_url;
-
-  // Non-sandboxed about:blank and about:srcdoc pages inherit their security
-  // origin from their parent frame/window. So, traverse the frame/window
-  // hierarchy to find the closest non-about:-page and return its URL.
-  content::RenderFrameHost* found_frame = frame;
-  do {
-    DCHECK(found_frame);
-    already_visited_frames.insert(found_frame);
-
-    // The loop should only execute (and consider the parent chain) if the
-    // currently considered frame has about: scheme.
-    DCHECK(match_about_blank);
-    DCHECK(
-        ((found_frame == frame) && document_url.SchemeIs(url::kAboutScheme)) ||
-        (found_frame->GetLastCommittedURL().SchemeIs(url::kAboutScheme)));
-
-    // Attempt to find |next_candidate| - either a parent of opener of
-    // |found_frame|.
-    content::RenderFrameHost* next_candidate = found_frame->GetParent();
-    if (!next_candidate) {
-      next_candidate =
-          content::WebContents::FromRenderFrameHost(found_frame)->GetOpener();
-    }
-    if (!next_candidate ||
-        base::Contains(already_visited_frames, next_candidate)) {
-      break;
-    }
-
-    found_frame = next_candidate;
-  } while (found_frame->GetLastCommittedURL().SchemeIs(url::kAboutScheme));
-
-  if (found_frame == frame)
-    return document_url;  // Not committed yet at ReadyToCommitNavigation time.
-  return found_frame->GetLastCommittedURL();
-}
-
-// If |user_script| will inject JavaScript content script into the target of
-// |navigation|, then DoesContentScriptMatchNavigatingFrame returns true.
-// Otherwise it may return either true or false.  Note that this function
-// ignores CSS content scripts.
-//
-// This function approximates a subset of checks from
-// UserScriptSet::GetInjectionForScript (which runs in the renderer process).
-// Unlike the renderer version, the code below doesn't consider ability to
-// create an injection host or the results of ScriptInjector::CanExecuteOnFrame.
-// Additionally the |effective_url| calculations are also only an approximation.
-// This is okay, because we may return either true even if no content scripts
-// would be injected (i.e. it is okay to create a special URLLoaderFactory when
-// in reality the content script won't be injected and won't need the factory).
-bool DoesContentScriptMatchNavigatingFrame(
-    const UserScript& user_script,
-    content::RenderFrameHost* navigating_frame,
-    const GURL& navigation_target) {
-  // A special URLLoaderFactory is only needed for Javascript content scripts
-  // (and is never needed for CSS-only injections).
-  if (user_script.js_scripts().empty())
-    return false;
-
-  // TODO(devlin): Update GetEffectiveDocumentURL() to take a
-  // MatchOriginAsFallbackBehavior.
-  bool match_about_blank = false;
-  switch (user_script.match_origin_as_fallback()) {
-    case MatchOriginAsFallbackBehavior::kAlways:
-    case MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree:
-      match_about_blank = true;
-      break;
-    case MatchOriginAsFallbackBehavior::kNever:
-      break;  // `false` is correct for |match_about_blank|.
-  }
-  GURL effective_url = GetEffectiveDocumentURL(
-      navigating_frame, navigation_target, match_about_blank);
-  bool is_subframe = navigating_frame->GetParent();
-  return user_script.MatchesDocument(effective_url, is_subframe);
-}
-
 }  // namespace
 
 // static
-bool URLLoaderFactoryManager::DoContentScriptsMatchNavigatingFrame(
-    const Extension& extension,
-    content::RenderFrameHost* navigating_frame,
-    const GURL& navigation_target) {
-  const UserScriptList& list =
-      ContentScriptsInfo::GetContentScripts(&extension);
-  return std::any_of(list.begin(), list.end(),
-                     [navigating_frame, navigation_target](
-                         const std::unique_ptr<UserScript>& script) {
-                       return DoesContentScriptMatchNavigatingFrame(
-                           *script, navigating_frame, navigation_target);
-                     });
-}
-
-// static
-void URLLoaderFactoryManager::ReadyToCommitNavigation(
-    content::NavigationHandle* navigation) {
-  content::RenderFrameHost* frame = navigation->GetRenderFrameHost();
-  const GURL& url = navigation->GetURL();
+void URLLoaderFactoryManager::WillInjectContentScriptsWhenNavigationCommits(
+    base::PassKey<ContentScriptTracker> pass_key,
+    content::NavigationHandle* navigation,
+    const std::vector<const Extension*>& extensions) {
+  // Same-document navigations do not send URLLoaderFactories to the renderer
+  // process.
+  if (navigation->IsSameDocument())
+    return;
 
   std::vector<url::Origin> initiators_requiring_separate_factory;
-  const ExtensionRegistry* registry =
-      ExtensionRegistry::Get(frame->GetProcess()->GetBrowserContext());
-  DCHECK(registry);  // ReadyToCommitNavigation shouldn't run during shutdown.
-  for (const auto& it : registry->enabled_extensions()) {
-    const Extension& extension = *it;
-    if (!DoContentScriptsMatchNavigatingFrame(extension, frame, url))
+  for (const Extension* extension : extensions) {
+    if (!ShouldCreateSeparateFactoryForContentScripts(*extension))
       continue;
 
-    if (!ShouldCreateSeparateFactoryForContentScripts(extension))
-      continue;
-
-    initiators_requiring_separate_factory.push_back(
-        url::Origin::Create(extension.url()));
+    initiators_requiring_separate_factory.push_back(extension->origin());
   }
 
   if (!initiators_requiring_separate_factory.empty()) {
@@ -258,25 +139,17 @@ void URLLoaderFactoryManager::ReadyToCommitNavigation(
     constexpr bool kPushToRendererNow = false;
 
     MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
-        frame, std::move(initiators_requiring_separate_factory),
-        kPushToRendererNow);
+        navigation->GetRenderFrameHost(),
+        std::move(initiators_requiring_separate_factory), kPushToRendererNow);
   }
 }
 
 // static
-void URLLoaderFactoryManager::WillExecuteCode(content::RenderFrameHost* frame,
-                                              const mojom::HostID& host_id) {
-  if (host_id.type != mojom::HostID::HostType::kExtensions)
-    return;
-
-  const ExtensionRegistry* registry =
-      ExtensionRegistry::Get(frame->GetProcess()->GetBrowserContext());
-  DCHECK(registry);  // WillExecuteCode shouldn't happen during shutdown.
-  const Extension* extension =
-      registry->enabled_extensions().GetByID(host_id.id);
-  DCHECK(extension);  // Guaranteed by the caller - see the doc comment.
-
-  if (!ShouldCreateSeparateFactoryForContentScripts(*extension))
+void URLLoaderFactoryManager::WillProgrammaticallyInjectContentScript(
+    base::PassKey<ContentScriptTracker> pass_key,
+    content::RenderFrameHost* frame,
+    const Extension& extension) {
+  if (!ShouldCreateSeparateFactoryForContentScripts(extension))
     return;
 
   // When WillExecuteCode runs, the frame already received the initial
@@ -289,7 +162,7 @@ void URLLoaderFactoryManager::WillExecuteCode(content::RenderFrameHost* frame,
   constexpr bool kPushToRendererNow = true;
 
   MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
-      frame, {url::Origin::Create(extension->url())}, kPushToRendererNow);
+      frame, {extension.origin()}, kPushToRendererNow);
 }
 
 // static

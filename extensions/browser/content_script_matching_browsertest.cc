@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/url_loader_factory_manager.h"
+#include "extensions/browser/content_script_tracker.h"
 
 #include "base/macros.h"
 #include "base/threading/thread_restrictions.h"
@@ -24,11 +24,17 @@
 
 namespace extensions {
 
-class URLLoaderFactoryManagerBrowserTest : public ShellApiTest,
-                                           public content::WebContentsDelegate {
+// Test suite covering
+// `extensions::ContentScriptTracker::DoContentScriptsMatchNavigatingFrame` from
+// //extensions/browser/content_script_tracker.h.
+//
+// See also ContentScriptTrackerBrowserTest in
+// //chrome/browser/extensions/content_script_tracker_browsertest.cc.
+class ContentScriptMatchingBrowserTest : public ShellApiTest,
+                                         public content::WebContentsDelegate {
  public:
-  URLLoaderFactoryManagerBrowserTest() = default;
-  ~URLLoaderFactoryManagerBrowserTest() override = default;
+  ContentScriptMatchingBrowserTest() = default;
+  ~ContentScriptMatchingBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     ShellApiTest::SetUpOnMainThread();
@@ -65,7 +71,7 @@ class URLLoaderFactoryManagerBrowserTest : public ShellApiTest,
     return extension_;
   }
 
-  // Returns whether the class-under-test (URLLoaderFactoryManager) thinks that
+  // Returns whether the class-under-test (ContentScriptTracker) thinks that
   // the test extension (installed by individual test cases via
   // InstallContentScriptsExtension) may inject content scripts into the
   // foo_frame frame in tab1 (see SetUpFrameTree for a list of available test
@@ -110,7 +116,7 @@ class URLLoaderFactoryManagerBrowserTest : public ShellApiTest,
   }
 
   // SetUpFrameTree sets up the following frame tree(s) that are used by all the
-  // URLLoaderFactoryManagerBrowserTest.ContentScriptMatching_* tests.
+  // ContentScriptMatchingBrowserTest.ContentScriptMatching_* tests.
   //
   // tab1_:
   //   foo_frame
@@ -179,7 +185,7 @@ class URLLoaderFactoryManagerBrowserTest : public ShellApiTest,
   bool DoContentScriptsMatchNavigatingFrame(
       content::RenderFrameHost* navigating_frame,
       const GURL& navigation_target) {
-    return URLLoaderFactoryManager::DoContentScriptsMatchNavigatingFrame(
+    return ContentScriptTracker::DoContentScriptsMatchNavigatingFrameForTesting(
         *extension_, navigating_frame, navigation_target);
   }
 
@@ -236,10 +242,10 @@ class URLLoaderFactoryManagerBrowserTest : public ShellApiTest,
   TestExtensionDir dir_;
   const Extension* extension_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryManagerBrowserTest);
+  DISALLOW_COPY_AND_ASSIGN(ContentScriptMatchingBrowserTest);
 };
 
-IN_PROC_BROWSER_TEST_F(URLLoaderFactoryManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ContentScriptMatchingBrowserTest,
                        ContentScriptMatching_ChainTraversalForBar) {
   SetUpFrameTree();
   ASSERT_FALSE(::testing::Test::HasFailure());
@@ -262,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(URLLoaderFactoryManagerBrowserTest,
   EXPECT_TRUE(DoContentScriptsMatch_Tab2_BarBlankFrame2());
 }
 
-IN_PROC_BROWSER_TEST_F(URLLoaderFactoryManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ContentScriptMatchingBrowserTest,
                        ContentScriptMatching_ChainTraversalForFoo) {
   SetUpFrameTree();
   ASSERT_FALSE(::testing::Test::HasFailure());
@@ -285,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(URLLoaderFactoryManagerBrowserTest,
   EXPECT_FALSE(DoContentScriptsMatch_Tab2_BarBlankFrame2());
 }
 
-IN_PROC_BROWSER_TEST_F(URLLoaderFactoryManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ContentScriptMatchingBrowserTest,
                        ContentScriptMatching_NoMatchingOfAboutBlank) {
   SetUpFrameTree();
   ASSERT_FALSE(::testing::Test::HasFailure());
@@ -317,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(URLLoaderFactoryManagerBrowserTest,
 #define MAYBE_ContentScriptMatching_NotAllFrames \
   ContentScriptMatching_NotAllFrames
 #endif
-IN_PROC_BROWSER_TEST_F(URLLoaderFactoryManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ContentScriptMatchingBrowserTest,
                        MAYBE_ContentScriptMatching_NotAllFrames) {
   SetUpFrameTree();
   ASSERT_FALSE(::testing::Test::HasFailure());
@@ -339,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(URLLoaderFactoryManagerBrowserTest,
   EXPECT_FALSE(DoContentScriptsMatch_Tab1_BarFrame());
 }
 
-IN_PROC_BROWSER_TEST_F(URLLoaderFactoryManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ContentScriptMatchingBrowserTest,
                        ContentScriptMatching_NotYetCommittedURL) {
   SetUpFrameTree();
   ASSERT_FALSE(::testing::Test::HasFailure());
@@ -369,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(URLLoaderFactoryManagerBrowserTest,
   EXPECT_FALSE(DoContentScriptsMatch_Tab1_FooBlankFrame(other_url));
 }
 
-IN_PROC_BROWSER_TEST_F(URLLoaderFactoryManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ContentScriptMatchingBrowserTest,
                        ContentScriptMatching_CssIsIgnored) {
   SetUpFrameTree();
   ASSERT_FALSE(::testing::Test::HasFailure());
