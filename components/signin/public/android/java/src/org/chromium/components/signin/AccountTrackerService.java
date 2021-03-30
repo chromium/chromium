@@ -11,7 +11,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
-import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -46,20 +45,7 @@ public class AccountTrackerService {
         int DONE = 2;
     }
 
-    /**
-     * Classes that want to listen for system accounts fetching and seeding should implement
-     * this interface and register with {@link #addSystemAccountsSeededListener}.
-     */
-    public interface OnSystemAccountsSeededListener {
-        // Called at the end of seedSystemAccounts().
-        void onSystemAccountsSeedingComplete();
-        // Called in invalidateAccountSeedStatus() indicating that accounts have changed.
-        default void onSystemAccountsChanged() {}
-    }
-
     private final long mNativeAccountTrackerService;
-    private final ObserverList<OnSystemAccountsSeededListener> mSystemAccountsSeedingObservers =
-            new ObserverList<>();
     private final List<Runnable> mRunnablesWaitingForAccountsSeeding = new ArrayList<>();
     private @AccountsSeedingStatus int mAccountsSeedingStatus;
     private Callback<CoreAccountId> mOnAccountSeededListener;
@@ -88,7 +74,7 @@ public class AccountTrackerService {
      * Use {@link #seedAccountsIfNeeded(Runnable)} instead.
      */
     @Deprecated
-    public boolean checkAndSeedSystemAccounts() {
+    private boolean checkAndSeedSystemAccounts() {
         ThreadUtils.assertOnUiThread();
         if (mAccountsSeedingStatus == AccountsSeedingStatus.DONE) {
             return true;
@@ -110,18 +96,6 @@ public class AccountTrackerService {
         }
         mRunnablesWaitingForAccountsSeeding.add(onAccountsSeeded);
         seedAccounts();
-    }
-
-    /**
-     * Register an |observer| to observe system accounts seeding status.
-     *
-     * TODO(crbug/1185162): Remove this method after removing all the callers
-     * Use {@link #seedAccountsIfNeeded(Runnable)} instead.
-     */
-    @Deprecated
-    public void addSystemAccountsSeededListener(OnSystemAccountsSeededListener observer) {
-        ThreadUtils.assertOnUiThread();
-        mSystemAccountsSeedingObservers.addObserver(observer);
     }
 
     public void seedAccounts() {
@@ -176,9 +150,6 @@ public class AccountTrackerService {
         AccountTrackerServiceJni.get().seedAccountsInfo(mNativeAccountTrackerService,
                 gaiaIds.toArray(new String[0]), emails.toArray(new String[0]));
         mAccountsSeedingStatus = AccountsSeedingStatus.DONE;
-        for (OnSystemAccountsSeededListener observer : mSystemAccountsSeedingObservers) {
-            observer.onSystemAccountsSeedingComplete();
-        }
         for (Runnable runnable : mRunnablesWaitingForAccountsSeeding) {
             runnable.run();
         }
@@ -202,14 +173,7 @@ public class AccountTrackerService {
     public void invalidateAccountSeedStatus(boolean reSeedAccounts) {
         ThreadUtils.assertOnUiThread();
         mAccountsSeedingStatus = AccountsSeedingStatus.NOT_STARTED;
-        notifyObserversOnAccountsChange();
         if (reSeedAccounts) checkAndSeedSystemAccounts();
-    }
-
-    private void notifyObserversOnAccountsChange() {
-        for (OnSystemAccountsSeededListener observer : mSystemAccountsSeedingObservers) {
-            observer.onSystemAccountsChanged();
-        }
     }
 
     @NativeMethods
