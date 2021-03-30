@@ -91,6 +91,9 @@ class LacrosChromeServiceImpl::InterfaceEntry
 
 // static
 LacrosChromeServiceImpl* LacrosChromeServiceImpl::Get() {
+  // If this returns null and causes failure in a unit test, consider using
+  // ScopedLacrosChromeServiceTestHelper in the test to instantiate
+  // LacrosChromeServiceImpl.
   return g_instance;
 }
 

@@ -32,6 +32,10 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/scoped_lacros_chrome_service_test_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 class Profile;
 class TestingProfile;
 
@@ -214,6 +218,11 @@ class ExtensionServiceTestBase : public testing::Test {
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   ash::ScopedTestUserManager test_user_manager_;
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::ScopedLacrosChromeServiceTestHelper
+      scoped_lacros_chrome_service_test_helper_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // An override that ignores CRX3 publisher signatures.
   SandboxedUnpacker::ScopedVerifierFormatOverrideForTest

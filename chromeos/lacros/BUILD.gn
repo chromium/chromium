@@ -28,6 +28,8 @@ component("lacros") {
     "lacros_chrome_service_impl.h",
     "lacros_chrome_service_impl_never_blocking_state.cc",
     "lacros_chrome_service_impl_never_blocking_state.h",
+    "scoped_lacros_chrome_service_test_helper.cc",
+    "scoped_lacros_chrome_service_test_helper.h",
     "system_idle_cache.cc",
     "system_idle_cache.h",
   ]

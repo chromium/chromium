@@ -52,6 +52,15 @@
 #include "services/network/public/cpp/features.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/login/login_state/login_state.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"  // nogncheck
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#endif
+
 // TODO(battre): move all static functions into an anonymous namespace at the
 // top of this file.
 
@@ -1732,6 +1741,20 @@ bool ShouldHideRequestHeader(content::BrowserContext* browser_context,
 bool ShouldHideResponseHeader(int extra_info_spec, const std::string& name) {
   return !(extra_info_spec & ExtraInfoSpec::EXTRA_HEADERS) &&
          base::LowerCaseEqualsASCII(name, "set-cookie");
+}
+
+bool ArePublicSessionRestrictionsEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (chromeos::LoginState::IsInitialized()) {
+    return chromeos::LoginState::Get()->ArePublicSessionRestrictionsEnabled();
+  }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  DCHECK(chromeos::LacrosChromeServiceImpl::Get());
+  return chromeos::LacrosChromeServiceImpl::Get()
+             ->init_params()
+             ->session_type == crosapi::mojom::SessionType::kPublicSession;
+#endif
+  return false;
 }
 
 }  // namespace extension_web_request_api_helpers

@@ -46,6 +46,9 @@ class ShellMainDelegate : public content::ContentMainDelegate {
 #if defined(OS_MAC)
   void PreCreateMainMessageLoop() override;
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void PostEarlyInitialization(bool is_running_tests) override;
+#endif
 
  private:
   // |process_type| is zygote, renderer, utility, etc. Returns true if the

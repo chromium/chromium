@@ -210,6 +210,10 @@ void ShellMainDelegate::ZygoteForked() {
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void ShellMainDelegate::PostEarlyInitialization(bool is_running_tests) {}
+#endif
+
 // static
 bool ShellMainDelegate::ProcessNeedsResourceBundle(
     const std::string& process_type) {
