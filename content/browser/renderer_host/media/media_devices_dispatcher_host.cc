@@ -17,6 +17,7 @@
 #include "base/task_runner_util.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/media/media_devices_permission_checker.h"
+#include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
@@ -87,7 +88,10 @@ void MediaDevicesDispatcherHost::Create(
                          return;
 
                        BackForwardCache::DisableForRenderFrameHost(
-                           render_frame_host, "MediaDevicesDispatcherHost");
+                           render_frame_host,
+                           BackForwardCacheDisable::DisabledReason(
+                               BackForwardCacheDisable::DisabledReasonId::
+                                   kMediaDevicesDispatcherHost));
                      },
                      render_process_id, render_frame_id));
 }

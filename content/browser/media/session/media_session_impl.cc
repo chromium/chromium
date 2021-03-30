@@ -20,8 +20,8 @@
 #include "content/browser/media/session/media_session_player_observer.h"
 #include "content/browser/media/session/media_session_service_impl.h"
 #include "content/browser/picture_in_picture/picture_in_picture_window_controller_impl.h"
+#include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
@@ -1281,8 +1281,10 @@ bool MediaSessionImpl::AddOneShotPlayer(MediaSessionPlayerObserver* observer,
 void MediaSessionImpl::OnServiceCreated(MediaSessionServiceImpl* service) {
   const auto rfh_id = service->GetRenderFrameHostId();
 
-  content::BackForwardCache::DisableForRenderFrameHost(
-      rfh_id, "MediaSessionImpl::OnServiceCreated");
+  BackForwardCache::DisableForRenderFrameHost(
+      rfh_id, BackForwardCacheDisable::DisabledReason(
+                  BackForwardCacheDisable::DisabledReasonId::
+                      kMediaSessionImplOnServiceCreated));
 
   services_[rfh_id] = service;
   UpdateRoutedService();

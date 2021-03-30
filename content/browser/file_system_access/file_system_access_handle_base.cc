@@ -6,6 +6,7 @@
 
 #include "base/task/post_task.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
+#include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -45,8 +46,10 @@ FileSystemAccessHandleBase::FileSystemAccessHandleBase(
 
     // Disable back-forward cache as File System Access's usage of
     // RenderFrameHost::IsCurrent at the moment is not compatible with bfcache.
-    BackForwardCache::DisableForRenderFrameHost(context_.frame_id,
-                                                "FileSystemAccess");
+    BackForwardCache::DisableForRenderFrameHost(
+        context_.frame_id,
+        BackForwardCacheDisable::DisabledReason(
+            BackForwardCacheDisable::DisabledReasonId::kFileSystemAccess));
     if (web_contents())
       web_contents()->IncrementFileSystemAccessHandleCount();
   }

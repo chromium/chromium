@@ -18,6 +18,7 @@
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_grant.h"
+#include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
@@ -714,7 +715,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
       shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetMainFrame()->GetRoutingID(),
-      "FileSystemAccess"));
+      BackForwardCacheDisable::DisabledReason(
+          BackForwardCacheDisable::DisabledReasonId::kFileSystemAccess)));
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,

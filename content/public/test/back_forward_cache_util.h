@@ -34,7 +34,7 @@ class BackForwardCacheDisabledTester {
 
   bool IsDisabledForFrameWithReason(int process_id,
                                     int frame_routing_id,
-                                    base::StringPiece reason);
+                                    BackForwardCache::DisabledReason reason);
 
  private:
   // Impl has to inherit from BackForwardCacheImpl, which is

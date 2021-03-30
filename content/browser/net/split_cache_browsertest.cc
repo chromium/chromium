@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -191,8 +192,8 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
     // 1) Prevent the old page from entering the back-forward cache. Otherwise
     //    the old process will be kept alive, because it is still being used.
     // 2) Navigate to a WebUI URL, which uses a new process.
-    BackForwardCache::DisableForRenderFrameHost(
-        shell()->web_contents()->GetMainFrame(), "test");
+    DisableForRenderFrameHostForTesting(
+        shell()->web_contents()->GetMainFrame());
     EXPECT_TRUE(NavigateToURL(shell(), GetWebUIURL(kChromeUIGpuHost)));
 
     // In the case of a redirect, the observed URL will be different from

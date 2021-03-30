@@ -252,8 +252,9 @@ class CONTENT_EXPORT BackForwardCacheTestDelegate {
   BackForwardCacheTestDelegate();
   virtual ~BackForwardCacheTestDelegate();
 
-  virtual void OnDisabledForFrameWithReason(GlobalFrameRoutingId id,
-                                            base::StringPiece reason) = 0;
+  virtual void OnDisabledForFrameWithReason(
+      GlobalFrameRoutingId id,
+      BackForwardCache::DisabledReason reason) = 0;
 };
 
 }  // namespace content

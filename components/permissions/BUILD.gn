@@ -71,6 +71,7 @@ source_set("permissions") {
     "//base",
     "//build:chromeos_buildflags",
     "//components/autofill_assistant/browser/public:public",
+    "//components/back_forward_cache",
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
     "//components/keyed_service/content",

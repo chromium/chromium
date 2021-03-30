@@ -11,6 +11,7 @@
 
 #include "base/base64.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
+#include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_controller.h"
@@ -198,7 +199,8 @@ void SecurityHandler::DidFinishNavigation(NavigationHandle* navigation_handle) {
   if (cert_error_override_mode_ == CertErrorOverrideMode::kHandleEvents) {
     BackForwardCache::DisableForRenderFrameHost(
         navigation_handle->GetPreviousRenderFrameHostId(),
-        "content::protocol::SecurityHandler");
+        BackForwardCacheDisable::DisabledReason(
+            BackForwardCacheDisable::DisabledReasonId::kSecurityHandler));
     FlushPendingCertificateErrorNotifications();
   }
 }

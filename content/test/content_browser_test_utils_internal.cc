@@ -790,4 +790,23 @@ void RenderFrameHostCreatedObserver::RenderFrameCreated(
     run_loop_.Quit();
 }
 
+BackForwardCache::DisabledReason RenderFrameHostDisabledForTestingReason() {
+  static const BackForwardCache::DisabledReason reason =
+      BackForwardCache::DisabledReason(
+          {BackForwardCache::DisabledSource::kTesting, 0,
+           "disabled for testing"});
+  return reason;
+}
+
+void DisableForRenderFrameHostForTesting(
+    content::RenderFrameHost* render_frame_host) {
+  content::BackForwardCache::DisableForRenderFrameHost(
+      render_frame_host, RenderFrameHostDisabledForTestingReason());
+}
+
+void DisableForRenderFrameHostForTesting(content::GlobalFrameRoutingId id) {
+  content::BackForwardCache::DisableForRenderFrameHost(
+      id, RenderFrameHostDisabledForTestingReason());
+}
+
 }  // namespace content

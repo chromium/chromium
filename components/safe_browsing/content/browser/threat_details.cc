@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/safe_browsing/content/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/threat_details_cache.h"
@@ -639,7 +640,9 @@ void ThreatDetails::StartCollection() {
 
 void ThreatDetails::RequestThreatDOMDetails(content::RenderFrameHost* frame) {
   content::BackForwardCache::DisableForRenderFrameHost(
-      frame, "safe_browsing::ThreatDetails");
+      frame,
+      back_forward_cache::DisabledReason(
+          back_forward_cache::DisabledReasonId::kSafeBrowsingThreatDetails));
   if (!frame->IsRenderFrameCreated()) {
     // A child frame may have been created browser-side but has not completed
     // setting up the renderer for it yet. In particular, this occurs if the

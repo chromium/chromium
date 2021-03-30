@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_BACK_FORWARD_CACHE_H_
 #define CONTENT_PUBLIC_BROWSER_BACK_FORWARD_CACHE_H_
 
+#include <cstdint>
+
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
@@ -31,6 +33,38 @@ class CONTENT_EXPORT BackForwardCache {
   // Returns true if BackForwardCache is enabled.
   static bool IsBackForwardCacheFeatureEnabled();
 
+  // Back/forward cache can be disabled from within content and also from
+  // embedders. This means we cannot have a unified enum that covers reasons
+  // from different layers. Instead we namespace the reasons and allow each
+  // source to manage its own enum. The previous approach was to use a hash of
+  // the string for logging but this made it hard identify the reasons in the
+  // logged data and also meant there was no control over new uses of the API.
+  //
+  // The logged value is |enum_value + source_type << 16|.
+  enum class DisabledSource {
+    // We reserve 0 because because the previous approach just used the strings
+    // hashed to uint16.
+    kLegacy = 0,
+    kTesting = 1,
+    kContent = 2,
+    kEmbedder = 3,
+  };
+  typedef uint16_t DisabledReasonType;
+  static const uint16_t kDisabledReasonTypeBits = 16;
+
+  // Represents a reason to disable back-forward cache, given by a source. It
+  // preserves the string that accompanied it, however the string is ignored for
+  // <, == and !=.
+  struct CONTENT_EXPORT DisabledReason {
+    const BackForwardCache::DisabledSource source;
+    const BackForwardCache::DisabledReasonType id;
+    const std::string description;
+
+    bool operator<(const DisabledReason&) const;
+    bool operator==(const DisabledReason&) const;
+    bool operator!=(const DisabledReason&) const;
+  };
+
   // Prevents the |render_frame_host| from entering the BackForwardCache. A
   // RenderFrameHost can only enter the BackForwardCache if the main one and all
   // its children can. This action can not be undone. Any document that is
@@ -45,15 +79,14 @@ class CONTENT_EXPORT BackForwardCache {
   // If the page is already in the cache an eviction is triggered.
   //
   // |render_frame_host|: non-null.
-  // |reason|: Free form string to be used in logging and metrics.
+  // |reason|: Describes who is disabling this and why.
   static void DisableForRenderFrameHost(RenderFrameHost* render_frame_host,
-                                        base::StringPiece reason);
-
+                                        DisabledReason reason);
   // Helper function to be used when it is not always possible to guarantee the
   // |render_frame_host| to be still alive when this is called. In this case,
   // its |id| can be used.
   static void DisableForRenderFrameHost(GlobalFrameRoutingId id,
-                                        base::StringPiece reason);
+                                        DisabledReason reason);
 
   // List of reasons the BackForwardCache was disabled for a specific test. If a
   // test needs to be disabled for a reason not covered below, please add to

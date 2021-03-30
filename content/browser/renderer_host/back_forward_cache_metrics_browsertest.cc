@@ -24,6 +24,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -867,8 +868,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheEnabledMetricsBrowserTest,
 
   // Make url1 ineligible for caching so that when we navigate back it doesn't
   // fetch the RenderFrameHost from the back-forward cache.
-  content::BackForwardCache::DisableForRenderFrameHost(
-      rfh_url1, "BackForwardCacheMetricsBrowserTest");
+  DisableForRenderFrameHostForTesting(rfh_url1);
   EXPECT_TRUE(NavigateToURL(shell(), url3));
 
   // 6) Go back and reload.

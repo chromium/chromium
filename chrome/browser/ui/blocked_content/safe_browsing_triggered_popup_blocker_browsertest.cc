@@ -27,6 +27,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -718,5 +719,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
 
   EXPECT_TRUE(back_forward_cache_tester.IsDisabledForFrameWithReason(
       main_frame_process_id, main_frame_routing_id,
-      "SafeBrowsingTriggeredPopupBlocker"));
+      back_forward_cache::DisabledReason(
+          back_forward_cache::DisabledReasonId::
+              kSafeBrowsingTriggeredPopupBlocker)));
 }

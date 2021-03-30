@@ -203,11 +203,11 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUkm(
 
   builder.Record(ukm::UkmRecorder::Get());
 
-  for (const std::string& reason : page_store_result_->disabled_reasons()) {
+  for (const BackForwardCache::DisabledReason& reason :
+       page_store_result_->disabled_reasons()) {
     ukm::builders::BackForwardCacheDisabledForRenderFrameHostReason
         rfh_reason_builder(source_id);
-    rfh_reason_builder.SetReason(
-        static_cast<int64_t>(base::HashMetricName(reason) & ((1 << 16) - 1)));
+    rfh_reason_builder.SetReason2(MetricValue(reason));
     rfh_reason_builder.Record(ukm::UkmRecorder::Get());
   }
 }
@@ -389,18 +389,17 @@ void BackForwardCacheMetrics::RecordMetricsForHistoryNavigationCommit(
     }
   }
 
-  for (const std::string& reason : page_store_result_->disabled_reasons()) {
-    // Use SparseHistogram instead of other simple macros for metrics. It is
-    // because the reasons are represented as strings, and it was impossible to
-    // define an enum values.
-    base::HistogramBase* histogram = base::SparseHistogram::FactoryGet(
+  for (const BackForwardCache::DisabledReason& reason :
+       page_store_result_->disabled_reasons()) {
+    // Use SparseHistogram instead of other simple macros for metrics. The
+    // reasons cannot be represented as a unified enum because they come from
+    // multiple sources. At first they were represented as strings but that
+    // makes it hard to track new additions. Now they are represented by
+    // a combination of source and source-specific enum.
+    base::UmaHistogramSparse(
         "BackForwardCache.HistoryNavigationOutcome."
-        "DisabledForRenderFrameHostReason",
-        base::HistogramBase::kUmaTargetedHistogramFlag);
-    // Adopts the lower 32 bits as a signed integer from unsigned 64 bits
-    // integer.
-    histogram->Add(base::HistogramBase::Sample(
-        static_cast<int32_t>(base::HashMetricName(reason))));
+        "DisabledForRenderFrameHostReason2",
+        MetricValue(reason));
   }
 
   if (ShouldRecordBrowsingInstanceNotSwappedReason() &&
@@ -461,6 +460,14 @@ void BackForwardCacheMetrics::RecordHistogramForReloadsAndHistoryNavigations(
       previous_navigation_is_served_from_bfcache_
           ? ReloadsAfterHistoryNavigation::kServedFromBackForwardCache
           : ReloadsAfterHistoryNavigation::kNotServedFromBackForwardCache);
+}
+
+// static
+uint64_t BackForwardCacheMetrics::MetricValue(
+    BackForwardCache::DisabledReason reason) {
+  return static_cast<BackForwardCache::DisabledReasonType>(reason.source)
+             << BackForwardCache::kDisabledReasonTypeBits |
+         reason.id;
 }
 
 }  // namespace content

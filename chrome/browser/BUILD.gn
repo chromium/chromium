@@ -1989,6 +1989,7 @@ static_library("browser") {
     "//components/autofill/content/browser",
     "//components/autofill/core/browser",
     "//components/autofill_assistant/browser/public:public",
+    "//components/back_forward_cache",
     "//components/background_fetch",
     "//components/background_sync",
     "//components/background_task_scheduler",

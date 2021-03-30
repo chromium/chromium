@@ -31,6 +31,7 @@ source_set("browser") {
   ]
   deps = [
     "//base",
+    "//components/back_forward_cache",
     "//components/content_settings/core/browser",
     "//components/permissions",
     "//components/security_state/core",

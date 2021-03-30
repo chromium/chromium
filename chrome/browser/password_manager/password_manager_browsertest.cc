@@ -4096,8 +4096,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
 // Test that if the credentials API is used, it makes the page ineligible for
 // caching in the BackForwardCache.
 //
-// See where content::BackForwardCache::DisableForRenderFrameHost is called
-// in chrome_password_manager_client.cc for explanation.
+// See where BackForwardCache::DisableForRenderFrameHost is called in
+// chrome_password_manager_client.cc for explanation.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
                        NotCachedIfCredentialsAPIUsed) {
   // Navigate to a page with a password form.

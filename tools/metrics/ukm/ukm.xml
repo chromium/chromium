@@ -1925,11 +1925,27 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="Reason"
       enum="BackForwardCacheDisabledForRenderFrameHostReasonShort">
+    <obsolete>
+      Deprecated as of 03/2021. Replaced with Reason2.
+    </obsolete>
+    <summary>
+      For history navigations, records the reason passed to
+      BackForwardCache::DisableForRenderFrameHost calls.
+
+      The metric is recorded when a history navigation commits and emits a
+      sample for each reason. One history navigation can emit multiple reasons,
+      and these reasons are recorded as multiple events with the same source ID
+      based on the navigation ID.
+    </summary>
+  </metric>
+  <metric name="Reason2"
+      enum="BackForwardCacheDisabledForRenderFrameHostReason2">
     <summary>
       For history navigations, records the reason passed to
       BackForwardCache::DisableForRenderFrameHost calls. The reason is specified
-      as a string, and this metric contains one of their hashes computed as
-      base::HashMetricName's lower 16bits.
+      as a 48-bit int representing the source (blink or an embedder) and a
+      source-specific 16-bit int representing the reason specific to that
+      source.
 
       The metric is recorded when a history navigation commits and emits a
       sample for each reason. One history navigation can emit multiple reasons,

@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/offline_pages/prefetch/prefetch_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/keyed_service/core/simple_key_map.h"
 #include "components/offline_pages/core/model/offline_page_model_utils.h"
 #include "components/offline_pages/core/offline_page_item.h"
@@ -456,7 +457,9 @@ TEST_F(OfflinePageTabHelperTest, OfflinePageIsNotStoredInBackForwardCache) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              TestPageUrl());
   EXPECT_TRUE(back_forward_cache_tester.IsDisabledForFrameWithReason(
-      process_id, main_frame_id, "OfflinePage"));
+      process_id, main_frame_id,
+      back_forward_cache::DisabledReason(
+          back_forward_cache::DisabledReasonId::kOfflinePage)));
 }
 
 }  // namespace

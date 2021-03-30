@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/back_forward_cache",
   "+components/history/core/browser",
   "+components/safe_browsing/core/proto/csd.pb.h",
   "+components/sessions/core/session_id.h",

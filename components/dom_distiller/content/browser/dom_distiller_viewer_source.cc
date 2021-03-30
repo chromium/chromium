@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/dom_distiller_request_view_base.h"
@@ -131,7 +132,8 @@ void DomDistillerViewerSource::RequestViewerHandle::DidFinishNavigation(
   // from being stored in back-forward cache.
   content::BackForwardCache::DisableForRenderFrameHost(
       navigation_handle->GetPreviousRenderFrameHostId(),
-      "DomDistillerViewerSource");
+      back_forward_cache::DisabledReason(
+          back_forward_cache::DisabledReasonId::kDomDistillerViewerSource));
 
   Cancel();
 }

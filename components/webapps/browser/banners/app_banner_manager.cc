@@ -16,6 +16,7 @@
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
@@ -601,7 +602,9 @@ void AppBannerManager::DidFinishNavigation(content::NavigationHandle* handle) {
   if (installable_web_app_check_result_ != InstallableWebAppCheckResult::kNo &&
       state_ != State::INACTIVE) {
     content::BackForwardCache::DisableForRenderFrameHost(
-        handle->GetPreviousRenderFrameHostId(), "banners::AppBannerManager");
+        handle->GetPreviousRenderFrameHostId(),
+        back_forward_cache::DisabledReason(
+            back_forward_cache::DisabledReasonId::kAppBannerManager));
   }
 
   if (state_ != State::COMPLETE && state_ != State::INACTIVE)

@@ -655,16 +655,18 @@ bool BackForwardCache::IsBackForwardCacheFeatureEnabled() {
 }
 
 // static
-void BackForwardCache::DisableForRenderFrameHost(RenderFrameHost* rfh,
-                                                 base::StringPiece reason) {
-  DisableForRenderFrameHost(
-      static_cast<RenderFrameHostImpl*>(rfh)->GetGlobalFrameRoutingId(),
-      reason);
+void BackForwardCache::DisableForRenderFrameHost(
+    RenderFrameHost* render_frame_host,
+    BackForwardCache::DisabledReason reason) {
+  DisableForRenderFrameHost(static_cast<RenderFrameHostImpl*>(render_frame_host)
+                                ->GetGlobalFrameRoutingId(),
+                            reason);
 }
 
 // static
-void BackForwardCache::DisableForRenderFrameHost(GlobalFrameRoutingId id,
-                                                 base::StringPiece reason) {
+void BackForwardCache::DisableForRenderFrameHost(
+    GlobalFrameRoutingId id,
+    BackForwardCache::DisabledReason reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (g_bfcache_disabled_test_observer)
     g_bfcache_disabled_test_observer->OnDisabledForFrameWithReason(id, reason);
@@ -743,6 +745,19 @@ bool BackForwardCacheImpl::CheckFeatureUsageOnlyAfterAck() {
 
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kBackForwardCache, "check_eligibility_after_pagehide", false);
+}
+
+bool BackForwardCache::DisabledReason::operator<(
+    const DisabledReason& other) const {
+  return std::tie(source, id) < std::tie(other.source, other.id);
+}
+bool BackForwardCache::DisabledReason::operator==(
+    const DisabledReason& other) const {
+  return std::tie(source, id) == std::tie(other.source, other.id);
+}
+bool BackForwardCache::DisabledReason::operator!=(
+    const DisabledReason& other) const {
+  return !(*this == other);
 }
 
 }  // namespace content

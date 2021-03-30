@@ -93,6 +93,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="BackForwardCache.AllSites.HistoryNavigationOutcome.DisabledForRenderFrameHostReason"
     enum="BackForwardCacheDisabledForRenderFrameHostReason"
     expires_after="2021-10-01">
+  <obsolete>
+    Removed from code in Mar 2021.
+  </obsolete>
   <owner>carlscab@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
@@ -101,6 +104,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     BackForwardCache::DisableForRenderFrameHost calls. These reasons are
     specified as strings, so this histograms contains their hashes computed as
     base::HashMetricName.
+
+    The metric is recorded when a history navigation commits and emits a sample
+    for each reason. Compare this with
+    BackForwardCache.HistoryNavigationOutcome, which contains the total number
+    of navigations which where not cached
+
+    This is recorded for all websites regardless whether back-forward cache is
+    enabled or not.
+  </summary>
+</histogram>
+
+<histogram
+    name="BackForwardCache.AllSites.HistoryNavigationOutcome.DisabledForRenderFrameHostReason2"
+    enum="BackForwardCacheDisabledForRenderFrameHostReason2"
+    expires_after="2021-10-01">
+  <owner>carlscab@chromium.org</owner>
+  <owner>hajimehoshi@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    For history navigations, records the reason passed to
+    BackForwardCache::DisableForRenderFrameHost calls.
 
     The metric is recorded when a history navigation commits and emits a sample
     for each reason. Compare this with
@@ -250,6 +274,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="BackForwardCache.HistoryNavigationOutcome.DisabledForRenderFrameHostReason"
     enum="BackForwardCacheDisabledForRenderFrameHostReason"
     expires_after="2021-08-15">
+  <obsolete>
+    Removed from code in Mar 2021.
+  </obsolete>
   <owner>carlscab@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
@@ -267,6 +294,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     This is recorded when back-forward cache is enabled for this navigation
     (back-forward cache feature is enabled and the domain is in the scope of the
     experiment).
+  </summary>
+</histogram>
+
+<histogram
+    name="BackForwardCache.HistoryNavigationOutcome.DisabledForRenderFrameHostReason2"
+    enum="BackForwardCacheDisabledForRenderFrameHostReason2"
+    expires_after="2021-08-15">
+  <owner>carlscab@chromium.org</owner>
+  <owner>hajimehoshi@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    For history navigations, records the reason passed to
+    BackForwardCache::DisableForRenderFrameHost calls.
+
+    The metric is recorded when a history navigation commits and emits a sample
+    for each reason. Compare this with
+    BackForwardCache.HistoryNavigationOutcome, which contains the total number
+    of navigations which where not cached
+
+    This is recorded for all websites regardless whether back-forward cache is
+    enabled or not.
   </summary>
 </histogram>
 

@@ -1261,13 +1261,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Prevents this frame (along with its parents/children) from being added to
   // the BackForwardCache. If the frame is already in the cache an eviction is
   // triggered.
-  void DisableBackForwardCache(base::StringPiece reason);
+  void DisableBackForwardCache(BackForwardCache::DisabledSource source,
+                               BackForwardCache::DisabledReasonType reason);
+  void DisableBackForwardCache(BackForwardCache::DisabledReason reason);
 
   bool is_evicted_from_back_forward_cache() {
     return is_evicted_from_back_forward_cache_;
   }
 
-  const std::set<std::string>& back_forward_cache_disabled_reasons() const {
+  const std::set<BackForwardCache::DisabledReason>&
+  back_forward_cache_disabled_reasons() const {
     return back_forward_cache_disabled_reasons_;
   }
 
@@ -3320,7 +3323,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // The reasons given in BackForwardCache::DisableForRenderFrameHost. This is a
   // breakdown of NotRestoredReason::kDisableForRenderFrameHostCalled.
-  std::set<std::string> back_forward_cache_disabled_reasons_;
+  std::set<BackForwardCache::DisabledReason>
+      back_forward_cache_disabled_reasons_;
 
   // Whether proactive BrowsingInstance swap is disabled for this frame or not.
   // Note that even if this is false, proactive BrowsingInstance swap still

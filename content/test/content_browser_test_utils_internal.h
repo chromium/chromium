@@ -22,6 +22,7 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/common/frame_messages.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/javascript_dialog_manager.h"
@@ -556,6 +557,13 @@ class RenderFrameHostCreatedObserver : public WebContentsObserver {
   // The callback to call when a RenderFrameCreated call is observed.
   OnRenderFrameHostCreatedCallback on_rfh_created_;
 };
+
+// The standard DisabledReason used in testing. The functions below use this
+// reason and tests will need to assert that it appears.
+BackForwardCache::DisabledReason RenderFrameHostDisabledForTestingReason();
+// Disable using the standard testing DisabledReason.
+void DisableForRenderFrameHostForTesting(RenderFrameHost* render_frame_host);
+void DisableForRenderFrameHostForTesting(GlobalFrameRoutingId id);
 
 }  // namespace content
 

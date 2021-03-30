@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -128,8 +129,10 @@ void FileChooserImpl::OpenFileChooser(blink::mojom::FileChooserParamsPtr params,
 
   // Don't allow page with open FileChooser to enter BackForwardCache to avoid
   // any unexpected behaviour from BackForwardCache.
-  BackForwardCache::DisableForRenderFrameHost(render_frame_host_,
-                                              "FileChooser");
+  BackForwardCache::DisableForRenderFrameHost(
+      render_frame_host_,
+      BackForwardCacheDisable::DisabledReason(
+          BackForwardCacheDisable::DisabledReasonId::kFileChooser));
 
   static_cast<WebContentsImpl*>(web_contents())
       ->RunFileChooser(render_frame_host_, std::move(listener), *params);

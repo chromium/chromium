@@ -49,6 +49,7 @@
 #include "components/autofill/core/browser/logging/log_receiver.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill_assistant/browser/public/runtime_manager.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/password_manager/content/browser/bad_message.h"
@@ -1112,7 +1113,10 @@ void ChromePasswordManagerClient::BindCredentialManager(
   // next call is made, if it has become disconnected.
   // TODO(https://crbug.com/1015358): Remove this workaround.
   content::BackForwardCache::DisableForRenderFrameHost(
-      render_frame_host, "ChromePasswordManagerClient::BindCredentialManager");
+      render_frame_host,
+      back_forward_cache::DisabledReason(
+          back_forward_cache::DisabledReasonId::
+              kChromePasswordManagerClient_BindCredentialManager));
 
   instance->content_credential_manager_.BindRequest(std::move(receiver));
 }

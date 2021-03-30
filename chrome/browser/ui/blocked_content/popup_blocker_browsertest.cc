@@ -36,6 +36,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/blocked_content/list_item_position.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
@@ -807,8 +808,10 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PopupsDisableBackForwardCache) {
   // Navigate away while having blocked popups. This should block bfcache.
   ui_test_utils::NavigateToURL(browser(), url2);
 
-  EXPECT_TRUE(tester.IsDisabledForFrameWithReason(process_id, frame_routing_id,
-                                                  "PopupBlockerTabHelper"));
+  EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
+      process_id, frame_routing_id,
+      back_forward_cache::DisabledReason(
+          back_forward_cache::DisabledReasonId::kPopupBlockerTabHelper)));
 }
 
 // Make sure the poput is attributed to the right WebContents when it is

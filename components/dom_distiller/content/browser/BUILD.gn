@@ -28,6 +28,7 @@ static_library("browser") {
   ]
   deps = [
     "//base",
+    "//components/back_forward_cache",
     "//components/dom_distiller/content/common/mojom",
     "//components/resources",
     "//components/strings",

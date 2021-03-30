@@ -42,7 +42,7 @@ class BackForwardCacheCanStoreDocumentResult {
   // TODO(hajimehoshi): Replace the arbitrary strings with base::Location /
   // FROM_HERE for privacy reasons.
   void NoDueToDisableForRenderFrameHostCalled(
-      const std::set<std::string>& reasons);
+      const std::set<BackForwardCache::DisabledReason>& reasons);
 
   bool CanStore() const;
   operator bool() const { return CanStore(); }
@@ -55,7 +55,7 @@ class BackForwardCacheCanStoreDocumentResult {
   browsing_instance_not_swapped_reason() const {
     return browsing_instance_not_swapped_reason_;
   }
-  const std::set<std::string>& disabled_reasons() const {
+  const std::set<BackForwardCache::DisabledReason>& disabled_reasons() const {
     return disabled_reasons_;
   }
 
@@ -69,7 +69,7 @@ class BackForwardCacheCanStoreDocumentResult {
   uint64_t blocklisted_features_ = 0;
   base::Optional<ShouldSwapBrowsingInstance>
       browsing_instance_not_swapped_reason_;
-  std::set<std::string> disabled_reasons_;
+  std::set<BackForwardCache::DisabledReason> disabled_reasons_;
 };
 
 }  // namespace content

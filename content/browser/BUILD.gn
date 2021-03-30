@@ -1272,6 +1272,8 @@ source_set("browser") {
     "renderer_host/ancestor_throttle.h",
     "renderer_host/back_forward_cache_can_store_document_result.cc",
     "renderer_host/back_forward_cache_can_store_document_result.h",
+    "renderer_host/back_forward_cache_disable.cc",
+    "renderer_host/back_forward_cache_disable.h",
     "renderer_host/back_forward_cache_impl.cc",
     "renderer_host/back_forward_cache_impl.h",
     "renderer_host/back_forward_cache_metrics.cc",

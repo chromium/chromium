@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/webauth/authenticator_environment_impl.h"
 #include "content/browser/webauth/virtual_authenticator_request_delegate.h"
 #include "content/browser/webauth/virtual_fido_discovery_factory.h"
@@ -740,8 +741,10 @@ AuthenticatorCommon::AuthenticatorCommon(RenderFrameHost* render_frame_host)
   // Disable the back-forward cache for any document that makes WebAuthn
   // requests. Pages using privacy-sensitive APIs are generally exempt from
   // back-forward cache for now as a precaution.
-  BackForwardCache::DisableForRenderFrameHost(render_frame_host,
-                                              "WebAuthenticationAPI");
+  BackForwardCache::DisableForRenderFrameHost(
+      render_frame_host,
+      BackForwardCacheDisable::DisabledReason(
+          BackForwardCacheDisable::DisabledReasonId::kWebAuthenticationAPI));
 }
 
 AuthenticatorCommon::~AuthenticatorCommon() = default;

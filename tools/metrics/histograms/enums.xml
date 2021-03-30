@@ -6577,6 +6577,32 @@ others/histograms.xml -->
       label="password_manager::ContentPasswordManagerDriver"/>
 </enum>
 
+<enum name="BackForwardCacheDisabledForRenderFrameHostReason2">
+  <int value="131072" label="kContent-kUnknown"/>
+  <int value="131073" label="kContent-kMediaSessionImplOnServiceCreated"/>
+  <int value="131074" label="kContent-kSecurityHandler"/>
+  <int value="131075" label="kContent-kWebAuthenticationAPI"/>
+  <int value="131076" label="kContent-kFileChooser"/>
+  <int value="131077" label="kContent-kSerial"/>
+  <int value="131078" label="kContent-kFileSystemAccess"/>
+  <int value="131079" label="kContent-kMediaDevicesDispatcherHost"/>
+  <int value="131080" label="kContent-kWebBluetooth"/>
+  <int value="131081" label="kContent-kWebUSB"/>
+  <int value="196608" label="kEmbedder-kUnknown"/>
+  <int value="196609" label="kEmbedder-kPopupBlockerTabHelper"/>
+  <int value="196610" label="kEmbedder-kSafeBrowsingTriggeredPopupBlocker"/>
+  <int value="196611" label="kEmbedder-kSafeBrowsingThreatDetails"/>
+  <int value="196612" label="kEmbedder-kAppBannerManager"/>
+  <int value="196613" label="kEmbedder-kDomDistillerViewerSource"/>
+  <int value="196614"
+      label="kEmbedder-kDomDistiller_SelfDeletingRequestDelegate"/>
+  <int value="196615" label="kEmbedder-kOomInterventionTabHelper"/>
+  <int value="196616" label="kEmbedder-kOfflinePage"/>
+  <int value="196617"
+      label="kEmbedder-kChromePasswordManagerClient_BindCredentialManager"/>
+  <int value="196618" label="kEmbedder-kPermissionRequestManager"/>
+</enum>
+
 <enum name="BackForwardCacheDisabledForRenderFrameHostReasonShort">
   <int value="4520" label="PopupBlockerTabHelper"/>
   <int value="8169" label="SafeBrowsingTriggeredPopupBlocker"/>
