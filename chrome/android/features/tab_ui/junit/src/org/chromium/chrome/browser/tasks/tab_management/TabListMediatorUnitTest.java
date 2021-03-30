@@ -39,7 +39,7 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_AND
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.FOR_TESTING;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.PRICE_WELCOME;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.PRICE_MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.TAB_SUGGESTION;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
@@ -120,7 +120,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_management.PriceWelcomeMessageService.PriceTabData;
+import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
@@ -386,7 +386,7 @@ public class TabListMediatorUnitTest {
             int position = invocation.getArgument(0);
             int itemType = mModel.get(position).type;
             if (itemType == TabProperties.UiType.MESSAGE
-                    || itemType == TabProperties.UiType.PRICE_WELCOME) {
+                    || itemType == TabProperties.UiType.LARGE_MESSAGE) {
                 return mGridLayoutManager.getSpanCount();
             }
             return 1;
@@ -1565,20 +1565,20 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void removeSpecialItem_Message_PriceWelcome() {
+    public void removeSpecialItem_Message_PriceMessage() {
         PropertyModel model = mock(PropertyModel.class);
-        int expectedMessageType = PRICE_WELCOME;
+        int expectedMessageType = PRICE_MESSAGE;
         int wrongMessageType = TAB_SUGGESTION;
         when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
         when(model.get(MESSAGE_TYPE)).thenReturn(expectedMessageType);
-        mMediator.addSpecialItemToModel(0, TabProperties.UiType.PRICE_WELCOME, model);
+        mMediator.addSpecialItemToModel(0, TabProperties.UiType.LARGE_MESSAGE, model);
         assertEquals(1, mModel.size());
 
         mMediator.removeSpecialItemFromModel(TabProperties.UiType.MESSAGE, wrongMessageType);
         assertEquals(1, mModel.size());
 
         mMediator.removeSpecialItemFromModel(
-                TabProperties.UiType.PRICE_WELCOME, expectedMessageType);
+                TabProperties.UiType.LARGE_MESSAGE, expectedMessageType);
         assertEquals(0, mModel.size());
     }
 
@@ -2246,15 +2246,15 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void testUpdateLayout_PriceWelcome() {
+    public void testUpdateLayout_PriceMessage() {
         initAndAssertAllProperties();
-        addSpecialItem(1, TabProperties.UiType.PRICE_WELCOME, PRICE_WELCOME);
-        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(1));
+        addSpecialItem(1, TabProperties.UiType.LARGE_MESSAGE, PRICE_MESSAGE);
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(1));
 
         doAnswer(invocation -> {
             int position = invocation.getArgument(0);
             int itemType = mModel.get(position).type;
-            if (itemType == TabProperties.UiType.PRICE_WELCOME) {
+            if (itemType == TabProperties.UiType.LARGE_MESSAGE) {
                 return mGridLayoutManager.getSpanCount();
             }
             return 1;
@@ -2262,11 +2262,13 @@ public class TabListMediatorUnitTest {
                 .when(mSpanSizeLookup)
                 .getSpanSize(anyInt());
         mMediator.updateLayout();
-        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(1));
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(1));
+        TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
+        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, true);
         mMediator.updateLayout();
-        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(2));
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(2));
     }
 
     @Test
@@ -2294,9 +2296,9 @@ public class TabListMediatorUnitTest {
     @Test
     public void testIndexOfNthTabCard() {
         initAndAssertAllProperties();
-        addSpecialItem(1, TabProperties.UiType.PRICE_WELCOME, PRICE_WELCOME);
+        addSpecialItem(1, TabProperties.UiType.LARGE_MESSAGE, PRICE_MESSAGE);
 
-        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(1));
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(1));
         assertThat(mModel.indexOfNthTabCard(-1), equalTo(TabModel.INVALID_TAB_INDEX));
         assertThat(mModel.indexOfNthTabCard(0), equalTo(0));
         assertThat(mModel.indexOfNthTabCard(1), equalTo(2));
@@ -2306,9 +2308,9 @@ public class TabListMediatorUnitTest {
     @Test
     public void testGetTabCardCountsBefore() {
         initAndAssertAllProperties();
-        addSpecialItem(1, TabProperties.UiType.PRICE_WELCOME, PRICE_WELCOME);
+        addSpecialItem(1, TabProperties.UiType.LARGE_MESSAGE, PRICE_MESSAGE);
 
-        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(1));
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(1));
         assertThat(mModel.getTabCardCountsBefore(-1), equalTo(TabModel.INVALID_TAB_INDEX));
         assertThat(mModel.getTabCardCountsBefore(0), equalTo(0));
         assertThat(mModel.getTabCardCountsBefore(1), equalTo(1));
@@ -2319,8 +2321,8 @@ public class TabListMediatorUnitTest {
     @Test
     public void testGetTabIndexBefore() {
         initAndAssertAllProperties();
-        addSpecialItem(1, TabProperties.UiType.PRICE_WELCOME, PRICE_WELCOME);
-        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(1));
+        addSpecialItem(1, TabProperties.UiType.LARGE_MESSAGE, PRICE_MESSAGE);
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(1));
         assertThat(mModel.getTabIndexBefore(2), equalTo(0));
         assertThat(mModel.getTabIndexBefore(0), equalTo(TabModel.INVALID_TAB_INDEX));
     }
@@ -2328,8 +2330,8 @@ public class TabListMediatorUnitTest {
     @Test
     public void testGetTabIndexAfter() {
         initAndAssertAllProperties();
-        addSpecialItem(1, TabProperties.UiType.PRICE_WELCOME, PRICE_WELCOME);
-        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(1));
+        addSpecialItem(1, TabProperties.UiType.LARGE_MESSAGE, PRICE_MESSAGE);
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(1));
         assertThat(mModel.getTabIndexAfter(0), equalTo(2));
         assertThat(mModel.getTabIndexAfter(2), equalTo(TabModel.INVALID_TAB_INDEX));
     }
@@ -2347,9 +2349,9 @@ public class TabListMediatorUnitTest {
 
         PropertyModel model = mock(PropertyModel.class);
         when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
-        when(model.get(MESSAGE_TYPE)).thenReturn(PRICE_WELCOME);
-        mMediator.addSpecialItemToModel(1, TabProperties.UiType.PRICE_WELCOME, model);
-        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(2));
+        when(model.get(MESSAGE_TYPE)).thenReturn(PRICE_MESSAGE);
+        mMediator.addSpecialItemToModel(1, TabProperties.UiType.LARGE_MESSAGE, model);
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(2));
     }
 
     @Test
@@ -2365,11 +2367,11 @@ public class TabListMediatorUnitTest {
 
         PropertyModel model = mock(PropertyModel.class);
         when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
-        when(model.get(MESSAGE_TYPE)).thenReturn(PRICE_WELCOME);
-        mMediator.addSpecialItemToModel(2, TabProperties.UiType.PRICE_WELCOME, model);
-        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(2));
+        when(model.get(MESSAGE_TYPE)).thenReturn(PRICE_MESSAGE);
+        mMediator.addSpecialItemToModel(2, TabProperties.UiType.LARGE_MESSAGE, model);
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(2));
         mModel.removeAt(0);
-        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(2));
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(2));
     }
 
     @Test
@@ -2389,7 +2391,7 @@ public class TabListMediatorUnitTest {
 
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, false);
-        assertThat(PriceTrackingUtilities.isPriceWelcomeMessageCardDisabled(), equalTo(true));
+        assertThat(PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(), equalTo(false));
         fetcher.maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
         verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
     }
@@ -2428,7 +2430,7 @@ public class TabListMediatorUnitTest {
                 new ShoppingPersistedTabDataFetcher(mTab1, mModel, mPriceWelcomeMessageController);
 
         // Simulate that we already has the message.
-        addSpecialItem(1, TabProperties.UiType.PRICE_WELCOME, PRICE_WELCOME);
+        addSpecialItem(1, TabProperties.UiType.LARGE_MESSAGE, PRICE_MESSAGE);
 
         fetcher.maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
         verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
@@ -2846,7 +2848,7 @@ public class TabListMediatorUnitTest {
         PropertyModel model = mock(PropertyModel.class);
         when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
         if (uiType == TabProperties.UiType.MESSAGE
-                || uiType == TabProperties.UiType.PRICE_WELCOME) {
+                || uiType == TabProperties.UiType.LARGE_MESSAGE) {
             when(model.get(MESSAGE_TYPE)).thenReturn(itemIdentifier);
         }
         // Avoid auto-updating the layout when inserting the special card.
@@ -2856,12 +2858,14 @@ public class TabListMediatorUnitTest {
 
     private void prepareTestMaybeShowPriceWelcomeMessage() {
         initAndAssertAllProperties();
+        TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
+        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, true);
         mPriceDrop = new PriceDrop("1", "2");
         mPriceTabData = new PriceTabData(TAB1_ID, mPriceDrop);
         doReturn(mPriceDrop).when(mShoppingPersistedTabData).getPriceDrop();
-        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME),
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_MESSAGE),
                 equalTo(TabModel.INVALID_TAB_INDEX));
     }
 }

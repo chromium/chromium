@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestion;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
@@ -47,7 +48,7 @@ public class MessageCardProviderMediatorUnitTest {
     private TabSuggestionMessageService.TabSuggestionMessageData mTabSuggestionMessageData;
 
     @Mock
-    private PriceWelcomeMessageService.PriceWelcomeMessageData mPriceWelcomeMessageData;
+    private PriceMessageService.PriceMessageData mPriceMessageData;
 
     @Mock
     private Supplier<Boolean> mIsIncognitoSupplier;
@@ -72,12 +73,12 @@ public class MessageCardProviderMediatorUnitTest {
                 when(mTabSuggestionMessageData.getReviewActionProvider()).thenReturn(() -> {});
                 mMediator.messageReady(type, mTabSuggestionMessageData);
                 break;
-            case MessageService.MessageType.PRICE_WELCOME:
-                when(mPriceWelcomeMessageData.getPriceDrop()).thenReturn(null);
-                when(mPriceWelcomeMessageData.getDismissActionProvider())
-                        .thenReturn((messageType) -> {});
-                when(mPriceWelcomeMessageData.getReviewActionProvider()).thenReturn(() -> {});
-                mMediator.messageReady(type, mPriceWelcomeMessageData);
+            case MessageService.MessageType.PRICE_MESSAGE:
+                when(mPriceMessageData.getPriceDrop()).thenReturn(null);
+                when(mPriceMessageData.getDismissActionProvider()).thenReturn((messageType) -> {});
+                when(mPriceMessageData.getReviewActionProvider()).thenReturn(() -> {});
+                when(mPriceMessageData.getType()).thenReturn(PriceMessageType.PRICE_WELCOME);
+                mMediator.messageReady(type, mPriceMessageData);
                 break;
             default:
                 mMediator.messageReady(type, new MessageService.MessageData() {});
@@ -305,17 +306,17 @@ public class MessageCardProviderMediatorUnitTest {
     }
 
     @Test
-    public void buildModel_ForPriceWelcome() {
+    public void buildModel_ForPriceMessage() {
         String titleText = "Price drop spotted";
         doReturn(titleText).when(mContext).getString(R.string.price_drop_spotted_title);
 
-        enqueueMessageItem(MessageService.MessageType.PRICE_WELCOME, -1);
+        enqueueMessageItem(MessageService.MessageType.PRICE_MESSAGE, -1);
 
         PropertyModel model = mMediator.getReadyMessageItemsForTesting()
-                                      .get(MessageService.MessageType.PRICE_WELCOME)
+                                      .get(MessageService.MessageType.PRICE_MESSAGE)
                                       .get(0)
                                       .model;
-        Assert.assertEquals(MessageService.MessageType.PRICE_WELCOME,
+        Assert.assertEquals(MessageService.MessageType.PRICE_MESSAGE,
                 model.get(MessageCardViewProperties.MESSAGE_TYPE));
         Assert.assertEquals(titleText, model.get(MessageCardViewProperties.TITLE_TEXT));
     }

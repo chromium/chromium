@@ -65,10 +65,9 @@ import java.util.List;
  * The Mediator that is responsible for resetting the tab grid or carousel based on visibility and
  * model changes.
  */
-class TabSwitcherMediator
-        implements TabSwitcher.Controller, TabListRecyclerView.VisibilityListener,
-                   TabListMediator.GridCardOnClickListenerProvider,
-                   PriceWelcomeMessageService.PriceWelcomeMessageReviewActionProvider {
+class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView.VisibilityListener,
+                                     TabListMediator.GridCardOnClickListenerProvider,
+                                     PriceMessageService.PriceWelcomeMessageReviewActionProvider {
     private static final String TAG = "TabSwitcherMediator";
 
     // This should be the same as TabListCoordinator.GRID_LAYOUT_SPAN_COUNT for the selected tab
@@ -111,7 +110,7 @@ class TabSwitcherMediator
     private TabSelectionEditorCoordinator
             .TabSelectionEditorController mTabSelectionEditorController;
     private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
-    private PriceWelcomeMessageService mPriceWelcomeMessageService;
+    private PriceMessageService mPriceMessageService;
 
     /**
      * In cases where a didSelectTab was due to switching models with a toggle,
@@ -211,7 +210,7 @@ class TabSwitcherMediator
          * Show the price welcome message in tab switcher. This is used when any open tab in tab
          * switcher has a price drop.
          */
-        void showPriceWelcomeMessage(PriceWelcomeMessageService.PriceTabData priceTabData);
+        void showPriceWelcomeMessage(PriceMessageService.PriceTabData priceTabData);
     }
 
     /**
@@ -320,8 +319,8 @@ class TabSwitcherMediator
             public void willCloseTab(Tab tab, boolean animate) {
                 if (mTabModelSelector.getCurrentModel().getCount() == 1) {
                     messageItemsController.removeAllAppendedMessage();
-                } else if (mPriceWelcomeMessageService != null
-                        && mPriceWelcomeMessageService.getBindingTabId() == tab.getId()) {
+                } else if (mPriceMessageService != null
+                        && mPriceMessageService.getBindingTabId() == tab.getId()) {
                     priceWelcomeMessageController.removePriceWelcomeMessage();
                 }
             }
@@ -331,19 +330,19 @@ class TabSwitcherMediator
                 if (mTabModelSelector.getCurrentModel().getCount() == 1) {
                     messageItemsController.restoreAllAppendedMessage();
                 }
-                if (mPriceWelcomeMessageService != null
-                        && mPriceWelcomeMessageService.getBindingTabId() == tab.getId()) {
+                if (mPriceMessageService != null
+                        && mPriceMessageService.getBindingTabId() == tab.getId()) {
                     priceWelcomeMessageController.restorePriceWelcomeMessage();
                 }
             }
 
             @Override
             public void tabClosureCommitted(Tab tab) {
-                // TODO(crbug.com/1157578): Auto update the PriceWelcomeMessageService instead of
+                // TODO(crbug.com/1157578): Auto update the PriceMessageService instead of
                 // updating it based on the client caller.
-                if (mPriceWelcomeMessageService != null
-                        && mPriceWelcomeMessageService.getBindingTabId() == tab.getId()) {
-                    mPriceWelcomeMessageService.invalidateMessage();
+                if (mPriceMessageService != null
+                        && mPriceMessageService.getBindingTabId() == tab.getId()) {
+                    mPriceMessageService.invalidateMessage();
                 }
             }
         };
@@ -832,8 +831,8 @@ class TabSwitcherMediator
         mOnTabSelectingListener = listener;
     }
 
-    void setPriceWelcomeMessageService(PriceWelcomeMessageService priceWelcomeMessageService) {
-        mPriceWelcomeMessageService = priceWelcomeMessageService;
+    void setPriceMessageService(PriceMessageService priceMessageService) {
+        mPriceMessageService = priceMessageService;
     }
 
     // GridCardOnClickListenerProvider implementation.

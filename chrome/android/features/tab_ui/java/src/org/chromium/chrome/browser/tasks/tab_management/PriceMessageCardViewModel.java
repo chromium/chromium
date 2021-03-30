@@ -10,44 +10,46 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 
 import android.content.Context;
 
+import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * This is a util class for creating the property model of the {@link PriceWelcomeMessageCardView}.
+ * This is a util class for creating the property model of the PriceMessageCard.
  */
-public class PriceWelcomeMessageCardViewModel {
+public class PriceMessageCardViewModel {
     /**
-     * Create a {@link PropertyModel} for {@link PriceWelcomeMessageCardView}.
+     * Create a {@link PropertyModel} for PriceMessageCardView.
      * @param context The {@link Context} to use.
      * @param uiDismissActionProvider The {@link MessageCardView.DismissActionProvider} to set.
-     * @param data The {@link PriceWelcomeMessageService.PriceWelcomeMessageData} to use.
+     * @param data The {@link PriceMessageService.PriceMessageData} to use.
      * @return A {@link PropertyModel} for the given {@code data}.
      */
     public static PropertyModel create(Context context,
             MessageCardView.DismissActionProvider uiDismissActionProvider,
-            PriceWelcomeMessageService.PriceWelcomeMessageData data) {
+            PriceMessageService.PriceMessageData data) {
+        boolean isIconVisible = data.getType() == PriceMessageType.PRICE_WELCOME ? false : true;
         String titleText = context.getString(R.string.price_drop_spotted_title);
-        String contentText = context.getString(R.string.price_drop_spotted_content);
+        String descriptionText = context.getString(R.string.price_drop_spotted_content);
         String actionText = context.getString(R.string.price_drop_spotted_show_me);
         String dismissButtonContextDescription =
                 context.getString(R.string.accessibility_tab_suggestion_dismiss_button);
 
         return new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
                 .with(MessageCardViewProperties.MESSAGE_TYPE,
-                        MessageService.MessageType.PRICE_WELCOME)
+                        MessageService.MessageType.PRICE_MESSAGE)
                 .with(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER, uiDismissActionProvider)
                 .with(MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER,
                         data.getDismissActionProvider())
                 .with(MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER,
                         data.getReviewActionProvider())
-                .with(MessageCardViewProperties.DESCRIPTION_TEXT, contentText)
+                .with(MessageCardViewProperties.DESCRIPTION_TEXT, descriptionText)
                 .with(MessageCardViewProperties.DESCRIPTION_TEXT_TEMPLATE, null)
                 .with(MessageCardViewProperties.ACTION_TEXT, actionText)
                 .with(MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION,
                         dismissButtonContextDescription)
                 .with(MessageCardViewProperties.SHOULD_KEEP_AFTER_REVIEW, false)
-                .with(MessageCardViewProperties.IS_ICON_VISIBLE, false)
+                .with(MessageCardViewProperties.IS_ICON_VISIBLE, isIconVisible)
                 .with(MessageCardViewProperties.IS_INCOGNITO, false)
                 .with(MessageCardViewProperties.TITLE_TEXT, titleText)
                 .with(MessageCardViewProperties.PRICE_DROP, data.getPriceDrop())

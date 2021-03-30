@@ -584,7 +584,7 @@ public final class ChromePreferenceKeys {
     public static final String PREFETCH_OFFLINE_COUNTER = "prefetch_notification_offline_counter";
 
     /**
-     * Whether users disable the PriceWelcomeMessageCard.
+     * Whether the PriceWelcomeMessageCard is enabled.
      */
     public static final String PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD =
             "Chrome.PriceTracking.PriceWelcome";

@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
+import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionsOrchestrator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -111,7 +112,7 @@ public class TabSwitcherCoordinator
     private ViewGroup mContainer;
     private TabCreatorManager mTabCreatorManager;
     private boolean mIsInitialized;
-    private PriceWelcomeMessageService mPriceWelcomeMessageService;
+    private PriceMessageService mPriceMessageService;
     private final ViewGroup mRootView;
 
     private final MenuOrKeyboardActionController
@@ -215,9 +216,9 @@ public class TabSwitcherCoordinator
 
         mMessageCardProviderCoordinator = new MessageCardProviderCoordinator(
                 context, tabModelSelector::isIncognitoSelected, (identifier) -> {
-                    if (identifier == MessageService.MessageType.PRICE_WELCOME) {
+                    if (identifier == MessageService.MessageType.PRICE_MESSAGE) {
                         mTabListCoordinator.removeSpecialListItem(
-                                TabProperties.UiType.PRICE_WELCOME, identifier);
+                                TabProperties.UiType.LARGE_MESSAGE, identifier);
                     } else {
                         mTabListCoordinator.removeSpecialListItem(
                                 TabProperties.UiType.MESSAGE, identifier);
@@ -249,9 +250,9 @@ public class TabSwitcherCoordinator
             }
 
             if (TabUiFeatureUtilities.isPriceTrackingEnabled()) {
-                mTabListCoordinator.registerItemType(TabProperties.UiType.PRICE_WELCOME,
-                        new LayoutViewBuilder(R.layout.price_welcome_message_card_item),
-                        PriceWelcomeMessageCardViewBinder::bind);
+                mTabListCoordinator.registerItemType(TabProperties.UiType.LARGE_MESSAGE,
+                        new LayoutViewBuilder(R.layout.large_message_card_item),
+                        LargeMessageCardViewBinder::bind);
             }
         }
 
@@ -329,13 +330,9 @@ public class TabSwitcherCoordinator
                         new PriceDropNotificationManager();
                 mPriceTrackingDialogCoordinator = new PriceTrackingDialogCoordinator(
                         context, modalDialogManager, this, mTabModelSelector, notificationManager);
-                if (!PriceTrackingUtilities.isPriceWelcomeMessageCardDisabled()) {
-                    mPriceWelcomeMessageService =
-                            new PriceWelcomeMessageService(mTabListCoordinator, mMediator);
-                    mMessageCardProviderCoordinator.subscribeMessageService(
-                            mPriceWelcomeMessageService);
-                    mMediator.setPriceWelcomeMessageService(mPriceWelcomeMessageService);
-                }
+                mPriceMessageService = new PriceMessageService(mTabListCoordinator, mMediator);
+                mMessageCardProviderCoordinator.subscribeMessageService(mPriceMessageService);
+                mMediator.setPriceMessageService(mPriceMessageService);
             }
         }
         mIsInitialized = true;
@@ -466,8 +463,8 @@ public class TabSwitcherCoordinator
         mMediator.registerFirstMeaningfulPaintRecorder();
         // Invalidate price welcome message for every reset so that the stale message won't be
         // restored by mistake (e.g. from tabClosureUndone in TabSwitcherMediator).
-        if (mPriceWelcomeMessageService != null) {
-            mPriceWelcomeMessageService.invalidateMessage();
+        if (mPriceMessageService != null) {
+            mPriceMessageService.invalidateMessage();
         }
         boolean showQuickly = mTabListCoordinator.resetWithListOfTabs(tabs, quickMode, mruMode);
         if (showQuickly) {
@@ -503,9 +500,8 @@ public class TabSwitcherCoordinator
         List<MessageCardProviderMediator.Message> messages =
                 mMessageCardProviderCoordinator.getMessageItems();
         for (int i = 0; i < messages.size(); i++) {
-            // The restore of PRICE_WELCOME message is handled in the restorePriceWelcomeMessage()
-            // below.
-            if (messages.get(i).type == MessageService.MessageType.PRICE_WELCOME) continue;
+            // The restore of PRICE_MESSAGE is handled in the restorePriceWelcomeMessage() below.
+            if (messages.get(i).type == MessageService.MessageType.PRICE_MESSAGE) continue;
             mTabListCoordinator.addSpecialListItemToEnd(
                     TabProperties.UiType.MESSAGE, messages.get(i).model);
         }
@@ -516,22 +512,22 @@ public class TabSwitcherCoordinator
     @Override
     public void removePriceWelcomeMessage() {
         mTabListCoordinator.removeSpecialListItem(
-                TabProperties.UiType.PRICE_WELCOME, MessageService.MessageType.PRICE_WELCOME);
+                TabProperties.UiType.LARGE_MESSAGE, MessageService.MessageType.PRICE_MESSAGE);
     }
 
     @Override
     public void restorePriceWelcomeMessage() {
-        appendNextMessage(MessageService.MessageType.PRICE_WELCOME);
+        appendNextMessage(MessageService.MessageType.PRICE_MESSAGE);
     }
 
     @Override
-    public void showPriceWelcomeMessage(PriceWelcomeMessageService.PriceTabData priceTabData) {
-        if (mPriceWelcomeMessageService == null
-                || PriceTrackingUtilities.isPriceWelcomeMessageCardDisabled()) {
+    public void showPriceWelcomeMessage(PriceMessageService.PriceTabData priceTabData) {
+        if (mPriceMessageService == null
+                || !PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled()) {
             return;
         }
-        mPriceWelcomeMessageService.preparePriceMessage(priceTabData);
-        appendNextMessage(MessageService.MessageType.PRICE_WELCOME);
+        mPriceMessageService.preparePriceMessage(PriceMessageType.PRICE_WELCOME, priceTabData);
+        appendNextMessage(MessageService.MessageType.PRICE_MESSAGE);
         // To make the message card in view when user enters tab switcher, we should scroll to
         // current tab with 0 offset. See {@link TabSwitcherMediator#setInitialScrollIndexOffset}
         // for more details.
@@ -545,7 +541,7 @@ public class TabSwitcherCoordinator
         List<MessageCardProviderMediator.Message> messages =
                 mMessageCardProviderCoordinator.getMessageItems();
         for (int i = 0; i < messages.size(); i++) {
-            if (messages.get(i).type == MessageService.MessageType.PRICE_WELCOME) continue;
+            if (messages.get(i).type == MessageService.MessageType.PRICE_MESSAGE) continue;
             mTabListCoordinator.addSpecialListItem(
                     index, TabProperties.UiType.MESSAGE, messages.get(i).model);
             index++;
@@ -559,10 +555,10 @@ public class TabSwitcherCoordinator
         MessageCardProviderMediator.Message nextMessage =
                 mMessageCardProviderCoordinator.getNextMessageItemForType(messageType);
         if (nextMessage == null) return;
-        if (messageType == MessageService.MessageType.PRICE_WELCOME) {
+        if (messageType == MessageService.MessageType.PRICE_MESSAGE) {
             mTabListCoordinator.addSpecialListItem(
                     mTabListCoordinator.getPriceWelcomeMessageInsertionIndex(),
-                    TabProperties.UiType.PRICE_WELCOME, nextMessage.model);
+                    TabProperties.UiType.LARGE_MESSAGE, nextMessage.model);
         } else {
             mTabListCoordinator.addSpecialListItemToEnd(
                     TabProperties.UiType.MESSAGE, nextMessage.model);

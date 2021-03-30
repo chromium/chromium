@@ -8,18 +8,17 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 
 import android.view.ViewGroup;
 
-import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * ViewBinder for PriceWelcomeMessageCardItem.
+ * ViewBinder for TabGridLargeMessageItem.
  */
-class PriceWelcomeMessageCardViewBinder {
+class LargeMessageCardViewBinder {
     public static void bind(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
-        assert view instanceof PriceWelcomeMessageCardView;
+        assert view instanceof LargeMessageCardView;
 
-        PriceWelcomeMessageCardView itemView = (PriceWelcomeMessageCardView) view;
+        LargeMessageCardView itemView = (LargeMessageCardView) view;
         if (MessageCardViewProperties.ACTION_TEXT == propertyKey) {
             itemView.setActionText(model.get(MessageCardViewProperties.ACTION_TEXT));
             itemView.setActionButtonOnClickListener(v -> {
@@ -41,7 +40,7 @@ class PriceWelcomeMessageCardViewBinder {
         } else if (MessageCardViewProperties.TITLE_TEXT == propertyKey) {
             itemView.setTitleText(model.get(MessageCardViewProperties.TITLE_TEXT));
         } else if (MessageCardViewProperties.DESCRIPTION_TEXT == propertyKey) {
-            itemView.setContentText(model.get(MessageCardViewProperties.DESCRIPTION_TEXT));
+            itemView.setDescriptionText(model.get(MessageCardViewProperties.DESCRIPTION_TEXT));
         } else if (MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
             itemView.setDismissButtonContentDescription(
                     model.get(MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION));
@@ -56,9 +55,12 @@ class PriceWelcomeMessageCardViewBinder {
                 if (serviceProvider != null) serviceProvider.dismiss(type);
             });
         } else if (MessageCardViewProperties.PRICE_DROP == propertyKey) {
-            ShoppingPersistedTabData.PriceDrop priceDrop =
-                    model.get(MessageCardViewProperties.PRICE_DROP);
-            if (priceDrop != null) itemView.setPriceInfoBoxStrings(priceDrop);
+            itemView.setupPriceInfoBox(model.get(MessageCardViewProperties.PRICE_DROP));
+        } else if (MessageCardViewProperties.ICON_PROVIDER == propertyKey) {
+            itemView.setIconDrawable(
+                    model.get(MessageCardViewProperties.ICON_PROVIDER).getIconDrawable());
+        } else if (MessageCardViewProperties.IS_ICON_VISIBLE == propertyKey) {
+            itemView.setIconVisibility(model.get(MessageCardViewProperties.IS_ICON_VISIBLE));
         } else if (CARD_ALPHA == propertyKey) {
             itemView.setAlpha(model.get(CARD_ALPHA));
         }

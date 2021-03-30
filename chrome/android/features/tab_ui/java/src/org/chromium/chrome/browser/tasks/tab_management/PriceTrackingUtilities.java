@@ -77,11 +77,12 @@ public class PriceTrackingUtilities {
     }
 
     /**
-     * @return Whether the PriceWelcomeMessageCard is disabled by users.
+     * @return Whether the PriceWelcomeMessageCard is enabled.
      */
-    public static boolean isPriceWelcomeMessageCardDisabled() {
-        return !SHARED_PREFERENCES_MANAGER.readBoolean(
-                PRICE_WELCOME_MESSAGE_CARD, TabUiFeatureUtilities.isPriceTrackingEnabled());
+    public static boolean isPriceWelcomeMessageCardEnabled() {
+        return isPriceTrackingEligible()
+                && SHARED_PREFERENCES_MANAGER.readBoolean(
+                        PRICE_WELCOME_MESSAGE_CARD, TabUiFeatureUtilities.isPriceTrackingEnabled());
     }
 
     /**
