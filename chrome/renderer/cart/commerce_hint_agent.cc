@@ -354,6 +354,12 @@ void DetectAddToCart(content::RenderFrame* render_frame,
   }
 }
 
+std::string CanonicalURL(const GURL& url) {
+  return base::JoinString({url.scheme_piece(), "://", url.host_piece(),
+                           url.path_piece().substr(0, kLengthLimit)},
+                          "");
+}
+
 }  // namespace
 
 CommerceHintAgent::CommerceHintAgent(content::RenderFrame* render_frame)
@@ -369,7 +375,7 @@ bool CommerceHintAgent::IsAddToCart(base::StringPiece str) {
 }
 
 bool CommerceHintAgent::IsVisitCart(const GURL& url) {
-  return PartialMatch(url.spec().substr(0, kLengthLimit),
+  return PartialMatch(CanonicalURL(url).substr(0, kLengthLimit),
                       GetVisitCartPattern(url));
 }
 
@@ -380,7 +386,7 @@ bool CommerceHintAgent::IsVisitCheckout(const GURL& url) {
   if (url.DomainIs(kEbayDomain)) {
     return url.spec().find("pay.ebay.com/rgxo") != std::string::npos;
   }
-  return PartialMatch(url.spec().substr(0, kLengthLimit),
+  return PartialMatch(CanonicalURL(url).substr(0, kLengthLimit),
                       GetVisitCheckoutPattern());
 }
 
