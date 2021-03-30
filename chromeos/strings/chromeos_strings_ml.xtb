@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">പാസ്‌വേഡ് <ph name="TIME" /> സമയത്തിനുള്ളിൽ കാലഹരണപ്പെടും</translation>
 <translation id="4238516577297848345">പ്രിന്റ് ജോലികളൊന്നും പുരോഗമിക്കുന്നില്ല</translation>
 <translation id="4297501883039923494">പ്രിന്റ് ജോലി നിർത്തി - അജ്ഞാതമായ പിശക്</translation>
+<translation id="4344214025510306853">APN അറ്റാച്ച് ചെയ്യുക</translation>
 <translation id="4378373042927530923">റൺ ചെയ്‌തിട്ടില്ല</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">എന്റെ ഡ്രൈവ്</translation>
@@ -277,6 +278,7 @@
 <translation id="7040230719604914234">ഓപ്പറേറ്റർ</translation>
 <translation id="7059230779847288458">ചാർജ് ചെയ്യുന്നു, പൂർത്തിയാകാൻ <ph name="TIME_VALUE" /> ശേഷിക്കുന്നു</translation>
 <translation id="708426984172631313">നിർത്തി</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">കണക്റ്റിംഗ്</translation>
 <translation id="7144878232160441200">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="714876143603641390">LAN കണക്റ്റിവിറ്റി</translation>
@@ -362,6 +364,7 @@
 <translation id="8970109610781093811">വീണ്ടും പ്രവർത്തിപ്പിക്കുക</translation>
 <translation id="9003704114456258138">ആവൃത്തി</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9065203028668620118">എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">നിലവിലെ ഉപയോഗം</translation>

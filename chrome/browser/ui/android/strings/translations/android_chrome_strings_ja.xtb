@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">ログインできませんでした</translation>
 <translation id="2860954141821109167">このデバイスで通話アプリが有効になっていることを確認してください</translation>
 <translation id="2870560284913253234">サイト</translation>
-<translation id="2876369937070532032">セキュリティ上のリスクがある場合に、アクセスした一部のページの URL が Google に送信されます</translation>
 <translation id="2888126860611144412">Chrome について</translation>
 <translation id="2891154217021530873">ページの読み込みを停止</translation>
 <translation id="2892647708214602204">このファイルの準備ができたときに通知が表示されます</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">[その他のオプション] からデータ削減量を確認できます</translation>
 <translation id="3166827708714933426">タブとウィンドウのショートカット</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">セーフ ブラウジング（危険なサイトからユーザーとデバイスを保護します）</translation>
 <translation id="3205824638308738187">あと少しで完了です</translation>
 <translation id="3207960819495026254">ブックマークしました</translation>
 <translation id="3208584281581115441">今すぐ確認</translation>
@@ -585,7 +583,6 @@
 <translation id="5011311129201317034"><ph name="SITE" /> が接続を要求しています</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">許可</translation>
-<translation id="5040262127954254034">プライバシー</translation>
 <translation id="5087580092889165836">カードを追加</translation>
 <translation id="5091249083535528968">詳細な使用状況データ</translation>
 <translation id="509429900233858213">エラーが発生しました。</translation>
@@ -638,6 +635,7 @@
 <translation id="5441522332038954058">アドレスバーに移動する</translation>
 <translation id="544776284582297024">タブを開いて複数のページに同時にアクセスするには、タブを開くボタンをタップします</translation>
 <translation id="545042621069398927">ダウンロード速度が向上しました。</translation>
+<translation id="5454166040603940656">- <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">ページをダウンロード</translation>
 <translation id="548278423535722844">マップアプリで開く</translation>
 <translation id="5483197086164197190">Chrome を操作する</translation>
@@ -864,7 +862,6 @@
 <translation id="6813446258015311409">Chrome にログイン、の画面が開きました。</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />、タブ、選択中</translation>
-<translation id="6845325883481699275">Chrome のセキュリティ改善に協力する</translation>
 <translation id="6846298663435243399">読み込んでいます…</translation>
 <translation id="6850409657436465440">ダウンロードが進行中です</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> 個のタブを閉じました</translation>
@@ -992,7 +989,6 @@
 <translation id="7704317875155739195">検索語句や URL をオートコンプリートする</translation>
 <translation id="7707922173985738739">モバイルデータを使用します</translation>
 <translation id="7725024127233776428">ブックマークしたページがここに表示されます</translation>
-<translation id="7746457520633464754">危険なアプリやサイトを検出するために、アクセスした一部のページの URL と限定的なシステム情報、一部のページ コンテンツが Chrome から Google に送信されます</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> からテキストが共有されました</translation>
 <translation id="7761849928583394409">日付と時間を選択</translation>
 <translation id="7762668264895820836">SD カード <ph name="SD_CARD_NUMBER" /></translation>

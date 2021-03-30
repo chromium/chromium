@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Ekki fjarlægja tækið alveg strax!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Ef tækið er fjarlægt á meðan það er í notkun kunna gögn að tapast. Bíddu þangað til aðgerðinni er lokið og aftengdu síðan tækið úr skráaforritinu.</translation>
+<translation id="5159560892333415631">Tæma ruslið</translation>
 <translation id="5163869187418756376">Mistókst að deila. Athugaðu nettenginguna og reyndu aftur síðar.</translation>
 <translation id="516592729076796170">Bandarískt Dvorak-lyklaborð fyrir forritara</translation>
 <translation id="5170477580121653719">Geymslurými eftir á Google Drive: <ph name="SPACE_AVAILABLE" />.</translation>
@@ -418,6 +419,7 @@
     unnið í skrám ásamt öðrum, allt á einum stað.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Endurheimtar skrár af Google Drive</translation>
 <translation id="5288441970121584418">Hamborgari</translation>
+<translation id="5299998344490869684">Viltu örugglega tæma ruslið?</translation>
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5318819489018851358">Deila með Linux</translation>
 <translation id="5323213332664049067">Rómansk-amerískt</translation>
@@ -749,6 +751,7 @@
 <translation id="872537912056138402">Króatískt</translation>
 <translation id="8750438273876807512">Haltu fingri á skrá og ýttu á <ph name="ICON" />. Veldu svo „Festa á hillu“ til að fá skjótan aðgang að skránum þínum á hillunni.</translation>
 <translation id="8775404590947523323">Breytingarnar þínar eru vistaðar sjálfkrafa.<ph name="BREAKS" />Til að vista afrit af upprunalegu myndinni skaltu taka hakið af „Skrifa yfir upprunalega“.</translation>
+<translation id="8802459921616481935">Færa í ruslið</translation>
 <translation id="8808686172382650546">Köttur</translation>
 <translation id="8810671769985673465">Zip-þjöppun mistókst; atriði er fyrir hendi: „<ph name="FILE_NAME" />“</translation>
 <translation id="8813284582615685103">Spænska (Spánn)</translation>
@@ -782,6 +785,7 @@
 <translation id="9154418932169119429">Þessi mynd er ekki tiltæk án nettengingar.</translation>
 <translation id="9172592259078059678">Gujarati umritun</translation>
 <translation id="9173120999827300720">Enska (bandarísk) með alþjóðlegu lyklaborði</translation>
+<translation id="9174050671906956834">Atriðum í ruslinu verður eytt endanlega eftir 30 daga.</translation>
 <translation id="9189836632794948435">Kasakstanska</translation>
 <translation id="9213073329713032541">Uppsetning hófst.</translation>
 <translation id="9219103736887031265">Myndir</translation>

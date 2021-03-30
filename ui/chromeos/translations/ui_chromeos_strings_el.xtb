@@ -412,6 +412,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Μην αφαιρέσετε ακόμα τη συσκευή σας!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Η αφαίρεση της συσκευής σας ενώ εξακολουθεί να χρησιμοποιείται μπορεί να οδηγήσει σε απώλεια δεδομένων. Περιμένετε έως ότου ολοκληρωθεί η λειτουργία και έπειτα αφαιρέστε τη συσκευή χρησιμοποιώντας την εφαρμογή Αρχεία.</translation>
+<translation id="5159560892333415631">Άδειασμα Κάδου απορριμάτων</translation>
 <translation id="5163869187418756376">Αποτυχία κοινής χρήσης. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά αργότερα.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5170477580121653719">Χώρος που απομένει στο Google Drive: <ph name="SPACE_AVAILABLE" />.</translation>
@@ -431,6 +432,7 @@
 <translation id="5275973617553375938">Ανακτημένα αρχεία από το Google Drive</translation>
 <translation id="5288441970121584418">Μπέργκερ</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">Είστε βέβαιοι ότι θέλετε να αδειάσετε τον Κάδο απορριμμάτων;</translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5318819489018851358">Κοινοποίηση σε Linux</translation>
 <translation id="5323213332664049067">Λατινικής Αμερικής</translation>
@@ -806,6 +808,7 @@
 <translation id="9154418932169119429">Αυτή η εικόνα δεν είναι διαθέσιμη εκτός σύνδεσης.</translation>
 <translation id="9172592259078059678">Μεταγραφή Γκουγιαράτι</translation>
 <translation id="9173120999827300720">Αγγλικά (ΗΠΑ) με Διεθνές πληκτρολόγιο</translation>
+<translation id="9174050671906956834">Τα στοιχεία στον Κάδο απορριμμάτων διαγράφονται μόνιμα μετά από 30 ημέρες.</translation>
 <translation id="9189836632794948435">Καζαχστανικά</translation>
 <translation id="9213073329713032541">Η εγκατάσταση ξεκίνησε με επιτυχία.</translation>
 <translation id="9219103736887031265">Εικόνες</translation>

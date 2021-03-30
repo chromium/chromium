@@ -56,6 +56,7 @@ Apper med lagringstillatelser har tilgang til bildene og videoene dine.</transla
 <translation id="5671277269877808209">Kvadrat</translation>
 <translation id="5775960006311140197">Ekspertmodus</translation>
 <translation id="5869546221129391014">Rutenett</translation>
+<translation id="5975083100439434680">Zoom ut</translation>
 <translation id="6040143037577758943">Lukk</translation>
 <translation id="6073451960410192870">Stopp opptaket</translation>
 <translation id="6197807149213783179">Lagre metadata</translation>
@@ -81,9 +82,9 @@ Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge v
 <translation id="7649070708921625228">Hjelp</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7670511624014457267">60 bilder per sekund</translation>
-<translation id="7974782136796202581">Vis alternativer for panorering, vipping og zooming</translation>
 <translation id="7983668134180549431">Oppdaget tekst.</translation>
 <translation id="8067883171444229417">Spill av videoen</translation>
+<translation id="8120146556401698679">Panorering, vipping, zooming</translation>
 <translation id="8131740175452115882">Bekreft</translation>
 <translation id="8145038249676204903">Bytt til foto</translation>
 <translation id="8239780215768881278">Ta øyeblikksbilde av videoen</translation>
@@ -94,6 +95,7 @@ Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge v
 <translation id="8815966864175525708">Bytt til bilde i stående format</translation>
 <translation id="8828441885228359828">Gjenoppta opptaket</translation>
 <translation id="8870695351537079478">Kan ikke starte opptak</translation>
+<translation id="8903921497873541725">Zoom inn</translation>
 <translation id="9045155556724273246">10 sekunder</translation>
 <translation id="945522503751344254">Send tilbakemelding</translation>
 </translationbundle>

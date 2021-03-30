@@ -419,11 +419,6 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1553532014072799546">Lista blanca de límites de tiempo por aplicación</translation>
 <translation id="1553956579506604198">Bloquea las extensiones externas para que no puedan instalarse</translation>
 <translation id="1555248923316727072">Configuración de gestión de identidades de usuarios de SAML</translation>
-<translation id="1560205870554624777">Permite controlar si la función Kerberos está habilitada. Kerberos es un protocolo de autenticación que puede usarse para autenticarse en aplicaciones web y en archivos compartidos.
-
-          Si se habilita la política, la función Kerberos estará habilitada. Las cuentas de Kerberos pueden añadirse a través de la política "Configurar cuentas de Kerberos" o en la configuración de las cuentas de Kerberos en la página de configuración de Otros usuarios.
-
-          Si no se asigna ningún valor a esta política o está inhabilitada, la configuración de las cuentas de Kerberos está inhabilitada. No se podrán añadir cuentas de Kerberos y no se podrá utilizar la autenticación Kerberos. Se eliminarán todas las cuentas de Kerberos y todas las contraseñas almacenadas.</translation>
 <translation id="1561424797596341174">La política anula las compilaciones de depuración del host de acceso remoto.</translation>
 <translation id="1561967320164410511">U2F y extensiones de confirmación individual</translation>
 <translation id="1567718448549957373">Si se habilita la política o no se establece, se permitirán las solicitudes de autenticación <ph name="BASIC_AUTH" /> recibidas desde conexiones HTTP no seguras.
@@ -1153,6 +1148,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si no se establece esta política, la función Clic de llamada se habilitará de forma predeterminada.</translation>
 <translation id="2482676533225429905">Mensajes nativos</translation>
 <translation id="2483146640187052324">Predecir las acciones de red en cualquier conexión de red</translation>
+<translation id="2483335232019796218">Inhabilita la cámara, la configuración del navegador, los ajustes del sistema operativo, los análisis y las funciones de Web Store, Canvas y Google Noticias</translation>
 <translation id="2496180316473517155">Historial de navegación</translation>
 <translation id="2498238926436517902">Ocultar siempre automáticamente los archivos</translation>
 <translation id="250022556568924228">Si se establece la política, <ph name="PRODUCT_OS_NAME" /> descargará los Términos del Servicio y se los mostrará a los usuarios siempre que se inicie sesión con una cuenta local del dispositivo. Para iniciar sesión, los usuarios deben aceptar los Términos del Servicio.
@@ -1546,6 +1542,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Consulta <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> para fijar aplicaciones en la estantería de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2976429807269247880">Configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
+<translation id="2985097017239074272">Google Noticias (compatible a partir de la versión 91)</translation>
 <translation id="2985927503455169394">Usa el modo predeterminado de la experiencia de incorporación del Asistente</translation>
 <translation id="2987155890997901449">Habilitar ARC</translation>
 <translation id="2987227569419001736">Controlar el uso de la API Bluetooth web</translation>
@@ -2580,6 +2577,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="4450222911834151460">Si se establece esta política, todos los tipos de datos especificados se excluirán de la sincronización de Google Sync y de la sincronización del perfil de itinerancia. Esto puede ser útil para reducir el tamaño del perfil de itinerancia o para limitar el tipo de datos que se suben a los servidores de Google Sync.
 
       Los tipos de datos actuales para esta política son los siguientes: "bookmarks", "readingList", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs" y "wifiConfigurations". Estos nombres distinguen entre mayúsculas y minúsculas.</translation>
+<translation id="4452653762766030431">Controla si los sistemas de archivos compartidos en red están disponibles en Chrome OS</translation>
 <translation id="445270821089253489">Controla el tipo de información del usuario y del dispositivo que se proporciona.</translation>
 <translation id="4453913621209182880">Permitir imprimir solo con gráficos de fondo</translation>
 <translation id="4454820008017317557">Mostrar el icono de la barra de herramientas de <ph name="PRODUCT_NAME" /></translation>
@@ -2813,6 +2811,13 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si no se le asigna ningún valor o se le asigna un valor no válido, el modo de inhabilitación de funciones del sistema tendrá el valor "blocked".</translation>
 <translation id="4835470005923546373">Inhabilitar el modo de impresión de gráficos de fondo de forma predeterminada</translation>
 <translation id="4835622243021053389">Habilita la autenticación NTLMv2.</translation>
+<translation id="4846678215172543001">Esta política evita que aparezcan advertencias URL similares en los sitios incluidos en la lista. Normalmente, estas advertencias aparecen en sitios que <ph name="PRODUCT_NAME" /> considera que podrían tratar de falsificar mediante spoofing otro sitio conocido por el usuario.
+
+       Si se habilita esta política y se le asignan uno o varios dominios, no se mostrarán páginas de advertencia similares cuando el usuario visite páginas de esos dominios.
+
+       Si no se habilita esta política o se le asigna una lista vacía, es posible que aparezcan advertencias en cualquier sitio que visite el usuario.
+
+       Se puede permitir un nombre de host con una coincidencia completa o cualquier coincidencia con el dominio. Por ejemplo, es posible que se eliminen las advertencias en una URL como "https://foo.example.com/bar" si la lista incluye "foo.example.com" o "example.com".</translation>
 <translation id="485419696366295465">Controla las políticas relacionadas con el subsistema <ph name="BOREALIS_NAME" />.</translation>
 <translation id="4855636880814771207">Si se asigna el valor "Habilitada" a esta política o no se le asigna ninguno, los usuarios podrán activar o desactivar el Bluetooth.
 
@@ -3012,7 +3017,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
-<translation id="5090209345759901501">Extiende la configuración del contenido Flash a todo el contenido</translation>
 <translation id="5090791951240382356">Permite combinar políticas de diccionario de fuentes distintas</translation>
 <translation id="5091315650312105069">Permitir la autenticación <ph name="BASIC_AUTH" /> para conexiones HTTP</translation>
 <translation id="5103112931744164177">Esta política controla qué pila de software se utiliza para comunicarse con el servidor DNS: el cliente DNS del sistema operativo o el cliente DNS integrado de <ph name="PRODUCT_NAME" />. Esta política no afecta a qué servidores DNS se utilizan. Por ejemplo, si el sistema operativo está configurado para utilizar un servidor DNS de empresa, el cliente DNS integrado usará ese mismo servidor. Tampoco controla si se usará DNS‑over‑HTTPS; <ph name="PRODUCT_NAME" /> siempre utilizará la resolución integrada para solicitudes DNS‑over‑HTTPS. Consulta la política <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> para obtener información sobre los controles de DNS‑over‑HTTPS.
@@ -4017,6 +4021,11 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="647698599569353771">Permite habilitar Compartir con Nearby.</translation>
 <translation id="6478258366184919502">Orígenes de pantalla de inicio de sesión</translation>
 <translation id="6478261301433199402">Si se asigna un valor a esta política, especificará la imagen de <ph name="PLUGIN_VM_NAME" /> de un usuario. Esta política se debe especificar como una cadena con formato JSON, en la que <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> indicará dónde se debe descargar la imagen y <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> será un hash SHA‑256 que se usará para verificar la integridad de la descarga.</translation>
+<translation id="6489084406497912050">Controla si los usuarios pueden añadir cuentas de Kerberos.
+
+          Si se habilita esta política o no se le asigna ningún valor, los usuarios podrán añadir cuentas de Kerberos a través de la página de configuración de cuentas de Kerberos. Los usuarios tendrán control total sobre las cuentas que han añadido y podrán modificarlas o eliminarlas.
+
+          Si se inhabilita esta política, los usuarios no podrán añadir cuentas de Kerberos. Solo se podrán añadir cuentas mediante la política "Configurar cuentas de Kerberos". Esta es una forma efectiva de bloquear cuentas.</translation>
 <translation id="6491139795995924304">Permitir Bluetooth en el dispositivo</translation>
 <translation id="6491872498385040936">Esta política está obsoleta, pero puedes utilizar <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />, que la anula y permite un ajuste más detallado.
 
@@ -4352,6 +4361,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Después de establecer la política, los usuarios podrán activar una aplicación en la pantalla de bloqueo si el ID de extensión de la aplicación se encuentra entre los valores de la lista de la política. Por tanto, si se asigna una lista vacía a esta política, se desactivará la toma de notas en la pantalla de bloqueo. Que la política incluya el ID de una aplicación no significa que el usuario pueda activarla como aplicación para tomar notas en la pantalla de bloqueo. Por ejemplo, en <ph name="PRODUCT_NAME" /> 61, la plataforma también restringe el conjunto de aplicaciones disponibles.
 
       Si no se establece esta política, no habrá restricciones impuestas por la política en relación con el conjunto de aplicaciones que los usuarios pueden habilitar en la pantalla de bloqueo.</translation>
+<translation id="6882028194958060206">Aplicar la configuración del contenido Flash a todo el contenido (obsoleta)</translation>
 <translation id="6889123056995503704">El usuario decide el comportamiento del cambio a una versión inferior</translation>
 <translation id="6894178810167845842">URL de la página Nueva pestaña</translation>
 <translation id="6897730193187922386">Elimina los mensajes de desactivación de <ph name="CLOUD_PRINT_NAME" /></translation>
@@ -5038,7 +5048,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si no se le asigna ningún valor, se aplicará la política <ph name="BLOCK_POPUPS_POLICY_NAME" />, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="7731026922044991970">Volver a la configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /> en todos los sitios web</translation>
 <translation id="7732907212083471072">Políticas retiradas</translation>
-<translation id="7737077721564799856">Inhabilitar la cámara, los ajustes del navegador y del sistema operativo, los análisis, Web Store y las funciones de Canvas</translation>
 <translation id="77379430721695807">Si se define esta política, se especificará la lista de URLs cuyos patrones se compararán con el origen de seguridad de la URL solicitante. Si se encuentra una coincidencia, se concederá acceso a dispositivos de captura de vídeo sin solicitarlo.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
@@ -5084,6 +5093,13 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si no se asigna ningún valor a esta política, el usuario podrá seleccionar si quiere que se le pida una contraseña para desbloquear el dispositivo cuando esté en modo de suspensión.</translation>
 <translation id="7784062550705119230">Si se utiliza <ph name="PRINTERS_ALLOWLIST" /> para la política <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, al establecer la política <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />, esta especifica qué impresoras pueden utilizar los usuarios. Solo las impresoras cuyos ID coincidan con los valores incluidos en la política estarán disponibles para los usuarios. Los ID deben coincidir con los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del archivo definido en la política <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="7788511847830146438">Por perfil</translation>
+<translation id="7798441698807517880">Esta política se quitó a partir de la versión 89 de <ph name="PRODUCT_NAME" /> porque <ph name="FLASH_PLUGIN_NAME" /> ya no está disponible.
+
+      Si se le asigna el valor True a esta política, se ejecutará todo el contenido <ph name="FLASH_PLUGIN_NAME" /> insertado en los sitios web que permitan <ph name="FLASH_PLUGIN_NAME" />, incluido el contenido de otros orígenes o de tamaño reducido.
+
+      Si se le asigna el valor False o no se le asigna ningún valor, es posible que se bloquee el contenido <ph name="FLASH_PLUGIN_NAME" /> de otros orígenes o de tamaño reducido.
+
+      Nota: Para controlar qué sitios web pueden ejecutar <ph name="FLASH_PLUGIN_NAME" />, consulta las políticas <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="780629758750905699">Permitir que se añadan cuentas de Family Link al dispositivo</translation>
 <translation id="7807139251387225825">Lista de tipos que se deben excluir de la sincronización</translation>
 <translation id="781268256210530471">Configuración de complementos</translation>
@@ -5112,6 +5128,11 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7850846808758624237">Si se asigna el valor "Habilitada" a esta política, se importará la página principal del navegador predeterminado anterior al ejecutarse por primera vez. Si se le asigna el valor "Deshabilitada" o no se le asigna ninguno, no se importará la página principal al ejecutarse por primera vez.
 
       Los usuarios pueden abrir un cuadro de diálogo de importación y la casilla de la página principal aparecerá marcada o desmarcada en función del valor de esta política.</translation>
+<translation id="7851772934080809511">Controla si la función Kerberos está habilitada. Kerberos es un protocolo de autenticación que puede usarse para autenticarse en aplicaciones web y en archivos compartidos.
+
+          Si se habilita esta política, se habilitará la función Kerberos. Las cuentas de Kerberos pueden añadirse mediante la política "Configurar cuentas de Kerberos" o en la página de configuración de cuentas de Kerberos.
+
+          Si se inhabilita esta política o no se le asigna ningún valor, se inhabilitará la configuración de cuentas de Kerberos. No se podrán añadir cuentas de Kerberos y no se podrá utilizar la autenticación Kerberos. Se eliminarán todas las cuentas de Kerberos y todas las contraseñas almacenadas.</translation>
 <translation id="7863947545897944083">Habilita la función de accesibilidad de contraste alto en la pantalla de inicio de sesión.
 
           Si se asigna el valor "true" a esta política, siempre se habilitará el contraste alto en la pantalla de inicio de sesión.
@@ -5140,11 +5161,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Si ninguna política prevalece sobre las otras, consulta <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> y <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. Los patrones de URL de estas tres políticas no deben interferir entre sí.</translation>
 <translation id="7887379840451099426">Configuración de gestión de energía aplicable únicamente cuando el dispositivo funcione con la batería</translation>
-<translation id="7889788745439330797">Permite controlar si los usuarios pueden añadir cuentas de Kerberos.
-
-          Si se habilita esta política o no se configura, los usuarios podrán añadir cuentas de Kerberos en la configuración de las cuentas de Kerberos en la página de configuración de Otros usuarios. Los usuarios tienen control total sobre las cuentas que han añadido y pueden modificarlas o eliminarlas.
-
-          Si se inhabilita esta política, los usuarios no podrán añadir cuentas de Kerberos. Solo pueden añadirse cuentas a través de la política "Configurar cuentas de Kerberos". Esta es una forma eficaz de bloquear cuentas.</translation>
 <translation id="7891884447851425349">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" />, se especificará la URL del buscador usada durante una búsqueda predeterminada. La URL debe incluir la cadena <ph name="SEARCH_TERM_MARKER" />, que en la consulta se sustituirá por los términos de búsqueda del usuario.
 
       Puedes especificar la URL de la Búsqueda de Google introduciendo lo siguiente: <ph name="GOOGLE_SEARCH_URL" />.</translation>
@@ -5403,11 +5419,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="8238421250255592181">Un indicador booleano que especifica si el teclado en pantalla permite usar la función de autocompletar.</translation>
 <translation id="8244171102276095471">Habilita los conjuntos de cifrado de RC4 en TLS</translation>
 <translation id="8244525275280476362">Retraso de recuperación máximo después de validar una política</translation>
-<translation id="8251411417369363637">Si se le asigna el valor "Habilitada" a esta política, se ejecutará todo el contenido <ph name="FLASH_PLUGIN_NAME" /> insertado en los sitios web que permiten <ph name="FLASH_PLUGIN_NAME" />, incluido el contenido de otros orígenes y el contenido de tamaño reducido.
-
-      Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, es posible que se bloquee el contenido <ph name="FLASH_PLUGIN_NAME" /> de otros orígenes o el contenido de tamaño reducido.
-
-      Nota: Para controlar qué sitios web pueden ejecutar <ph name="FLASH_PLUGIN_NAME" />, consulta las políticas <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="82530263956734297">ID de extensiones excluidas de la lista de bloqueados</translation>
 <translation id="8256688113167012935">Permite controlar el nombre de la cuenta que <ph name="PRODUCT_OS_NAME" /> muestra en la pantalla de inicio de sesión para la cuenta local del dispositivo correspondiente.
 

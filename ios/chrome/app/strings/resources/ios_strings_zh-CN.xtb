@@ -156,7 +156,7 @@
 <translation id="2690858294534178585">相机正在使用中</translation>
 <translation id="2691653761409724435">无法离线查看</translation>
 <translation id="2695507686909505111">网页翻译完毕</translation>
-<translation id="2702801445560668637">读取列表</translation>
+<translation id="2702801445560668637">阅读清单</translation>
 <translation id="2704491540504985681">下载内容</translation>
 <translation id="2704606927547763573">已复制</translation>
 <translation id="2709516037105925701">自动填充</translation>
@@ -282,6 +282,7 @@
 <translation id="3928666092801078803">合并我的数据</translation>
 <translation id="3929457972718048006">地址</translation>
 <translation id="3943492037546055397">密码</translation>
+<translation id="3967266340354872733">如需了解更多与隐私、安全和数据收集相关的设置，请前往<ph name="BEGIN_LINK" />同步<ph name="END_LINK" />和 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />部分。</translation>
 <translation id="3967822245660637423">下载完毕</translation>
 <translation id="3968505803272650567">管理感兴趣的主题</translation>
 <translation id="3989635538409502728">退出</translation>
@@ -556,6 +557,7 @@
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">无法导出密码</translation>
 <translation id="6748108480210050150">发件人</translation>
+<translation id="6760509555861141183">返回到最近用过的标签页</translation>
 <translation id="6780034285637185932">邮编</translation>
 <translation id="6785453220513215166">正在发送崩溃报告…</translation>
 <translation id="679325081238418596">获取您在所有设备上保存的书签、历史记录、密码和其他设置</translation>
@@ -607,7 +609,6 @@
 <translation id="7272437679830969316">无法验证您的身份。未复制密码。</translation>
 <translation id="7291368939935408496">正在准备密码…</translation>
 <translation id="7293171162284876153">要开始同步，请开启“同步 Chrome 数据”。</translation>
-<translation id="7299000566397147023">打开最近用过的标签页</translation>
 <translation id="7313347584264171202">您已打开的无痕模式标签页会显示在此处</translation>
 <translation id="7336264872878993241">已下载<ph name="PERCENT" />%</translation>
 <translation id="7340958967809483333">“探索”功能的选项</translation>

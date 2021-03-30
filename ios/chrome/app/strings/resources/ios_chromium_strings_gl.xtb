@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Chromium non pode usar a cámara neste momento</translation>
 <translation id="2195025571279539885">Queres que a próxima vez Chromium che ofreza a posibilidade de traducir as páxinas en <ph name="LANGUAGE_NAME" /> deste sitio?</translation>
 <translation id="2590893390871230428">Sincronizar os teus datos de Chromium</translation>
-<translation id="259614951763923692">Se permites que Chromium saiba cal é a túa localización, este enviaralla ao teu motor de busca predeterminado e aos sitios aos que lles concedas a autorización pertinente. Os sitios poderán preguntarche pola túa localización se teñen información local que mostrarche (por exemplo, noticias ou tendas próximas).</translation>
 <translation id="2650312721222849884">Para ver as túas pestanas desde calquera dispositivo no que utilices Chromium, activa a sincronización</translation>
 <translation id="2730884209570016437">Chromium non pode usar a cámara porque a está usando outra aplicación</translation>
 <translation id="2915596697727466327">Chromium utiliza Face ID para garantir o acceso autorizado aos contrasinais.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Pechar sesión en Chromium?</translation>
 <translation id="6424492062988593837">Chromium introduciu melloras. Está dispoñible unha nova versión.</translation>
 <translation id="6820823224820483452">Chromium non puido comprobar todos os contrasinais. Téntao de novo mañá.</translation>
+<translation id="6827294685447036764">Se permites que Chromium saiba cal é a túa localización, este enviaralla aos sitios aos que lles concedas a autorización pertinente. Os sitios poderán preguntarche pola túa localización se teñen información local que mostrarche (por exemplo, noticias ou tendas próximas).</translation>
 <translation id="7018284295775193585">Chromium non se pode actualizar</translation>
 <translation id="7099326575020694068">Chromium non pode usar a cámara no modo Vista dividida</translation>
 <translation id="7118091470949186573">Xa podes utilizar Chromium sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>

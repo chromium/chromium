@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Offline, Chrome can't check for updates</translation>
 <translation id="5854621639439811139">Chrome tip. Some buttons are now at the bottom of your screen, such as Back, Forward and Search.</translation>
+<translation id="5876773482963502140">If you allow Chrome to know your location, Chrome sends it to any sites that you allow. Sites may ask for your location when they have local info to show you, like nearby shops or news.</translation>
 <translation id="6036420186814142909">Google Chrome has features that help you manage your internet data and how quickly you're able to load web pages.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Switch to Chrome</translation>
@@ -90,5 +91,4 @@
   2. Tap the default browser app
   3. Select Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">If you allow Chrome to know your location, Chrome sends it to your default search engine and any sites that you allow. Sites may ask for your location when they have local info to show you, like nearby shops or news.</translation>
 </translationbundle>

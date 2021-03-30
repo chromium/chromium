@@ -396,6 +396,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Pritisnuli ste prečicu na tastaturi za visoki kontrast. Želite li ga uključiti?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4333628967105022692">Preglednik Lacros nije podržan dok je istovremeno prijavljeno više korisnika.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">Asistent se učitava…</translation>
 <translation id="4356930093361201197">način rada visokog kontrasta</translation>
@@ -968,6 +969,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="9091626656156419976">Uklonjen je ekran <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Utišavanje telefona</translation>
 <translation id="9099154003160514616">Dostupno je ažuriranje za Lacros</translation>
+<translation id="9105450214093926548">Prijavljivanje drugog korisnika nije podržano dok je preglednik Lacros pokrenut. Umjesto toga, koristite profil drugog preglednika u Lacrosu ili zatvorite Lacros i pokušajte ponovo.</translation>
 <translation id="9133335900048457298">Nije moguće snimiti zaštićeni sadržaj</translation>
 <translation id="9151726767154816831">Ponovo pokrenite i izvršite powerwash da ažurirate</translation>
 <translation id="9166331175924255663">Uključite/isključite povećanu vidljivost Dijeljenja u blizini.</translation>

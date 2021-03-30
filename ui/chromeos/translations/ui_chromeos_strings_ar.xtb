@@ -220,7 +220,7 @@
 <translation id="3335337277364016868">عام التسجيل</translation>
 <translation id="3353984535370177728">حدد مجلدًا لتحميله</translation>
 <translation id="3356580349448036450">مكتمل</translation>
-<translation id="3358452157379365236">غيتار</translation>
+<translation id="3358452157379365236">قيثارة</translation>
 <translation id="3382143449143186018">‏النيبالية باستخدام لوحة مفاتيح InScript</translation>
 <translation id="3408236822532681288">‏الألمانية (ألمانيا) باستخدام لوحة مفاتيح Neo 2</translation>
 <translation id="3414856743105198592">يؤدي تنسيق الوسائط القابلة للإزالة إلى مسح جميع البيانات. هل تريد المتابعة؟</translation>
@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />لا تزل جهازك الآن.<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    قد تؤدي إزالة جهازك أثناء وجوده قيد الاستخدام إلى فقدان البيانات.  يُرجى الانتظار حتى انتهاء العملية، ثم إخراج الجهاز باستخدام تطبيق الملفات.</translation>
+<translation id="5159560892333415631">إفراغ المهملات</translation>
 <translation id="5163869187418756376">تعذّرت المشاركة. تحقق من اتصالك وأعد المحاولة لاحقًا.</translation>
 <translation id="516592729076796170">‏لوحة مفاتيح المطور الأمريكية Dvorak</translation>
 <translation id="5170477580121653719">‏المساحة المتبقية في Google Drive: <ph name="SPACE_AVAILABLE" />.</translation>
@@ -419,6 +420,7 @@
 <translation id="5275973617553375938">‏الملفات المستردة من Google Drive</translation>
 <translation id="5288441970121584418">برغر</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">هل تريد فعلاً إفراغ المهملات؟</translation>
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5318819489018851358">‏المشاركة مع نظام التشغيل Linux</translation>
 <translation id="5323213332664049067">أمريكا اللاتينية</translation>
@@ -758,7 +760,7 @@
 <translation id="8860454412039442620">‏جدول بيانات Excel</translation>
 <translation id="8866284467018526531">تحويل صوتي إلى اللغة العربية</translation>
 <translation id="8900820606136623064">المجرية</translation>
-<translation id="8903931173357132290">حاصل على شهادة</translation>
+<translation id="8903931173357132290">خرّيج</translation>
 <translation id="8919081441417203123">الدانماركية</translation>
 <translation id="8965697826696209160">ليست هناك مساحة كافية.</translation>
 <translation id="8970501467542182729">‏تم تصميم هذا الملف لأجهزة الكمبيوتر التي تستخدم نظام التشغيل Macintosh. وهذا الملف غير متوافق مع جهازك الذي يعمل بنظام التشغيل Chrome. <ph name="BEGIN_LINK_HELP" />مزيد من المعلومات<ph name="END_LINK_HELP" /> حول فتح الملفات على "نظام التشغيل Chrome"</translation>
@@ -783,6 +785,7 @@
 <translation id="9154418932169119429">هذه الصورة غير متاحة بلا إنترنت.</translation>
 <translation id="9172592259078059678">تحويل صوتي إلى اللغة الغوجاراتية</translation>
 <translation id="9173120999827300720">الإنجليزية (الولايات المتحدة) باستخدام لوحة المفاتيح الدولية</translation>
+<translation id="9174050671906956834">يتم حذف العناصر من المهملات نهائيًا بعد 30 يومًا.</translation>
 <translation id="9189836632794948435">الكازاخية</translation>
 <translation id="9213073329713032541">بدأ التثبيت بنجاح.</translation>
 <translation id="9219103736887031265">الصور</translation>

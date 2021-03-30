@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Momentan, Chromium nu poate folosi camera foto</translation>
 <translation id="2195025571279539885">Dorești ca data viitoare Chromium să propună traducerea paginilor în limba <ph name="LANGUAGE_NAME" /> de pe acest site?</translation>
 <translation id="2590893390871230428">Sincronizează-ți datele din Chromium</translation>
-<translation id="259614951763923692">Dacă permiți accesul Chromium la locație, Chromium trimite informații privind locația la motorul de căutare prestabilit și la site-urile cărora le acorzi această permisiune. Site-urile pot solicita informații despre locație atunci când au informații locale de afișat, de exemplu, magazine din apropiere sau știri.</translation>
 <translation id="2650312721222849884">Activează sincronizarea ca să vezi toate filele tale deschise în Chromium</translation>
 <translation id="2730884209570016437">Chromium nu poate folosi camera foto, deoarece este folosită de o altă aplicație</translation>
 <translation id="2915596697727466327">Chromium folosește Face ID pentru a asigura accesul autorizat la parolele tale.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Te deconectezi de la Chromium?</translation>
 <translation id="6424492062988593837">Chromium a devenit și mai bun! Este disponibilă o nouă versiune.</translation>
 <translation id="6820823224820483452">Chromium nu a putut verifica toate parolele. Încearcă din nou mâine.</translation>
+<translation id="6827294685447036764">Dacă permiți accesul Chromium la locație, Chromium trimite informații privind locația la site-urile cărora le acorzi această permisiune. Site-urile pot solicita informații despre locație atunci când au informații locale de afișat, de exemplu, magazine din apropiere sau știri.</translation>
 <translation id="7018284295775193585">Chromium nu se poate actualiza</translation>
 <translation id="7099326575020694068">Chromium nu poate folosi camera foto în modul Vizualizare împărțită</translation>
 <translation id="7118091470949186573">Acum poți folosi Chromium oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>

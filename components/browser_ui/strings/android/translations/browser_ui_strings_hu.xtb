@@ -178,6 +178,7 @@
 <translation id="5916664084637901428">Be</translation>
 <translation id="5922853908706496913">Képernyő megosztása</translation>
 <translation id="5939518447894949180">Visszaállítás</translation>
+<translation id="5975083100439434680">Kicsinyítés</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">A webhelynek az eszközhöz való hozzáférésének vezérlése</translation>
 <translation id="6040143037577758943">Bezárás</translation>
@@ -298,6 +299,7 @@
 <translation id="8801436777607969138">JavaScript letiltása adott webhelynél.</translation>
 <translation id="8816026460808729765">Az érzékelőkhöz való hozzáférés tiltása a webhelyek számára</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8903921497873541725">Nagyítás</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Az NFC ki van kapcsolva ezen az eszközön. Kapcsolja be az <ph name="BEGIN_LINK" />Android Beállítások alkalmazásában<ph name="END_LINK" />.</translation>
 <translation id="8929372349074745002">Ez a webhely gyorsan megnyílik és reagál a legtöbb felhasználó számára</translation>

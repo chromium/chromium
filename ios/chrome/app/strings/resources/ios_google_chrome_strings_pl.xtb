@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Tryb offline. Chrome nie może sprawdzić dostępności aktualizacji.</translation>
 <translation id="5854621639439811139">Wskazówka dla użytkowników Chrome. Niektóre przyciski (na przykład Wstecz, Dalej i Szukaj) znajdują się teraz na dole ekranu.</translation>
+<translation id="5876773482963502140">Jeśli zezwolisz na dostęp do swojej lokalizacji, Chrome będzie wysyłać ją do witryn, którym przyznasz dostęp. O dostęp do Twojej lokalizacji mogą prosić witryny pokazujące treści lokalne, np. wiadomości z regionu czy informacje o sklepach w pobliżu.</translation>
 <translation id="6036420186814142909">W Google Chrome są funkcje, które pomogą Ci zarządzać szybkością wczytywania stron internetowych oraz danymi przesyłanymi przez sieć.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Przejdź na Chrome</translation>
@@ -90,5 +91,4 @@
   2. Kliknij Domyślna przeglądarka.
   3. Wybierz Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Jeśli zezwolisz na dostęp do swojej lokalizacji, Chrome będzie wysyłać ją do domyślnej wyszukiwarki oraz witryn, którym przyznasz dostęp. O dostęp do Twojej lokalizacji mogą prosić witryny pokazujące treści lokalne, np. wiadomości z regionu czy informacje o sklepach w pobliżu.</translation>
 </translationbundle>

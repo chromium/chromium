@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">Čtverec</translation>
 <translation id="5775960006311140197">Režim pro experty</translation>
 <translation id="5869546221129391014">Mřížka</translation>
+<translation id="5975083100439434680">Oddálit</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6073451960410192870">Zastavit nahrávání</translation>
 <translation id="6197807149213783179">Uložit metadata</translation>
@@ -81,9 +82,9 @@ Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou f
 <translation id="7649070708921625228">Nápověda</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7670511624014457267">60 snímků/s</translation>
-<translation id="7974782136796202581">Zobrazit možnosti posunutí, náklonu a přiblížení</translation>
 <translation id="7983668134180549431">Byl zjištěn text.</translation>
 <translation id="8067883171444229417">Přehrát video</translation>
+<translation id="8120146556401698679">Posunutí, náklon, přiblížení</translation>
 <translation id="8131740175452115882">Potvrdit</translation>
 <translation id="8145038249676204903">Přepnout na focení</translation>
 <translation id="8239780215768881278">Pořídit snímek videa</translation>
@@ -94,6 +95,7 @@ Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou f
 <translation id="8815966864175525708">Přepnout na pořízení portrétové fotky</translation>
 <translation id="8828441885228359828">Obnovit nahrávání</translation>
 <translation id="8870695351537079478">Nahrávání se nepodařilo zahájit</translation>
+<translation id="8903921497873541725">Přiblížit</translation>
 <translation id="9045155556724273246">10 sekund</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
 </translationbundle>

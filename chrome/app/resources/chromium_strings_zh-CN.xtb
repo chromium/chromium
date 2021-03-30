@@ -10,7 +10,6 @@
 <translation id="1315551408014407711">设置您的新 Chromium 个人资料</translation>
 <translation id="1396446129537741364">Chromium 正尝试显示密码。</translation>
 <translation id="1414495520565016063">您已登录 Chromium！</translation>
-<translation id="1414973082589232775">您必须重启 Chromium，才能使用 Rosetta 播放受保护的媒体内容。</translation>
 <translation id="151962892725702025">由于您的网域停用了同步功能，Chromium操作系统无法同步您的数据。</translation>
 <translation id="1524282610922162960">共享 Chromium 标签页</translation>
 <translation id="1553461853655228091">Chromium 需要获得相应权限，才能使用您的摄像头为您的周边环境创建 3D 地图</translation>
@@ -135,11 +134,11 @@
 <translation id="5480860683791598150">Chromium 需要获得位置权限，才能将您的位置信息共享给此网站</translation>
 <translation id="549669000822060376">Chromium正在安装最新的系统更新，请稍候。</translation>
 <translation id="5496810170689441661">Chromium 正在尝试修改密码。请输入您的 Windows 密码以允许此操作。</translation>
+<translation id="5527463683072221100">在 Chromium 中打开 PDF 文件</translation>
 <translation id="5623402015214259806">{0,plural, =0{有一项可用的 Chromium 更新}=1{有一项可用的 Chromium 更新}other{有一项可用的 Chromium 更新（已发布 # 天）}}</translation>
 <translation id="5634636535844844681">Chromium 仅支持 Windows 7 或更高版本的操作系统。</translation>
 <translation id="5653831366781983928">请立即重启 Chromium</translation>
 <translation id="5698481217667032250">以这种语言显示 Chromium</translation>
-<translation id="5736967399513123100">您需要安装 Rosetta，Chromium 才能播放受保护的媒体内容。您想现在就安装吗？</translation>
 <translation id="5820394555380036790">Chromium 操作系统</translation>
 <translation id="5862307444128926510">欢迎使用 Chromium</translation>
 <translation id="5895138241574237353">重新启动</translation>
@@ -190,7 +189,6 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay（已复制到 Chromium）</translation>
 <translation id="6893813176749746474">Chromium 已更新，但您已经至少 30 天未使用它了。</translation>
-<translation id="6897548120660295439">待您安装 Rosetta 之后，Chromium 才能播放此页上受保护的媒体内容。</translation>
 <translation id="691026815377248078">Chromium 需获得蓝牙使用权限才能继续配对。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">在 Chromium 无痕式窗口中打开链接(&amp;G)</translation>
 <translation id="6978145336957848883">安全系数低的密码容易被人猜到。不妨让 Chromium <ph name="BEGIN_LINK" />为您创建并记住安全系数高的密码<ph name="END_LINK" />。</translation>

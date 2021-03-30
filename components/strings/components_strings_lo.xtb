@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">ເບິ່ງລາຍລະອຽດ</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ຕ້ອງການເກັບຂໍ້ມູນຂະໜາດໃຫຍ່ໄວ້ໃນອຸປະກອນຂອງທ່ານຢ່າງຖາວອນ</translation>
 <translation id="1032854598605920125">ໝຸນຕາມເຂັມໂມງ</translation>
+<translation id="1036224116832931580">ເກມ Dino, ແຕະເພື່ອໂດດ ແລະ ຫຼິ້ນ</translation>
 <translation id="1036348656032585052">ປິດ</translation>
 <translation id="1038106730571050514">ສະແດງການແນະນຳ</translation>
 <translation id="1038842779957582377">ຊື່ບໍ່ຮູ້ຈັກ</translation>
@@ -279,6 +280,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{ບໍ່ມີ}=1{1 ເວັບໄຊ}other{# ເວັບໄຊ}}</translation>
 <translation id="1945968466830820669">ທ່ານອາດຈະສູນເສຍການເຂົ້າເຖິງບັນຊີຂອງອົງການຂອງທ່ານ ຫຼື ປະສົບກັບການລັກໃຊ້ຕົວຕົນ.</translation>
 <translation id="1947454675006758438">ໜີບກະຫຼັບເຟີຢູ່ເທິງສຸດເບື້ອງຂວາ</translation>
+<translation id="1958218078413065209">ຄະແນນສູງສຸດຂອງທ່ານແມ່ນ <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">ຊ່ວຍປັບປຸງຄວາມປອດໄພຂອງເວັບໄຊສຳລັບທຸກຄົນໂດຍການສົ່ງ <ph name="BEGIN_WHITEPAPER_LINK" />URL ຂອງບາງໜ້າເວັບທີ່ທ່ານເຂົ້າເບິ່ງ, ຂໍ້ມູນລະບົບແບບຈຳກັດ ແລະ ບາງເນື້ອຫາໃນໜ້າເວັບ<ph name="END_WHITEPAPER_LINK" /> ໄປໃຫ້ Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">ບຸກມາກສ໌ ່<ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">ຄວາມ​ຜິດ​ພາດການສ້າງລໍາດັບ</translation>
@@ -547,6 +549,7 @@
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພືີ່ອເປີດໃຊ້ການກວດສອບຄວາມປອດໄພໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="3061707000357573562">ການບໍລິການແກ້ບັນຫາ</translation>
 <translation id="3064966200440839136">ກຳລັງອອກຈາກໂໝດບໍ່ເຜີຍຕົນຕົວເພື່ອຈ່າຍຜ່ານແອັບພລິເຄຊັນພາຍນອກ. ສືບຕໍ່ບໍ?</translation>
+<translation id="306573536155379004">ເລີ່ມເກມແລ້ວ.</translation>
 <translation id="3080254622891793721">ກຣາບຟິກ</translation>
 <translation id="3086579638707268289">ກຳລັງມີການຕິດຕາມເບິ່ງການເຄື່ອນໄຫວຂອງທ່ານໃນເວັບ</translation>
 <translation id="3087734570205094154">ດ້ານລຸ່ມ</translation>
@@ -1543,6 +1546,7 @@
 <translation id="6934672428414710184">ຊື່ນີ້ມາຈາກບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="6944692733090228304">ທ່ານໄດ້ປ້ອນລະຫັດຜ່ານຂອງທ່ານໃນເວັບໄຊທີ່ບໍ່ຖືກຈັດການໂດຍ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. ເພື່ອປົກປ້ອງບັນຊີຂອງທ່ານ, ກະລຸນາຢ່ານຳລະຫັດຜ່ານຂອງທ່ານມາໃຊ້ໃໝ່ຢູ່ໃນແອັບ ແລະ ເວັບໄຊອື່ນ.</translation>
 <translation id="6945221475159498467">ເລືອກ</translation>
+<translation id="6948051842255602737">ເກມຈົບແລ້ວ, ຄະແນນຂອງທ່ານແມ່ນ <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">ເພື່ອເບິ່ງວິທີ ແລະ ຂໍ້ກຳນົດການຮັບເຄື່ອງ, ກະລຸນາເລືອກທີ່ຢູ່</translation>
 <translation id="6949872517221025916">ຣີເຊັດລະຫັດຜ່ານ</translation>
 <translation id="6950684638814147129">ເກີດຄວາມຜິດພາດໃນເວລາແຍກວິເຄາະຄ່າ JSON: <ph name="ERROR" /></translation>
@@ -1825,6 +1829,7 @@
 <translation id="7956713633345437162">ບຸກມາກສ໌ມື​ຖື</translation>
 <translation id="7961015016161918242">ບໍ່​ເລີຍ</translation>
 <translation id="7966803981046576691">ປະເພດບັນຊີວຽກ</translation>
+<translation id="79682505114836835">ຄ່າ "<ph name="VALUE" />" ເປັນສີ hex ທີ່ບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="7976214039405368314">ມີການຮ້ອງຂໍຫຼາຍເກີນໄປ</translation>
 <translation id="7977538094055660992">ອຸປະກອນເຈ້ຍອອກ</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1952,6 +1957,7 @@
 <translation id="8446884382197647889">ຮຽນ​ຮູ້​ເພີ່ມ​ເຕີມ</translation>
 <translation id="8457125768502047971">ບໍ່ມີກຳນົດ</translation>
 <translation id="8461694314515752532">ເຂົ້າລະຫັດຂໍ້ມູນທີ່ຊິ້ງດ້ວຍລະຫັດຜ່ານການຊິ້ງຂໍ້ມູນຂອງທ່ານເອງ</translation>
+<translation id="8463101686637053101">ເກມ Dino, ກົດຍະຫວ່າງເພື່ອໂດດ ແລະ ຫຼິ້ນ</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 ບັດເຄຣດິດ}other{# ບັດເຄຣດິດ}}</translation>
 <translation id="8473863474539038330">ທີ່ຢູ່ ແລະ ອື່ນໆອີກ</translation>
 <translation id="8474910779563686872">ສະແດງລາຍລະອຽດຂອງນັກພັດທະນາ</translation>
@@ -2087,6 +2093,7 @@
 <translation id="8996941253935762404">ເວັບໄຊທ໌ຢູ່ຂ້າງໜ້າມີໂປຣແກຣມທີ່ເປັນ​ອັນ​ຕະ​ລາຍ</translation>
 <translation id="8997023839087525404">ເຊີບເວີໄດ້ນຳສະເໜີໃບຢັ້ງຢືນທີ່ບໍ່ຖືກເປີດເຜີຍທົ່ວໄປ ໂດຍໃຊ້ນະໂຍບາຍຄວາມໂປ່ງໃສຂອງໃບຢັ້ງຢືນ. ນະໂຍບາຍນີ້ແມ່ນຂໍ້ກຳນົດສຳລັບບາງໃບຢັ້ງຢືນ ເພື່ອຮັບປະກັນວ່າພວກມັນເຊື່ອຖືໄດ້ ແລະ ປ້ອງກັນຈາກຜູ້ໂຈມຕີ.</translation>
 <translation id="9001074447101275817">ພຣັອກຊີ <ph name="DOMAIN" /> ຮຽກຮ້ອງໃຫ້ມີຊື່ຜູ້ໃຊ້ ແລະລະຫັດຜ່ານ.</translation>
+<translation id="9001963517402879850">ໂດດ​!</translation>
 <translation id="9004367719664099443">ເຊດຊັນ VR ພວມດຳເນີນຢູ່</translation>
 <translation id="9005998258318286617">ໂຫຼດເອກະສານ PDF ບໍ່ສຳເລັດ.</translation>
 <translation id="9008201768610948239">ບໍ່ສົນໃຈ</translation>

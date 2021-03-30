@@ -193,6 +193,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2964349545761222050">Üçüncü Tərəf Kukiləri Bloklayın</translation>
 <translation id="2969979262385602596">Hesaba girmək olmur. Sonra cəhd edin.</translation>
 <translation id="2975121486251958312">Yalnız Anonim rejim əlçatandır</translation>
+<translation id="2981323609054805194">gün əvvəl</translation>
 <translation id="2982481275546140226">Datanı təmizləyin</translation>
 <translation id="298306318844797842">Ödəniş metodu əlavə edin...</translation>
 <translation id="2989805286512600854">Yeni Paneldə açın</translation>
@@ -556,7 +557,9 @@ Hər sayt üçün unikal parol istifadə edin.</translation>
 <translation id="6710079714193676716">Təşkilatınız tərəfindən idarə olunur. Bəzi funksiyalar əlçatan olmaya bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Tətbiqlər</translation>
 <translation id="6730682669179532099">Parolları Eksport Etmək alınmadı</translation>
+<translation id="6739790015462537309">s əvvəl</translation>
 <translation id="6748108480210050150">Kimdən</translation>
+<translation id="6760509555861141183">Son Taba qayıdın</translation>
 <translation id="6780034285637185932">Poçt İndeksi</translation>
 <translation id="6785453220513215166">Qəza haqqında hesabat göndərilir...</translation>
 <translation id="679325081238418596">Bütün cihazlarınızda əlfəcin, tarixçə, parol və digər ayarları əldə edin</translation>
@@ -608,7 +611,6 @@ Hər sayt üçün unikal parol istifadə edin.</translation>
 <translation id="7272437679830969316">Kimliyinizi doğrulamaq mümkün deyil. Parol kopyalanmayıb.</translation>
 <translation id="7291368939935408496">Parollar Hazırlanır...</translation>
 <translation id="7293171162284876153">Sinxronizasiyanı başlatmaq üçün "Chrome datasını sinxronizasiya edin" seçimini aktiv edin.</translation>
-<translation id="7299000566397147023">Ən Son Tabı Açın</translation>
 <translation id="7313347584264171202">Anonim tabları burada tapa bilərsiniz</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> faiz endirilib</translation>
 <translation id="7340958967809483333">"Kəşf edin" üçün seçimlər</translation>

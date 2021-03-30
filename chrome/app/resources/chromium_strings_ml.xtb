@@ -12,7 +12,6 @@
 <translation id="1315551408014407711">നിങ്ങളുടെ പുതിയ Chromium പ്രൊഫൈൽ സജ്ജീകരിക്കുക</translation>
 <translation id="1396446129537741364">Chromium പാസ്‌വേഡുകൾ ദൃശ്യമാക്കാൻ ശ്രമിക്കുന്നു.</translation>
 <translation id="1414495520565016063">നിങ്ങൾ Chromium-ൽ സൈൻ ഇൻ ചെയ്‌തു!</translation>
-<translation id="1414973082589232775">പരിരക്ഷിത മീഡിയ പ്ലേ ചെയ്യുന്നതിന് Rosetta ഉപയോഗിക്കാൻ Chromium റീസ്‌റ്റാർട്ട് ചെയ്‌തിരിക്കണം.</translation>
 <translation id="151962892725702025">നിങ്ങളുടെ ഡൊമെയ്‌നിന് സമന്വയം ലഭ്യമല്ലാത്തതിനാൽ Chromium OS-ന് നിങ്ങളുടെ ഡാറ്റ സമന്വയിപ്പിക്കാനായില്ല.</translation>
 <translation id="1524282610922162960">ഒരു Chromium ടാബ് പങ്കിടുക</translation>
 <translation id="1553461853655228091">നിങ്ങളുടെ ചുറ്റുപാടിന്റെ 3D മാപ്പ് സൃഷ്ടിക്കുന്നതിന് നിങ്ങളുടെ ക്യാമറ ആക്സസ് ചെയ്യാൻ Chromium-ന് നിങ്ങളുടെ അനുമതി ആവശ്യമാണ്</translation>
@@ -27,6 +26,7 @@
 <translation id="1966382378801805537">Chromium-ത്തിന് ഡിഫോൾട്ട് ബ്രൗസർ നിർണ്ണയിക്കാനോ സജ്ജമാക്കാനോ കഴിയില്ല</translation>
 <translation id="2008474315282236005">ഇത് ഈ ഉപകരണത്തിൽ നിന്നും ഒരിനം ഇല്ലാതാക്കും. പിന്നീട് നിങ്ങളുടെ വിവരങ്ങൾ വീണ്ടെടുക്കാൻ, <ph name="USER_EMAIL" /> എന്നയാളായി Chromium-ൽ സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="2020032459870799438">ഡാറ്റാ ലംഘനങ്ങളിൽ നിന്നും മറ്റ് സുരക്ഷാ പ്രശ്‌നങ്ങളിൽ നിന്നും നിങ്ങളുടെ മറ്റ് പാസ്‌വേഡുകൾ സുരക്ഷിതമാണോ എന്ന് പരിശോധിക്കാൻ, <ph name="BEGIN_LINK" />Chromium-ൽ സൈൻ ഇൻ ചെയ്യുക<ph name="END_LINK" />.</translation>
+<translation id="2174178932569897599">Chromium ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="2185166961232948079">Chromium - നെറ്റ്‌വർക്ക് സൈൻ ഇൻ - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">നിങ്ങളൊരു കമ്പ്യൂട്ടർ പങ്കിടുകയാണെങ്കിൽ, സുഹൃത്തുക്കൾക്കും കുടുബാംഗങ്ങൾക്കും വെവ്വേറെ ബ്രൗസ് ചെയ്യാനും അവർക്ക് ആവശ്യമുള്ള രീതിയിൽ Chromium സജ്ജീകരിക്കാനുമാകും.</translation>
 <translation id="2294245788148774212">ഓപ്ഷണൽ: പ്രശ്‍നനിർണ്ണയ, ഉപയോഗ വിവരങ്ങൾ Google-ന് സ്വയമേവ അയച്ചുകൊണ്ട് Chromium OS ഫീച്ചറുകളും പ്രകടനവും മെച്ചപ്പെടുത്താൻ സഹായിക്കുക.</translation>
@@ -137,11 +137,11 @@
 <translation id="5480860683791598150">Chromium-ത്തിന് ഈ സൈറ്റുമായി ലൊക്കേഷൻ പങ്കിടുന്നതിന് നിങ്ങളുടെ ലൊക്കേഷനിലേക്കുള്ള ആക്‌സസ് ആവശ്യമാണ്</translation>
 <translation id="549669000822060376">Chromium ഏറ്റവും പുതിയ സിസ്‌റ്റം അപ്‌ഡേറ്റുകൾ ഇൻസ്റ്റാളുചെയ്യുന്നതുവരെ കാത്തിരിക്കുക.</translation>
 <translation id="5496810170689441661">പാസ്‌വേഡുകൾ എഡിറ്റ് ചെയ്യാൻ Chromium ശ്രമിക്കുന്നു. ഇത് അനുവദിക്കാൻ നിങ്ങളുടെ Windows പാസ്‌വേഡ് ടൈപ്പ് ചെയ്യുക.</translation>
+<translation id="5527463683072221100">Chromium-ൽ PDF-കൾ തുറക്കുക</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium-ത്തിനൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}=1{Chromium-ത്തിനൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}other{# ദിവസമായി Chromium-ത്തിനൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}}</translation>
 <translation id="5634636535844844681">Chromium-ത്തിന് Windows 7 അല്ലെങ്കിൽ അതിനുശേഷമുള്ള പതിപ്പ് ആവശ്യമാണ്.</translation>
 <translation id="5653831366781983928">Chromium ഇപ്പോൾ റീസ്‌റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="5698481217667032250">ഈ ഭാഷയിൽ Chromium പ്രദർശിപ്പിക്കുക</translation>
-<translation id="5736967399513123100">പരിരക്ഷിത മീഡിയ പ്ലേ ചെയ്യുന്നതിന് Chromium പ്രവർത്തനക്ഷമമാക്കാൻ Rosetta ഇൻസ്‌റ്റാൾ ചെയ്യേണ്ടതുണ്ട്. ഇപ്പോൾ ഇൻസ്‌റ്റാൾ ചെയ്യണോ?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Chromium-ത്തിലേക്ക് സ്വാഗതം</translation>
 <translation id="5895138241574237353">പുനരാരംഭിക്കുക</translation>
@@ -192,7 +192,6 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium-ത്തിലേക്ക് പകർത്തി)</translation>
 <translation id="6893813176749746474">Chromium അപ്‌ഡേറ്റുചെയ്‌തു, എന്നാൽ കുറഞ്ഞത് 30 ദിവസം പോലും നിങ്ങൾ ഇത് ഉപയോഗിച്ചില്ല.</translation>
-<translation id="6897548120660295439">Rosetta, ഈ പേജിൽ പരിരക്ഷിത മീഡിയ പ്ലേ ചെയ്യാൻ Chromium-നെ പ്രവർത്തനക്ഷമമാക്കുന്നു.</translation>
 <translation id="691026815377248078">ജോടിയാക്കൽ തുടരാൻ Chromium-ന് Bluetooth ആക്സസ് 
  ആവശ്യമാണ്. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Chromium അദൃശ്യ വിൻഡോയിൽ ലിങ്ക് തുറക്കുക</translation>

@@ -195,6 +195,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="6070348360322141662">ለተጨማሪ ደህንነት ሲባል Google Chrome ውሂብዎን ያመሰጥረዋል</translation>
 <translation id="608006075545470555">የስራ መገለጫ ወደዚህ አሳሽ ያክሉ</translation>
 <translation id="6113794647360055231">Chrome አሁን ይበልጥ ተሻሽሏል</translation>
+<translation id="6145313976051292476">PDFዎችን በChrome ውስጥ ክፈት</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome ቅድመ-ይሁንታ</translation>
 <translation id="61852838583753520">&amp;Chrome ስርዓተ ክወናን አዘምን</translation>
@@ -207,7 +208,6 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome ግንባታ</translation>
 <translation id="6566149418543181476">Google Chromeን በማዘመን ላይ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">የChrome OS ሥርዓት</translation>
-<translation id="6650333065969705433">Rosettaን በመጠቀም የተጠበቀ ሚዲያን ለማጫወት Chromeን ዳግም ማስነሳት አለብዎት።</translation>
 <translation id="6676384891291319759">በይነመረብን ተዳረስ</translation>
 <translation id="6679975945624592337">Google Chrome ጀርባ ውስጥ ይሂድ</translation>
 <translation id="6739177684496155661">በአዲሱ የChrome መገለጫ ውስጥ ይቀጥል?</translation>
@@ -271,7 +271,6 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">ይህ የስራ መገለጫ ከግል መገለጫዎ ሙሉ ለሙሉ የተለየ ነው።</translation>
 <translation id="8556340503434111824">አዲስ የGoogle Chrome ስሪት አለ፣ እና ከመቼውም በበለጠ ፈጣን ነው።</translation>
-<translation id="861359755029082151">Chrome በዚህ ገጽ ላይ ያለው የተጠበቀ ሚዲያ እንዲያጫውት Rosetta ያስችለዋል።</translation>
 <translation id="8614913330719544658">Google Chrome መልስ አይሰጥም። አሁን ዳግም ይጀምር?</translation>
 <translation id="861702415419836452">Chrome የዙሪያዎ 3ል ካርታ መፍጠር እንዲችል ካሜራዎን የመድረስ ፈቃድ ያስፈልገዋል</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome በ1 ደቂቃ ውስጥ ዳግም ይጀመራል}one{Chrome በ# ደቂቃዎች ውስጥ ዳግም ይጀመራል}other{Chrome በ# ደቂቃዎች ውስጥ ዳግም ይጀመራል}}</translation>
@@ -285,7 +284,6 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8834965163890861871">Google Chrome የይለፍ ቃላትን ለማርትዕ እየሞከረ ነው። ይህን ለመፍቀድ የእርስዎን Windows የይለፍ ቃል ይተይቡ።</translation>
 <translation id="884296878221830158">እንዲሁም Chromeን ሲጀምሩት ወይም የመነሻ አዝራሩን ጠቅ ሲያደርጉት የሚታየውን ገጽ ይቆጣጠራል።</translation>
 <translation id="8862326446509486874">ለስርዓተ-ደረጃ ጭነት ተገቢ መብቶች የሉዎትም። ጫኚውን እንደ አስተዳዳሪ በማሄድ እንደገና ይሞክሩ።</translation>
-<translation id="8907709077090383765">Chrome የተጠበቀ ሚዲያን እንዲያጫውት ለማስቻል Rosettaን መጫን አለብዎት። አሁን ሊጭኑት ይፈልጋሉ?</translation>
 <translation id="8914504000324227558">Chromeን ዳግም አስጀምር</translation>
 <translation id="8922193594870374009">አንድ ቁጥር ከ<ph name="ORIGIN" /> ወደ የእርስዎ Android ስልክ ለመላክ በሁለቱም መሣሪያዎች ላይ በመለያ ወደ Chrome ይግቡ።</translation>
 <translation id="8986207147630327271">የስራ መገለጫን ወደዚህ አሳሽ እያከሉ እና ለአስተዳዳሪዎ በስራ መገለጫው ላይ ብቻ ቁጥጥር እየሰጡ ነው።</translation>

@@ -193,6 +193,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6070348360322141662">Xavfsizlik himoyasini oshirish maqsadida Google Chrome ma’lumotlaringizni shifrlaydi</translation>
 <translation id="608006075545470555">Bu brauzerga ish profilini kiritish</translation>
 <translation id="6113794647360055231">Chrome ancha yaxshilanmoqda</translation>
+<translation id="6145313976051292476">PDF fayllarni Chrome bilan ochish</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="61852838583753520">&amp;Chrome OS‘ni yangilash</translation>
@@ -205,7 +206,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome yangilanmoqda (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS tizimi</translation>
-<translation id="6650333065969705433">Himoyalangan mediani ijro etishda Rosetta dasturidan foydalanish uchun Chrome brauzerini qayta ishga tushiring.</translation>
 <translation id="6676384891291319759">Internetga ulanish</translation>
 <translation id="6679975945624592337">Google Chrome fonda ishlashiga ruxsat</translation>
 <translation id="6739177684496155661">Yangi Chrome profilida davom etasizmi?</translation>
@@ -269,7 +269,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Bu ish profili shaxsiy profilingizdan butunlay ajratilgan.</translation>
 <translation id="8556340503434111824">Google Chrome brauzerining yanada tezroq ishlaydigan yangi versiyasi chiqdi.</translation>
-<translation id="861359755029082151">Rosetta Chrome brauzerida bu sahifada mediani ijro etish imkoniyatini yoqadi.</translation>
 <translation id="8614913330719544658">Google Chrome javob bermayapti. Qaytadan ishga tushirilsinmi?</translation>
 <translation id="861702415419836452">Chrome atrofingiz 3D xaritasini yaratishi uchun unga kamera ruxsati zarur</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 daqiqadan keyin qayta ishga tushadi}other{Chrome # daqiqadan keyin qayta ishga tushadi}}</translation>
@@ -283,7 +282,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8834965163890861871">Google Chrome parollarni tahrirlashga urinmoqda. Ruxsat berish uchun Windows parolingizni kiriting.</translation>
 <translation id="884296878221830158">Bundan tashqari kengaytma Chrome ochilganida yoki Bosh sahifa tugmasi bosilganida qaysi sahifa ko‘rsatilishini nazorat qiladi.</translation>
 <translation id="8862326446509486874">Sizda tizim darajasida o‘rnatish uchun yetarli ruxsatlar yo‘q. O‘rnatish dasturini administrator nomidan qayta ishga tushiring.</translation>
-<translation id="8907709077090383765">Chrome himoyalangan mediani ijro etishi uchun Rosetta oʻrnatilishi lozim. Uni hozir oʻrnatishni xohlaysizmi?</translation>
 <translation id="8914504000324227558">Chrome’ni qayta ishga tushiring</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> orqali Android telefoningizga raqam yuborish uchun ikkala qurilmada Chrome hisobingizga kiring.</translation>
 <translation id="8986207147630327271">Bu brauzerga ish profilini kiritish bilan siz administratorga ish profili orqali barcha boshqaruv ruxsatlarini berasiz.</translation>
@@ -293,6 +291,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="911206726377975832">Brauzer faoliyati haqidagi ma’lumotlar ham tozalansinmi?</translation>
 <translation id="9138603949443464873">O‘zgarishlarni tatbi qilish uchun Chrome qayta ishga tushirilishi zarur</translation>
 <translation id="919706545465235479">Sinxronizatsiyani boshlash uchun Chrome brauzerini yangilang</translation>
+<translation id="922152298093051471">Chromeni moslash</translation>
 <translation id="940313311831216333">Chrome brauzeridagi axborotlardan barcha qurilmalaringizda foydalanish uchun hisobingizga kiring va sinxronizatsiyani yoqing.</translation>
 <translation id="989369509083708165">Qurilmangizdagi asosiy brauzer – Google Chrome.</translation>
 </translationbundle>

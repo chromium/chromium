@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">スクエア</translation>
 <translation id="5775960006311140197">エキスパート モード</translation>
 <translation id="5869546221129391014">グリッド</translation>
+<translation id="5975083100439434680">縮小する</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6073451960410192870">撮影を停止</translation>
 <translation id="6197807149213783179">メタデータを保存</translation>
@@ -81,9 +82,9 @@
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7974782136796202581">パン ティルト ズーム オプションを表示</translation>
 <translation id="7983668134180549431">テキストが検出されました。</translation>
 <translation id="8067883171444229417">動画を再生します</translation>
+<translation id="8120146556401698679">パン、チルト、ズーム</translation>
 <translation id="8131740175452115882">確認</translation>
 <translation id="8145038249676204903">写真の撮影に切り替え</translation>
 <translation id="8239780215768881278">動画スナップショットを作成</translation>
@@ -94,6 +95,7 @@
 <translation id="8815966864175525708">縦向きの写真の撮影に切り替え</translation>
 <translation id="8828441885228359828">録画を再開</translation>
 <translation id="8870695351537079478">録画を開始できません</translation>
+<translation id="8903921497873541725">拡大する</translation>
 <translation id="9045155556724273246">10 秒</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
 </translationbundle>

@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">Vierkant</translation>
 <translation id="5775960006311140197">Expertmodus</translation>
 <translation id="5869546221129391014">Raster</translation>
+<translation id="5975083100439434680">Uitzoomen</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6073451960410192870">Opname stoppen</translation>
 <translation id="6197807149213783179">Metadata opslaan</translation>
@@ -81,9 +82,9 @@ Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbe
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7974782136796202581">Opties voor schuiven, kantelen en zoomen tonen</translation>
 <translation id="7983668134180549431">Tekst gevonden.</translation>
 <translation id="8067883171444229417">Video afspelen</translation>
+<translation id="8120146556401698679">Schuiven, kantelen, zoomen</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
 <translation id="8145038249676204903">Naar foto maken</translation>
 <translation id="8239780215768881278">Videomomentopname maken</translation>
@@ -94,6 +95,7 @@ Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbe
 <translation id="8815966864175525708">Schakel over om portretfoto te maken</translation>
 <translation id="8828441885228359828">Opname hervatten</translation>
 <translation id="8870695351537079478">Kan opname niet starten</translation>
+<translation id="8903921497873541725">Inzoomen</translation>
 <translation id="9045155556724273246">10 seconden</translation>
 <translation id="945522503751344254">Feedback sturen</translation>
 </translationbundle>

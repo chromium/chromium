@@ -194,6 +194,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6070348360322141662">Pour plus de sécurité, vos données seront chiffrées dans Google Chrome</translation>
 <translation id="608006075545470555">Ajouter un profil professionnel à ce navigateur</translation>
 <translation id="6113794647360055231">Chrome s'est amélioré</translation>
+<translation id="6145313976051292476">Ouvrir les PDF dans Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Bêta</translation>
 <translation id="61852838583753520">Mettre à jour &amp;Chrome OS</translation>
@@ -206,7 +207,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome pour les développeurs</translation>
 <translation id="6566149418543181476">Mise à jour de Google Chrome (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="6568793831116033768">Système Chrome OS</translation>
-<translation id="6650333065969705433">Pour utiliser Rosetta pour lire des contenus multimédias protégés, vous devez redémarrer Chrome.</translation>
 <translation id="6676384891291319759">Accéder à Internet</translation>
 <translation id="6679975945624592337">Laisser Google Chrome s'exécuter en arrière-plan</translation>
 <translation id="6739177684496155661">Continuer avec un nouveau profil Chrome ?</translation>
@@ -270,7 +270,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Ce profil professionnel est parfaitement séparé de votre profil personnel.</translation>
 <translation id="8556340503434111824">Une nouvelle version de Google Chrome encore plus rapide est disponible.</translation>
-<translation id="861359755029082151">Rosetta permet à Chrome de lire les contenus multimédias protégés sur cette page.</translation>
 <translation id="8614913330719544658">Google Chrome ne répond pas. Voulez-vous le relancer maintenant ?</translation>
 <translation id="861702415419836452">Chrome a besoin de votre autorisation pour accéder à votre appareil photo afin de créer un plan 3D de votre environnement</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome va être relancé dans 1 minute}one{Chrome va être relancé dans # minute}other{Chrome va être relancé dans # minutes}}</translation>
@@ -284,7 +283,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8834965163890861871">Google Chrome tente de modifier les mots de passe. Pour autoriser cette action, saisissez votre mot de passe Windows.</translation>
 <translation id="884296878221830158">Elle contrôle également la page qui s'affiche au démarrage de Chrome ou lorsque vous cliquez sur le bouton Accueil.</translation>
 <translation id="8862326446509486874">Vous ne disposez pas des droits requis pour installer la version système. Relancez l'installation en vous connectant comme administrateur.</translation>
-<translation id="8907709077090383765">Pour autoriser Chrome à lire des contenus multimédias protégés, vous devez installer Rosetta. Voulez-vous l'installer maintenant ?</translation>
 <translation id="8914504000324227558">Relancer Google Chrome</translation>
 <translation id="8922193594870374009">Pour envoyer un numéro depuis <ph name="ORIGIN" /> vers votre téléphone Android, connectez-vous à Chrome sur les deux appareils.</translation>
 <translation id="8986207147630327271">Vous êtes sur le point d'ajouter un profil professionnel à ce navigateur et d'en donner le contrôle à votre administrateur.</translation>

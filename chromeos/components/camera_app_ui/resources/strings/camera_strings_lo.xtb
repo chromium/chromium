@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">ບໍ່ໄດ້ບັນທຶກຫຍັງໄວ້</translation>
+<translation id="1838104802459806957">ອຽງຂຶ້ນ</translation>
 <translation id="1851616744363735765">ຢຸດໄວ້ຊົ່ວຄາວແລ້ວ</translation>
 <translation id="1862930711583847113">ບໍ່ສາມາດສົ່ງອອກ <ph name="FILE" /> ໄດ້</translation>
 <translation id="1899697626337024495">ຄວາມລະອຽດຮູບພາບ</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> ເປີດໃຊ້ຢູ່</translation>
 <translation id="2144806332417375165">ຄ່າພາຣາມີເຕີວິດີໂອແບບກຳນົດເອງ</translation>
 <translation id="229579744168541441">ສົ່ງອອກໄປໃສ່ດິສກ໌</translation>
+<translation id="2320741269052147773">ເລືອນໄປຊ້າຍ</translation>
 <translation id="2501278716633472235">ກັບ​ຄືນ​ໄປ</translation>
 <translation id="2501853267655415902">ຢຸດການບັນທຶກແລ້ວ</translation>
 <translation id="2501953888035679275">ຖ່າຍຮູບ ແລະ ບັນທຶກວິດີໂອດ້ວຍກ້ອງຖ່າຍຮູບຂອງທ່ານ.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">ຮູບພາບ ແລະ ວິດີໂອທີ່ຖ່າຍດ້ວຍກ້ອງຖ່າຍຮູບຈະຖືກຍ້າຍໄປໃສ່ໂຟນເດີດາວໂຫຼດ. ທ່ານສາມາດເຂົ້າເຖິງພວກມັນໄດ້ໃນໄຟລ໌.
 
        ແອັບທີ່ມີການອະນຸຍາດບ່ອນເກັບຂໍ້ມູນຈະມີສິດເຂົ້າເຖິງຮູບພາບ ແລະ ວິດີໂອຂອງທ່ານໄດ້.</translation>
+<translation id="3067436040345934772">ເລື່ອນໄປຂວາ</translation>
 <translation id="3081586908890909590">ປ່ຽນເປັນບັນທຶກວິດີໂອ</translation>
 <translation id="313467653172006084">30 FPS</translation>
 <translation id="3183731565330012717">ປະເພດເສັ້ນຕາໜ່າງ</translation>
@@ -56,6 +59,7 @@
 <translation id="5671277269877808209">ສີ່ຫຼ່ຽມ</translation>
 <translation id="5775960006311140197">ໂໝດຜູ້ຊ່ຽວຊານ</translation>
 <translation id="5869546221129391014">ຕາຂ່າຍ</translation>
+<translation id="5975083100439434680">ຊູມອອກ</translation>
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="6073451960410192870">ຢຸດການບັນທຶກ</translation>
 <translation id="6197807149213783179">ບັນທຶກເມຕາເດຕາໄວ້</translation>
@@ -81,19 +85,21 @@
 <translation id="7649070708921625228">ຊ່ວຍ​ເຫຼືອ</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7974782136796202581">ສະແດງຕົວເລືອກການເລື່ອນ ການອ່ຽງ ການຊູມ</translation>
 <translation id="7983668134180549431">ກວດພົບຂໍ້ຄວາມ.</translation>
 <translation id="8067883171444229417">ຫຼິ້ນວິດີໂອ</translation>
+<translation id="8120146556401698679">ເລື່ອນ ອຽງ ຊູມ</translation>
 <translation id="8131740175452115882">ຢືນ​ຢັນ</translation>
 <translation id="8145038249676204903">ປ່ຽນເປັນຖ່າຍຮູບ</translation>
 <translation id="8239780215768881278">ຖ່າຍພາບວິດີໂອໄວ</translation>
 <translation id="8261506727792406068">ລຶບ</translation>
+<translation id="8425673304802773841">ອຽງລົງ</translation>
 <translation id="8428213095426709021">ການ​ຕັ້ງຄ່າ</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">ສະແດງຕົວຢ່າງເມຕາເດຕາ</translation>
 <translation id="8815966864175525708">ປ່ຽນເປັນຖ່າຍຮູບບຸກຄົນ</translation>
 <translation id="8828441885228359828">ສືບຕໍ່ການບັນທຶກ</translation>
 <translation id="8870695351537079478">ບໍ່ສາມາດເລີ່ມການບັນທຶກໄດ້</translation>
+<translation id="8903921497873541725">ຊຸມເຂົ້າ</translation>
 <translation id="9045155556724273246">10 ວິນາທີ</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
 </translationbundle>

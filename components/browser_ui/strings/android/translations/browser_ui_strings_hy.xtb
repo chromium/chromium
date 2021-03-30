@@ -178,6 +178,7 @@
 <translation id="5916664084637901428">Միացնել</translation>
 <translation id="5922853908706496913">Էկրանը ցուցադրվում է</translation>
 <translation id="5939518447894949180">Վերակայել</translation>
+<translation id="5975083100439434680">Փոքրացնել</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Կառավարեք այս կայքի՝ ձեր սարքն օգտագործելու թույլտվությունները</translation>
 <translation id="6040143037577758943">Փակել</translation>
@@ -223,7 +224,7 @@
 <translation id="7000754031042624318">Անջատված է Android-ի կարգավորումներում</translation>
 <translation id="7016516562562142042">Թույլատրված է ընթացիկ որոնիչին</translation>
 <translation id="7053983685419859001">Արգելափակել</translation>
-<translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ընտրված տարր}one{# selected}other{# ընտրված տարր}}</translation>
+<translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ընտրված տարր}one{# ընտրված տարր}other{# ընտրված տարր}}</translation>
 <translation id="7087918508125750058">Ընտրված է <ph name="ITEM_COUNT" /> տարր։ Ընտրանքները հասանելի են էկրանի վերին հատվածում</translation>
 <translation id="7128222689758636196">Թույլատրել ընթացիկ որոնիչին</translation>
 <translation id="7141896414559753902">Արգելափակել ելնող պատուհանները և վերահասցեավորումը կայքերում (խորհուրդ է տրվում)</translation>
@@ -298,6 +299,7 @@
 <translation id="8801436777607969138">Արգելափակել JavaScript-ը նշված կայքի համար:</translation>
 <translation id="8816026460808729765">Արգելել կայքերին օգտագործել տվիչները</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8903921497873541725">Խոշորացնել</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Սարքի NFC-ն անջատված է։ Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="8929372349074745002">Այս կայքը հիմնականում բեռնվում և արձագանքում է արագ</translation>

@@ -282,6 +282,7 @@
 <translation id="3928666092801078803">Дайындарымды бириктирүү</translation>
 <translation id="3929457972718048006">Даректер</translation>
 <translation id="3943492037546055397">Сырсөздөр</translation>
+<translation id="3967266340354872733">Купуялыкка, коопсуздукка жана дайындарды чогултууга байланыштуу дагы башка жөндөөлөрдү көрүү үчүн <ph name="BEGIN_LINK" />Шайкештирүү<ph name="END_LINK" /> жана <ph name="BEGIN_LINK" />Google кызматтары<ph name="END_LINK" /> бөлүмүнө өтүңүз.</translation>
 <translation id="3967822245660637423">Жүктөп алуу аяктады</translation>
 <translation id="3968505803272650567">Кызыккан нерселерди башкаруу</translation>
 <translation id="3989635538409502728">Чыгуу</translation>
@@ -302,7 +303,7 @@
 <translation id="4121993058175073134">Накта экспорт дайындарын жөнөтүү үчүн, электрондук почта аккаунтуңузду Жөндөөлөр колдонмосунан конфигурациялаңыз.</translation>
 <translation id="4124987746317609294">Убакыт аралыгы</translation>
 <translation id="4152011295694446843">Кыстармаларыңызды ушул жерден табасыз</translation>
-<translation id="4172051516777682613">Ар дайым көрсөтүлсүн</translation>
+<translation id="4172051516777682613">Ар дайым көрүнсүн</translation>
 <translation id="418156467088430727">Оффлайн версиясын жаңы өтмөктөн көрүү</translation>
 <translation id="4181841719683918333">Тилдер</translation>
 <translation id="424315890655130736">Купуя сөз айкашын киргизиңиз</translation>
@@ -556,6 +557,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6713747756340119864">Google Колднмлр</translation>
 <translation id="6730682669179532099">Сырсөздөр экспорттолбой жатат</translation>
 <translation id="6748108480210050150">Кимден</translation>
+<translation id="6760509555861141183">Акыркы өтмөккө өтүү</translation>
 <translation id="6780034285637185932">Почта индекси</translation>
 <translation id="6785453220513215166">Ката жөнүндө кабар жөнөтүү…</translation>
 <translation id="679325081238418596">Бардык түзмөктөрүңүздөн кыстармаларды, таржымалды, сырсөздөрдү жана башка жөндөөлөрүңүздү алыңыз</translation>
@@ -607,7 +609,6 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="7272437679830969316">Аныктыгыңыз тастыкталган жок. Сырсөз көчүрүлгөн жок.</translation>
 <translation id="7291368939935408496">Сырсөздөр даярдалууда…</translation>
 <translation id="7293171162284876153">Шайкештирүүнү баштоо үчүн, "Chrome дайындарын шайкештирүүнү" күйгүзүңүз.</translation>
-<translation id="7299000566397147023">Соңку өтмөктү ачуу</translation>
 <translation id="7313347584264171202">Жашыруун өтмөктөрүңүздү ушул жерден табасыз</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> пайыз жүктөлүп алынды</translation>
 <translation id="7340958967809483333">Сунуштардын параметрлери</translation>

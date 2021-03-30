@@ -194,6 +194,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6070348360322141662">अतिरिक्त सुरक्षिततेसाठी, Google Chrome तुमचा डेटा एंक्रिप्ट करेल</translation>
 <translation id="608006075545470555">या ब्राउझरवर कार्य प्रोफाइल जोडा</translation>
 <translation id="6113794647360055231">Chrome आता उत्कृष्ट झाले आहे</translation>
+<translation id="6145313976051292476">Chrome मध्ये PDF उघडा</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome बीटा</translation>
 <translation id="61852838583753520">&amp;Chrome OS अपडेट करा</translation>
@@ -206,7 +207,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome डेव्हलपर</translation>
 <translation id="6566149418543181476">Google Chrome अपडेट करीत आहे (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS सिस्टम</translation>
-<translation id="6650333065969705433">संरक्षित मीडिया प्ले करण्यासाठी Rosetta सुरू करण्यासाठी, तुम्ही Chrome रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="6676384891291319759">इंटरनेट ॲक्सेस करा</translation>
 <translation id="6679975945624592337">Google Chrome बॅकग्राउंडमध्ये सुरू द्या</translation>
 <translation id="6739177684496155661">नवीन Chrome प्रोफाइलमध्ये सुरू ठेवायचे आहे का?</translation>
@@ -270,7 +270,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">ही कार्य प्रोफाइल तुमच्या वैयक्तिक प्रोफाइलपेक्षा पूर्णपणे स्वतंत्र आहे.</translation>
 <translation id="8556340503434111824">Google Chrome ची नवीन आवृत्ती उपलब्ध आहे, आणि ही नेहमीपेक्षा द्रुत आहे. </translation>
-<translation id="861359755029082151">या पेजवर संरक्षित मीडिया प्ले करण्यासाठी, Rosetta हे Chrome सुरू करते.</translation>
 <translation id="8614913330719544658">Google Chrome प्रतिसाद देत नाही. त्वरित पुन्हा लाँच करायचा?</translation>
 <translation id="861702415419836452">तुमच्या आसपासचा 3D नकाशा तयार करण्यासाठी Chrome ला तुमचा कॅमेरा अ‍ॅक्सेस करण्याची परवानगी हवी आहे</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome एका मिनिटामध्ये पुन्हा लॉंच होईल}other{Chrome # मिनिटांमध्ये पुन्हा लॉंच होईल}}</translation>
@@ -284,7 +283,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8834965163890861871">Google Chrome पासवर्ड संपादित करण्याचा प्रयत्‍न करत आहे. हे करू देण्यासाठी तुमचा Windows पासवर्ड टाइप करा.</translation>
 <translation id="884296878221830158">तुम्ही Chrome सुरू करता किंवा होम बटण क्लिक करता तेव्हा कोणते पेज दर्शविले जाते ते देखील हे नियंत्रित करते.</translation>
 <translation id="8862326446509486874">तुमच्याकडे सिस्टम स्तरावरील इंस्टॉलसाठी योग्य अधिकार नाहीत. ॲडमिनिस्ट्रेटर म्हणून पुन्हा इंस्टॉलर चालविण्याचा प्रयत्न करा.</translation>
-<translation id="8907709077090383765">संरक्षित मीडिया प्ले करण्यासाठी Chrome सुरू करण्यासाठी, तुम्ही Rosetta इंस्टॉल करणे आवश्यक आहे. तुम्हाला ते आता इंस्टॉल करायचे आहे का?</translation>
 <translation id="8914504000324227558">Chrome रीलाँच करा</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> वरून तुमच्या Android फोनवर नंबर पाठवण्यासाठी, दोन्ही डिव्हाइसवर Chrome मध्ये साइन इन करा.</translation>
 <translation id="8986207147630327271">तुम्ही या ब्राउझरवर कार्य प्रोफाइल जोडत आहात आणि तुमच्या अ‍ॅडमिस्ट्रेटरला फक्त कार्य प्रोफाइलवर नियंत्रण देत आहात.</translation>
@@ -294,6 +292,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="911206726377975832">तुमचा ब्राउझिंग डेटा देखील हटवायचा?</translation>
 <translation id="9138603949443464873">तुम्ही केलेले बदल लागू करण्यासाठी, Chrome रीलाँच करा</translation>
 <translation id="919706545465235479">सिंक सुरू करण्यासाठी अपडेट करा</translation>
+<translation id="922152298093051471">Chrome कस्टमाइझ करा</translation>
 <translation id="940313311831216333">तुमचा Chrome आशय तुमच्या सर्व डिव्हाइसवर अ‍ॅक्सेस करण्यासाठी साइन इन करा, त्यानंतर सिंक सुरू करा.</translation>
 <translation id="989369509083708165">Google Chrome तुमचा डीफॉल्ट ब्राउझर आहे</translation>
 </translationbundle>

@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Offline, Chrome tidak dapat memeriksa update</translation>
 <translation id="5854621639439811139">Tips Chrome. Beberapa tombol sekarang terdapat di bagian bawah layar, seperti Kembali, Teruskan, dan Telusuri.</translation>
+<translation id="5876773482963502140">Jika Anda mengizinkan Chrome mengetahui lokasi, Chrome akan mengirimkannya ke situs apa pun yang diizinkan. Situs mungkin meminta lokasi Anda saat mereka memiliki info lokal untuk ditampilkan, seperti toko terdekat atau berita.</translation>
 <translation id="6036420186814142909">Google Chrome memiliki fitur yang dapat membantu Anda mengelola data internet dan seberapa cepat Anda dapat memuat halaman web.
 <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Beralih ke Chrome</translation>
@@ -90,5 +91,4 @@
   2. Ketuk Aplikasi Browser Default
   3. Pilih Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Jika Anda mengizinkan Chrome mengetahui lokasi, Chrome akan mengirimkannya ke mesin telusur default dan situs apa pun yang diizinkan. Situs mungkin meminta lokasi Anda saat mereka memiliki info lokal untuk ditampilkan, seperti toko terdekat atau berita.</translation>
 </translationbundle>

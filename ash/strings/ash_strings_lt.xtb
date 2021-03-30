@@ -396,6 +396,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Paspaudėte didelio kontrasto spartųjį klavišą. Ar norite jį įjungti?</translation>
 <translation id="4331809312908958774">„Chrome“ OS</translation>
+<translation id="4333628967105022692">„Lacros“ nepalaikoma, kai prisijungę keli naudotojai.</translation>
 <translation id="4338109981321384717">Didinamasis stiklas</translation>
 <translation id="4351433414020964307">Padėjėjas įkeliamas...</translation>
 <translation id="4356930093361201197">didelio kontrasto režimas</translation>
@@ -968,6 +969,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="9091626656156419976">Pašalintas vaizdas „<ph name="DISPLAY_NAME" />“</translation>
 <translation id="9098969848082897657">Telefono nutildymas</translation>
 <translation id="9099154003160514616">Pasiekiamas „Lacros“ naujinys</translation>
+<translation id="9105450214093926548">Antrojo naudotojo prisijungimo funkcija nepalaikoma, kol vykdoma „Lacros“ naršyklė. Naudokite antrosios naršyklės profilį sistemoje „Lacros“ arba uždarykite „Lacros“ ir bandykite dar kartą.</translation>
 <translation id="9133335900048457298">Negalima įrašyti apsaugoto turinio</translation>
 <translation id="9151726767154816831">Kad atnaujintumėte, paleiskite iš naujo ir naudokite „Powerwash“</translation>
 <translation id="9166331175924255663">Perjungti bendrinimo netoliese didelį matomumą.</translation>

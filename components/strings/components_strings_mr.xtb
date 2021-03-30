@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">तपशील पाहा</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ला तुमच्या डिव्हाइसवर मोठ्या प्रमाणावर डेटा कायमचा स्टोअर करायचा आहे</translation>
 <translation id="1032854598605920125">घड्याळाच्या दिशेने फिरवा</translation>
+<translation id="1036224116832931580">Dino गेम, उडी मारण्यासाठी आणि खेळण्यासाठी टॅप करा</translation>
 <translation id="1036348656032585052">बंद करा</translation>
 <translation id="1038106730571050514">सूचना दाखवा</translation>
 <translation id="1038842779957582377">अज्ञात नाव</translation>
@@ -279,6 +280,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{काहीही नाही}=1{1 साइट}other{# साइट}}</translation>
 <translation id="1945968466830820669">तुम्ही तुमच्या संस्थेच्या खात्याचा ॲक्सेस गमावू शकता किंवा तुमची संवेदनशील माहिती चोरीला जाऊ शकते. Chromium तुमचा पासवर्ड लगेच बदलण्याची शिफारस करत आहे.</translation>
 <translation id="1947454675006758438">स्टेपल टॉप राइट</translation>
+<translation id="1958218078413065209">तुमचा सर्वोच्च स्कोअर <ph name="SCORE" /> आहे.</translation>
 <translation id="1959001866257244765">Google ला <ph name="BEGIN_WHITEPAPER_LINK" />तुम्ही भेट देत असलेल्या काही पेजच्या URL, मर्यादित सिस्टम माहिती आणि पेजवरील काही आशय<ph name="END_WHITEPAPER_LINK" /> पाठवून वेबवरील प्रत्येकासाठी सुरक्षिततेत सुधारणा करण्यात मदत करा. <ph name="BEGIN_PRIVACY_PAGE_LINK" />गोपनीयता धोरण<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> बुकमार्क</translation>
 <translation id="1973335181906896915">क्रमीकरण एरर</translation>
@@ -547,6 +549,7 @@
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये सुरक्षितता तपासणी रन करण्यासाठी टॅब, त्यानंतर एंटर दाबा</translation>
 <translation id="3061707000357573562">पॅच सेवा</translation>
 <translation id="3064966200440839136">बाह्य ॲप्लिकेशन द्वारे पेमेंट देण्यासाठी गुप्त मोड सोडत आहे. सुरू ठेवायचे?</translation>
+<translation id="306573536155379004">गेमला सुरुवात झाली.</translation>
 <translation id="3080254622891793721">ग्राफिक</translation>
 <translation id="3086579638707268289">वेबवरील तुमच्या ॲक्टिव्हिटीचे नियंत्रण केले जात आहे</translation>
 <translation id="3087734570205094154">तळाकडील</translation>
@@ -1543,6 +1546,7 @@
 <translation id="6934672428414710184">हे नाव तुमच्या Google खात्यावरून आहे</translation>
 <translation id="6944692733090228304">तुम्ही पासवर्ड एंटर केलेली साइट <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> द्वारे व्यवस्थापित केलेली नाही. तुमच्या खात्याच्या संरक्षणासाठी, तुमचा पासवर्ड इतर ॲप्स किंवा साइटवर पुन्हा वापरू नका.</translation>
 <translation id="6945221475159498467">निवडा</translation>
+<translation id="6948051842255602737">गेम संपला, तुमचा स्कोअर <ph name="SCORE" /> आहे.</translation>
 <translation id="6948701128805548767">पिकअप पद्धती आणि आवश्यकता पाहण्यासाठी, एक पत्ता निवडा</translation>
 <translation id="6949872517221025916">पासवर्ड रीसेट करा</translation>
 <translation id="6950684638814147129">JSON मूल्य पार्स करताना एरर आली: <ph name="ERROR" /></translation>
@@ -1825,6 +1829,7 @@
 <translation id="7956713633345437162">Mobile बुकमार्क</translation>
 <translation id="7961015016161918242">कधीही नाही</translation>
 <translation id="7966803981046576691">जॉब खाते प्रकार</translation>
+<translation id="79682505114836835">मूल्य "<ph name="VALUE" />" हा चुकीचा हेक्स रंग आहे.</translation>
 <translation id="7976214039405368314">खूप जास्त विनंत्या</translation>
 <translation id="7977538094055660992">आउटपुट डिव्हाइस</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1952,6 +1957,7 @@
 <translation id="8446884382197647889">अधिक जाणून घ्या</translation>
 <translation id="8457125768502047971">अनिश्चित</translation>
 <translation id="8461694314515752532">तुमच्या स्वतःच्या सिंक पासफ्रेजसह सिंक केलेला डेटा एंक्रिप्ट करा</translation>
+<translation id="8463101686637053101">Dino गेम, उडी मारण्यासाठी आणि खेळण्यासाठी स्पेस दाबा</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 क्रेडिट कार्ड}other{# क्रेडिट कार्ड}}</translation>
 <translation id="8473863474539038330">पत्ते आणि बरेच काही</translation>
 <translation id="8474910779563686872">डेव्हलपर तपशील दाखवा</translation>
@@ -2087,6 +2093,7 @@
 <translation id="8996941253935762404">पुढे असणार्‍या साइटमध्ये हानिकारक प्रोग्राम आहेत</translation>
 <translation id="8997023839087525404">सर्व्हरने सर्टिफिकेट पारदर्शकता धोरणाचा वापर करून सार्वजनिकरत्या उघड न केलेले एक सर्टिफिकेट सादर केले. काही सर्टिफिकेट विश्वसनीय आहेत आणि हल्लेखोरांविरूद्ध संरक्षण करतात याची खात्री करण्‍यासाठी त्यांच्यासाठी ही एक आवश्यकता आहे.</translation>
 <translation id="9001074447101275817">प्रॉक्सी <ph name="DOMAIN" /> ला वापरकर्ता नाव आणि पासवर्ड आवश्यक आहेत.</translation>
+<translation id="9001963517402879850">उडी मारा!</translation>
 <translation id="9004367719664099443">VR सेशन प्रगतीपथावर आहे</translation>
 <translation id="9005998258318286617">पीडीएफ दस्तऐवज लोड करण्यात अपयश आले.</translation>
 <translation id="9008201768610948239">दुर्लक्ष करा</translation>

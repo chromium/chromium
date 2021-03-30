@@ -396,6 +396,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Du trykket på hurtigtasten for høy kontrast. Vil du slå det på?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4333628967105022692">Lacros støttes ikke når flere brukere er logget på.</translation>
 <translation id="4338109981321384717">Forstørrelsesglass</translation>
 <translation id="4351433414020964307">Assistenten lastes inn …</translation>
 <translation id="4356930093361201197">høykontrastmodus</translation>
@@ -968,6 +969,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="9091626656156419976">Fjernet skjermen <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Demp telefonen</translation>
 <translation id="9099154003160514616">Lacros-oppdatering er tilgjengelig</translation>
+<translation id="9105450214093926548">Pålogging med en bruker til støttes ikke mens Lacros-nettleseren kjører. Bruk en nettleserprofil til i Lacros i stedet, eller lukk Lacros og prøv igjen.</translation>
 <translation id="9133335900048457298">Kan ikke ta opp beskyttet innhold</translation>
 <translation id="9151726767154816831">Start på nytt, og kjør Powerwash for å oppdatere</translation>
 <translation id="9166331175924255663">Slå av/på høy synlighet for nærdeling.</translation>

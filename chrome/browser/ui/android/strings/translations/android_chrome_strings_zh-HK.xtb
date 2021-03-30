@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">登入失敗</translation>
 <translation id="2860954141821109167">請確認此裝置已啟用手機應用程式</translation>
 <translation id="2870560284913253234">網站</translation>
-<translation id="2876369937070532032">當網站面臨安全風險時，Chrome 會將您瀏覽的部分網頁網址傳送給 Google</translation>
 <translation id="2888126860611144412">關於 Chrome</translation>
 <translation id="2891154217021530873">停止載入網頁</translation>
 <translation id="2892647708214602204">此檔案可供下載時，系統會顯示通知</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">只要㩒一下 [更多選項] 按鈕，就可以翻查慳咗嘅數據用量</translation>
 <translation id="3166827708714933426">分頁和視窗快速鍵</translation>
 <translation id="3169472444629675720">探索</translation>
-<translation id="3181954750937456830">安全瀏覽 (保護您和裝置免受危險網站攻擊)</translation>
 <translation id="3205824638308738187">即將完成！</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3208584281581115441">立即檢查</translation>
@@ -505,6 +503,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="4561979708150884304">沒有連線</translation>
 <translation id="4565377596337484307">隱藏密碼</translation>
 <translation id="4572422548854449519">登入受管理的帳戶</translation>
+<translation id="4576892426230499203">請改用其他驗證選項</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# 分鐘前}other{# 分鐘前}}</translation>
 <translation id="4587589328781138893">網站</translation>
 <translation id="4594952190837476234">此離線網頁在 <ph name="CREATION_TIME" />建立，且可能與網上版本不同。</translation>
@@ -584,7 +583,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5011311129201317034"><ph name="SITE" /> 要求連接至</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">允許</translation>
-<translation id="5040262127954254034">私隱權</translation>
 <translation id="5087580092889165836">加入新卡</translation>
 <translation id="5091249083535528968">延伸使用情況資料</translation>
 <translation id="509429900233858213">發生錯誤。</translation>
@@ -637,6 +635,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5441522332038954058">跳至網址列</translation>
 <translation id="544776284582297024">如要同時開啟分頁和瀏覽不同網頁，請輕按開啟分頁按鈕</translation>
 <translation id="545042621069398927">正在加快下載速度。</translation>
+<translation id="5454166040603940656">與 <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">下載網頁</translation>
 <translation id="548278423535722844">在地圖應用程式中開啟</translation>
 <translation id="5483197086164197190">導覽 Chrome</translation>
@@ -777,6 +776,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6316139424528454185">此 Android 版本不受支援</translation>
 <translation id="6324034347079777476">Android 系統同步處理功能已停用</translation>
 <translation id="6324977638108296054">無法建立突顯文字的連結</translation>
+<translation id="6324997754869598316">(錯誤代碼：<ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">透過 <ph name="APPLICATION" /> 分享</translation>
 <translation id="6337234675334993532">加密</translation>
 <translation id="6341580099087024258">詢問儲存檔案的地方</translation>
@@ -793,6 +793,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> (<ph name="VIOLATED_URL" />)</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
 <translation id="6406506848690869874">同步處理</translation>
+<translation id="6407224748847589805">無法連接電腦。請改用其他驗證選項。</translation>
 <translation id="6410404864818553978">基本使用情況資料</translation>
 <translation id="6410883413783534063">開啟分頁即可同時瀏覽不同網頁</translation>
 <translation id="6412673304250309937">使用儲存在 Chrome 中的不安全網站清單來檢查網址。如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chrome 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能。</translation>
@@ -861,7 +862,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6813446258015311409">登入 Chrome，開咗。</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />，分頁，已選取</translation>
-<translation id="6845325883481699275">協助提高 Chrome 安全性</translation>
 <translation id="6846298663435243399">載入中…</translation>
 <translation id="6850409657436465440">仍在下載</translation>
 <translation id="6850830437481525139">已關閉 <ph name="TAB_COUNT" /> 個分頁</translation>
@@ -989,7 +989,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="7704317875155739195">自動完成搜尋和網址</translation>
 <translation id="7707922173985738739">使用流動數據</translation>
 <translation id="7725024127233776428">加入書籤的網頁會在這裡顯示</translation>
-<translation id="7746457520633464754">為了偵測危險的應用程式和網站，Chrome 會將您瀏覽的部分網頁網址、有限的系統資料以及部分網頁內容傳送給 Google</translation>
 <translation id="7757787379047923882">透過 <ph name="DEVICE_NAME" /> 分享的文字</translation>
 <translation id="7761849928583394409">選擇日期和時間</translation>
 <translation id="7762668264895820836">SD 卡 <ph name="SD_CARD_NUMBER" /></translation>

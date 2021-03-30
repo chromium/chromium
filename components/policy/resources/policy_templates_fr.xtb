@@ -419,11 +419,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1553532014072799546">Liste blanche des restrictions temporelles spécifiques à chaque application</translation>
 <translation id="1553956579506604198">Empêche que des extensions externes soient installées</translation>
 <translation id="1555248923316727072">Paramètres de gestion de l'identité des utilisateurs authentifiés via SAML</translation>
-<translation id="1560205870554624777">Permet d'activer ou non la fonctionnalité Kerberos. Kerberos est un protocole d'authentification (auprès d'applications Web ou en vue de partager des fichiers, par exemple).
-
-          Si cette règle est activée, la fonctionnalité Kerberos l'est également. Des comptes Kerberos peuvent être ajoutés à l'aide de la règle KerberosAccounts ou en accédant aux paramètres de comptes Kerberos disponibles sur la page "Paramètres relatifs aux personnes".
-
-          Si cette règle est désactivée ou si elle n'est pas définie, les paramètres de comptes Kerberos sont désactivés. Aucun compte Kerberos ne peut être ajouté et l'authentification Kerberos ne peut pas être utilisée. Les comptes Kerberos déjà créés et les mots de passe enregistrés sont tous supprimés.</translation>
 <translation id="1561424797596341174">Remplacements de règle pour les versions de débogage de l'hôte distant</translation>
 <translation id="1561967320164410511">U2F plus extensions pour chaque attestation</translation>
 <translation id="1567718448549957373">Si cette règle est activée ou si elle n'est pas définie, l'authentification <ph name="BASIC_AUTH" /> sera autorisée sur les connexions HTTP non sécurisées.
@@ -1155,6 +1150,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si vous ne définissez pas cette règle, la fonctionnalité Click to Call est activée par défaut.</translation>
 <translation id="2482676533225429905">Messagerie native</translation>
 <translation id="2483146640187052324">Prédire les actions réseau lors d'une connexion au réseau</translation>
+<translation id="2483335232019796218">Configurer l'appareil photo, les paramètres du navigateur et de l'OS, l'analyse de fichiers, ainsi que les fonctionnalités Dessin, Web Store et Google Actualités à désactiver</translation>
 <translation id="2496180316473517155">Historique de navigation</translation>
 <translation id="2498238926436517902">Toujours masquer automatiquement l'étagère</translation>
 <translation id="250022556568924228">Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> télécharge les conditions d'utilisation et les présente aux utilisateurs dès qu'une session d'un compte local de l'appareil s'ouvre. Les utilisateurs ne peuvent se connecter à cette session qu'après avoir accepté lesdites conditions d'utilisation.
@@ -1527,6 +1523,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Consultez la règle <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> pour épingler des applications à l'étagère <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2976429807269247880">Paramètres du comportement vis-à-vis des anciens cookies <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
+<translation id="2985097017239074272">Google Actualités (compatible depuis la version 91)</translation>
 <translation id="2985927503455169394">Utiliser le mode par défaut du processus de prise en main de l'Assistant</translation>
 <translation id="2987155890997901449">Activer ARC</translation>
 <translation id="2987227569419001736">Contrôler l'utilisation de l'API Web Bluetooth</translation>
@@ -2555,6 +2552,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="4450222911834151460">Si cette règle est configurée, tous les types de données spécifiés ne seront pas synchronisés avec Google Sync et ni avec le profil itinérant. Cela peut permettre de réduire la taille du profil itinérant ou de limiter les types de données importés sur les serveurs Google Sync.
 
       Les types de données actuels pour cette règle sont : "bookmarks", "readingList", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs" et "wifiConfigurations". Ces noms sont sensibles à la casse.</translation>
+<translation id="4452653762766030431">Vérifie la disponibilité de Partages de fichiers en réseau pour Chrome OS</translation>
 <translation id="445270821089253489">Contrôle le type d'informations figurant dans les rapports sur les utilisateurs et les appareils.</translation>
 <translation id="4453913621209182880">Autoriser l'impression uniquement avec des images de fond</translation>
 <translation id="4454820008017317557">Afficher l'icône de la barre d'outils de <ph name="PRODUCT_NAME" /></translation>
@@ -2788,6 +2786,13 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle n'est pas configurée, ou si elle est définie sur une valeur non valide, le mode de désactivation des fonctionnalités du système est défini sur "bloqué".</translation>
 <translation id="4835470005923546373">Désactiver le mode d'impression d'images de fond par défaut</translation>
 <translation id="4835622243021053389">Activer l'authentification NTLMv2.</translation>
+<translation id="4846678215172543001">Cette règle empêche l'affichage d'avertissements concernant des URL similaires sur les sites répertoriés. Ces avertissements s'affichent généralement sur un site suspecté par <ph name="PRODUCT_NAME" /> d'imiter frauduleusement un autre site connu de l'utilisateur.
+
+       Si cette règle est activée et définie sur un ou plusieurs domaines, aucun avertissement ne s'affiche lorsque l'utilisateur consulte des pages sur ce ou ces domaines.
+
+       Si la règle n'est pas définie ou si elle est définie sur une liste vide, ces avertissements peuvent s'afficher sur n'importe quel site consulté par l'utilisateur.
+
+       Un nom d'hôte peut être autorisé dans le cadre d'une correspondance d'hôte exacte ou de toute correspondance de domaine. Par exemple, les avertissements peuvent être supprimés pour l'URL "https://foo.example.com/bar" si la liste inclut "foo.example.com" ou "example.com".</translation>
 <translation id="485419696366295465">Contrôle les règles liées au sous-système <ph name="BOREALIS_NAME" />.</translation>
 <translation id="4855636880814771207">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent alors activer ou désactiver le Bluetooth.
 
@@ -2984,7 +2989,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
-<translation id="5090209345759901501">Appliquer le paramètre de contenu Flash à tous les contenus</translation>
 <translation id="5090791951240382356">Autoriser la fusion de règles de dictionnaire qui proviennent de sources différentes</translation>
 <translation id="5091315650312105069">Autoriser l'authentification <ph name="BASIC_AUTH" /> pour HTTP</translation>
 <translation id="5103112931744164177">Cette règle détermine la pile logicielle utilisée pour communiquer avec le serveur DNS, c'est-à-dire soit le client DNS du système d'exploitation, soit le client DNS intégré de <ph name="PRODUCT_NAME" />. Cette règle n'a aucune incidence sur les serveurs DNS utilisés : si, par exemple, le système d'exploitation est configuré pour utiliser un serveur DNS d'entreprise, ce même serveur sera utilisé par le client DNS intégré. Elle ne contrôle pas non plus l'utilisation du protocole DNS-over-HTTPS. <ph name="PRODUCT_NAME" /> utilisera toujours le résolveur intégré pour les requêtes DNS-over-HTTPS. Pour plus d'informations sur le contrôle du protocole DNS-over-HTTPS, veuillez consulter la règle <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />.
@@ -3988,6 +3992,11 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="647698599569353771">Autorisez l'activation du Partage à proximité.</translation>
 <translation id="6478258366184919502">Origines de l'écran de connexion</translation>
 <translation id="6478261301433199402">Cette règle permet de définir l'image de <ph name="PLUGIN_VM_NAME" /> pour un utilisateur. Spécifiez cette règle sous la forme d'une chaîne au format JSON. Dans le champ "<ph name="URL_PLUGIN_VM_IMAGE_FIELD" />", indiquez l'URL où télécharger l'image, et dans le champ "<ph name="HASH_PLUGIN_VM_IMAGE_FIELD" />", le hachage SHA-256 utilisé pour vérifier l'intégrité du téléchargement.</translation>
+<translation id="6489084406497912050">Permet de déterminer si les utilisateurs peuvent ajouter ou non des comptes Kerberos.
+
+          Si cette règle est activée ou si elle n'est pas définie, les utilisateurs peuvent ajouter des comptes Kerberos via les paramètres de comptes Kerberos sur la page "Paramètres Kerberos". Ils ont le plein contrôle des comptes qu'ils ont ajoutés et peuvent ainsi les modifier ou les supprimer.
+
+          Si cette règle est désactivée, les utilisateurs ne peuvent pas ajouter de comptes Kerberos. Ces derniers ne peuvent être ajoutés qu'avec la règle "Configurer les comptes Kerberos". C'est un moyen efficace de verrouiller des comptes.</translation>
 <translation id="6491139795995924304">Autoriser le Bluetooth sur l'appareil</translation>
 <translation id="6491872498385040936">Cette règle est obsolète. Utilisez plutôt <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />, qui est prioritaire sur cette règle et permet des réglages plus fins.
 
@@ -4323,6 +4332,7 @@ Si vous sélectionnez les options suivantes :
       Si cette règle est configurée, les utilisateurs ne peuvent activer une application sur l'écran de verrouillage que si l'ID d'extension de cette application figure dans la liste d'autorisation de la règle. Par conséquent, si la liste est vide, la prise de notes est désactivée sur l'écran de verrouillage. Lorsque la règle inclut un ID d'application, cela ne signifie pas nécessairement que les utilisateurs peuvent activer l'application en question comme application de prise de notes sur l'écran de verrouillage. Par exemple, dans <ph name="PRODUCT_NAME" /> 61, l'ensemble d'applications disponible est également limité par la plate-forme.
 
       Si cette règle n'est pas configurée, aucune restriction qu'elle impose n'est appliquée à l'ensemble des applications que les utilisateurs peuvent activer sur l'écran de verrouillage.</translation>
+<translation id="6882028194958060206">Appliquer le paramètre de contenu Flash à tous les contenus (obsolète)</translation>
 <translation id="6889123056995503704">L'utilisateur détermine le comportement de retour à une version antérieure</translation>
 <translation id="6894178810167845842">URL de la page "Nouvel onglet"</translation>
 <translation id="6897730193187922386">Supprimer les messages d'abandon de <ph name="CLOUD_PRINT_NAME" /></translation>
@@ -5009,7 +5019,6 @@ au maximum si un utilisateur se sert de l'appareil.
       Si cette règle n'est pas configurée, la règle <ph name="BLOCK_POPUPS_POLICY_NAME" /> s'applique. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="7731026922044991970">Rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour les cookies sur tous les sites</translation>
 <translation id="7732907212083471072">Règles supprimées</translation>
-<translation id="7737077721564799856">Configurer l'appareil photo, les paramètres du navigateur et de l'OS, l'analyse de fichiers, ainsi que les fonctionnalités Dessin et Web Store à désactiver</translation>
 <translation id="77379430721695807">Permet d'établir la liste des URL dont les formats sont mis en correspondance avec la source de sécurité de l'URL à l'origine de la demande. En cas de correspondance, l'accès aux appareils de capture vidéo est autorisé sans invite.
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, consultez la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
@@ -5055,6 +5064,13 @@ au maximum si un utilisateur se sert de l'appareil.
       Si cette règle n'est pas configurée, l'utilisateur peut choisir s'il doit être invité ou non à saisir un mot de passe pour sortir l'appareil du mode veille.</translation>
 <translation id="7784062550705119230">Si <ph name="PRINTERS_ALLOWLIST" /> est sélectionné pour la règle <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, la définition de <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> indique les imprimantes accessibles aux utilisateurs. Seules les imprimantes dont les ID correspondent aux valeurs définies dans cette règle sont proposées aux utilisateurs. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="DEVICE_PRINTERS_POLICY_NAME" /></translation>
 <translation id="7788511847830146438">Par profil</translation>
+<translation id="7798441698807517880">Cette règle a été supprimée depuis la version 89 de <ph name="PRODUCT_NAME" />, car <ph name="FLASH_PLUGIN_NAME" /> est obsolète.
+
+      Si cette règle est définie sur "True", tous les contenus <ph name="FLASH_PLUGIN_NAME" /> intégrés aux sites qui autorisent <ph name="FLASH_PLUGIN_NAME" /> sont exécutés (y compris les contenus de provenance différente ou de petite taille).
+
+      Si cette règle est définie sur "False" ou si elle n'est pas configurée, les contenus <ph name="FLASH_PLUGIN_NAME" /> de provenance différente ou de petite taille peuvent être bloqués.
+
+      Remarque : pour contrôler les sites autorisés à exécuter <ph name="FLASH_PLUGIN_NAME" />, reportez-vous aux règles <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> et <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="780629758750905699">Autoriser l'ajout de comptes Family Link à l'appareil</translation>
 <translation id="7807139251387225825">Liste des types à exclure de la synchronisation</translation>
 <translation id="781268256210530471">Paramètres des plug-ins</translation>
@@ -5083,6 +5099,11 @@ au maximum si un utilisateur se sert de l'appareil.
 <translation id="7850846808758624237">Si cette règle est activée, la page d'accueil configurée dans le précédent navigateur par défaut sera importée lors de la première exécution. Si cette règle est désactivée ou qu'elle n'est pas configurée, la page d'accueil n'est pas importée lors de la première exécution.
 
       Les utilisateurs peuvent ouvrir une boîte de dialogue d'importation. La case correspondant à la page d'accueil sera cochée ou non selon la configuration de cette règle.</translation>
+<translation id="7851772934080809511">Permet d'activer ou non la fonctionnalité Kerberos. Kerberos est un protocole d'authentification (auprès d'applis Web ou en vue de partager des fichiers, par exemple).
+
+          Si cette règle est activée, la fonctionnalité Kerberos l'est aussi. Des comptes Kerberos peuvent être ajoutés à l'aide de la règle "Configurer les comptes Kerberos" ou via les paramètres de comptes Kerberos sur la page "Paramètres Kerberos".
+
+          Si cette règle est désactivée ou si elle n'est pas définie, les paramètres de comptes Kerberos sont désactivés. Aucun compte Kerberos ne peut être ajouté, et l'authentification Kerberos ne peut pas être utilisée. Les comptes Kerberos déjà créés et les mots de passe enregistrés sont tous supprimés.</translation>
 <translation id="7863947545897944083">Permet d'activer la fonctionnalité d'accessibilité de contraste élevé sur l'écran de connexion.
 
           Si cette règle est définie sur "True", le contraste élevé est toujours activé sur l'écran de connexion.
@@ -5111,11 +5132,6 @@ au maximum si un utilisateur se sert de l'appareil.
 
       Même si aucune règle spécifique ne prévaut, consultez les règles <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> et <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. En revanche, les formats d'URL parmi ces trois règles ne doivent pas être en conflit.</translation>
 <translation id="7887379840451099426">Paramètres de gestion de l'alimentation applicables uniquement si l'appareil fonctionne sur batterie.</translation>
-<translation id="7889788745439330797">Permet de déterminer si les utilisateurs peuvent ajouter ou non des comptes Kerberos.
-
-          Si cette règle est activée ou si elle n'est pas définie, les utilisateurs peuvent ajouter des comptes Kerberos en accédant aux paramètres correspondants sur la page "Paramètres relatifs aux personnes". Ils ont le plein contrôle des comptes qu'ils ont ajoutés et peuvent ainsi les modifier ou les supprimer.
-
-          Si cette règle est désactivée, les utilisateurs ne peuvent pas ajouter de comptes Kerberos. Ces derniers ne peuvent être ajoutés qu'avec la règle KerberosAccounts. C'est un moyen efficace de verrouiller des comptes.</translation>
 <translation id="7891884447851425349">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> vous permet de spécifier l'URL du moteur de recherche utilisé lors d'une recherche par défaut. L'URL doit inclure la chaîne <ph name="SEARCH_TERM_MARKER" />, qui sera remplacée dans la requête par les termes de recherche de l'utilisateur.
 
       Vous pouvez spécifier cette URL comme suit : <ph name="GOOGLE_SEARCH_URL" />.</translation>
@@ -5374,11 +5390,6 @@ Si cette règle n'est pas définie, l'écran de confidentialité est désactivé
 <translation id="8238421250255592181">Indicateur booléen spécifiant si la saisie semi-automatique est disponible ou non avec le clavier à l'écran.</translation>
 <translation id="8244171102276095471">Activer des suites de chiffrement RC4 dans TLS</translation>
 <translation id="8244525275280476362">Délai maximal de récupération après le rejet d'une règle</translation>
-<translation id="8251411417369363637">Si cette règle est définie sur "True", tous les contenus <ph name="FLASH_PLUGIN_NAME" /> intégrés aux sites Web qui autorisent <ph name="FLASH_PLUGIN_NAME" /> sont exécutés (y compris les contenus de provenance différente ou de petite taille).
-
-      Si cette règle est définie sur "False" ou si elle n'est pas configurée, les contenus <ph name="FLASH_PLUGIN_NAME" /> de provenance différente ou de petite taille peuvent être bloqués.
-
-      Remarque : pour contrôler les sites Web autorisés à exécuter <ph name="FLASH_PLUGIN_NAME" />, reportez-vous aux règles <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> et <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="82530263956734297">Identifiants d'extension à exclure de la liste de blocage</translation>
 <translation id="8256688113167012935">Définit quel nom de compte s'affiche sur l'écran de connexion de <ph name="PRODUCT_OS_NAME" /> pour le compte local de l'appareil correspondant.
 

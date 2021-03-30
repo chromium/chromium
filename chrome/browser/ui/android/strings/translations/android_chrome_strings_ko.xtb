@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">로그인 실패</translation>
 <translation id="2860954141821109167">이 기기에서 전화 앱이 사용 설정되어 있는지 확인하세요.</translation>
 <translation id="2870560284913253234">사이트</translation>
-<translation id="2876369937070532032">보안상의 위험이 있을 때 일부 방문 페이지의 URL을 Google로 전송합니다.</translation>
 <translation id="2888126860611144412">Chrome 정보</translation>
 <translation id="2891154217021530873">페이지 로딩 중지</translation>
 <translation id="2892647708214602204">파일이 준비되면 알림이 표시됩니다.</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">추가 옵션 버튼에서 저장한 데이터의 양을 확인해보세요.</translation>
 <translation id="3166827708714933426">탭 및 창 단축키</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">세이프 브라우징(사용자와 사용자의 기기를 위험한 사이트로부터 보호)</translation>
 <translation id="3205824638308738187">거의 완료되었습니다.</translation>
 <translation id="3207960819495026254">북마크에 추가됨</translation>
 <translation id="3208584281581115441">지금 확인</translation>
@@ -505,6 +503,7 @@
 <translation id="4561979708150884304">연결되지 않음</translation>
 <translation id="4565377596337484307">비밀번호 숨김</translation>
 <translation id="4572422548854449519">관리 계정에 로그인</translation>
+<translation id="4576892426230499203">다른 인증 수단을 사용해 보세요.</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{#분 전}other{#분 전}}</translation>
 <translation id="4587589328781138893">사이트</translation>
 <translation id="4594952190837476234">이 오프라인 페이지는 <ph name="CREATION_TIME" />에 생성되었으며 온라인 버전과 다를 수 있습니다.</translation>
@@ -584,7 +583,6 @@
 <translation id="5011311129201317034"><ph name="SITE" />에서 연결하려고 함</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">허용</translation>
-<translation id="5040262127954254034">개인정보 보호</translation>
 <translation id="5087580092889165836">카드 추가</translation>
 <translation id="5091249083535528968">확장된 사용 데이터</translation>
 <translation id="509429900233858213">오류가 발생했습니다.</translation>
@@ -637,6 +635,7 @@
 <translation id="5441522332038954058">검색주소창으로 이동</translation>
 <translation id="544776284582297024">탭을 열어 동시에 여러 페이지를 방문하려면 탭 열기 버튼 탭하기</translation>
 <translation id="545042621069398927">다운로드 속도 향상</translation>
+<translation id="5454166040603940656">제공업체: <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">다운로드 페이지</translation>
 <translation id="548278423535722844">지도 앱에서 열기</translation>
 <translation id="5483197086164197190">Chrome 탐색하기</translation>
@@ -777,6 +776,7 @@
 <translation id="6316139424528454185">지원되지 않는 Android 버전입니다.</translation>
 <translation id="6324034347079777476">Android 시스템 동기화 사용 안함</translation>
 <translation id="6324977638108296054">하이라이트 링크를 만들 수 없음</translation>
+<translation id="6324997754869598316">(오류 <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">공유 방법: <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">암호화</translation>
 <translation id="6341580099087024258">파일 저장 위치 묻기</translation>
@@ -793,6 +793,7 @@
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" />에 <ph name="ERROR_CODE" /> 오류 발생</translation>
 <translation id="6404511346730675251">북마크 수정</translation>
 <translation id="6406506848690869874">동기화</translation>
+<translation id="6407224748847589805">컴퓨터에 연결할 수 없습니다. 다른 인증 수단을 사용해 보세요.</translation>
 <translation id="6410404864818553978">기본 사용 데이터</translation>
 <translation id="6410883413783534063">탭을 열어 동시에 다른 페이지를 방문합니다.</translation>
 <translation id="6412673304250309937">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
@@ -861,7 +862,6 @@
 <translation id="6813446258015311409">Chrome에 로그인, 계정 선택 도구가 열렸습니다.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, 탭, 선택됨</translation>
-<translation id="6845325883481699275">Chrome 보안 강화 개선에 참여하기</translation>
 <translation id="6846298663435243399">로드 중…</translation>
 <translation id="6850409657436465440">아직 다운로드 중</translation>
 <translation id="6850830437481525139">탭 <ph name="TAB_COUNT" />개를 닫았습니다.</translation>
@@ -989,7 +989,6 @@
 <translation id="7704317875155739195">검색어 및 URL 자동 완성</translation>
 <translation id="7707922173985738739">모바일 데이터 사용</translation>
 <translation id="7725024127233776428">북마크한 페이지가 여기에 표시됩니다.</translation>
-<translation id="7746457520633464754">Chrome은 위험한 앱 및 사이트를 감지하기 위해 일부 방문 페이지의 URL, 제한적인 시스템 정보, 페이지 콘텐츠 일부를 Google로 전송합니다.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />에서 공유된 텍스트</translation>
 <translation id="7761849928583394409">날짜 및 시간 선택</translation>
 <translation id="7762668264895820836">SD 카드 <ph name="SD_CARD_NUMBER" /></translation>

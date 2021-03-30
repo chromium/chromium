@@ -282,6 +282,7 @@
 <translation id="3928666092801078803">મારા ડેટાને સંયોજિત કરો</translation>
 <translation id="3929457972718048006">સરનામાં</translation>
 <translation id="3943492037546055397">પાસવર્ડ</translation>
+<translation id="3967266340354872733">પ્રાઇવસી, સુરક્ષા અને ડેટા સંગ્રહથી સંબંધિત વધુ સેટિંગ માટે, <ph name="BEGIN_LINK" />સિંક<ph name="END_LINK" /> અને <ph name="BEGIN_LINK" />Googleની સેવાઓ<ph name="END_LINK" /> જુઓ.</translation>
 <translation id="3967822245660637423">ડાઉનલોડ પૂર્ણ</translation>
 <translation id="3968505803272650567">રુચિઓ મેનેજ કરો</translation>
 <translation id="3989635538409502728">સાઇન આઉટ</translation>
@@ -556,6 +557,7 @@
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">બધા પાસવર્ડ નિકાસ કરી શકાતાં નથી</translation>
 <translation id="6748108480210050150">પ્રેષક:</translation>
+<translation id="6760509555861141183">તાજેતરના ટૅબ પર પાછા ફરો</translation>
 <translation id="6780034285637185932">પિન કોડ</translation>
 <translation id="6785453220513215166">ક્રૅશ રિપોર્ટ મોકલી રહ્યું છે...</translation>
 <translation id="679325081238418596">તમારા તમામ ઉપકરણો પર તમારા બુકમાર્ક્સ, ઇતિહાસ, પાસવર્ડ્સ અને અન્ય સેટિંગ્સ મેળવો</translation>
@@ -607,7 +609,6 @@
 <translation id="7272437679830969316">તમારી ઓળખની ચકાસણી કરી શકાતી નથી. પાસવર્ડ કૉપિ કરેલો નથી.</translation>
 <translation id="7291368939935408496">પાસવર્ડ તૈયાર કરી રહ્યાં છીએ…</translation>
 <translation id="7293171162284876153">સિંક શરુ કરવા માટે, "તમારો Chromeનો ડેટા સિંક કરો" ચાલુ કરો.</translation>
-<translation id="7299000566397147023">સૌથી તાજેતરની ટૅબ ખોલો</translation>
 <translation id="7313347584264171202">તમને તમારી છૂપી ટૅબ અહીં મળશે</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> ટકા ડાઉનલોડ થઈ</translation>
 <translation id="7340958967809483333">Discover માટેના વિકલ્પો</translation>

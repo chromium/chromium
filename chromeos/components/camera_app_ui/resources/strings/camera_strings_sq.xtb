@@ -56,6 +56,7 @@ Aplikacionet që kanë leje për hapësirën ruajtëse do të kenë qasje te fot
 <translation id="5671277269877808209">Katror</translation>
 <translation id="5775960006311140197">Modaliteti i ekspertëve</translation>
 <translation id="5869546221129391014">Rrjetë</translation>
+<translation id="5975083100439434680">Zvogëlo</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6073451960410192870">Ndalo regjistrimin</translation>
 <translation id="6197807149213783179">Ruaj të dhënat meta</translation>
@@ -81,9 +82,9 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="7649070708921625228">Ndihma</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7974782136796202581">Shfaq opsionet e zmadhimit/animit/zgjerimit</translation>
 <translation id="7983668134180549431">U zbulua një tekst.</translation>
 <translation id="8067883171444229417">Luaj videon</translation>
+<translation id="8120146556401698679">Zmadhim me anim të zgjerimit</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
 <translation id="8145038249676204903">Kalo te nxjerrja e fotografive</translation>
 <translation id="8239780215768881278">Shkrep një pamje të çastit të videos</translation>
@@ -94,6 +95,7 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="8815966864175525708">Kalo te nxjerrja e fotografisë portret</translation>
 <translation id="8828441885228359828">Rifillo regjistrimin</translation>
 <translation id="8870695351537079478">Regjistrimi nuk mund të fillojë</translation>
+<translation id="8903921497873541725">Zmadho</translation>
 <translation id="9045155556724273246">10 sekonda</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 </translationbundle>

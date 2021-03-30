@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">உள்நுழைய முடியவில்லை</translation>
 <translation id="2860954141821109167">இந்தச் சாதனத்தில் ஃபோன் ஆப்ஸ் இயக்கப்பட்டுள்ளதை உறுதிசெய்து கொள்ளவும்</translation>
 <translation id="2870560284913253234">தளம்</translation>
-<translation id="2876369937070532032">ஆபத்தான தளங்களைப் பார்ப்பதால் உங்கள் பாதுகாப்பிற்கு ஆபத்து ஏற்படும்போது நீங்கள் பார்வையிடும் சில பக்கங்களின் URLகளை Googleளுக்கு அனுப்பும்</translation>
 <translation id="2888126860611144412">Chrome அறிமுகம்</translation>
 <translation id="2891154217021530873">பக்கத்தை ஏற்றுவதை நிறுத்து</translation>
 <translation id="2892647708214602204">இந்தக் கோப்பு தயாராக உள்ளபோது அறிவிப்பைப் பெறுவீர்கள்</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">மேலும் விருப்பங்கள் பொத்தானைப் பயன்படுத்தி, எவ்வளவு தரவைச் சேமித்துள்ளீர்கள் என்பதைப் பார்க்கலாம்</translation>
 <translation id="3166827708714933426">தாவல் மற்றும் சாளரத்திற்கான ஷார்ட்கட்கள்</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">பாதுகாப்பு உலாவல் (ஆபத்தான தளங்களிலிருந்து உங்களையும் சாதனத்தையும் பாதுகாக்கும்)</translation>
 <translation id="3205824638308738187">கிட்டத்தட்ட முடிந்தது!</translation>
 <translation id="3207960819495026254">புக்மார்க் செய்யப்பட்டது</translation>
 <translation id="3208584281581115441">இப்போது சரிபார்</translation>
@@ -505,6 +503,7 @@
 <translation id="4561979708150884304">இணைப்பு இல்லை</translation>
 <translation id="4565377596337484307">கடவுச்சொல்லை மறைக்கும்</translation>
 <translation id="4572422548854449519">நிர்வகிக்கப்படும் கணக்கில் உள்நுழையவும்</translation>
+<translation id="4576892426230499203">வேறொரு சரிபார்ப்பு விருப்பத்தைப் பயன்படுத்தவும்</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# நிமிடத்திற்கு முன்பு}other{# நிமிடங்களுக்கு முன்பு}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234"><ph name="CREATION_TIME" /> அன்று இந்த ஆஃப்லைன் பக்கம் உருவாக்கப்பட்டது. இது ஆன்லைன் பதிப்பிலிருந்து வேறுபடலாம்.</translation>
@@ -584,7 +583,6 @@
 <translation id="5011311129201317034"><ph name="SITE" /> இணைய விரும்புகிறது</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">அனுமதி</translation>
-<translation id="5040262127954254034">தனியுரிமை</translation>
 <translation id="5087580092889165836">கார்டைச் சேர்</translation>
 <translation id="5091249083535528968">கூடுதல் உபயோகத் தரவு</translation>
 <translation id="509429900233858213">பிழை ஏற்பட்டது.</translation>
@@ -637,6 +635,7 @@
 <translation id="5441522332038954058">முகவரிப் பட்டிக்குச் செல்லும்</translation>
 <translation id="544776284582297024">ஒரே நேரத்தில் தாவல்களைத் திறந்து வெவ்வேறு பக்கங்களைப் பார்வையிட, 'திறக்கப்பட்டுள்ள தாவல்கள்' பட்டனைத் தட்டவும்</translation>
 <translation id="545042621069398927">பதிவிறக்கத்தின் வேகத்தை அதிகப்படுத்துகிறது.</translation>
+<translation id="5454166040603940656"><ph name="PROVIDER" /> உடன்</translation>
 <translation id="5456381639095306749">பக்கத்தைப் பதிவிறக்குக</translation>
 <translation id="548278423535722844">வரைபடப் பயன்பாட்டில் திற</translation>
 <translation id="5483197086164197190">Chromeமிற்குச் செல்லுதல்</translation>
@@ -777,6 +776,7 @@
 <translation id="6316139424528454185">Android பதிப்பு ஆதரிக்கப்படாது</translation>
 <translation id="6324034347079777476">Android அமைப்பின் ஒத்திசைவு முடக்கப்பட்டது</translation>
 <translation id="6324977638108296054">ஹைலைட் செய்யப்பட்ட உரைக்கான இணைப்பை உருவாக்க முடியவில்லை</translation>
+<translation id="6324997754869598316">(பிழை <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> வழியாகப் பகிர்</translation>
 <translation id="6337234675334993532">என்க்ரிப்ஷன்</translation>
 <translation id="6341580099087024258">கோப்புகளை எங்கே சேமிக்க வேண்டும் என்று கேள்</translation>
@@ -793,6 +793,7 @@
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> இல் <ph name="ERROR_CODE" /> பிழை</translation>
 <translation id="6404511346730675251">புக்மார்க்களைத் திருத்து</translation>
 <translation id="6406506848690869874">Sync</translation>
+<translation id="6407224748847589805">கம்ப்யூட்டருடன் இணைக்க முடியவில்லை. வேறொரு சரிபார்ப்பு விருப்பத்தைப் பயன்படுத்தவும்.</translation>
 <translation id="6410404864818553978">அடிப்படை உபயோகத் தரவு</translation>
 <translation id="6410883413783534063">ஒரே நேரத்தில் வெவ்வேறு பக்கங்களைப் பார்வையிடுவதற்குத் தாவல்களைத் திறக்கவும்</translation>
 <translation id="6412673304250309937">Chromeமில் சேமிக்கப்பட்டுள்ள பாதுகாப்பில்லாத தளங்களின் பட்டியலைப் பயன்படுத்தி URLகளைச் சரிபார்க்கும். தளம் உங்கள் கடவுச்சொல்லைத் திருட முயன்றலோ தீங்குவிளைவிக்கும் கோப்பை நீங்கள் பதிவிறக்கினாலோ Chromeமானது பக்க உள்ளடக்கத்தின் சிறிய பகுதிகள் உட்பட URLகளையும் பாதுகாப்பு உலாவலுக்கு அனுப்பக்கூடும்.</translation>
@@ -861,7 +862,6 @@
 <translation id="6813446258015311409">Chromeமில் உள்நுழைக, திறக்கப்பட்டுள்ளது.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> தாவல் தேர்ந்தெடுக்கப்பட்டது</translation>
-<translation id="6845325883481699275">Chromeமின் பாதுகாப்பை மேம்படுத்த உதவுக</translation>
 <translation id="6846298663435243399">ஏற்றுகிறது...</translation>
 <translation id="6850409657436465440">பதிவிறக்கம் செயலில் உள்ளது</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> தாவல்கள் மூடப்பட்டன</translation>
@@ -989,7 +989,6 @@
 <translation id="7704317875155739195">தேடல்களையும் URLகளையும் தானே நிரப்பு</translation>
 <translation id="7707922173985738739">மொபைல் டேட்டாவைப் பயன்படுத்து</translation>
 <translation id="7725024127233776428">நீங்கள் புக்மார்க் செய்த பக்கங்கள் இங்கு தோன்றும்</translation>
-<translation id="7746457520633464754">ஆபத்தான ஆப்ஸையும் தளங்களையும் கண்டறிய நீங்கள் பார்வையிட்ட சில பக்கங்களின் URLகளையும், வரம்பிற்குட்பட்ட சிஸ்டம் தகவல்களையும், சில பக்கங்களின் உள்ளடக்கத்தையும் Googleளுக்கு Chrome அனுப்பும்</translation>
 <translation id="7757787379047923882">உரை <ph name="DEVICE_NAME" /> இலிருந்து பகிரப்பட்டுள்ளது</translation>
 <translation id="7761849928583394409">தேதியையும் நேரத்தையும் தேர்வுசெய்யுங்கள்</translation>
 <translation id="7762668264895820836">SD கார்டு <ph name="SD_CARD_NUMBER" /></translation>

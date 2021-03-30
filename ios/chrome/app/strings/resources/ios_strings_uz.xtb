@@ -193,6 +193,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2964349545761222050">Tashqi cookie fayllarni bloklash</translation>
 <translation id="2969979262385602596">Hisobga kirib bo‘lmadi. Keyinroq qayta urinib ko‘ring.</translation>
 <translation id="2975121486251958312">Faqat Inkognito rejimida ochiladi</translation>
+<translation id="2981323609054805194">kun oldin</translation>
 <translation id="2982481275546140226">Axborotlarni tozalash</translation>
 <translation id="298306318844797842">Toʻlov usulini kiriting</translation>
 <translation id="2989805286512600854">Yangi varaqda ochish</translation>
@@ -282,6 +283,7 @@ Quyidagi amallarni bajaring:</translation>
 <translation id="3928666092801078803">Ma’lumotlarni birlashtirish</translation>
 <translation id="3929457972718048006">Manzillar</translation>
 <translation id="3943492037546055397">Parollar</translation>
+<translation id="3967266340354872733">Maxfiylik, xavfsizlik va axborotlar jamlanishi haqida batafsil axborot olish uchun <ph name="BEGIN_LINK" />Sinxronlash<ph name="END_LINK" /> va <ph name="BEGIN_LINK" />Google xizmatlari<ph name="END_LINK" /> bilan tanishing</translation>
 <translation id="3967822245660637423">Yuklab olindi</translation>
 <translation id="3968505803272650567">Qiziqishlarni sozlash</translation>
 <translation id="3989635538409502728">Chiqish</translation>
@@ -555,7 +557,9 @@ Har bir sayt uchun alohida parol ishlating.</translation>
 <translation id="6710079714193676716">Tashkilotingiz tomonidan boshqariladi. Ayrim funksiyalar ishlamasligi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Parollar eksport qilinmadi</translation>
+<translation id="6739790015462537309">soat oldin</translation>
 <translation id="6748108480210050150">Kimdan:</translation>
+<translation id="6760509555861141183">Oxirgi varaqqa qaytish</translation>
 <translation id="6780034285637185932">Pochta indeksi</translation>
 <translation id="6785453220513215166">Ishdan chiqish hisoboti yuborilmoqda...</translation>
 <translation id="679325081238418596">Chrome brauzeriga kirganingizdan so‘ng xatcho‘plar, tarix, parollar va boshqa sozlamalaringiz barcha qurilmalaringizda sinxronlanadi</translation>
@@ -607,7 +611,6 @@ Har bir sayt uchun alohida parol ishlating.</translation>
 <translation id="7272437679830969316">Shaxsingiz tasdiqlanmadi. Paroldan nusxa olinmadi.</translation>
 <translation id="7291368939935408496">Parollar tayyorlanmoqda...</translation>
 <translation id="7293171162284876153">Sinxronlashni boshlash uchun “Chrome axborotini sinxronlash” tugmasini bosing.</translation>
-<translation id="7299000566397147023">Eng oxirgi ishlatilgan varaqni ochish</translation>
 <translation id="7313347584264171202">Brauzer Inkognito varaqlari shu yerda chiqadi</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% yuklab olindi</translation>
 <translation id="7340958967809483333">Discover parametrlari</translation>

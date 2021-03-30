@@ -195,6 +195,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6070348360322141662">Google Chrome dulkóðar gögnin þín til að auka öryggið</translation>
 <translation id="608006075545470555">Bæta vinnusniði við þennan vafra</translation>
 <translation id="6113794647360055231">Chrome er nú enn betra</translation>
+<translation id="6145313976051292476">Opna PDF-skjöl í Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - tilraunaútgáfa Google Chrome</translation>
 <translation id="61852838583753520">Uppfæra &amp;Chrome OS</translation>
@@ -207,7 +208,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Uppfærir Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS kerfi</translation>
-<translation id="6650333065969705433">Þú þarft að endurræsa Chrome til að nota Rosetta til að spila varið efni.</translation>
 <translation id="6676384891291319759">Aðgangur að internetinu</translation>
 <translation id="6679975945624592337">Leyfa Google Chrome að keyra í bakgrunni</translation>
 <translation id="6739177684496155661">Halda áfram á nýjum Chrome prófíl?</translation>
@@ -271,7 +271,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Þessi vinnuprófíll er algjörlega aðskilinn þínum eigin prófíl.</translation>
 <translation id="8556340503434111824">Ný útgáfa af Google Chrome er í boði, og hún er hraðari en nokkru sinni fyrr.</translation>
-<translation id="861359755029082151">Rosetta gerir Chrome kleift að spila varið efni á þessari síðu.</translation>
 <translation id="8614913330719544658">Google Chrome svarar ekki. Endurræsa núna?</translation>
 <translation id="861702415419836452">Chrome þarf leyfi til að nota myndavélina til að búa til þrívíddarkort af umhverfinu</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome verður endurræst eftir 1 mínútu}one{Chrome verður endurræst eftir # mínútu}other{Chrome verður endurræst eftir # mínútur}}</translation>
@@ -285,7 +284,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8834965163890861871">Google Chrome er að reyna að breyta aðgangsorðum. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
 <translation id="884296878221830158">Hún stýrir því einnig hvaða síða birtist þegar þú ræsir Chrome eða smellir á heimahnappinn.</translation>
 <translation id="8862326446509486874">Þú hefur ekki tilskilin réttindi til uppsetningar fyrir kerfið allt. Prófaðu að keyra uppsetningarforritið aftur sem stjórnandi.</translation>
-<translation id="8907709077090383765">Þú þarft að setja upp Rosetta svo Chrome geti spilað varið efni. Viltu setja það upp núna?</translation>
 <translation id="8914504000324227558">Endurræsa Chrome</translation>
 <translation id="8922193594870374009">Til að senda númer úr <ph name="ORIGIN" /> í Android símann þinn skaltu skrá þig inn á Chrome í báðum tækjunum.</translation>
 <translation id="8986207147630327271">Þú ert að bæta vinnuprófíl við þennan vafra og veita stjórnanda þínum leyfi til að stjórna vinnuprófílnum eingöngu.</translation>
@@ -295,6 +293,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="911206726377975832">Eyða líka vafragögnum?</translation>
 <translation id="9138603949443464873">Endurræstu Chrome til að breytingarnar taki gildi</translation>
 <translation id="919706545465235479">Uppfærðu Chrome til að hefja samstillingu</translation>
+<translation id="922152298093051471">Sérsníða Chrome</translation>
 <translation id="940313311831216333">Til að fá aðgang að Chrome efninu þínu í öllum tækjum skaltu skrá þig inn og kveikja á samstillingu.</translation>
 <translation id="989369509083708165">Google Chrome er sjálfgefinn vafri</translation>
 </translationbundle>

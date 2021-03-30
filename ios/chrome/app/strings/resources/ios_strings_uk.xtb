@@ -282,6 +282,7 @@
 <translation id="3928666092801078803">Об’єднати мої дані</translation>
 <translation id="3929457972718048006">Адреси</translation>
 <translation id="3943492037546055397">Паролі</translation>
+<translation id="3967266340354872733">Інші налаштування конфіденційності, безпеки й збору даних доступні в розділах <ph name="BEGIN_LINK" />Синхронізація<ph name="END_LINK" /> та <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Завантажено</translation>
 <translation id="3968505803272650567">Керувати інтересами</translation>
 <translation id="3989635538409502728">Вийти</translation>
@@ -556,6 +557,7 @@
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Не вдалось експортувати паролі</translation>
 <translation id="6748108480210050150">З</translation>
+<translation id="6760509555861141183">Повернутися на останню вкладку</translation>
 <translation id="6780034285637185932">Поштовий індекс</translation>
 <translation id="6785453220513215166">Надсилання звіту про аварійне завершення роботи…</translation>
 <translation id="679325081238418596">Отримайте доступ до своїх закладок, історії, паролів та інших налаштувань на всіх пристроях</translation>
@@ -607,7 +609,6 @@
 <translation id="7272437679830969316">Не вдалося підтвердити особу. Пароль не скопійовано.</translation>
 <translation id="7291368939935408496">Готуються паролі…</translation>
 <translation id="7293171162284876153">Щоб почати синхронізацію, увімкніть параметр "Синхронізувати дані Chrome".</translation>
-<translation id="7299000566397147023">Відкрити останню вкладку</translation>
 <translation id="7313347584264171202">Тут відображатимуться ваші анонімні вкладки</translation>
 <translation id="7336264872878993241">Завантажено <ph name="PERCENT" />%</translation>
 <translation id="7340958967809483333">Налаштування рекомендацій</translation>

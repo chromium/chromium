@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Offline állapotban van, ezért a Chrome nem tud frissítéseket keresni</translation>
 <translation id="5854621639439811139">Tipp a Chrome használatához. Egyes gombok (például a Vissza, az Előre vagy a Keresés) mostantól a képernyő alján jelennek meg.</translation>
+<translation id="5876773482963502140">Ha engedélyezi a Chrome számára a helyadatok használatát, akkor a böngésző továbbítja a helyadatokat az Ön által engedélyezett webhelyeknek. A webhelyek akkor kérhetnek hozzáférést a helyadatokhoz, ha helyi információkat jelenítenek meg (pl. közeli boltok vagy helyi hírek esetén).</translation>
 <translation id="6036420186814142909">A Google Chrome számos olyan funkciót biztosít, amelyek segítik internetes adatainak kezelésében, illetve a weboldalak betöltési gyorsaságának beállításában.
 <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Váltás Chrome-ra</translation>
@@ -90,5 +91,4 @@
   2. Koppintson az Alapértelmezett böngésző lehetőségre.
   3. Válassza a Chrome böngészőt.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Ha engedélyezi a Chrome számára a helyadatok használatát, akkor a böngésző továbbítja az adatokat az alapértelmezett keresőmotornak, valamint azoknak a webhelyeknek is, amelyeket Ön engedélyez. A webhelyek akkor kérhetnek hozzáférést a helyadatokhoz, ha helyi információkat jelenítenek meg (pl. közeli boltok vagy helyi hírek esetén).</translation>
 </translationbundle>

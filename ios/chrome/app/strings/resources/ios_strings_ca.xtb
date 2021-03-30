@@ -282,6 +282,7 @@ Segueix aquests passos:</translation>
 <translation id="3928666092801078803">Combina les meves dades</translation>
 <translation id="3929457972718048006">Adreces</translation>
 <translation id="3943492037546055397">Contrasenyes</translation>
+<translation id="3967266340354872733">Per trobar més opcions de configuració relacionades amb la privadesa, la seguretat i la recollida de dades, consulta <ph name="BEGIN_LINK" />Sincronització<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
 <translation id="3968505803272650567">Gestiona els interessos</translation>
 <translation id="3989635538409502728">Tanca la sessió</translation>
@@ -556,6 +557,7 @@ Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">No es poden exportar les contrasenyes</translation>
 <translation id="6748108480210050150">De</translation>
+<translation id="6760509555861141183">Torna a la pestanya Recents</translation>
 <translation id="6780034285637185932">Codi postal</translation>
 <translation id="6785453220513215166">S'està enviant l'informe d'error...</translation>
 <translation id="679325081238418596">Accedeix a les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració en tots els dispositius</translation>
@@ -607,7 +609,6 @@ Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
 <translation id="7272437679830969316">No es pot verificar la teva identitat. La contrasenya no s'ha copiat.</translation>
 <translation id="7291368939935408496">S'estan preparant les contrasenyes...</translation>
 <translation id="7293171162284876153">Per iniciar la sincronització, activa l'opció Sincronitza les dades de Chrome.</translation>
-<translation id="7299000566397147023">Obre la pestanya més recent</translation>
 <translation id="7313347584264171202">Trobaràs les pestanyes d'incògnit aquí</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> per cent baixat</translation>
 <translation id="7340958967809483333">Opcions per a Discover</translation>

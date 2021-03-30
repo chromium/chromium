@@ -10,7 +10,6 @@
 <translation id="1315551408014407711">Új Chromium-profil beállítása</translation>
 <translation id="1396446129537741364">A Chromium megpróbálja megjeleníteni a jelszavakat.</translation>
 <translation id="1414495520565016063">Bejelentkezett a Chromiumba.</translation>
-<translation id="1414973082589232775">Ahhoz, hogy használhassa a Rosettát védett médiatartalmak lejátszásához, újra kell indítania a Chromiumot.</translation>
 <translation id="151962892725702025">A Chromium OS nem tudta szinkronizálni az adatait, mert a szinkronizálás nem érhető el az Ön domainjénél.</translation>
 <translation id="1524282610922162960">Chromium-lap megosztása</translation>
 <translation id="1553461853655228091">A Chromiumnak engedélyre van szüksége a kamerájához való hozzáféréshez annak érdekében, hogy 3D-s térképet készíthessen az Ön környezetéről.</translation>
@@ -135,11 +134,11 @@
 <translation id="5480860683791598150">A Chromiumnak a helyadatokhoz való hozzáférésre van szüksége ahhoz, hogy megoszthassa az Ön tartózkodási helyét a webhellyel</translation>
 <translation id="549669000822060376">Kérjük, várjon, amíg a Chromium telepíti a legutóbbi rendszerfrissítéseket.</translation>
 <translation id="5496810170689441661">A Chromium szerkeszteni próbálja a jelszavakat. Az engedélyezéshez adja meg Windows-jelszavát.</translation>
+<translation id="5527463683072221100">PDF-fájlok megnyitása a Chromiumban</translation>
 <translation id="5623402015214259806">{0,plural, =0{Rendelkezésre áll egy Chromium-frissítés}=1{Rendelkezésre áll egy Chromium-frissítés}other{# napja rendelkezésre áll egy Chromium-frissítés}}</translation>
 <translation id="5634636535844844681">A Chromium futtatásához Windows 7 vagy újabb verzió szükséges.</translation>
 <translation id="5653831366781983928">Indítsa újra a Chromiumot most</translation>
 <translation id="5698481217667032250">A Chromium megjelenítése ezen a nyelven</translation>
-<translation id="5736967399513123100">Ahhoz, hogy engedélyezhesse a Chromiumnak védett médiatartalmak lejátszását, telepítenie kell a Rosettát. Szeretné most telepíteni?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Üdvözli a Chromium!</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
@@ -188,7 +187,6 @@
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (a Chromiumba másolva)</translation>
 <translation id="6893813176749746474">A Chromium frissítése megtörtént, de nem használta a böngészőt legalább 30 napja.</translation>
-<translation id="6897548120660295439">A Rosetta engedélyezi a Chromium számára, hogy védett médiatartalmakat játsszon le ezen az oldalon.</translation>
 <translation id="691026815377248078">A Chromiumnak Bluetooth-hozzáférésre van szükséges a párosítás 
  folytatásához. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Link megnyitása Chromium-inko&amp;gnitóablakban</translation>

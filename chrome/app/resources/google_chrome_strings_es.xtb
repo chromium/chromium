@@ -196,6 +196,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6070348360322141662">Para mayor seguridad, Google Chrome cifrará tus datos</translation>
 <translation id="608006075545470555">Añadir perfil de trabajo a este navegador</translation>
 <translation id="6113794647360055231">Chrome mejor que nunca</translation>
+<translation id="6145313976051292476">Abrir archivos PDF en Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> ‑ Google Chrome Beta</translation>
 <translation id="61852838583753520">Información de &amp;Chrome OS</translation>
@@ -208,7 +209,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> ‑ Google Chrome Dev</translation>
 <translation id="6566149418543181476">Actualizando Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Sistema Chrome OS</translation>
-<translation id="6650333065969705433">Si quieres utilizar Rosetta para reproducir contenido multimedia protegido, debes reiniciar Chrome.</translation>
 <translation id="6676384891291319759">Accede a Internet.</translation>
 <translation id="6679975945624592337">Permitir que Google Chrome se ejecute en segundo plano</translation>
 <translation id="6739177684496155661">¿Continuar en un nuevo perfil de Chrome?</translation>
@@ -272,7 +272,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Este perfil de trabajo es completamente independiente de tu perfil personal.</translation>
 <translation id="8556340503434111824">Hay una nueva versión de Google Chrome disponible que funciona a una velocidad sin precedentes.</translation>
-<translation id="861359755029082151">Rosetta habilita la reproducción de contenido multimedia protegido en esta página en Chrome.</translation>
 <translation id="8614913330719544658">Google Chrome no responde. ¿Quieres reiniciarlo ahora?</translation>
 <translation id="861702415419836452">Para crear un mapa 3D de tu entorno, Chrome necesita permiso para acceder a tu cámara</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome se reiniciará dentro de 1 minuto}other{Chrome se reiniciará dentro de # minutos}}</translation>
@@ -286,7 +285,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8834965163890861871">Google Chrome está intentando cambiar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="884296878221830158">También controla qué página se muestra al iniciar Chrome o hacer clic en el botón de página principal.</translation>
 <translation id="8862326446509486874">No dispones de los derechos necesarios para la instalación en el sistema. Intenta ejecutar de nuevo el programa de instalación como administrador.</translation>
-<translation id="8907709077090383765">Si quieres habilitar la reproducción de contenido multimedia protegido en Chrome, tienes que instalar Rosetta. ¿Quieres instalarlo ahora?</translation>
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número desde <ph name="ORIGIN" /> a tu teléfono Android, inicia sesión en Chrome con ambos dispositivos.</translation>
 <translation id="8986207147630327271">Vas a añadir un perfil de trabajo a este navegador y le vas a dar a tu administrador el control únicamente sobre este perfil.</translation>

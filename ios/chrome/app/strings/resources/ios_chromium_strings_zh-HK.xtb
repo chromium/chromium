@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Chromium 目前無法使用您的相機</translation>
 <translation id="2195025571279539885">您希望 Chromium 將來翻譯此網站的<ph name="LANGUAGE_NAME" />頁面嗎？</translation>
 <translation id="2590893390871230428">同步處理 Chromium 資料</translation>
-<translation id="259614951763923692">如果您允許 Chromium 存取您的位置，Chromium 會將位置資料傳送至預設搜尋引擎和您允許的任何網站。當網站向您提供附近商家或新聞等本地資訊時，可能會要求您提供位置。</translation>
 <translation id="2650312721222849884">如要在任何使用 Chromium 的裝置上查看分頁，請開啟同步處理功能</translation>
 <translation id="2730884209570016437">由於另一個應用程式正在使用相機，因此 Chromium 暫時無法使用</translation>
 <translation id="2915596697727466327">Chromium 透過 Face ID 確保只有獲授權人士才可存取您的密碼。</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
 <translation id="6424492062988593837">Chromium 現在更進一步！歡迎您升級使用新版本。</translation>
 <translation id="6820823224820483452">Chromium 無法檢查所有密碼。請明天再試。</translation>
+<translation id="6827294685447036764">如果您允許 Chromium 存取您的位置，Chromium 會將位置資料傳送至您允許的任何網站。當網站向您提供附近商家或新聞等本地資訊時，可能會要求您提供位置。</translation>
 <translation id="7018284295775193585">Chromium 無法更新</translation>
 <translation id="7099326575020694068">Chromium 無法在「分割檢視」模式中使用相機</translation>
 <translation id="7118091470949186573">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chromium。</translation>

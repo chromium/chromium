@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Ogled podrobnosti</translation>
 <translation id="1030706264415084469"><ph name="URL" /> želi trajno shranjevati velike količine podatkov v vaši napravi</translation>
 <translation id="1032854598605920125">Sukanje v smeri urnega kazalca</translation>
+<translation id="1036224116832931580">Igra z dinozavrom, dotaknite se za skakanje in igranje</translation>
 <translation id="1036348656032585052">Izklop</translation>
 <translation id="1038106730571050514">Prikaz predlogov</translation>
 <translation id="1038842779957582377">neznano ime</translation>
@@ -279,6 +280,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="192020519938775529">{COUNT,plural, =0{Brez}=1{1 spletno mesto}one{# spletno mesto}two{# spletni mesti}few{# spletna mesta}other{# spletnih mest}}</translation>
 <translation id="1945968466830820669">Izgubite lahko dostop do računa za organizacijo ali postanete žrtev kraje identitete. Chromium priporoča, da spremenite geslo.</translation>
 <translation id="1947454675006758438">Spenjanje zgoraj desno</translation>
+<translation id="1958218078413065209">Vaš najboljši rezultat je <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">S pošiljanjem <ph name="BEGIN_WHITEPAPER_LINK" />URL-jev nekaterih strani, ki jih obiščete, omejenih podatkov o sistemu in nekatere vsebine strani<ph name="END_WHITEPAPER_LINK" /> Googlu lahko pomagate izboljšati varnost v spletu za vse. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Pravilnik o zasebnosti<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Zaznamki domene <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Napaka pri serializaciji</translation>
@@ -547,6 +549,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite v nastavitvah Chroma zagnati varnostno preverjanje</translation>
 <translation id="3061707000357573562">Storitev za popravke</translation>
 <translation id="3064966200440839136">Zaradi plačila v zunanji aplikaciji boste zapustili način brez beleženja zgodovine. Želite nadaljevati?</translation>
+<translation id="306573536155379004">Igra se je začela.</translation>
 <translation id="3080254622891793721">Grafični elementi</translation>
 <translation id="3086579638707268289">Vaša dejavnost v spletu je nadzorovana</translation>
 <translation id="3087734570205094154">Na dno</translation>
@@ -1543,6 +1546,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6934672428414710184">To ime je iz vašega računa za Google</translation>
 <translation id="6944692733090228304">Vnesli ste geslo na spletnem mestu, ki ga ne upravlja: <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Zaradi zaščite računa gesla ne uporabljajte za druge aplikacije in spletna mesta.</translation>
 <translation id="6945221475159498467">Izberi</translation>
+<translation id="6948051842255602737">Konec igre. Vaš rezultat je <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Če si želite ogledati načine prevzema in zahteve, izberite naslov</translation>
 <translation id="6949872517221025916">Ponastavitev gesla</translation>
 <translation id="6950684638814147129">Napaka pri razčlenjevanju vrednosti JSON: <ph name="ERROR" /></translation>
@@ -1825,6 +1829,7 @@ Dodatne podrobnosti:
 <translation id="7956713633345437162">Mobilni zaznamki</translation>
 <translation id="7961015016161918242">Nikoli</translation>
 <translation id="7966803981046576691">Vrsta računa za opravilo</translation>
+<translation id="79682505114836835">Vrednost »<ph name="VALUE" />« je neveljavna šestnajstiška barva.</translation>
 <translation id="7976214039405368314">Preveč zahtev.</translation>
 <translation id="7977538094055660992">Izhodna naprava</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1952,6 +1957,7 @@ Dodatne podrobnosti:
 <translation id="8446884382197647889">Več o tem</translation>
 <translation id="8457125768502047971">Neomejeno</translation>
 <translation id="8461694314515752532">Šifriranje sinhroniziranih podatkov z vašim geslom za sinhronizacijo</translation>
+<translation id="8463101686637053101">Igra z dinozavrom, pritisnite preslednico za skakanje in igranje</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kreditna kartica}one{# kreditna kartica}two{# kreditni kartici}few{# kreditne kartice}other{# kreditnih kartic}}</translation>
 <translation id="8473863474539038330">Naslovi in drugo</translation>
 <translation id="8474910779563686872">Pokaži podrobnosti o razvijalcu</translation>
@@ -2087,6 +2093,7 @@ Dodatne podrobnosti:
 <translation id="8996941253935762404">Pozor: Spletno mesto vsebuje škodljive programe.</translation>
 <translation id="8997023839087525404">Strežnik je posredoval potrdilo, ki ni bilo javno razkrito na podlagi pravilnika o preglednosti potrdila. To je obvezno za nekatera potrdila zaradi zagotavljanja, da so zaupanja vredna in ščitijo pred napadalci.</translation>
 <translation id="9001074447101275817">Strežnik proxy <ph name="DOMAIN" /> zahteva uporabniško ime in geslo.</translation>
+<translation id="9001963517402879850">Skočite!</translation>
 <translation id="9004367719664099443">Seja VR je v teku</translation>
 <translation id="9005998258318286617">Dokumenta PDF ni bilo mogoče naložiti.</translation>
 <translation id="9008201768610948239">Prezri</translation>

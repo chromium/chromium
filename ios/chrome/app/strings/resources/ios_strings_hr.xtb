@@ -282,6 +282,7 @@ Slijedite korake u nastavku:</translation>
 <translation id="3928666092801078803">Kombiniranje podataka</translation>
 <translation id="3929457972718048006">Adrese</translation>
 <translation id="3943492037546055397">Zaporke</translation>
+<translation id="3967266340354872733">Više postavki koje se odnose na privatnost, sigurnost i prikupljanje podataka dostupno je u odjeljcima <ph name="BEGIN_LINK" />Sinkronizacija<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />Googleove usluge<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Preuzimanje dovršeno</translation>
 <translation id="3968505803272650567">Upravljaj interesima</translation>
 <translation id="3989635538409502728">Odjava</translation>
@@ -556,6 +557,7 @@ Pokušajte koristiti jedinstvenu zaporku za svaku web-lokaciju.</translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Izvoz zaporki nije moguć</translation>
 <translation id="6748108480210050150">Od</translation>
+<translation id="6760509555861141183">Natrag na karticu Nedavno</translation>
 <translation id="6780034285637185932">Poštanski broj</translation>
 <translation id="6785453220513215166">Slanje izvješća o rušenju programa...</translation>
 <translation id="679325081238418596">Prenesite svoje oznake, povijest, zaporke i druge postavke na sve svoje uređaje</translation>
@@ -607,7 +609,6 @@ Pokušajte koristiti jedinstvenu zaporku za svaku web-lokaciju.</translation>
 <translation id="7272437679830969316">Potvrda identiteta nije moguća. Zaporka nije kopirana.</translation>
 <translation id="7291368939935408496">Priprema zaporki...</translation>
 <translation id="7293171162284876153">Da biste pokrenuli sinkronizaciju, uključite postavku "Sinkroniziraj podatke s Chromea".</translation>
-<translation id="7299000566397147023">Otvaranje najnovije kartice</translation>
 <translation id="7313347584264171202">Ovdje ćete pronaći svoje anonimne kartice</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> posto preuzeto</translation>
 <translation id="7340958967809483333">Opcije za Discover</translation>

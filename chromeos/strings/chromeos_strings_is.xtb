@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">Aðgangsorð rennur út eftir <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Engin prentun í gangi</translation>
 <translation id="4297501883039923494">Stöðvað – óþekkt villa</translation>
+<translation id="4344214025510306853">Tengja aðgangsstað</translation>
 <translation id="4378373042927530923">Ekki keyra</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Drifið mitt</translation>
@@ -278,6 +279,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7040230719604914234">Símafyrirtæki</translation>
 <translation id="7059230779847288458">Í hleðslu, <ph name="TIME_VALUE" /> þar til full hleðsla næst</translation>
 <translation id="708426984172631313">STÖÐVAÐ</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">Tengist</translation>
 <translation id="7144878232160441200">Reyna aftur</translation>
 <translation id="714876143603641390">LAN-tenging</translation>
@@ -363,6 +365,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8970109610781093811">Keyra aftur</translation>
 <translation id="9003704114456258138">Tíðni</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9065203028668620118">Breyta</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Núverandi notkun</translation>

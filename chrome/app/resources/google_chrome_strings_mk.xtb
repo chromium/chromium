@@ -196,6 +196,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6070348360322141662">За дополнителна безбедност, Google Chrome ќе ги шифрира вашите податоци</translation>
 <translation id="608006075545470555">Додајте работен профил во овој прелистувач</translation>
 <translation id="6113794647360055231">Chrome тукушто се подобри</translation>
+<translation id="6145313976051292476">Отворај PDF-формат во Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="61852838583753520">Ажурирај &amp;Chrome OS</translation>
@@ -208,7 +209,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome се ажурира (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Систем Chrome OS</translation>
-<translation id="6650333065969705433">За да користите Rosetta за пуштање заштитени аудиовизуелни содржини, треба да го рестартирате Chrome.</translation>
 <translation id="6676384891291319759">Пристап до интернет</translation>
 <translation id="6679975945624592337">Остави Google Chrome да работи во заднина</translation>
 <translation id="6739177684496155661">Сакате да продолжите на нов профил на Chrome?</translation>
@@ -272,7 +272,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Овој работен профил е целосно одделен од вашиот личен профил.</translation>
 <translation id="8556340503434111824">Достапна е нова верзија на Google Chrome и побрза е од кога било.</translation>
-<translation id="861359755029082151">Rosetta му овозможува на Chrome да пушта заштитени аудиовизуелни содржини на страницава.</translation>
 <translation id="8614913330719544658">Google Chrome не реагира. Да се рестартира сега?</translation>
 <translation id="861702415419836452">На Chrome му треба дозвола за да пристапи до камерата и да создаде 3D-карта од вашето опкружување</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome ќе се рестартира по 1 минута}one{Chrome ќе се рестартира по # минута}other{Chrome ќе се рестартира по # минути}}</translation>
@@ -286,7 +285,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8834965163890861871">Google Chrome се обидува да измени лозинки. Внесете ја својата лозинка за Windows за да го дозволите ова.</translation>
 <translation id="884296878221830158">Контролира и која страница се прикажува кога ќе стартувате Chrome или ако кликнете на копчето Дома.</translation>
 <translation id="8862326446509486874">Немате соодветни права за инсталирање на системско ниво. Обидете се да го извршите инсталаторот повторно како администратор.</translation>
-<translation id="8907709077090383765">За да му овозможите на Chrome да пушта заштитени аудиовизуелни содржини, треба да инсталирате Rosetta. Дали сакате да се инсталира сега?</translation>
 <translation id="8914504000324227558">Рестартирајте го Chrome</translation>
 <translation id="8922193594870374009">За да испратите број од <ph name="ORIGIN" /> до телефонот со Android, најавете се на Chrome на двата уреда.</translation>
 <translation id="8986207147630327271">Додавате работен профил во овој прелистувач и му давате контрола на администраторот само врз тој профил.</translation>

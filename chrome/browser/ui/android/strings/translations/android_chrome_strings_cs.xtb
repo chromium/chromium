@@ -268,7 +268,6 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="2856503607207334158">Přihlášení se nezdařilo</translation>
 <translation id="2860954141821109167">Zkontrolujte zda je na tomto zařízení povolená aplikace k telefonování</translation>
 <translation id="2870560284913253234">Stránky</translation>
-<translation id="2876369937070532032">Když je ohrožena vaše bezpečnost, odesílá adresy URL některých navštívených stránek do Googlu</translation>
 <translation id="2888126860611144412">O aplikaci Chrome</translation>
 <translation id="2891154217021530873">Zastavit načítání stránky</translation>
 <translation id="2892647708214602204">Až bude soubor připraven, zobrazí se oznámení</translation>
@@ -311,7 +310,6 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3157842584138209013">Informace o množství uspořených dat zobrazíte pomocí tlačítka Další možnosti</translation>
 <translation id="3166827708714933426">Zkratky pro okna a karty</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Bezpečné prohlížení (chrání vás a vaše zařízení před nebezpečnými weby)</translation>
 <translation id="3205824638308738187">Skoro hotovo.</translation>
 <translation id="3207960819495026254">Přidáno do záložek</translation>
 <translation id="3208584281581115441">Zkontrolovat</translation>
@@ -505,6 +503,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4561979708150884304">Žádné připojení</translation>
 <translation id="4565377596337484307">Skrýt heslo</translation>
 <translation id="4572422548854449519">Přihlaste se ke spravovanému účtu</translation>
+<translation id="4576892426230499203">Zkuste jiný způsob ověření</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{před # minutou}few{před # minutami}many{před # minuty}other{před # minutami}}</translation>
 <translation id="4587589328781138893">Weby</translation>
 <translation id="4594952190837476234">Tato offline stránka je z <ph name="CREATION_TIME" /> a může se od online verze lišit.</translation>
@@ -584,7 +583,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5011311129201317034">Web <ph name="SITE" /> žádá o připojení</translation>
 <translation id="5016205925109358554">Patková</translation>
 <translation id="5039804452771397117">Povolit</translation>
-<translation id="5040262127954254034">Ochrana soukromí</translation>
 <translation id="5087580092889165836">Přidat kartu</translation>
 <translation id="5091249083535528968">Rozšířené údaje o využití</translation>
 <translation id="509429900233858213">Došlo k chybě.</translation>
@@ -637,6 +635,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5441522332038954058">Přejít na adresní řádek</translation>
 <translation id="544776284582297024">Pokud chcete otevřít karty a prohlížet si několik různých stránek najednou, klepněte na tlačítko otevření karet</translation>
 <translation id="545042621069398927">Zrychlování stahování.</translation>
+<translation id="5454166040603940656">(<ph name="PROVIDER" />)</translation>
 <translation id="5456381639095306749">Stáhnout stránku</translation>
 <translation id="548278423535722844">Otevřít v mapové aplikaci</translation>
 <translation id="5483197086164197190">Navigace v Chromu</translation>
@@ -777,6 +776,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6316139424528454185">Nepodporovaná verze Androidu</translation>
 <translation id="6324034347079777476">Synchronizace systému Android je vypnuta.</translation>
 <translation id="6324977638108296054">Odkaz na zvýraznění nelze vytvořit</translation>
+<translation id="6324997754869598316">(Chyba <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Sdílet prostřednictvím aplikace <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Šifrování</translation>
 <translation id="6341580099087024258">Zeptat se, kam se soubory mají uložit</translation>
@@ -793,6 +793,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> na webu <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Upravit záložku</translation>
 <translation id="6406506848690869874">Synchronizace</translation>
+<translation id="6407224748847589805">K počítači se nelze připojit. Zkuste jiný způsob ověření.</translation>
 <translation id="6410404864818553978">Základní údaje o využití</translation>
 <translation id="6410883413783534063">Pomocí karet můžete mít otevřených několik různých stránek najednou</translation>
 <translation id="6412673304250309937">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v Chromu. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky.</translation>
@@ -861,7 +862,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6813446258015311409">Přihlášení do Chromu, otevřeno.</translation>
 <translation id="6820686453637990663">Bezpečnostní kód platební karty (CVC)</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, karta, vybráno</translation>
-<translation id="6845325883481699275">Pomoci zlepšovat zabezpečení Chromu</translation>
 <translation id="6846298663435243399">Načítání…</translation>
 <translation id="6850409657436465440">Stahování stále probíhá</translation>
 <translation id="6850830437481525139">Zavřené karty: <ph name="TAB_COUNT" /></translation>
@@ -989,7 +989,6 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="7704317875155739195">Automaticky doplňovat vyhledávací dotazy a adresy URL</translation>
 <translation id="7707922173985738739">Používat mobilní data</translation>
 <translation id="7725024127233776428">Zde se zobrazují stránky přidané do záložek</translation>
-<translation id="7746457520633464754">Kvůli detekci nebezpečných aplikací a webů odesílá Chrome do Googlu adresy URL některých navštívených stránek, omezené informace o systému a část obsahu stránek</translation>
 <translation id="7757787379047923882">Text sdílený ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Vybrat datum a čas</translation>
 <translation id="7762668264895820836">SD karta <ph name="SD_CARD_NUMBER" /></translation>

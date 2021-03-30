@@ -225,7 +225,7 @@
 <translation id="3408236822532681288">Німецька (Німеччина), розкладка Neo 2</translation>
 <translation id="3414856743105198592">Форматування знімного носія призведе до стирання всіх даних. Продовжити?</translation>
 <translation id="3437801641691368414">Час створення</translation>
-<translation id="343907260260897561">Фотоапарат для миттєвих знімків</translation>
+<translation id="343907260260897561">Фотокамера миттєвого друку</translation>
 <translation id="3455931012307786678">Естонська</translation>
 <translation id="3466147780910026086">Сканування носія…</translation>
 <translation id="3468522857997926824">На <ph name="BEGIN_LINK" />Google Диск<ph name="END_LINK" /> імпортовано <ph name="FILE_COUNT" /> фото</translation>
@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Не видаляйте пристрій зараз!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Видалення пристрою під час його використання може спричинити втрату даних. Зачекайте, доки операція завершиться, а потім відключіть пристрій за допомогою програми "Файли".</translation>
+<translation id="5159560892333415631">Очистити кошик</translation>
 <translation id="5163869187418756376">Помилка надання доступу. Перевірте з’єднання та повторіть спробу пізніше.</translation>
 <translation id="516592729076796170">Розкладка Дворака для програмістів (США)</translation>
 <translation id="5170477580121653719">Вільне місце на Диску Google: <ph name="SPACE_AVAILABLE" />.</translation>
@@ -419,6 +420,7 @@
 <translation id="5275973617553375938">Відновлені файли з Google Диска</translation>
 <translation id="5288441970121584418">Бургер</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">Очистити кошик?</translation>
 <translation id="5317780077021120954">Зберегти</translation>
 <translation id="5318819489018851358">Надати доступ додаткам Linux</translation>
 <translation id="5323213332664049067">латиноамериканська</translation>
@@ -508,7 +510,7 @@
 <translation id="6248400709929739064">Увімкнути субтитри</translation>
 <translation id="6269630227984243955">Малайська</translation>
 <translation id="6287852322318138013">Вибрати програму, щоб відкрити цей файл</translation>
-<translation id="6321303798550928047">Махання рукою</translation>
+<translation id="6321303798550928047">Помах рукою</translation>
 <translation id="6339145975392024142">Американська міжнародна клавіатура (ПК)</translation>
 <translation id="6346310558342052870">Доступ обмежено</translation>
 <translation id="6356685157277930264">Вікно відгуку про файли</translation>
@@ -783,6 +785,7 @@
 <translation id="9154418932169119429">Це зображення не доступне в режимі офлайн.</translation>
 <translation id="9172592259078059678">Гуджараті, транслітерація</translation>
 <translation id="9173120999827300720">Англійська (США), міжнародна розкладка</translation>
+<translation id="9174050671906956834">Файли зберігаються в кошику 30 днів, а потім видаляються назавжди.</translation>
 <translation id="9189836632794948435">Казахська</translation>
 <translation id="9213073329713032541">Встановлення розпочато.</translation>
 <translation id="9219103736887031265">Зображення</translation>

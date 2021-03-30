@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">Platnosť hesla vyprší o <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Neprebiehajú žiadne tlačové úlohy</translation>
 <translation id="4297501883039923494">Zastavené – neznáma chyba</translation>
+<translation id="4344214025510306853">Pripojiť názov prístupového bodu (APN)</translation>
 <translation id="4378373042927530923">Nebolo spustené</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Môj disk</translation>
@@ -278,6 +279,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7040230719604914234">Operátor</translation>
 <translation id="7059230779847288458">Nabíja sa (úplné nabitie o <ph name="TIME_VALUE" />)</translation>
 <translation id="708426984172631313">ZASTAVENÉ</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">Pripája sa</translation>
 <translation id="7144878232160441200">Skúsiť znova</translation>
 <translation id="714876143603641390">Pripojenie cez miestnu sieť</translation>
@@ -363,6 +365,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8970109610781093811">Spustiť znova</translation>
 <translation id="9003704114456258138">Frekvencia</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9065203028668620118">Upraviť</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Aktuálne využitie</translation>

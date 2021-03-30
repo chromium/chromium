@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Chromium pašlaik nevar izmantot jūsu kameru.</translation>
 <translation id="2195025571279539885">Vai vēlaties, lai Chromium nākamreiz piedāvātu šīs vietnes lapas, kuru saturs ir šādā valodā: <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="2590893390871230428">Sinhronizēt jūsu Chromium datus</translation>
-<translation id="259614951763923692">Ja atļaujat pārlūkam Chromium piekļūt jūsu atrašanās vietas informācijai, pārlūkā Chromium šī informācija tiek nosūtīta uz jūsu noklusējuma meklētājprogrammu un uz vietnēm, kurām piešķirat atļauju. Vietnēs var tikt lūgta atļauja piekļūt atrašanās vietas informācijai, lai rādītu jums vietēju informāciju, piemēram, vietējās ziņas vai informāciju par tuvumā esošiem veikaliem.</translation>
 <translation id="2650312721222849884">Lai skatītu cilnes no ierīcēm, kurās lietojat pārlūku Chromium, ieslēdziet sinhronizāciju.</translation>
 <translation id="2730884209570016437">Chromium nevar izmantot kameru, jo to izmanto cita lietojumprogramma.</translation>
 <translation id="2915596697727466327">Chromium izmanto Face ID, lai jūsu parolēm varētu piekļūt tikai pilnvarotas personas.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Vai izrakstīties no Chromium?</translation>
 <translation id="6424492062988593837">Lietojumprogramma Chromium ir uzlabota! Ir pieejama jauna versija.</translation>
 <translation id="6820823224820483452">Pārlūkprogrammā Chromium nevarēja pārbaudīt visas paroles. Mēģiniet vēlreiz rīt.</translation>
+<translation id="6827294685447036764">Ja atļaujat pārlūkam Chromium piekļūt jūsu atrašanās vietas informācijai, pārlūkā Chromium šī informācija tiek nosūtīta uz visām vietnēm, kurām piešķirat atļauju. Vietnēs var tikt lūgta atļauja piekļūt atrašanās vietas informācijai, lai rādītu jums vietēju informāciju, piemēram, vietējās ziņas vai informāciju par tuvumā esošiem veikaliem.</translation>
 <translation id="7018284295775193585">Nevar atjaunināt pārlūku Chromium.</translation>
 <translation id="7099326575020694068">Chromium nevar izmantot kameru dalītā skata režīmā.</translation>
 <translation id="7118091470949186573">Tagad varat izmantot Chromium ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>

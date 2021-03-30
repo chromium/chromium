@@ -20,7 +20,6 @@
 <translation id="2178608107313874732">Chromium teď nemůže použít fotoaparát</translation>
 <translation id="2195025571279539885">Chcete, aby prohlížeč Chromium příště pro stránky v jazyce <ph name="LANGUAGE_NAME" /> z tohoto webu nabízel překlad?</translation>
 <translation id="2590893390871230428">Synchronizovat data prohlížeče Chromium</translation>
-<translation id="259614951763923692">Když prohlížeči Chromium povolíte přístup k poloze, bude ji odesílat výchozímu vyhledávači a webům, u kterých to povolíte. Weby o vaši polohu mohou žádat, pokud pro vás mají místní informace, například seznamy obchodů v okolí nebo místní zprávy.</translation>
 <translation id="2650312721222849884">Chcete-li mít své karty k dispozici všude, kde používáte Chromium, zapněte synchronizaci</translation>
 <translation id="2730884209570016437">Chromium nemůže použít fotoaparát, protože jej právě používá jiná aplikace</translation>
 <translation id="2915596697727466327">Chromium pomocí funkce Face ID ověřuje přístup k heslům.</translation>
@@ -58,6 +57,7 @@
 <translation id="6268381023930128611">Odhlásit se z prohlížeče Chromium?</translation>
 <translation id="6424492062988593837">Chromium je opět o něco lepší. K dispozici je nová verze.</translation>
 <translation id="6820823224820483452">Chromiu se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra.</translation>
+<translation id="6827294685447036764">Když prohlížeči Chromium povolíte přístup k poloze, bude ji odesílat webům, u kterých to povolíte. Weby o vaši polohu mohou žádat, pokud pro vás mají místní informace, například seznamy obchodů v okolí nebo místní zprávy.</translation>
 <translation id="7018284295775193585">Chromium nelze aktualizovat</translation>
 <translation id="7099326575020694068">Prohlížeč Chromium nemůže používat fotoaparát v režimu Split View.</translation>
 <translation id="7118091470949186573">Nyní můžete Chromium použít pokaždé, když klepnete na odkazy ve zprávách, dokumentech a ostatních aplikacích.</translation>

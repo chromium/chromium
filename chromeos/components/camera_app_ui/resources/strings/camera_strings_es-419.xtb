@@ -56,6 +56,7 @@ Las apps que tengan permiso de almacenamiento podrán acceder a tus fotos y vide
 <translation id="5671277269877808209">Cuadrado</translation>
 <translation id="5775960006311140197">Modo experto</translation>
 <translation id="5869546221129391014">Cuadrícula</translation>
+<translation id="5975083100439434680">Alejar</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6073451960410192870">Detener grabación</translation>
 <translation id="6197807149213783179">Guardar metadatos</translation>
@@ -81,9 +82,9 @@ Si tus comentarios están relacionados con la calidad de imagen o video, adjunta
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7974782136796202581">Mostrar opciones de desplazamiento lateral, inclinación y zoom</translation>
 <translation id="7983668134180549431">Se detectó texto.</translation>
 <translation id="8067883171444229417">Reproducir video</translation>
+<translation id="8120146556401698679">Desplazamiento inclinación ampliación</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8145038249676204903">Cambiar al modo para tomar fotos</translation>
 <translation id="8239780215768881278">Tomar una instantánea del video</translation>
@@ -94,6 +95,7 @@ Si tus comentarios están relacionados con la calidad de imagen o video, adjunta
 <translation id="8815966864175525708">Cambiar al modo vertical para tomar fotos</translation>
 <translation id="8828441885228359828">Reanudar la grabación</translation>
 <translation id="8870695351537079478">No es posible comenzar a grabar</translation>
+<translation id="8903921497873541725">Acercar</translation>
 <translation id="9045155556724273246">10 segundos</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 </translationbundle>

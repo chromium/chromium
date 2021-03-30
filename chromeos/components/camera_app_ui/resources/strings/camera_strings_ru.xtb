@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">Квадрат</translation>
 <translation id="5775960006311140197">Режим эксперта</translation>
 <translation id="5869546221129391014">Сетка</translation>
+<translation id="5975083100439434680">Уменьшить</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6073451960410192870">Остановить запись</translation>
 <translation id="6197807149213783179">Сохранение метаданных</translation>
@@ -81,9 +82,9 @@
 <translation id="7649070708921625228">Справка</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7670511624014457267">60 кадров/с</translation>
-<translation id="7974782136796202581">Показывать настройки масштаба, панорамирования и наклона камеры</translation>
 <translation id="7983668134180549431">Обнаружен текст.</translation>
 <translation id="8067883171444229417">Смотреть видео</translation>
+<translation id="8120146556401698679">Панорамирование, изменение ракурса, масштабирование</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8145038249676204903">Переключиться на фотосъемку</translation>
 <translation id="8239780215768881278">Сделать снимок</translation>
@@ -94,6 +95,7 @@
 <translation id="8815966864175525708">Перейти к созданию вертикального фото</translation>
 <translation id="8828441885228359828">Продолжить запись</translation>
 <translation id="8870695351537079478">Не удалось начать запись</translation>
+<translation id="8903921497873541725">Увеличить</translation>
 <translation id="9045155556724273246">10 секунд</translation>
 <translation id="945522503751344254">Отправить отзыв</translation>
 </translationbundle>

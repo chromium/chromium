@@ -193,6 +193,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2964349545761222050">Loka á fótspor frá þriðja aðila</translation>
 <translation id="2969979262385602596">Innskráning mistókst. Reyndu aftur síðar.</translation>
 <translation id="2975121486251958312">Aðeins huliðsstilling er í boði</translation>
+<translation id="2981323609054805194">d síðan</translation>
 <translation id="2982481275546140226">Hreinsa gögn</translation>
 <translation id="298306318844797842">Bæta við greiðslumáta...</translation>
 <translation id="2989805286512600854">Opna í nýjum flipa</translation>
@@ -282,6 +283,7 @@ Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="3928666092801078803">Sameina gögnin mín</translation>
 <translation id="3929457972718048006">Heimilisföng</translation>
 <translation id="3943492037546055397">Aðgangsorð</translation>
+<translation id="3967266340354872733">Frekari upplýsingar sem tengjast persónuvernd, öryggi og gagnasöfnun má finna í <ph name="BEGIN_LINK" />Samstilling<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />Google þjónustur<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Niðurhali lokið</translation>
 <translation id="3968505803272650567">Stjórna áhugasviðum</translation>
 <translation id="3989635538409502728">Skrá út</translation>
@@ -555,7 +557,9 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="6710079714193676716">Stjórnað af fyrirtækinu þínu. Sumir eiginleikar gætu verið óaðgengilegir. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Ekki er hægt að flytja út aðgangsorð</translation>
+<translation id="6739790015462537309">klst. síðan</translation>
 <translation id="6748108480210050150">Frá</translation>
+<translation id="6760509555861141183">Fara aftur á nýlegan flipa</translation>
 <translation id="6780034285637185932">Póstnúmer</translation>
 <translation id="6785453220513215166">Sendir hrunskýrslu...</translation>
 <translation id="679325081238418596">Fáðu bókamerkin þín, ferilinn, aðgangsorð og aðrar stillingar í öll tækin þín</translation>
@@ -607,7 +611,6 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="7272437679830969316">Ekki tókst að staðfesta hver þú ert. Aðgangsorð var ekki afritað.</translation>
 <translation id="7291368939935408496">Undirbýr aðgangsorð...</translation>
 <translation id="7293171162284876153">Til að hefja samstillingu skaltu kveikja á „Samstilla gögnin þín í Chrome“.</translation>
-<translation id="7299000566397147023">Opna síðasta flipa</translation>
 <translation id="7313347584264171202">Þú finnur huliðsflipana þína hér</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> prósent sótt</translation>
 <translation id="7340958967809483333">Valkostir fyrir Tillögur</translation>

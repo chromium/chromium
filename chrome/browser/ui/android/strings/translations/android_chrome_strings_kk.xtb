@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">Кіру сәтсіз аяқталды.</translation>
 <translation id="2860954141821109167">Бұл құрылғыда телефон қолданбасы қосулы екенін тексеріңіз.</translation>
 <translation id="2870560284913253234">Сайт</translation>
-<translation id="2876369937070532032">Қауіп төніп тұрғанда, сіз кірген кейбір беттердің URL сілтемелерін Google-ға жібереді.</translation>
 <translation id="2888126860611144412">Chrome туралы</translation>
 <translation id="2891154217021530873">Бет жүктеуді тоқтату</translation>
 <translation id="2892647708214602204">Файл дайын болғанда, хабарландыру шығады.</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">"Басқа да опциялар" түймесі арқылы қанша деректер сақталғанын көріңіз</translation>
 <translation id="3166827708714933426">Қойынды мен терезенің пернелер тіркесімі</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Safe Browsing қызметі (сізді және құрылғыңызды қауіпті сайттардан қорғайды)</translation>
 <translation id="3205824638308738187">Аз қалды!</translation>
 <translation id="3207960819495026254">Бетбелгі қойылған</translation>
 <translation id="3208584281581115441">Қазір тексеру</translation>
@@ -505,6 +503,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="4561979708150884304">Байланыс жоқ</translation>
 <translation id="4565377596337484307">Құпия сөзді жасыру</translation>
 <translation id="4572422548854449519">Басқарылатын есептік жазбаға кіру</translation>
+<translation id="4576892426230499203">Басқа растау опциясын пайдаланып көріңіз.</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# минут бұрын}other{# минут бұрын}}</translation>
 <translation id="4587589328781138893">Сайттар</translation>
 <translation id="4594952190837476234">Бұл офлайн бет <ph name="CREATION_TIME" /> күні жасалған, сондықтан онлайн нұсқасынан өзгеше болуы мүмкін.</translation>
@@ -584,7 +583,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="5011311129201317034"><ph name="SITE" /> сайты байланыс орнатқысы келеді</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Рұқсат беру</translation>
-<translation id="5040262127954254034">Құпиялылық</translation>
 <translation id="5087580092889165836">Несие картасын қосу</translation>
 <translation id="5091249083535528968">Пайдаланылуы туралы толығырақ дерек</translation>
 <translation id="509429900233858213">Қате орын алды.</translation>
@@ -637,6 +635,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="5441522332038954058">Мекенжай жолағына өту</translation>
 <translation id="544776284582297024">Бір уақытта қойындыларды ашып, неше түрлі беттерге кіру үшін "ашық қойындылар" түймесін басыңыз.</translation>
 <translation id="545042621069398927">Жылдамырақ жүктеп алынуда.</translation>
+<translation id="5454166040603940656"><ph name="PROVIDER" /> провайдерімен</translation>
 <translation id="5456381639095306749">Жүктеп алу беті</translation>
 <translation id="548278423535722844">Maps қолданбасында ашу</translation>
 <translation id="5483197086164197190">Chrome браузерін шарлау</translation>
@@ -777,6 +776,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="6316139424528454185">Android: қолдау көрсетілмейді</translation>
 <translation id="6324034347079777476">Android жүйесін синхрондау өшірілді</translation>
 <translation id="6324977638108296054">Бөлектелген мәтіннің сілтемесі жасалмады.</translation>
+<translation id="6324997754869598316">(<ph name="ERROR_CODE" /> қатесі)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> арқылы бөлісу</translation>
 <translation id="6337234675334993532">Шифрлау</translation>
 <translation id="6341580099087024258">Файл сақталатын орынды сұрау</translation>
@@ -793,6 +793,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="6402652558933147609"><ph name="ERROR_CODE" />: <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Бетбелгіні өзгерту</translation>
 <translation id="6406506848690869874">Синхрондау</translation>
+<translation id="6407224748847589805">Компьютеріңізге қосылу мүмкін емес. Басқа растау опциясын пайдаланып көріңіз.</translation>
 <translation id="6410404864818553978">Пайдаланылуы туралы негізгі дерек</translation>
 <translation id="6410883413783534063">Бір мезгілде түрлі беттерге кіру үшін қойындыларды ашыңыз.</translation>
 <translation id="6412673304250309937">Chrome браузерінде сақталған қауіпсіз емес сайттар тізімімен URL сілтемелерін салыстырып тексереді. Егер сайт құпия сөзіңізді ұрлағысы келсе немесе сіз зиянды файл жүктеп алған кезде, Chrome браузері URL мекенжайларын, сонымен қатар бет мазмұны бөліктерін, "Қауіпсіз шолу" функциясына жіберуі мүмкін.</translation>
@@ -861,7 +862,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="6813446258015311409">Chrome-ға кіру, ашық.</translation>
 <translation id="6820686453637990663">CVC коды</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, қойынды, таңдалды</translation>
-<translation id="6845325883481699275">Chrome қауіпсіздігін жетілдіруге көмектесу</translation>
 <translation id="6846298663435243399">Жүктелуде…</translation>
 <translation id="6850409657436465440">Жүктеп алу әлі аяқталған жоқ</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> қойынды жабылған</translation>
@@ -989,7 +989,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="7704317875155739195">Іздеулер мен URL мекенжайларын автотолтыру</translation>
 <translation id="7707922173985738739">Мобильдік деректерді пайдалану</translation>
 <translation id="7725024127233776428">Бетбелгі қойылған беттер осы жерде көрсетіледі</translation>
-<translation id="7746457520633464754">Қауіпті қолданбалар мен сайттарды анықтау үшін Chrome браузері сіз кірген кейбір беттердің URL сілтемелерін, жүйе туралы шектеулі ақпаратты және беттің кейбір мазмұнын Google-ға жібереді.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> бөліскен мәтін</translation>
 <translation id="7761849928583394409">Күні мен уақытын таңдау</translation>
 <translation id="7762668264895820836"><ph name="SD_CARD_NUMBER" />-ші SD картасы</translation>

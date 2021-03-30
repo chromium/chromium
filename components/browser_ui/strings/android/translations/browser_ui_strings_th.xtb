@@ -178,6 +178,7 @@
 <translation id="5916664084637901428">เปิด</translation>
 <translation id="5922853908706496913">กำลังแชร์หน้าจอ</translation>
 <translation id="5939518447894949180">รีเซ็ต</translation>
+<translation id="5975083100439434680">ย่อ</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">ควบคุมการเข้าถึงอุปกรณ์ของคุณของเว็บไซต์นี้</translation>
 <translation id="6040143037577758943">ปิด</translation>
@@ -298,6 +299,7 @@
 <translation id="8801436777607969138">บล็อก JavaScript ในเว็บไซต์ที่ต้องการ</translation>
 <translation id="8816026460808729765">บล็อกไม่ให้เว็บไซต์เข้าถึงเซ็นเซอร์</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8903921497873541725">ขยาย</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC ในอุปกรณ์นี้ปิดอยู่ เปิดได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="8929372349074745002">เว็บไซต์นี้เปิดและตอบสนองอย่างรวดเร็วสำหรับผู้คนส่วนใหญ่</translation>

@@ -396,6 +396,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Ai accesat comanda rapidă de la tastatură pentru contrast ridicat. Vrei să-l activezi?</translation>
 <translation id="4331809312908958774">Sistemul de operare Chrome</translation>
+<translation id="4333628967105022692">Lacros nu este acceptat dacă se conectează mai mulți utilizatori.</translation>
 <translation id="4338109981321384717">Lupă</translation>
 <translation id="4351433414020964307">Asistentul se încarcă...</translation>
 <translation id="4356930093361201197">mod de contrast ridicat</translation>
@@ -776,7 +777,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7607002721634913082">Întreruptă</translation>
 <translation id="7618774594543487847">Neutru</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Afișează setările Nearby Share.</translation>
+<translation id="7633755430369750696">Afișează setările Trimiterii în apropiere.</translation>
 <translation id="7641938616688887143">Înregistrează</translation>
 <translation id="7642647758716480637">Deschide setările pentru <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (proprietar)</translation>
@@ -968,9 +969,10 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="9091626656156419976">S-a eliminat afișajul <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Dezactivează sunetul telefonului</translation>
 <translation id="9099154003160514616">Este disponibilă o actualizare pentru Lacros</translation>
+<translation id="9105450214093926548">Nu este acceptată conectarea unui al doilea utilizator în timp ce browserul Lacros rulează. Folosește un al doilea profil de browser în Lacros sau închide Lacros și încearcă din nou.</translation>
 <translation id="9133335900048457298">Nu se poate înregistra conținut protejat</translation>
 <translation id="9151726767154816831">Pentru a actualiza, repornește și folosește Powerwash</translation>
-<translation id="9166331175924255663">Activează/dezactivează vizibilitatea crescută pentru Nearby Share.</translation>
+<translation id="9166331175924255663">Activează/dezactivează vizibilitatea crescută pentru Trimiterea în apropiere.</translation>
 <translation id="9168436347345867845">Mai târziu</translation>
 <translation id="9179259655489829027">Cu această funcție poți să accesezi rapid orice utilizator conectat fără solicitarea parolei. Folosește funcția numai pentru conturile în care ai încredere.</translation>
 <translation id="9183456764293710005">Lupă de ecran complet</translation>

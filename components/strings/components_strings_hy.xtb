@@ -276,7 +276,7 @@
 <translation id="1917876262703816781">Ձեր գաղտնաբառը բացահայտվել է որոշակի կայքում կամ հավելվածում տեղի ունեցած տվյալների արտահոսքի հետևանքով։ Chrome-ը խորհուրդ է տալիս անհապաղ փոխել <ph name="ORIGIN" /> ռեսուրսում օգտագործվող գաղտնաբառը:</translation>
 <translation id="1919345977826869612">Գովազդ</translation>
 <translation id="1919367280705858090">Որոշակի սխալների վերացման օգնություն</translation>
-<translation id="192020519938775529">{COUNT,plural, =0{Ոչինչ չկա}=1{1 կայք}one{# sites}other{# կայք}}</translation>
+<translation id="192020519938775529">{COUNT,plural, =0{Ոչինչ չկա}=1{1 կայք}one{# կայք}other{# կայք}}</translation>
 <translation id="1945968466830820669">Հնարավոր է՝ չկարողանաք օգտագործել ձեր կազմակերպության հաշիվը, կամ ինչ-որ մեկը կարող է գողանալ ձեր անձնական տվյալները։ Խորհուրդ ենք տալիս փոխել գաղտնաբառը։</translation>
 <translation id="1947454675006758438">Ամրակ վերևի աջ կողմում</translation>
 <translation id="1959001866257244765">Օգնեք բարձրացնել անվտանգության մակարդակը համացանցում՝ Google-ին ուղարկելով <ph name="BEGIN_WHITEPAPER_LINK" />ձեր այցելած որոշ էջերի հասցեներն ու բովանդակությունը և որոշակի տեղեկություններ համակարգի մասին<ph name="END_WHITEPAPER_LINK" />։ <ph name="BEGIN_PRIVACY_PAGE_LINK" />Գաղտնիության քաղաքականություն<ph name="END_PRIVACY_PAGE_LINK" /></translation>
@@ -673,7 +673,7 @@
 <translation id="3518941727116570328">Մի քանի օբյեկտների մշակում</translation>
 <translation id="3528171143076753409">Սերվերի վկայագիրը վստահելի չէ:</translation>
 <translation id="3528485271872257980">Մուգ շագանակագույն</translation>
-<translation id="3530944546672790857">{COUNT,plural, =0{Առնվազն 1 տարր համաժամացված սարքերում}=1{1 տարր (և ավելին համաժամացված սարքերում)}one{# items (and more on synced devices)}other{# տարր (և ավելին համաժամացված սարքերում)}}</translation>
+<translation id="3530944546672790857">{COUNT,plural, =0{Առնվազն 1 տարր համաժամացված սարքերում}=1{1 տարր (և ավելին համաժամացված սարքերում)}one{# տարր (և ավելին համաժամացված սարքերում)}other{# տարր (և ավելին համաժամացված սարքերում)}}</translation>
 <translation id="3531780078352352885">Առաջադրանքի թերթեր</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> կայքն ուզում է օգտագործել ձեր խոսափողը</translation>
 <translation id="3533328374079021623">Փոստարկղ 5</translation>
@@ -785,7 +785,7 @@
 <translation id="3962859241508114581">Նախորդ կատարումը</translation>
 <translation id="3963721102035795474">Ընթերցողի ռեժիմ</translation>
 <translation id="3963837677003247395">Լրացնե՞լ ձեռքով</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Ոչինչ չկա}=1{1 կայքից }one{From # sites }other{# կայքից }}</translation>
+<translation id="3964661563329879394">{COUNT,plural, =0{Ոչինչ չկա}=1{1 կայքից }one{# կայքից }other{# կայքից }}</translation>
 <translation id="397105322502079400">Հաշվարկում…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />-ն արգելափակված է</translation>
 <translation id="3973357910713125165">«Անցնել Chrome-ի անվտանգության ստուգում» կոճակ։ Chrome-ի կարգավորումներում անվտանգության ստուգում անցնելու համար սեղմեք «Enter»։</translation>
@@ -2160,7 +2160,7 @@
 <translation id="962484866189421427">Այս բովանդակությունը կարող է փորձել կեղծ հավելվածներ տեղադրել կամ տվյալներ հավաքել՝ ձեզ հետևելու համար։ <ph name="BEGIN_LINK" />Միևնույն է ցուցադրել<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Պաշտոնական տարբերակ</translation>
 <translation id="973773823069644502">Ավելացրեք առաքման հասցեն</translation>
-<translation id="975560348586398090">{COUNT,plural, =0{Ոչինչ չկա}=1{1 տարր}one{# items}other{# տարր}}</translation>
+<translation id="975560348586398090">{COUNT,plural, =0{Ոչինչ չկա}=1{1 տարր}one{# տարր}other{# տարր}}</translation>
 <translation id="981121421437150478">Անցանց</translation>
 <translation id="984275831282074731">Վճարման եղանակներ</translation>
 <translation id="985199708454569384">&lt;p&gt;Այս սխալը ցուցադրվում է, երբ ձեր համակարգչի/շարժական սարքի ամսաթիվը և ժամը ճիշտ չեն։&lt;/p&gt;

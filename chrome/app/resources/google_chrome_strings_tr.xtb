@@ -57,7 +57,7 @@
 <translation id="2429317896000329049">Senkronizasyon, alan adınızda kullanılamadığından Google Chrome, verilerinizi senkronize edemedi.</translation>
 <translation id="245659736593643560">Chrome OS, <ph name="BEGIN_LINK_LINUX_OSS" />Linux geliştirme ortamında (Beta)<ph name="END_LINK_LINUX_OSS" /> olduğu gibi ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_CROS_OSS" /> yararlanılarak geliştirilmiştir.</translation>
 <translation id="2467438592969358367">Google Chrome şifrelerinizi dışa aktarmak istiyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
-<translation id="2485422356828889247">Yüklemeyi Kaldır</translation>
+<translation id="2485422356828889247">Kaldır</translation>
 <translation id="2534507159460261402">Google Pay (Chrome'a kopyalandı)</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> kullanıcısının oturumu halihazırda bu Chrome profilinde açık. Göz atma işlemlerinizi ayrı tutmak isterseniz Chrome, sizin için kendi profilinizi oluşturabilir.</translation>
 <translation id="2580411288591421699">Şu anda çalışmakta olan Google Chrome ile aynı sürüm yüklenemez. Lütfen Google Chrome'u kapatın ve tekrar deneyin.</translation>
@@ -189,6 +189,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6070348360322141662">Google Chrome ek güvenlik sağlamak için verilerinizi şifreler</translation>
 <translation id="608006075545470555">Bu tarayıcıya İş Profili ekle</translation>
 <translation id="6113794647360055231">Chrome daha da iyi bir hale geldi</translation>
+<translation id="6145313976051292476">PDF'leri Chrome'da aç</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="61852838583753520">&amp;Chrome OS'i güncelle</translation>
@@ -201,7 +202,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome güncelleniyor (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS sistemi</translation>
-<translation id="6650333065969705433">Korunan medyayı izlemek üzere Rosetta'yı kullanmak için Chrome'u yeniden başlatmalısınız.</translation>
 <translation id="6676384891291319759">İnternet'e erişin</translation>
 <translation id="6679975945624592337">Google Chrome'un Arka Planda Çalışmasına İzin Ver</translation>
 <translation id="6739177684496155661">Yeni bir Chrome profilinde devam edilsin mi?</translation>
@@ -265,7 +265,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Bu iş profili, kişisel profilinizden tamamen ayrıdır.</translation>
 <translation id="8556340503434111824">Kullanabileceğiniz yeni bir Google Chrome sürümü var ve bu sürüm, her zamankinden daha hızlı.</translation>
-<translation id="861359755029082151">Rosetta, Chrome'un bu sayfadaki korunan medyayı oynatmasını sağlar.</translation>
 <translation id="8614913330719544658">Google Chrome yanıt vermiyor. Yeniden başlatılsın mı?</translation>
 <translation id="861702415419836452">Çevrenizin 3D haritasını oluşturmak için Chrome'un kameranıza erişim iznine ihtiyacı var</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 dakika içinde yeniden başlatılacak}other{Chrome # dakika içinde yeniden başlatılacak}}</translation>
@@ -279,7 +278,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8834965163890861871">Google Chrome şifreleri düzenlemeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="884296878221830158">Ayrıca Chrome'u başlattığınızda veya Ana Sayfa düğmesini tıkladığınızda gösterilecek sayfayı da denetler.</translation>
 <translation id="8862326446509486874">Sistem düzeyinde yükleme için gerekli haklara sahip değilsiniz. Yükleyiciyi Yönetici olarak tekrar çalıştırmayı deneyin.</translation>
-<translation id="8907709077090383765">Chrome'un korunan medyayı oynatmasını sağlamak için Rosetta'yı yüklemeniz gerekir. Şimdi yüklemek ister misiniz?</translation>
 <translation id="8914504000324227558">Chrome'u Yeniden Başlat</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> sitesinden Android telefonunuza numara göndermek için iki cihazdan da Chrome'da oturum açın.</translation>
 <translation id="8986207147630327271">Bu tarayıcıya bir iş profili ekliyor ve yöneticinize yalnızca iş profilini kontrol etme yetkisi veriyorsunuz.</translation>

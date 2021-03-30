@@ -396,6 +396,7 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">તમે હાઇ કૉન્ટ્રાસ્ટ માટેનો કીબોર્ડ શૉર્ટકટ દબાવેલ છે. શું તમે તેને ચાલુ કરવા માગો છો?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4333628967105022692">એકથી વધુ વપરાશકર્તાઓએ સાઇન ઇન કર્યું હોય, ત્યારે Lacros કામ કરતું નથી.</translation>
 <translation id="4338109981321384717">બૃહદદર્શક કાચ</translation>
 <translation id="4351433414020964307">સહાયક લોડ થઈ રહ્યું છે…</translation>
 <translation id="4356930093361201197">ઉચ્ચ કોન્ટ્રાસ્ટ મોડ</translation>
@@ -776,7 +777,7 @@
 <translation id="7607002721634913082">થોભાવેલું</translation>
 <translation id="7618774594543487847">ન્યૂટ્રલ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">નજીકના શેરિંગ સેટિંગ બતાવો.</translation>
+<translation id="7633755430369750696">નજીકના શેર સેટિંગ બતાવો.</translation>
 <translation id="7641938616688887143">રેકોર્ડ કરો</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" /> માટે સેટિંગ ખોલો, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (માલિક)</translation>
@@ -968,9 +969,10 @@
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> ડિસ્પ્લે કાઢી નાખ્યું</translation>
 <translation id="9098969848082897657">ફોન સાઇલન્ટ રાખો</translation>
 <translation id="9099154003160514616">Lacros બ્રાઉઝરની અપડેટ ઉપલબ્ધ છે</translation>
+<translation id="9105450214093926548">Lacros બ્રાઉઝર ચાલતું હોય, ત્યારે બીજા વપરાશકર્તા દ્વારા સાઇન ઇન કરવાને સપોર્ટ કરવામાં આવતો નથી. કૃપા કરીને તેના બદલે Lacrosમાં બીજી બ્રાઉઝર પ્રોફાઇલનો ઉપયોગ કરો કે Lacros બંધ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="9133335900048457298">સંરક્ષિત કન્ટેન્ટ રેકોર્ડ કરી શકાતું નથી</translation>
 <translation id="9151726767154816831">અપડેટ કરવા માટે પુનઃપ્રારંભ કરો અને પાવરવૉશ કરો</translation>
-<translation id="9166331175924255663">નજીકના શેરિંગની ઉચ્ચ દૃશ્યતા ટૉગલ કરો.</translation>
+<translation id="9166331175924255663">નજીકના શેરની ઉચ્ચ દૃશ્યતા ટૉગલ કરો.</translation>
 <translation id="9168436347345867845">આ પછીથી કરો</translation>
 <translation id="9179259655489829027">આ સુવિધા તમને પાસવર્ડની જરૂર વગર ઝડપથી કોઈ સાઇન-ઇન થયેલ વપરાશકર્તાને ઍક્સેસ કરવાની પરવાનગી આપે છે. માત્ર તમે જેના પર વિશ્વાસ કરતા હો તે એકાઉન્ટ સાથે જ આ સુવિધાનો ઉપયોગ કરો.</translation>
 <translation id="9183456764293710005">પૂર્ણ-સ્ક્રીન મૅગ્નિફાયર</translation>

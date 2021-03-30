@@ -396,6 +396,7 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">고대비 단축키를 누르셨습니다. 사용 설정할까요?</translation>
 <translation id="4331809312908958774">크롬 OS</translation>
+<translation id="4333628967105022692">Lacros는 여러 사용자가 로그인된 상태에서 지원되지 않습니다.</translation>
 <translation id="4338109981321384717">돋보기</translation>
 <translation id="4351433414020964307">어시스턴트 로드 중...</translation>
 <translation id="4356930093361201197">고대비 모드</translation>
@@ -968,6 +969,7 @@
 <translation id="9091626656156419976">디스플레이 <ph name="DISPLAY_NAME" /> 제거됨</translation>
 <translation id="9098969848082897657">휴대전화 무음 설정</translation>
 <translation id="9099154003160514616">Lacros 업데이트 사용 가능</translation>
+<translation id="9105450214093926548">Lacros 브라우저가 실행되는 동안에는 두 번째 사용자 로그인이 지원되지 않습니다. 대신 Lacros에서 두 번째 브라우저 프로필을 사용하거나 Lacros를 닫았다가 다시 시도해 보세요.</translation>
 <translation id="9133335900048457298">보호된 콘텐츠는 녹화할 수 없음</translation>
 <translation id="9151726767154816831">업데이트하려면 다시 시작하고 Powerwash하세요.</translation>
 <translation id="9166331175924255663">Nearby Share 모든 기기에 공개 설정 전환</translation>

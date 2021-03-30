@@ -193,6 +193,7 @@
 <translation id="2964349545761222050">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="2969979262385602596">ເຂົ້າ​ສູ່​ລະ​ບົບບໍ່ໄດ້, ກະລຸນາລອງໃໝ່ພາຍຫຼັງ.</translation>
 <translation id="2975121486251958312">ມີແຕ່ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນພ້ອມໃຫ້ນຳໃຊ້</translation>
+<translation id="2981323609054805194">ມື້ກ່ອນ</translation>
 <translation id="2982481275546140226">ລຶບລ້າງຂໍ້ມູນ</translation>
 <translation id="298306318844797842">ເພີ່ມວິທີການຈ່າຍເງິນ...</translation>
 <translation id="2989805286512600854">ເປີດຢູ່ໃນແຖບໃໝ່</translation>
@@ -282,6 +283,7 @@
 <translation id="3928666092801078803">ລວມຂໍ້ມູນຂອງຂ້ອຍເຂົ້າກັນ</translation>
 <translation id="3929457972718048006">ທີ່ຢູ່</translation>
 <translation id="3943492037546055397">ລະຫັດຜ່ານ</translation>
+<translation id="3967266340354872733">ສຳລັບການຕັ້ງຄ່າເພີ່ມເຕີມທີ່ກ່ຽວຂ້ອງກັບຄວາມເປັນສ່ວນຕົວ, ຄວາມປອດໄພ ແລະ ການເກັບກຳຂໍ້ມູນ, ກະລຸນາເບິ່ງ <ph name="BEGIN_LINK" />ການຊິ້ງຂໍ້ມູນ<ph name="END_LINK" /> ແລະ <ph name="BEGIN_LINK" />ບໍລິການຂອງ Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">ດາວ​ໂຫຼດ​ສຳ​ເລັດ</translation>
 <translation id="3968505803272650567">ຈັດການຄວາມສົນໃຈ</translation>
 <translation id="3989635538409502728">ອອກຈາກລະບົບ</translation>
@@ -555,7 +557,9 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6710079714193676716">ຈັດການໂດຍອົງການຂອງທ່ານ. ບາງຄຸນສົມບັດອາດຈະບໍ່ພ້ອມໃຫ້ນຳໃຊ້. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">ບໍ່ສາມາດສົ່ງລະຫັດຜ່ານອອກໄດ້</translation>
+<translation id="6739790015462537309">ຊມ ກ່ອນ</translation>
 <translation id="6748108480210050150">ຈາກ</translation>
+<translation id="6760509555861141183">ກັບໄປຫາແຖບຫຼ້າສຸດ</translation>
 <translation id="6780034285637185932">ລະ​ຫັດ​ໄປສະນີ</translation>
 <translation id="6785453220513215166">ກຳ​ລັງ​ສົ່ງລາຍງານການຂັດຂ້ອງ...</translation>
 <translation id="679325081238418596">ໃຊ້ບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນຂອງທ່ານຢູ່ໃນທຸກອຸປະກອນຂອງທ່ານ</translation>
@@ -607,7 +611,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7272437679830969316">ບໍ່ສາມາດພິສູດຢືນຢັນຕົວຕົນຂອງທ່ານໄດ້. ບໍ່ໄດ້ສຳເນົາລະຫັດຜ່ານ.</translation>
 <translation id="7291368939935408496">ກຳລັງກະກຽມລະຫັດຜ່ານ...</translation>
 <translation id="7293171162284876153">ເພື່ອເລີ່ມການຊິ້ງຂໍ້ມູນ, ກະລຸນາເປີດ "ຊິ້ງຂໍ້ມູນ Chrome ຂອງທ່ານ".</translation>
-<translation id="7299000566397147023">ເປີດແຖບຫຼ້າສຸດ</translation>
 <translation id="7313347584264171202">ທ່ານຈະເຫັນແຖບທີ່ບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> ເປີ​ເຊັນ​ຖືກ​ດາວ​ໂຫຼດ​ແລ້ວ</translation>
 <translation id="7340958967809483333">ຕົວເລືອກສຳລັບ Discover</translation>

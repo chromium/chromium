@@ -36,7 +36,7 @@
 <translation id="1358735829858566124">Die Datei oder das Verzeichnis kann nicht verwendet werden.</translation>
 <translation id="1363028406613469049">Titel</translation>
 <translation id="1378727793141957596">Willkommen bei Google Drive!</translation>
-<translation id="1379911846207762492">Sie können den Dateizugriff offline verfügbar machen, wenn Sie keine Internetverbindung haben.</translation>
+<translation id="1379911846207762492">Sie können Dateien offline verfügbar machen, wenn Sie keine Internetverbindung haben.</translation>
 <translation id="1383876407941801731">Durchsuchen</translation>
 <translation id="1395262318152388157">Schieberegler für die Suche</translation>
 <translation id="1404323374378969387">Norwegisch</translation>
@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Entfernen Sie Ihr Gerät noch nicht!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Wenn Sie Ihr Gerät entfernen, während es verwendet wird, können Daten verloren gehen. Warten Sie, bis der Vorgang abgeschlossen ist, und werfen Sie das Gerät dann über die App "Dateien" aus.</translation>
+<translation id="5159560892333415631">Papierkorb leeren</translation>
 <translation id="5163869187418756376">Fehler bei der Freigabe. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es später erneut.</translation>
 <translation id="516592729076796170">USA – Programmer Dvorak</translation>
 <translation id="5170477580121653719">Verbleibender Speicherplatz in Google Drive: <ph name="SPACE_AVAILABLE" /></translation>
@@ -419,6 +420,7 @@
 <translation id="5275973617553375938">Wiederhergestellte Dateien von Google Drive</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">Möchten Sie den Papierkorb wirklich leeren?</translation>
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5318819489018851358">Mit Linux teilen</translation>
 <translation id="5323213332664049067">Lateinamerikanisch</translation>
@@ -783,6 +785,7 @@
 <translation id="9154418932169119429">Dieses Bild ist offline nicht verfügbar.</translation>
 <translation id="9172592259078059678">Gujarati (Transliteration)</translation>
 <translation id="9173120999827300720">Englisch (USA) mit internationaler Tastatur</translation>
+<translation id="9174050671906956834">Elemente im Papierkorb werden nach 30 Tagen endgültig gelöscht.</translation>
 <translation id="9189836632794948435">Kasachisch</translation>
 <translation id="9213073329713032541">Die Installation wurde gestartet.</translation>
 <translation id="9219103736887031265">Bilder</translation>

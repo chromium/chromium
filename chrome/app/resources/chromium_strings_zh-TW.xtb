@@ -10,7 +10,6 @@
 <translation id="1315551408014407711">設定新的 Chromium 設定檔</translation>
 <translation id="1396446129537741364">Chromium 即將顯示密碼。</translation>
 <translation id="1414495520565016063">你已登入 Chromium！</translation>
-<translation id="1414973082589232775">如要使用 Rosetta 播放設有保護的媒體，必須重新啟動 Chromium。</translation>
 <translation id="151962892725702025">你的網域無法使用「同步功能」，因此 Chromium 作業系統無法同步處理你的資料。</translation>
 <translation id="1524282610922162960">分享 Chromium 分頁</translation>
 <translation id="1553461853655228091">Chromium 需要取得攝影機權限，才能根據你的周遭環境建立 3D 地圖</translation>
@@ -135,11 +134,11 @@
 <translation id="5480860683791598150">Chromium 需要位置資訊存取權，才能與這個網站分享你的位置資訊</translation>
 <translation id="549669000822060376">請稍候，Chromium 正在安裝最新的系統更新。</translation>
 <translation id="5496810170689441661">Chromium 正在嘗試編輯密碼。如果你同意這項作業，請輸入你的 Windows 密碼。</translation>
+<translation id="5527463683072221100">在 Chromium 中開啟 PDF</translation>
 <translation id="5623402015214259806">{0,plural, =0{有可用的 Chromium 更新}=1{有可用的 Chromium 更新}other{Chromium 更新已發布 # 天}}</translation>
 <translation id="5634636535844844681">Chromium 僅支援 Windows 7 以上版本的作業系統。</translation>
 <translation id="5653831366781983928">請立即重新啟動 Chromium</translation>
 <translation id="5698481217667032250">將 Chromium 的介面文字設為這種語言</translation>
-<translation id="5736967399513123100">如果要讓 Chromium 播放設有保護的媒體，必須安裝 Rosetta。要立即安裝 Rosetta 嗎？</translation>
 <translation id="5820394555380036790">Chromium 作業系統</translation>
 <translation id="5862307444128926510">歡迎使用 Chromium</translation>
 <translation id="5895138241574237353">重新啟動</translation>
@@ -190,7 +189,6 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (已複製到 Chromium)</translation>
 <translation id="6893813176749746474">Chromium 已更新，但你至少超過 30 天沒有使用 Chromium 了。</translation>
-<translation id="6897548120660295439">Rosetta 可讓 Chromium 播放這個頁面中設有保護的媒體。</translation>
 <translation id="691026815377248078">Chromium 需要藍牙存取權才能繼續配對。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">在 Chromium 無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="6978145336957848883">低強度密碼很容易讓有心人士猜中，請讓 Chromium <ph name="BEGIN_LINK" />為你建立一組高強度密碼，並儲存在 Chromium 中<ph name="END_LINK" />。</translation>

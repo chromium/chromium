@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Sense connexió; Chrome no pot cercar actualitzacions</translation>
 <translation id="5854621639439811139">Consell de Chrome. Ara alguns botons són a la part inferior de la pantalla, per exemple, Enrere, Endavant i Cerca.</translation>
+<translation id="5876773482963502140">Si permets que Chrome sàpiga la teva ubicació, l'enviarà als llocs web a què donis permís. Pot ser que els llocs web demanin la teva ubicació quan tinguin informació local per mostrar-te, com ara botigues o notícies a prop.</translation>
 <translation id="6036420186814142909">Google Chrome té funcions que us ajuden a gestionar les vostres dades d'Internet i la rapidesa amb què podeu carregar pàgines web.
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Canvia a Chrome</translation>
@@ -90,5 +91,4 @@
   2. Toca Aplicació de navegador predeterminada.
   3. Selecciona Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Si permets que Chrome sàpiga la teva ubicació, l'enviarà al motor de cerca predeterminat i als llocs web a què donis permís. Pot ser que els llocs web demanin la teva ubicació quan tinguin informació local per mostrar-te, com ara botigues o notícies a prop.</translation>
 </translationbundle>

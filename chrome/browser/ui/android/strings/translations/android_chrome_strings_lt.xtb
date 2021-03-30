@@ -268,7 +268,6 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="2856503607207334158">Nepavyko prisijungti</translation>
 <translation id="2860954141821109167">Įsitikinkite, kad šiame įrenginyje įgalinta telefono programa</translation>
 <translation id="2870560284913253234">Svetainė</translation>
-<translation id="2876369937070532032">Siunčia „Google“ kai kurių puslapių, kuriuose lankotės, URL, kai kyla pavojus jūsų saugai</translation>
 <translation id="2888126860611144412">Apie „Chrome“</translation>
 <translation id="2891154217021530873">Sustabdyti puslapio įkėlimą</translation>
 <translation id="2892647708214602204">Kai failas bus paruoštas, matysite pranešimą</translation>
@@ -311,7 +310,6 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="3157842584138209013">Žr., kiek duomenų sutaupėte, spustelėję mygtuką „Daugiau parinkčių“</translation>
 <translation id="3166827708714933426">Skirtukų ir langų spartieji klavišai</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Saugus naršymas (apsaugo jus ir jūsų įrenginį nuo pavojingų svetainių)</translation>
 <translation id="3205824638308738187">Beveik baigta!</translation>
 <translation id="3207960819495026254">Pažymėta</translation>
 <translation id="3208584281581115441">Tikrinti dabar</translation>
@@ -505,6 +503,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4561979708150884304">Nėra ryšio</translation>
 <translation id="4565377596337484307">Slėpti slaptažodį</translation>
 <translation id="4572422548854449519">Prisijungimas prie tvarkomos paskyros</translation>
+<translation id="4576892426230499203">Bandykite naudoti kitą patvirtinimo parinktį</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Prieš 1 minutę}one{Prieš # minutę}few{Prieš # minutes}many{Prieš # minutės}other{Prieš # minučių}}</translation>
 <translation id="4587589328781138893">Svetainės</translation>
 <translation id="4594952190837476234">Šis neprisijungus naudojamas puslapis sukurtas <ph name="CREATION_TIME" />, todėl gali skirtis nuo prisijungus pateiktos versijos.</translation>
@@ -584,7 +583,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5011311129201317034"><ph name="SITE" /> nori prisijungti</translation>
 <translation id="5016205925109358554">Su užraitais</translation>
 <translation id="5039804452771397117">Leisti</translation>
-<translation id="5040262127954254034">Privatumas</translation>
 <translation id="5087580092889165836">Pridėti kortelę</translation>
 <translation id="5091249083535528968">Išplėstiniai naudojimo duomenys</translation>
 <translation id="509429900233858213">Įvyko klaida.</translation>
@@ -637,6 +635,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5441522332038954058">Pereiti prie adreso juostos</translation>
 <translation id="544776284582297024">Norėdami atidaryti skirtukus ir vienu metu lankytis skirtinguose puslapiuose, palieskite mygtuką „Atidaryti skirtukai“</translation>
 <translation id="545042621069398927">Paspartinamas atsisiuntimas.</translation>
+<translation id="5454166040603940656">naudojant <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Atsisiųsti puslapį</translation>
 <translation id="548278423535722844">Atidaryti Žemėlapių programoje</translation>
 <translation id="5483197086164197190">Naršyti „Chrome“</translation>
@@ -777,6 +776,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6316139424528454185">„Android“ versija nepalaikoma</translation>
 <translation id="6324034347079777476">„Android“ sistemos sinchronizavimas išjungtas</translation>
 <translation id="6324977638108296054">Nepavyko sukurti nuorodos į paryškintą tekstą</translation>
+<translation id="6324997754869598316">(Klaida: <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Bendrinti per „<ph name="APPLICATION" />“</translation>
 <translation id="6337234675334993532">Šifruotė</translation>
 <translation id="6341580099087024258">Klausti, kur saugoti failus</translation>
@@ -793,6 +793,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Redaguoti žymę</translation>
 <translation id="6406506848690869874">Sinchronizavimas</translation>
+<translation id="6407224748847589805">Nepavyko prijungti prie jūsų kompiuterio. Bandykite naudoti kitą patvirtinimo parinktį.</translation>
 <translation id="6410404864818553978">Pagrindiniai naudojimo duomenys</translation>
 <translation id="6410883413783534063">Atidarykite skirtukus ir vienu metu lankykitės skirtinguose puslapiuose</translation>
 <translation id="6412673304250309937">Tikrinami URL pagal nesaugių svetainių sąrašą, saugomą naršyklėje „Chrome“. Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chrome“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, Saugaus naršymo funkcijai.</translation>
@@ -861,7 +862,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6813446258015311409">Prisijungimo prie „Chrome“ puslapis atidarytas.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">„<ph name="TAB_TITLE" />“, skirtukas, pasirinktas</translation>
-<translation id="6845325883481699275">Padėkite tobulinti „Chrome“ saugą</translation>
 <translation id="6846298663435243399">Įkeliama…</translation>
 <translation id="6850409657436465440">Atsisiuntimas vis dar vykdomas</translation>
 <translation id="6850830437481525139">Uždaryta skirtukų lapų: <ph name="TAB_COUNT" /></translation>
@@ -989,7 +989,6 @@ Inkognito režimo seanso duomenys bus išvalyti iš „Chrome“ tik tada, kai <
 <translation id="7704317875155739195">Automatiškai užbaigti paieškas ir URL</translation>
 <translation id="7707922173985738739">Naudoti mobiliojo ryšio duomenis</translation>
 <translation id="7725024127233776428">Pažymėti puslapiai rodomi čia</translation>
-<translation id="7746457520633464754">Tam, kad būtų aptiktos pavojingos programos ir svetainės, „Chrome“ siunčia „Google“ kai kurių puslapių, kuriuose lankotės, URL, ribotą sistemos informaciją ir kai kurių puslapių turinį</translation>
 <translation id="7757787379047923882">Tekstas bendrinamas iš „<ph name="DEVICE_NAME" />“</translation>
 <translation id="7761849928583394409">Pasirinkti datą ir laiką</translation>
 <translation id="7762668264895820836">SD kortelė Nr. <ph name="SD_CARD_NUMBER" /></translation>

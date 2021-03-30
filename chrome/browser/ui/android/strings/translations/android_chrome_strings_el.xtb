@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">Η σύνδεση απέτυχε</translation>
 <translation id="2860954141821109167">Βεβαιωθείτε ότι είναι ενεργοποιημένη μια εφαρμογή τηλεφώνου σε αυτήν τη συσκευή.</translation>
 <translation id="2870560284913253234">Ιστότοπος</translation>
-<translation id="2876369937070532032">Στέλνει URL από ορισμένες σελίδες που επισκέπτεστε στο Google, όταν η ασφάλειά σας βρίσκεται σε κίνδυνο</translation>
 <translation id="2888126860611144412">Σχετικά με το Chrome</translation>
 <translation id="2891154217021530873">Διακοπή φόρτωσης σελίδας</translation>
 <translation id="2892647708214602204">Θα δείτε μια ειδοποίηση όταν είναι έτοιμο αυτό το αρχείο.</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">Δείτε πόσα δεδομένα έχετε αποθηκεύσει από το κουμπί "Περισσότερες επιλογές"</translation>
 <translation id="3166827708714933426">Συντομεύσεις καρτέλας και παραθύρου</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Ασφαλής περιήγηση (προστατεύει εσάς και τη συσκευή σας από επικίνδυνους ιστοτόπους)</translation>
 <translation id="3205824638308738187">Σχεδόν ολοκληρώθηκε!</translation>
 <translation id="3207960819495026254">Προστέθηκε στους σελιδοδείκτες</translation>
 <translation id="3208584281581115441">Έλεγχος τώρα</translation>
@@ -505,6 +503,7 @@
 <translation id="4561979708150884304">Δεν υπάρχει σύνδεση</translation>
 <translation id="4565377596337484307">Απόκρυψη κωδικού πρόσβασης</translation>
 <translation id="4572422548854449519">Συνδεθείτε στον διαχειριζόμενο λογαριασμό</translation>
+<translation id="4576892426230499203">Δοκιμάστε μια διαφορετική επιλογή επαλήθευσης</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Πριν από # λεπτό}other{Πριν από # λεπτά}}</translation>
 <translation id="4587589328781138893">Ιστότοποι</translation>
 <translation id="4594952190837476234">Αυτή η σελίδα εκτός σύνδεσης δημιουργήθηκε στις <ph name="CREATION_TIME" /> και μπορεί να διαφέρει από την έκδοση στο διαδίκτυο.</translation>
@@ -584,7 +583,6 @@
 <translation id="5011311129201317034">Ο ιστότοπος <ph name="SITE" /> επιθυμεί σύνδεση</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Επιτρέπεται</translation>
-<translation id="5040262127954254034">Απόρρητο</translation>
 <translation id="5087580092889165836">Προσθήκη κάρτας</translation>
 <translation id="5091249083535528968">Εκτεταμένα δεδομένα χρήσης</translation>
 <translation id="509429900233858213">Παρουσιάστηκε σφάλμα.</translation>
@@ -637,6 +635,7 @@
 <translation id="5441522332038954058">Μετάβαση στη γραμμή διευθύνσεων</translation>
 <translation id="544776284582297024">Για να ανοίξετε καρτέλες και να επισκεφτείτε διαφορετικές σελίδες ταυτόχρονα, πατήστε το κουμπί Άνοιγμα καρτελών.</translation>
 <translation id="545042621069398927">Επιτάχυνση της λήψης σας.</translation>
+<translation id="5454166040603940656">με <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Λήψη σελίδας</translation>
 <translation id="548278423535722844">Άνοιγμα σε εφαρμογή χαρτών</translation>
 <translation id="5483197086164197190">Πλοήγηση στο Chrome</translation>
@@ -777,6 +776,7 @@
 <translation id="6316139424528454185">Μη υποστηρ. έκδοση Android</translation>
 <translation id="6324034347079777476">Ο συγχρονισμός συστήματος Android απενεργοποιήθηκε</translation>
 <translation id="6324977638108296054">Δεν είναι δυνατή η δημιουργία συνδέσμου προς την επισήμανση</translation>
+<translation id="6324997754869598316">(Σφάλμα <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Μοιραστείτε μέσω <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Κρυπτογράφηση</translation>
 <translation id="6341580099087024258">Να γίνεται ερώτηση σχετικά με την τοποθεσία αποθήκευσης των αρχείων</translation>
@@ -793,6 +793,7 @@
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Επεξεργασία σελιδοδείκτη</translation>
 <translation id="6406506848690869874">Συγχρονισμός</translation>
+<translation id="6407224748847589805">Δεν είναι δυνατή η σύνδεση στον υπολογιστή σας. Δοκιμάστε διαφορετική επιλογή επαλήθευσης.</translation>
 <translation id="6410404864818553978">Βασικά δεδομένα χρήσης</translation>
 <translation id="6410883413783534063">Ανοίξτε καρτέλες για να επισκεφτείτε διαφορετικές σελίδες ταυτόχρονα.</translation>
 <translation id="6412673304250309937">Ελέγχει αν τα URL περιλαμβάνονται στην λίστα μη ασφαλών ιστοτόπων που είναι αποθηκευμένη στο Chrome. Εάν ένας ιστότοπος προσπαθήσει να κλέψει τον κωδικό σας ή όταν κάνετε λήψη ενός επιβλαβούς αρχείου, το Chrome μπορεί επίσης να στείλει URL, καθώς και τμήματα του περιεχομένου της σελίδας, στην Ασφαλή περιήγηση.</translation>
@@ -861,7 +862,6 @@
 <translation id="6813446258015311409">Σύνδεση στο Chrome, έγινε άνοιγμα.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, καρτέλα, επιλέχθηκε</translation>
-<translation id="6845325883481699275">Συμβάλετε στη βελτίωση της ασφάλειας του Chrome</translation>
 <translation id="6846298663435243399">Φόρτωση…</translation>
 <translation id="6850409657436465440">Η λήψη σας βρίσκεται ακόμα σε εξέλιξη</translation>
 <translation id="6850830437481525139">Έκλεισαν <ph name="TAB_COUNT" /> καρτέλες</translation>
@@ -989,7 +989,6 @@
 <translation id="7704317875155739195">Αυτόματη συμπλήρωση αναζητήσεων και URL</translation>
 <translation id="7707922173985738739">Χρήση δεδομένων κινητής τηλεφωνίας</translation>
 <translation id="7725024127233776428">Εδώ εμφανίζονται οι σελίδες στις οποίες προσθέτετε σελιδοδείκτη</translation>
-<translation id="7746457520633464754">Για τον εντοπισμό επικίνδυνων εφαρμογών και ιστοτόπων, το Chrome στέλνει URL ορισμένων ιστοτόπων που επισκέπτεστε, περιορισμένες πληροφορίες συστήματος και ένα μέρος του περιεχομένου σελίδας στο Google</translation>
 <translation id="7757787379047923882">Το κείμενο κοινοποιήθηκε από τη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Επιλογή ημερομηνίας και ώρας</translation>
 <translation id="7762668264895820836">Κάρτα SD <ph name="SD_CARD_NUMBER" /></translation>

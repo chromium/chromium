@@ -395,6 +395,7 @@
 <translation id="4321179778687042513">Ctrl</translation>
 <translation id="4321776623976362024">আপুনি হাই কনট্ৰাষ্টৰ বাবে কীব’ৰ্ডৰ শ্বৰ্টকাটত টিপিছে৷ আপুনি এইটো অন কৰিব বিচাৰেনে?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4333628967105022692">একাধিক ব্যৱহাৰকাৰী ছাইন ইন হৈ থকাৰ সময়ত Lacrosএ কাম নকৰে।</translation>
 <translation id="4338109981321384717">বিবৰ্ধক কাঁচ</translation>
 <translation id="4351433414020964307">Assistant ল’ড হৈ আছে...</translation>
 <translation id="4356930093361201197">ৰঙৰ উচ্চ প্ৰভেদযুক্ত ম’ড</translation>
@@ -773,7 +774,7 @@
 <translation id="7607002721634913082">পজ হৈ আছে</translation>
 <translation id="7618774594543487847">নিৰপেক্ষ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">নিকটৱৰ্তী শ্বেয়াৰৰ ছেটিং দেখুৱাওক।</translation>
+<translation id="7633755430369750696">Nearby Shareৰ ছেটিং দেখুৱাওক।</translation>
 <translation id="7641938616688887143">ৰেকৰ্ড কৰক</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />ৰ বাবে ছেটিংসমূহ খোলক, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (গৰাকী)</translation>
@@ -964,6 +965,7 @@
 <translation id="9091626656156419976">ডিছপ্লে' <ph name="DISPLAY_NAME" /> আঁতৰোৱা হ'ল</translation>
 <translation id="9098969848082897657">ফ’নটো নীৰৱ কৰক</translation>
 <translation id="9099154003160514616">Lacrosৰ আপডে’ট উপলব্ধ</translation>
+<translation id="9105450214093926548">Lacros ব্ৰাউজাৰটো চলি থকাৰ সময়ত দ্বিতীয় এগৰাকী ব্যৱহাৰকাৰী ছাইন ইন কৰাটো সমৰ্থিত নহয়। অনুগ্ৰহ কৰি তাৰ সলনি Lacrosত দ্বিতীয় এটা ব্ৰাউজাৰ প্ৰ’ফাইল ব্যৱহাৰ কৰক অথবা Lacros বন্ধ কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="9133335900048457298">সুৰক্ষিত সমল ৰেকৰ্ড কৰিব নোৱাৰি</translation>
 <translation id="9151726767154816831">আপডে’ট কৰিবলৈ ৰিষ্টাৰ্ট আৰু পাৱাৰৱাশ্ব কৰক</translation>
 <translation id="9166331175924255663">নিকটৱৰ্তী শ্বেয়াৰৰ উচ্চ দৃশ্যমানতা ট’গল কৰক।</translation>

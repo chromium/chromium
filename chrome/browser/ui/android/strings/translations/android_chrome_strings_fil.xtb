@@ -268,7 +268,6 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="2856503607207334158">Pumalya ang pag-sign in</translation>
 <translation id="2860954141821109167">Tiyaking may naka-enable na phone app sa device na ito</translation>
 <translation id="2870560284913253234">Site</translation>
-<translation id="2876369937070532032">Ipadala ang mga URL ng ilang page na binibisita mo sa Google kapag nanganganib ang iyong seguridad</translation>
 <translation id="2888126860611144412">Tungkol sa Chrome</translation>
 <translation id="2891154217021530873">Ihinto ang pag-load ng page</translation>
 <translation id="2892647708214602204">Makakakita ka ng notification kapag handa na ang file na ito</translation>
@@ -311,7 +310,6 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3157842584138209013">Tingnan kung gaano karaming data ang iyong natipid sa button ng Higit Pang Opsyon</translation>
 <translation id="3166827708714933426">Mga shortcut ng tab at window</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Ligtas na Pag-browse (pinoprotektahan ka at ang iyong device mula sa mga mapanganib na site)</translation>
 <translation id="3205824638308738187">Halos tapos na!</translation>
 <translation id="3207960819495026254">Naka-bookmark</translation>
 <translation id="3208584281581115441">Suriin ngayon</translation>
@@ -585,7 +583,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5011311129201317034">Gustong kumonekta ng <ph name="SITE" /></translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Payagan</translation>
-<translation id="5040262127954254034">Privacy</translation>
 <translation id="5087580092889165836">Magdagdag ng card</translation>
 <translation id="5091249083535528968">Pinalawak na data ng paggamit</translation>
 <translation id="509429900233858213">May naganap na error.</translation>
@@ -638,6 +635,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5441522332038954058">Pumunta sa address bar</translation>
 <translation id="544776284582297024">Para magbukas ng mga tab at bisitahin ang iba't ibang page nang sabay-sabay, i-tap ang button na magbukas ng mga tab</translation>
 <translation id="545042621069398927">Pinapabilis ang iyong pag-download.</translation>
+<translation id="5454166040603940656">sa <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">I-download ang page</translation>
 <translation id="548278423535722844">Buksan sa app na mga mapa</translation>
 <translation id="5483197086164197190">Mag-navigate sa Chrome</translation>
@@ -864,7 +862,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6813446258015311409">Nakabukas ang pag-sign in sa Chrome.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, tab, napili</translation>
-<translation id="6845325883481699275">Tulungang paigtingin ang seguridad ng Chrome</translation>
 <translation id="6846298663435243399">Naglo-load…</translation>
 <translation id="6850409657436465440">Isinasagawa pa rin ang iyong pag-download</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> (na) tab ang isinara</translation>
@@ -992,7 +989,6 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="7704317875155739195">Awtomatikong kumpletuhin ang mga paghahanap at URL</translation>
 <translation id="7707922173985738739">Gumamit ng mobile data</translation>
 <translation id="7725024127233776428">Lalabas dito ang mga page na iyong.na-bookmark</translation>
-<translation id="7746457520633464754">Para matukoy ang mapapanganib na app at site, nagpapadala ang Chrome ng mga URL ng ilang page na binibisita mo, limitadong impormasyon ng system, at ilang content ng page sa Google</translation>
 <translation id="7757787379047923882">Ibinahagi ang text mula sa <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Pumili ng petsa at oras</translation>
 <translation id="7762668264895820836">SD card <ph name="SD_CARD_NUMBER" /></translation>

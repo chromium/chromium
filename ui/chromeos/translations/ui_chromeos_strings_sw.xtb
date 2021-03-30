@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Bado usiondoe kifaa chako!<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
       Kuondoa kifaa chako kikiwa kinatumika kunaweza kusababisha kupoteza data. Tafadhali subiri hadi uendeshaji ukamilike, kisha uondoe kifaa kwa kutumia programu ya Faili.</translation>
+<translation id="5159560892333415631">Futa Kila Kitu Kwenye Tupio</translation>
 <translation id="5163869187418756376">Kushiriki kumeshindwa. Angalia muunganisho wako na ujaribu tena baadaye.</translation>
 <translation id="516592729076796170">Kibodi ya Programmer Dvorak, Marekani</translation>
 <translation id="5170477580121653719">Nafasi iliyosalia ya Hifadhi ya Google: <ph name="SPACE_AVAILABLE" />.</translation>
@@ -419,6 +420,7 @@
 <translation id="5275973617553375938">Faili zilizorejeshwa kutoka Hifadhi ya Google</translation>
 <translation id="5288441970121584418">Baga</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">Je, una uhakika unataka kufuta kila kitu kwenye Tupio?</translation>
 <translation id="5317780077021120954">Hifadhi</translation>
 <translation id="5318819489018851358">Shiriki kwenye Linux</translation>
 <translation id="5323213332664049067">Amerika ya Kusini</translation>
@@ -750,6 +752,7 @@
 <translation id="872537912056138402">Kikroeshia</translation>
 <translation id="8750438273876807512">Gusa na ushikilie faili na uguse <ph name="ICON" />, kisha uchague "Bandika kwenye rafu" ili uweze kufikia faili zako zilizo kwenye rafu kwa haraka.</translation>
 <translation id="8775404590947523323">Uhariri wako umehifadhiwa otomatiki.<ph name="BREAKS" />Ili kuweka nakala ya picha halisi, ondoa tiki kwenye "Futa halisi"</translation>
+<translation id="8802459921616481935">Weka kwenye Tupio</translation>
 <translation id="8808686172382650546">Paka</translation>
 <translation id="8810671769985673465">Haikuwezekana kubana, faili ipo: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Kihispania (Uhispania)</translation>
@@ -758,7 +761,7 @@
 <translation id="8860454412039442620">Lahajedwali la Excel</translation>
 <translation id="8866284467018526531">Unukuzi wa mfumo wa kuandika Kiarabu</translation>
 <translation id="8900820606136623064">Kihungari</translation>
-<translation id="8903931173357132290">Hitimu</translation>
+<translation id="8903931173357132290">Kuhitimu</translation>
 <translation id="8919081441417203123">Kidenmarki</translation>
 <translation id="8965697826696209160">Hakuna nafasi ya kutosha.</translation>
 <translation id="8970501467542182729">Faili hii imeundwa kwa ajili ya kompyuta inayotumia programu ya Macintosh. Kwa hivyo haioani na kifaa chako kinachotumia Mfumo wa Uendeshaji wa Chrome. <ph name="BEGIN_LINK_HELP" />Pata Maelezo Zaidi<ph name="END_LINK_HELP" /> kuhusu kufungua faili kwenye Mfumo wa Uendeshaji wa Chrome.</translation>
@@ -783,6 +786,7 @@
 <translation id="9154418932169119429">Picha hii haipatikani nje ya mtandaoni.</translation>
 <translation id="9172592259078059678">Unukuzi wa mfumo wa kuandika Kigujarati</translation>
 <translation id="9173120999827300720">Kiingereza (Marekani) kwenye kibodi ya Kimataifa</translation>
+<translation id="9174050671906956834">Vipengee katika tupio hufutwa kabisa baada ya siku 30.</translation>
 <translation id="9189836632794948435">Kikazaki</translation>
 <translation id="9213073329713032541">Imeanza kusakinisha.</translation>
 <translation id="9219103736887031265">Picha</translation>

@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Chromium kan ikke bruge dit kamera lige nu</translation>
 <translation id="2195025571279539885">Skal Chromium tilbyde at oversætte sider på <ph name="LANGUAGE_NAME" /> fra dette website næste gang?</translation>
 <translation id="2590893390871230428">Synkroniser dine Chromium-data</translation>
-<translation id="259614951763923692">Hvis du giver Chromium tilladelse til at kende din placering, sender Chromium den til din standardsøgemaskine og de websites, du giver tilladelse til. Websites kan anmode om adgang til din placering, når de vil vise dig lokale oplysninger, f.eks. butikker i nærheden eller nyheder.</translation>
 <translation id="2650312721222849884">Aktivér synkronisering for at se dine faner på alle de enheder, hvor du bruger Chromium</translation>
 <translation id="2730884209570016437">Chromium kan ikke bruge dit kamera, da det bruges af en anden app</translation>
 <translation id="2915596697727466327">Chromium bruger Face ID til at sikre autoriseret adgang til dine adgangskoder.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Vil du logge ud af Chromium?</translation>
 <translation id="6424492062988593837">Chromium er lige blevet bedre! Der er en ny tilgængelig version.</translation>
 <translation id="6820823224820483452">Chromium kunne ikke tjekke alle adgangskoder. Prøv igen i morgen.</translation>
+<translation id="6827294685447036764">Hvis du giver Chromium tilladelse til at kende din placering, sender Chromium den til de websites, du giver tilladelse til. Websites kan anmode om adgang til din placering, når de vil vise dig lokale oplysninger, f.eks. butikker i nærheden eller nyheder.</translation>
 <translation id="7018284295775193585">Chromium kan ikke opdateres</translation>
 <translation id="7099326575020694068">Chromium kan ikke bruge dit kamera i tilstanden Opdelt visning</translation>
 <translation id="7118091470949186573">Du kan nu bruge Chromium, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>

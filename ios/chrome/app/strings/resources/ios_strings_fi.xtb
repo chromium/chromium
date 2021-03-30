@@ -282,6 +282,7 @@ Seuraa alla olevia ohjeita:</translation>
 <translation id="3928666092801078803">Yhdistä tiedot</translation>
 <translation id="3929457972718048006">Osoitteet</translation>
 <translation id="3943492037546055397">Salasanat</translation>
+<translation id="3967266340354872733">Näet lisää yksityisyyteen, tietoturvaan ja datankeruuseen liittyviä asetuksia kohdista <ph name="BEGIN_LINK" />Synkronointi<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />Googlen palvelut<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Lataus on valmis</translation>
 <translation id="3968505803272650567">Ylläpidä kiinnostuksen kohteita</translation>
 <translation id="3989635538409502728">Kirjaudu ulos</translation>
@@ -556,6 +557,7 @@ Yritä käyttää jokaisella sivustolla yksilöllistä salasanaa.</translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Salasanojen vienti epäonnistui</translation>
 <translation id="6748108480210050150">Lähettäjä</translation>
+<translation id="6760509555861141183">Palaa viimeisimmälle välilehdelle</translation>
 <translation id="6780034285637185932">Postinumero</translation>
 <translation id="6785453220513215166">Lähetetään virheraporttia…</translation>
 <translation id="679325081238418596">Käytä kirjanmerkkejäsi, historiaasi, salasanojasi ja muita asetuksiasi kaikilla laitteillasi.</translation>
@@ -607,7 +609,6 @@ Yritä käyttää jokaisella sivustolla yksilöllistä salasanaa.</translation>
 <translation id="7272437679830969316">Henkilöllisyytesi vahvistaminen ei onnistunut. Salasanaa ei kopioitu.</translation>
 <translation id="7291368939935408496">Valmistellaan salasanoja…</translation>
 <translation id="7293171162284876153">Aloita synkronointi ottamalla Chrome-datan synkronointi käyttöön.</translation>
-<translation id="7299000566397147023">Avaa viimeisin välilehti</translation>
 <translation id="7313347584264171202">Näet incognito-välilehtesi täällä</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> prosenttia ladattu</translation>
 <translation id="7340958967809483333">Discover-asetukset</translation>

@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">A senha expirará em <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nenhum trabalho de impressão em andamento</translation>
 <translation id="4297501883039923494">Parado (erro desconhecido)</translation>
+<translation id="4344214025510306853">Adicionar um APN</translation>
 <translation id="4378373042927530923">Não executada</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Meu Drive</translation>
@@ -278,6 +279,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7059230779847288458">Carregando. <ph name="TIME_VALUE" /> até a carga completa</translation>
 <translation id="708426984172631313">PARADO</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="714876143603641390">Conectividade LAN</translation>
@@ -363,6 +365,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8970109610781093811">Executar novamente</translation>
 <translation id="9003704114456258138">Frequência</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9065203028668620118">Editar</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Uso atual</translation>

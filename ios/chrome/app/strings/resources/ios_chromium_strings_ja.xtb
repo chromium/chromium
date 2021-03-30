@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">現在 Chromium ではカメラを使用できません</translation>
 <translation id="2195025571279539885">次回から Chromium でこのサイトの <ph name="LANGUAGE_NAME" /> ページの翻訳を表示しますか？</translation>
 <translation id="2590893390871230428">Chromium のデータを同期する</translation>
-<translation id="259614951763923692">Chromium に位置情報の利用を許可した場合、その情報が Chromium から既定の検索エンジンや許可済みのサイトに送信されます。また、サイトで付近の店舗やニュースなどの地域情報を表示できる場合に位置情報を要求されることがあります。</translation>
 <translation id="2650312721222849884">どのデバイスからでも Chromium で自分のタブにアクセスするには、同期をオンにしてください</translation>
 <translation id="2730884209570016437">カメラは別のアプリが使用中のため、Chromium では使用できません</translation>
 <translation id="2915596697727466327">Chromium では Face ID の使用により、パスワードへの認証されたアクセスのみが許可されます。</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Chromium からログアウトしますか？</translation>
 <translation id="6424492062988593837">Chromium のアップデートが見つかりました。新しいバージョンが利用可能です。</translation>
 <translation id="6820823224820483452">Chromium ですべてのパスワードを確認できませんでした。明日もう一度お試しください。</translation>
+<translation id="6827294685447036764">Chromium に位置情報の利用を許可すると、許可を与えたサイトに位置情報が提供されます。また、サイトで付近の店舗やニュースなどの地域情報を表示できる場合に位置情報を要求されることがあります。</translation>
 <translation id="7018284295775193585">Chromium を更新できません</translation>
 <translation id="7099326575020694068">Chromium では、分割表示モードでカメラを使用することはできません</translation>
 <translation id="7118091470949186573">メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chromium が使えるようになります。</translation>

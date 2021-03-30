@@ -268,7 +268,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="2856503607207334158">Sikertelen bejelentkezés</translation>
 <translation id="2860954141821109167">Győződjön meg arról, hogy van engedélyezett telefonalkalmazás ezen az eszközön</translation>
 <translation id="2870560284913253234">Webhely</translation>
-<translation id="2876369937070532032">Elküldi egyes felkeresett oldalak URL-jét a Google-nak, ha veszélyben van az Ön biztonsága</translation>
 <translation id="2888126860611144412">A Chrome névjegye</translation>
 <translation id="2891154217021530873">Oldal betöltésének leállítása</translation>
 <translation id="2892647708214602204">Értesítést kap, amikor a fájl elkészült</translation>
@@ -311,7 +310,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3157842584138209013">A További lehetőségek gombra kattintva tekintheti meg, hogy mekkora a megtakarított adatmennyiség</translation>
 <translation id="3166827708714933426">Lapokkal és ablakokkal kapcsolatos billentyűparancsok</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Biztonságos Böngészés (megvédi Önt és eszközét a veszélyes webhelyekkel szemben)</translation>
 <translation id="3205824638308738187">Majdnem kész.</translation>
 <translation id="3207960819495026254">Könyvjelző rögzítve</translation>
 <translation id="3208584281581115441">Ellenőrzés most</translation>
@@ -505,6 +503,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4561979708150884304">Nincs kapcsolat</translation>
 <translation id="4565377596337484307">Jelszó elrejtése</translation>
 <translation id="4572422548854449519">Bejelentkezés a kezelt fiókba</translation>
+<translation id="4576892426230499203">Próbálkozzon másik ellenőrzési módszerrel</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# perce}other{# perce}}</translation>
 <translation id="4587589328781138893">Webhelyek</translation>
 <translation id="4594952190837476234">Az offline oldal létrehozási ideje: <ph name="CREATION_TIME" />. Az oldal eltérhet az online változattól.</translation>
@@ -584,7 +583,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5011311129201317034">A(z) <ph name="SITE" /> csatlakozni szeretne</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Engedélyezés</translation>
-<translation id="5040262127954254034">Adatvédelem</translation>
 <translation id="5087580092889165836">Kártya hozzáadása</translation>
 <translation id="5091249083535528968">Bővített használati adatok</translation>
 <translation id="509429900233858213">Hiba történt.</translation>
@@ -637,6 +635,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5441522332038954058">Ugrás a címsávba</translation>
 <translation id="544776284582297024">Ha egyidejűleg több lapot is megnyitna, és különböző oldalakat is felkeresne, koppintson a megnyitott lapok gombra</translation>
 <translation id="545042621069398927">Letöltés felgyorsítása…</translation>
+<translation id="5454166040603940656"><ph name="PROVIDER" /> szolgáltatóval</translation>
 <translation id="5456381639095306749">Oldal letöltése</translation>
 <translation id="548278423535722844">Megnyitás térképalkalmazásban</translation>
 <translation id="5483197086164197190">Navigáció a Chrome-ban</translation>
@@ -777,6 +776,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6316139424528454185">Nem támogatott Android-verzió</translation>
 <translation id="6324034347079777476">Az Android rendszer szinkronizálása letiltva</translation>
 <translation id="6324977638108296054">Nem sikerült linket létrehozni a kiemelt szöveghez</translation>
+<translation id="6324997754869598316">(Hiba: <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Megosztás a következőn keresztül: <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Titkosítás</translation>
 <translation id="6341580099087024258">Rákérdezés a fájlok mentésének helyére</translation>
@@ -793,6 +793,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6402652558933147609"><ph name="ERROR_CODE" />, <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Könyvjelző szerkesztése</translation>
 <translation id="6406506848690869874">Szinkronizálás</translation>
+<translation id="6407224748847589805">Nem lehet csatlakozni a számítógépéhez. Próbálkozzon másik ellenőrzési módszerrel.</translation>
 <translation id="6410404864818553978">Alapvető használati adatok</translation>
 <translation id="6410883413783534063">Lapok megnyitásával egyszerre több oldalt is felkereshet.</translation>
 <translation id="6412673304250309937">Ellenőrzi az URL-eket a Chrome-ban a nem biztonságos webhelyekről tárolt lista alapján. Ha egy webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön ártalmas fájlt tölt le, akkor a Chrome elküldheti az URL-eket is (az oldaltartalmak részleteivel együtt) a Biztonságos Böngészésnek.</translation>
@@ -861,7 +862,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6813446258015311409">Bejelentkezés a Chrome-ba, megnyitva.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, lap, kiválasztva</translation>
-<translation id="6845325883481699275">Segítség a Chrome biztonságának továbberősítésében</translation>
 <translation id="6846298663435243399">Betöltés…</translation>
 <translation id="6850409657436465440">A letöltés még mindig folyamatban van</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> lap bezárva</translation>
@@ -989,7 +989,6 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="7704317875155739195">Keresések és URL-címek automatikus kiegészítése</translation>
 <translation id="7707922173985738739">Mobiladat-kapcsolat használata</translation>
 <translation id="7725024127233776428">Itt jelennek meg a könyvjelzőként mentett oldalak</translation>
-<translation id="7746457520633464754">A veszélyes alkalmazások és webhelyek észlelésének érdekében a Chrome az egyes felkeresett oldalak URL-jét, valamint korlátozott rendszer-információkat és bizonyos oldaltartalmakat továbbít a Google-nak.</translation>
 <translation id="7757787379047923882">Szöveg megosztva a következő eszközről: <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Dátum és időpont kiválasztása</translation>
 <translation id="7762668264895820836">SD-kártya (<ph name="SD_CARD_NUMBER" />)</translation>

@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">Cadrado</translation>
 <translation id="5775960006311140197">Modo experto</translation>
 <translation id="5869546221129391014">Grade</translation>
+<translation id="5975083100439434680">Afastar</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6073451960410192870">Deter gravación</translation>
 <translation id="6197807149213783179">Gardar metadatos</translation>
@@ -81,9 +82,9 @@ Se está relacionado coa calidade da imaxe ou do vídeo, anexa unha foto ou un v
 <translation id="7649070708921625228">Axuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7670511624014457267">60 fps</translation>
-<translation id="7974782136796202581">Mostrar opcións de panorámica, inclinación e zoom</translation>
 <translation id="7983668134180549431">Detectouse texto.</translation>
 <translation id="8067883171444229417">Reproducir vídeo</translation>
+<translation id="8120146556401698679">Panorámica, inclinación e zoom</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8145038249676204903">Cambiar a modo de cámara de fotos</translation>
 <translation id="8239780215768881278">Crear instantánea do vídeo</translation>
@@ -94,6 +95,7 @@ Se está relacionado coa calidade da imaxe ou do vídeo, anexa unha foto ou un v
 <translation id="8815966864175525708">Cambiar para facer unha foto de retrato</translation>
 <translation id="8828441885228359828">Retomar gravación</translation>
 <translation id="8870695351537079478">Non se puido iniciar a gravación</translation>
+<translation id="8903921497873541725">Achegar</translation>
 <translation id="9045155556724273246">10 segundos</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 </translationbundle>

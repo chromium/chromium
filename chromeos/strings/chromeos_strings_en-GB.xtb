@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">Password expires in <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No print jobs in progress</translation>
 <translation id="4297501883039923494">Stopped – unknown error</translation>
+<translation id="4344214025510306853">Attach APN</translation>
 <translation id="4378373042927530923">Not run</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">My Drive</translation>
@@ -278,6 +279,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7059230779847288458">Charging; <ph name="TIME_VALUE" /> until full</translation>
 <translation id="708426984172631313">STOPPED</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">Connecting</translation>
 <translation id="7144878232160441200">Retry</translation>
 <translation id="714876143603641390">LAN connectivity</translation>
@@ -363,6 +365,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8970109610781093811">Run again</translation>
 <translation id="9003704114456258138">Frequency:</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9065203028668620118">Edit</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Current usage</translation>

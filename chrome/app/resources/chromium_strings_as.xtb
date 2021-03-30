@@ -12,7 +12,6 @@
 <translation id="1315551408014407711">আপোনাৰ নতুন Chromium প্ৰ'ফাইল ছেট আপ কৰক</translation>
 <translation id="1396446129537741364">Chromiumএ পাছৱর্ডসমূহ দেখুৱাবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="1414495520565016063">আপুনি Chromiumত ছাইন ইন হৈ আছে!</translation>
-<translation id="1414973082589232775">সুৰক্ষিত মিডিয়া প্লে’ কৰাৰ বাবে Rosetta ব্যৱহাৰ কৰিবলৈ আপুনি Chromium ৰিষ্টাৰ্ট কৰিবই লাগিব।</translation>
 <translation id="151962892725702025">আপোনাৰ ড‘মেইনত ছিংক কৰাৰ সুবিধা নথকাৰ বাবে Chromium OSএ আপোনাৰ ডেটা ছিংক কৰিব নোৱাৰিলে।</translation>
 <translation id="1524282610922162960">Chromium টেব এটা শ্বেয়াৰ কৰক</translation>
 <translation id="1553461853655228091">আপোনাৰ চৌপাশৰ এখন 3D মেপ সৃষ্টি কৰিবলৈ Chromiumক আপোনাৰ কেমেৰা এক্সেছ কৰাৰ অনুমতিৰ প্ৰয়োজন</translation>
@@ -137,11 +136,11 @@
 <translation id="5480860683791598150">আপোনাৰ অৱস্থান এই ছাইটটোৰ সৈতে শ্বেয়াৰ কৰিবলৈ Chromiumএ আপোনাৰ অৱস্থান এক্সেছ কৰাৰ আৱশ্যক</translation>
 <translation id="549669000822060376">Chromiumএ শেহতীয়া ছিষ্টেম আপডে’ট ইনষ্টল কৰালৈ কিছুসময় অপেক্ষা কৰক।</translation>
 <translation id="5496810170689441661">Chromiumএ পাছৱর্ডসমূহ সম্পাদনা কৰিবলৈ চেষ্টা কৰি আছে। এই কার্যৰ বাবে অনুমতি দিবলৈ আপোনাৰ Windowsৰ পাছৱৰ্ডটো টাইপ কৰক।</translation>
+<translation id="5527463683072221100">Chromiumত PDF খোলক</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromiumৰ এটা আপডে'ট আছে}=1{Chromiumৰ এটা আপডে'ট আছে}one{Chromiumৰ এটা আপডে’ট # দিনৰ বাবে উপলব্ধ}other{Chromiumৰ এটা আপডে’ট # দিনৰ বাবে উপলব্ধ}}</translation>
 <translation id="5634636535844844681">Chromiumৰ বাবে Windows 7 বা তাতোকৈ উন্নত সংস্কৰণৰ আৱশ্যক।</translation>
 <translation id="5653831366781983928">অনুগ্ৰহ কৰি এতিয়া Chromium ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="5698481217667032250">এই ভাষাত Chromium প্ৰদর্শন কৰক</translation>
-<translation id="5736967399513123100">সুৰক্ষিত মিডিয়া Chromiumএ প্লে’ কৰাৰ সুবিধাটো সক্ষম কৰিবলৈ আপুনি Rosetta ইনষ্টল কৰিব লাগিব। আপুনি এইটো এতিয়াই ইনষ্টল কৰিব বিচাৰেনে?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Chromium লৈ স্বাগতম</translation>
 <translation id="5895138241574237353">ৰিষ্টাৰ্ট কৰক</translation>
@@ -192,7 +191,6 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromiumলৈ প্ৰতিলিপি কৰা হ’ল)</translation>
 <translation id="6893813176749746474">Chromium আপডে’ট কৰা হৈছে, কিন্তু আপুনি সেইটো যোৱা ৩০ দিন ধৰি ব্যৱহাৰ কৰা নাই।</translation>
-<translation id="6897548120660295439">এই পৃষ্ঠাখনত সুৰক্ষিত মিডিয়া প্লে’ কৰিবলৈ Rosettaই Chromiumক সক্ষম কৰে।</translation>
 <translation id="691026815377248078">পেয়াৰ কৰাটো অব্যাহত ৰাখিবলৈ Chromiumক ব্লুটুথ সুবিধাৰ এক্সেছৰ 
 আৱশ্যক। <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Chromium ইন&amp;ক’গনিট’ ৱিণ্ড’ত লিংকটো খোলক</translation>

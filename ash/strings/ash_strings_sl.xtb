@@ -277,6 +277,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> se še vedno lahko prijavi pozneje.</translation>
 <translation id="3321628682574733415">Nepravilna koda starša</translation>
 <translation id="332587331255250389">Zamenjajte baterijo</translation>
+<translation id="3333741161915951567">Vnovični zagon modema. Počakajte 30 sekund in nato poskusite znova.</translation>
 <translation id="3341303451326249809">Posnetek zaslona je shranjen</translation>
 <translation id="334252345105450327">Ustvari posnetek zaslona</translation>
 <translation id="3351879221545518001">Trenutno predvajate vsebino zaslona.</translation>
@@ -396,6 +397,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Pritisnili ste bližnjično tipko za visoki kontrast. Ali ga želite vklopiti?</translation>
 <translation id="4331809312908958774">OS Chrome</translation>
+<translation id="4333628967105022692">Lacros ni podprt, če je prijavljenih več uporabnikov.</translation>
 <translation id="4338109981321384717">Povečevalno steklo</translation>
 <translation id="4351433414020964307">Pomočnik se nalaga ...</translation>
 <translation id="4356930093361201197">visokokontrastni način</translation>
@@ -968,6 +970,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="9091626656156419976">Odstranjen zaslon <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Utišanje telefona</translation>
 <translation id="9099154003160514616">Na voljo je posodobitev za Lacros</translation>
+<translation id="9105450214093926548">Prijava drugega uporabnika ni podprta, medtem ko se izvaja brskalnik Lacros. Uporabite drugi profil brskalnika v Lacrosu ali zaprite Lacros in poskusite znova.</translation>
 <translation id="9133335900048457298">Zaščitene vsebine ni mogoče posneti</translation>
 <translation id="9151726767154816831">Če želite posodobiti, znova zaženite in uporabite funkcijo Powerwash</translation>
 <translation id="9166331175924255663">Preklop visoke vidnosti deljenja v bližini.</translation>

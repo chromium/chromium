@@ -282,6 +282,7 @@
 <translation id="3928666092801078803">合併我的資料</translation>
 <translation id="3929457972718048006">地址</translation>
 <translation id="3943492037546055397">密碼</translation>
+<translation id="3967266340354872733">如需更多與私隱權、安全性和資料收集相關的設定，請參閱<ph name="BEGIN_LINK" />同步處理<ph name="END_LINK" />和 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3968505803272650567">管理興趣</translation>
 <translation id="3989635538409502728">登出</translation>
@@ -554,6 +555,7 @@
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">無法匯出密碼</translation>
 <translation id="6748108480210050150">來源</translation>
+<translation id="6760509555861141183">返回「最近」分頁</translation>
 <translation id="6780034285637185932">郵遞區號</translation>
 <translation id="6785453220513215166">正在傳送當機報告...</translation>
 <translation id="679325081238418596">您可從任何裝置取得自己的書籤、記錄、密碼和其他設定</translation>
@@ -605,7 +607,6 @@
 <translation id="7272437679830969316">無法驗證您的身分。未複製密碼。</translation>
 <translation id="7291368939935408496">正在準備密碼…</translation>
 <translation id="7293171162284876153">如要開始同步處理，請開啟「同步處理 Chrome 資料」。</translation>
-<translation id="7299000566397147023">開啟最近使用的分頁</translation>
 <translation id="7313347584264171202">您可在此查看無痕式分頁</translation>
 <translation id="7336264872878993241">已下載 <ph name="PERCENT" /> %</translation>
 <translation id="7340958967809483333">「探索」的選項</translation>

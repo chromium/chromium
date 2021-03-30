@@ -396,6 +396,7 @@
 <translation id="4321179778687042513">مهار</translation>
 <translation id="4321776623976362024">میان‌بر صفحه‌کلید مربوط به کنتراست بالا را فشار دادید. می‌خواهید آن را روشن کنید؟</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4333628967105022692">‏وقتی چند کاربر به سیستم وارد شده باشند، از Lacros پشتیبانی نمی‌شود.</translation>
 <translation id="4338109981321384717">ذره‌بین</translation>
 <translation id="4351433414020964307">دستیار درحال بار کردن است...</translation>
 <translation id="4356930093361201197">حالت تضاد بالا</translation>
@@ -496,7 +497,7 @@
 <translation id="5155897006997040331">سرعت خواندن</translation>
 <translation id="5168181903108465623">دستگاه‌های فرستادن موجود هستند</translation>
 <translation id="5170568018924773124">نمایش در پوشه</translation>
-<translation id="5176318573511391780">ضبط کردن بخشی از صفحه‌نمایش</translation>
+<translation id="5176318573511391780">ضبط کردن نیم‌صفحه</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{۱ اعلان دیگر}one{# اعلان دیگر}other{# اعلان دیگر}}</translation>
 <translation id="5207949376430453814">برجسته کردن هشتک نوشتار</translation>
 <translation id="5208059991603368177">روشن</translation>
@@ -968,6 +969,7 @@
 <translation id="9091626656156419976">نمایشگر <ph name="DISPLAY_NAME" /> برداشته شد</translation>
 <translation id="9098969848082897657">بی‌صدا کردن تلفن</translation>
 <translation id="9099154003160514616">‏به‌روزرسانی Lacros موجود است</translation>
+<translation id="9105450214093926548">‏درحین اجرای مرورگر Lacros، از ورود به سیستم کاربر دوم پشتیبانی نمی‌شود. لطفاً درعوض از نمایه مرورگر دیگری در Lacros استفاده کنید یا Lacros را ببندید و دوباره امتحان کنید.</translation>
 <translation id="9133335900048457298">نمی‌توان محتوای محافظت‌شده را ضبط کرد</translation>
 <translation id="9151726767154816831">‏راه‌اندازی مجدد و Powerwash برای به‌روزرسانی</translation>
 <translation id="9166331175924255663">روشن/خاموش کردن «هم‌رسانی با اطراف» با میزان بالای نمایان بودن.</translation>

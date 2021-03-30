@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Sjá upplýsingar</translation>
 <translation id="1030706264415084469"><ph name="URL" /> vill fá að geyma mikið magn gagna varanlega í tækinu þínu</translation>
 <translation id="1032854598605920125">Snúa réttsælis</translation>
+<translation id="1036224116832931580">Risaeðluleikur, ýttu til að hoppa og spila</translation>
 <translation id="1036348656032585052">Slökkva</translation>
 <translation id="1038106730571050514">Sýna tillögur</translation>
 <translation id="1038842779957582377">óþekkt heiti</translation>
@@ -280,6 +281,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="192020519938775529">{COUNT,plural, =0{Ekkert}=1{Eitt vefsvæði}one{# vefsvæði}other{# vefsvæði}}</translation>
 <translation id="1945968466830820669">Þú gætir misst aðgang að fyrirtækisreikningnum eða orðið fyrir auðkennisstuldi. Chromium mælir með því að þú skiptir um aðgangsorð núna.</translation>
 <translation id="1947454675006758438">Hefti efst til hægri</translation>
+<translation id="1958218078413065209">Stigametið þitt er <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Hjálpaðu til við að auka öryggi allra á vefnum með því að senda <ph name="BEGIN_WHITEPAPER_LINK" />vefslóðir sumra þeirra vefsíðna sem þú skoðar, takmarkaðar kerfisupplýsingar og tiltekið innihald síðna<ph name="END_WHITEPAPER_LINK" /> til Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Persónuverndarstefna<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Bókamerki frá <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Röðunarvilla</translation>
@@ -548,6 +550,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn og svo Enter til að keyra öryggisathugun í stillingum Chrome</translation>
 <translation id="3061707000357573562">Plástraþjónusta</translation>
 <translation id="3064966200440839136">Slökkva þarf á huliðsstillingu til að greiða með öðru forriti. Halda áfram?</translation>
+<translation id="306573536155379004">Leikur hafinn.</translation>
 <translation id="3080254622891793721">Grafík</translation>
 <translation id="3086579638707268289">Verið er að fylgjast með aðgerðum þínum á vefnum</translation>
 <translation id="3087734570205094154">Neðst</translation>
@@ -1544,6 +1547,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="6934672428414710184">Þetta nafn kemur af Google reikningnum þínum</translation>
 <translation id="6944692733090228304">Þú slóst aðgangsorðið þitt inn á vefsvæði sem <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> hefur ekki umsjón með. Til að vernda reikninginn þinn skaltu ekki nota sama aðgangsorð í öðrum forritum eða vefsvæðum.</translation>
 <translation id="6945221475159498467">Velja</translation>
+<translation id="6948051842255602737">Leik lokið, þú fékkst <ph name="SCORE" /> stig.</translation>
 <translation id="6948701128805548767">Veldu heimilisfang til að sjá afhendingarmáta og kröfur</translation>
 <translation id="6949872517221025916">Endurstilla aðgangsorð</translation>
 <translation id="6950684638814147129">Villa við þáttun JSON-gildis: <ph name="ERROR" /></translation>
@@ -1826,6 +1830,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="7956713633345437162">Bókamerki fartækis</translation>
 <translation id="7961015016161918242">Aldrei</translation>
 <translation id="7966803981046576691">Gerð vinnslureiknings</translation>
+<translation id="79682505114836835">Gildið „<ph name="VALUE" />“ er ógildur litur í sextándakerfi.</translation>
 <translation id="7976214039405368314">Of margar beiðnir</translation>
 <translation id="7977538094055660992">Úttakstæki</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1953,6 +1958,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="8446884382197647889">Frekari upplýsingar</translation>
 <translation id="8457125768502047971">Ótiltekið</translation>
 <translation id="8461694314515752532">Dulkóða samstillt gögn með eigin aðgangsorði samstillingar</translation>
+<translation id="8463101686637053101">Risaeðluleikur, ýttu á bilslána til að hoppa og spila</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{Eitt kreditkort}one{# kreditkort}other{# kreditkort}}</translation>
 <translation id="8473863474539038330">Heimilisföng og fleira</translation>
 <translation id="8474910779563686872">Sýna upplýsingar forritara</translation>
@@ -2088,6 +2094,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="8996941253935762404">Vefsvæðið framundan inniheldur skaðleg forrit</translation>
 <translation id="8997023839087525404">Vefþjónninn birti vottorð sem var ekki opinberlega birt með gagnsæisreglu vottorða. Þess er krafist fyrir sum vottorð, til að tryggja að þeim sé treystandi og til að veita vernd gegn tölvuþrjótum.</translation>
 <translation id="9001074447101275817">Staðgengilsþjónninn <ph name="DOMAIN" /> krefst notandanafns og aðgangsorðs.</translation>
+<translation id="9001963517402879850">Hoppaðu!</translation>
 <translation id="9004367719664099443">VR-lota í gangi</translation>
 <translation id="9005998258318286617">Mistókst að hlaða PDF-skjal.</translation>
 <translation id="9008201768610948239">Hunsa</translation>

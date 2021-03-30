@@ -282,6 +282,7 @@ Hãy làm theo các bước sau:</translation>
 <translation id="3928666092801078803">Kết hợp dữ liệu của tôi</translation>
 <translation id="3929457972718048006">Địa chỉ</translation>
 <translation id="3943492037546055397">Mật khẩu</translation>
+<translation id="3967266340354872733">Bạn có thể xem thêm các chế độ cài đặt liên quan đến quyền riêng tư, vấn đề bảo mật cũng như hoạt động thu thập dữ liệu trong phần <ph name="BEGIN_LINK" />Đồng bộ hóa<ph name="END_LINK" /> và phần <ph name="BEGIN_LINK" />Các dịch vụ của Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Đã tải xuống xong</translation>
 <translation id="3968505803272650567">Quản lý mối quan tâm</translation>
 <translation id="3989635538409502728">Đăng xuất</translation>
@@ -556,6 +557,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Không thể xuất mật khẩu</translation>
 <translation id="6748108480210050150">Từ</translation>
+<translation id="6760509555861141183">Quay lại thẻ truy cập gần đây</translation>
 <translation id="6780034285637185932">Mã zip</translation>
 <translation id="6785453220513215166">Đang gửi báo cáo lỗi...</translation>
 <translation id="679325081238418596">Sử dụng dấu trang, lịch sử hoạt động, mật khẩu và các tùy chọn cài đặt khác trên tất cả thiết bị của bạn</translation>
@@ -578,7 +580,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="6973630695168034713">Thư mục</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6988572888918530647">Quản lý Tài khoản Google</translation>
+<translation id="6988572888918530647">Quản lý Tài khoản Google của bạn</translation>
 <translation id="6995899638241819463">Cảnh báo bạn nếu mật khẩu bị lộ trong một sự cố rò rỉ dữ liệu</translation>
 <translation id="6998989275928107238">Đến</translation>
 <translation id="7004032350256606903">Tổ chức của bạn yêu cầu bạn duyệt web ở chế độ riêng tư.
@@ -607,7 +609,6 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="7272437679830969316">Không thể xác minh danh tính của bạn. Chưa sao chép mật khẩu.</translation>
 <translation id="7291368939935408496">Đang chuẩn bị mật khẩu...</translation>
 <translation id="7293171162284876153">Để bắt đầu đồng bộ hóa, hãy bật tùy chọn "Đồng bộ hóa dữ liệu của bạn trên Chrome".</translation>
-<translation id="7299000566397147023">Mở thẻ gần đây nhất</translation>
 <translation id="7313347584264171202">Bạn sẽ thấy các thẻ ẩn danh ở đây</translation>
 <translation id="7336264872878993241">Đã tải xuống <ph name="PERCENT" /> phần trăm</translation>
 <translation id="7340958967809483333">Các tùy chọn của tính năng Khám phá</translation>

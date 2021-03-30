@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Offline, Chrome nu poate căuta actualizări</translation>
 <translation id="5854621639439811139">Sfat pentru Chrome: unele butoane se află acum în partea de jos a ecranului, cum ar fi Înapoi, Înainte și Caută.</translation>
+<translation id="5876773482963502140">Dacă permiți accesul Chrome la locație, Chrome trimite informații privind locația la site-urile cărora le acorzi această permisiune. Site-urile pot solicita informații despre locație atunci când au informații locale de afișat, de exemplu, magazine din apropiere sau știri.</translation>
 <translation id="6036420186814142909">Google Chrome are funcții care te ajută să gestionezi datele de internet și viteza cu care poți să încarci paginile web.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Treci la Chrome</translation>
@@ -90,5 +91,4 @@
   2. atinge Aplicația browser prestabilită;
   3. selectează Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Dacă permiți accesul Chrome la locație, Chrome trimite informații privind locația la motorul de căutare prestabilit și la site-urile cărora le acorzi această permisiune. Site-urile pot solicita informații despre locație atunci când au informații locale de afișat, de exemplu, magazine din apropiere sau știri.</translation>
 </translationbundle>

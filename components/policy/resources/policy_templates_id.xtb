@@ -278,7 +278,7 @@
 <translation id="1413936351612032792">Informasi laporan tentang penggunaan aplikasi Linux</translation>
 <translation id="1417888712677507140">Blokir dialog JavaScript yang dipicu dari subframe asal yang berbeda.</translation>
 <translation id="1418387035898607074">Lewati pemeriksaan Safe Browsing untuk file yang didownload dari sumber tepercaya</translation>
-<translation id="1418968246960170056">Menyetel kebijakan memungkinkan Anda menetapkan daftar situs yang otomatis diizinkan untuk mengakses perangkat serial USB dengan ID vendor dan produk yang cocok dengan kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan <ph name="PRODUCT_ID_FIELD_NAME" />. Jika kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tidak ada, situs tertentu akan diizinkan untuk mengakses perangkat dengan ID vendor yang cocok dengan kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan ID produk apa pun.
+<translation id="1418968246960170056">Menyetel kebijakan ini memungkinkan Anda menetapkan daftar situs yang otomatis diizinkan untuk mengakses perangkat serial USB dengan ID vendor dan produk yang cocok dengan kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan <ph name="PRODUCT_ID_FIELD_NAME" />. Jika kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tidak ada, situs tertentu akan diizinkan untuk mengakses perangkat dengan ID vendor yang cocok dengan kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan ID produk apa pun.
 
       URL harus valid. Jika tidak, kebijakan akan diabaikan. Hanya asal (skema, host, dan port) URL yang dipertimbangkan.
 
@@ -418,11 +418,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1553532014072799546">Daftar yang Diizinkan terkait Batas Waktu per Aplikasi</translation>
 <translation id="1553956579506604198">Memblokir ekstensi eksternal sehingga tidak dapat diinstal</translation>
 <translation id="1555248923316727072">Setelan pengelolaan identitas pengguna SAML</translation>
-<translation id="1560205870554624777">Mengontrol apakah fungsi Kerberos aktif. Kerberos adalah protokol autentikasi yang dapat digunakan untuk mengautentikasi ke apl web dan berbagi file.
-
-          Jika kebijakan ini diaktifkan, fungsi Kerberos akan diaktifkan. Akun Kerberos dapat ditambahkan baik melalui kebijakan 'Konfigurasikan akun Kerberos' atau melalui Setelan akun Kerberos di halaman setelan Pengguna.
-
-          Jika kebijakan ini dinonaktifkan atau tidak disetel, Setelan akun Kerberos akan dinonaktifkan. Tidak ada akun Kerberos yang dapat ditambahkan dan autentikasi Kerberos tidak dapat digunakan. Semua akun Kerberos yang ada dan sandi yang disimpan telah dihapus.</translation>
 <translation id="1561424797596341174">Penggantian kebijakan untuk versi Debug host akses jarak jauh</translation>
 <translation id="1561967320164410511">U2F ditambah beberapa ekstensi untuk masing-masing pengesahan</translation>
 <translation id="1567718448549957373">Jika kebijakan disetel ke Aktif atau tidak disetel, verifikasi autentikasi <ph name="BASIC_AUTH" /> akan diizinkan diterima melalui HTTP yang tidak aman.
@@ -746,7 +741,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Printer yang tersambung ke <ph name="CLOUD_PRINT_NAME" /> dianggap sebagai <ph name="PRINTER_TYPE_CLOUD" />, printer lainnya akan diklasifikasikan sebagai <ph name="PRINTER_TYPE_LOCAL" />.
 
-      Catatan: Menghilangkan kolom berarti semua nilai cocok. Misalnya, tidak menentukan konektivitas menyebabkan Pratinjau Cetak mulai menemukan semua jenis printer, <ph name="PRINTER_TYPE_LOCAL" /> dan <ph name="PRINTER_TYPE_CLOUD" />. Pola ekspresi reguler harus mengikuti sintaks RegExp JavaScript, dan pencocokan bersifat peka huruf besar/kecil.</translation>
+      Catatan: Menghilangkan kolom berarti semua nilai cocok. Misalnya, tidak menentukan konektivitas menyebabkan Pratinjau Cetak mulai menemukan semua jenis printer, <ph name="PRINTER_TYPE_LOCAL" /> dan <ph name="PRINTER_TYPE_CLOUD" />. Pola ekspresi reguler harus mengikuti sintaksis RegExp JavaScript, dan pencocokan bersifat peka huruf besar/kecil.</translation>
 <translation id="2005506794355327448">Tindakan yang harus diambil saat penutup ditutup.</translation>
 <translation id="2006530844219044261">Pengelolaan daya</translation>
 <translation id="2013285471046373727">Menentukan bagaimana aplikasi diinstal. OPTIONAL: Aplikasi tidak otomatis diinstal, tetapi pengguna dapat menginstalnya. Ini adalah setelan default jika kebijakan tidak ditentukan. PRELOAD: Aplikasi otomatis diinstal, tetapi pengguna dapat meng-uninstal. FORCE_INSTALLED: Aplikasi otomatis diinstal dan pengguna tidak dapat meng-uninstal. BLOCKED: Aplikasi diblokir dan tidak dapat diinstal. Jika aplikasi diinstal berdasarkan kebijakan sebelumnya, aplikasi akan di-uninstal.</translation>
@@ -1153,6 +1148,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika kebijakan ini tidak ditetapkan, fitur Click to Call akan diaktifkan secara default.</translation>
 <translation id="2482676533225429905">Perpesanan Asli</translation>
 <translation id="2483146640187052324">Prediksi tindakan jaringan di koneksi jaringan apa pun</translation>
+<translation id="2483335232019796218">Mengonfigurasi kamera, setelan browser, setelan OS, pemindaian, Web Store, Canvas, dan fitur-fitur Google Berita agar dinonaktifkan</translation>
 <translation id="2496180316473517155">Histori penjelajahan</translation>
 <translation id="2498238926436517902">Selalu sembunyikan rak secara otomatis</translation>
 <translation id="250022556568924228">Jika kebijakan disetel, <ph name="PRODUCT_OS_NAME" /> akan mendownload Persyaratan Layanan dan menampilkannya kepada pengguna saat sesi akun lokal perangkat dimulai. Pengguna hanya dapat login ke sesi setelah menerima Persyaratan Layanan.
@@ -1546,6 +1542,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Lihat <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> untuk menyematkan aplikasi ke rak <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2976429807269247880">Setelan perilaku cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
+<translation id="2985097017239074272">Google Berita (didukung sejak versi 91)</translation>
 <translation id="2985927503455169394">Gunakan mode default pengalaman aktivasi Asisten</translation>
 <translation id="2987155890997901449">Aktifkan ARC</translation>
 <translation id="2987227569419001736">Mengontrol penggunaan API Bluetooth Web</translation>
@@ -2580,6 +2577,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="4450222911834151460">Jika kebijakan ini disetel, semua jenis data yang ditentukan akan dikecualikan dari sinkronisasi, baik untuk Google Sync maupun sinkronisasi profil roaming. Hal ini berguna untuk mengurangi ukuran profil roaming atau membatasi jenis data yang diupload ke Server Google Sync.
 
       Jenis data saat ini untuk kebijakan ini adalah: "bookmarks", "readingList", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Nama-nama tersebut peka huruf besar atau kecil.</translation>
+<translation id="4452653762766030431">Mengontrol fitur Berbagi File Dalam Jaringan untuk ketersediaan Chrome OS</translation>
 <translation id="445270821089253489">Mengontrol jenis informasi perangkat dan pengguna yang dilaporkan.</translation>
 <translation id="4453913621209182880">Izinkan pencetakan hanya dengan grafis latar belakang</translation>
 <translation id="4454820008017317557">Tampilkan ikon toolbar <ph name="PRODUCT_NAME" /></translation>
@@ -2813,6 +2811,13 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Jika kebijakan in tidak disetel atau disetel ke nilai yang tidak valid, mode nonaktif dari fitur sistem akan menjadi "diblokir".</translation>
 <translation id="4835470005923546373">Nonaktifkan mode pencetakan grafis latar belakang secara default</translation>
 <translation id="4835622243021053389">Mengaktifkan autentikasi NTLMv2.</translation>
+<translation id="4846678215172543001">Kebijakan ini mencegah tampilnya peringatan URL yang mirip di situs yang tercantum. Peringatan ini biasanya ditampilkan di situs yang diyakini <ph name="PRODUCT_NAME" /> mencoba melakukan spoofing pada situs lain yang biasa dikunjungi pengguna.
+
+       Jika kebijakan ini diaktifkan dan disetel ke satu atau beberapa domain, halaman peringatan URL yang mirip tidak akan ditampilkan saat pengguna mengunjungi halaman di domain tersebut.
+
+       Jika kebijakan ini tidak disetel, atau disetel ke daftar kosong, peringatan dapat muncul di situs yang dikunjungi pengguna.
+
+       Nama host dapat diizinkan menggunakan pencocokan host lengkap, atau pencocokan domain apa pun. Misalnya, peringatan untuk URL seperti "https://foo.example.com/bar" dapat disembunyikan jika daftar ini menyertakan "foo.example.com" atau "example.com".</translation>
 <translation id="485419696366295465">Mengontrol kebijakan yang terkait dengan subsistem <ph name="BOREALIS_NAME" />.</translation>
 <translation id="4855636880814771207">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan dapat mengaktifkan atau menonaktifkan Bluetooth.
 
@@ -3011,7 +3016,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
-<translation id="5090209345759901501">Memperluas setelan konten Flash untuk semua konten</translation>
 <translation id="5090791951240382356">Mengizinkan penggabungan kebijakan kamus dari sumber berbeda</translation>
 <translation id="5091315650312105069">Mengizinkan autentikasi <ph name="BASIC_AUTH" /> untuk HTTP</translation>
 <translation id="5103112931744164177">Kebijakan ini mengontrol stack software yang digunakan untuk berkomunikasi dengan server DNS: klien DNS Sistem Operasi, atau klien DNS bawaan dari <ph name="PRODUCT_NAME" />. Kebijakan ini tidak memengaruhi server DNS mana yang digunakan: misalnya, jika sistem operasi dikonfigurasi untuk menggunakan server DNS perusahaan, server yang sama tersebut akan digunakan oleh klien DNS bawaan. Kebijakan ini juga tidak akan mengontrol jika DNS-over-HTTPS digunakan; <ph name="PRODUCT_NAME" /> akan selalu menggunakan resolver bawaan untuk permintaan DNS-over-HTTPS. Silakan lihat kebijakan <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> untuk mengetahui informasi mengenai pengontrolan DNS-over-HTTPS.
@@ -4018,6 +4022,11 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="647698599569353771">Mengizinkan pengaktifan Berbagi Langsung.</translation>
 <translation id="6478258366184919502">Asal layar login</translation>
 <translation id="6478261301433199402">Menyetel kebijakan akan menentukan image <ph name="PLUGIN_VM_NAME" /> bagi pengguna. Tentukan kebijakan ini sebagai string berformat JSON, dengan <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> yang menyatakan tempat mendownload image dan <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> sebagai hash SHA-256 yang digunakan untuk memverifikasi integritas download.</translation>
+<translation id="6489084406497912050">Mengontrol apakah pengguna dapat menambahkan akun Kerberos.
+
+          Jika kebijakan ini diaktifkan atau tidak disetel, pengguna dapat menambahkan akun Kerberos melalui Setelan akun Kerberos di halaman setelan Kerberos. Pengguna dapat sepenuhnya mengontrol akun yang mereka tambahkan serta dapat memodifikasi atau menghapusnya.
+
+          Jika kebijakan ini dinonaktifkan, pengguna tidak dapat menambahkan akun Kerberos. Akun hanya dapat ditambahkan melalui kebijakan 'Konfigurasikan akun Kerberos'. Ini adalah cara yang efektif untuk mengunci akun.</translation>
 <translation id="6491139795995924304">Izinkan bluetooth di perangkat</translation>
 <translation id="6491872498385040936">Kebijakan ini tidak digunakan lagi. Pertimbangkan untuk menggunakan kebijakan <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />, yang mengganti kebijakan ini dan memungkinkan penyelarasan yang lebih mendetail.
 
@@ -4353,6 +4362,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan disetel, pengguna akan dapat mengaktifkan aplikasi di layar kunci jika ID ekstensi aplikasi tercantum dalam nilai daftar kebijakan. Oleh karena itu, menyetel kebijakan ke daftar kosong akan menonaktifkan pencatatan di layar kunci. Kebijakan dengan ID aplikasi tidak selalu berarti bahwa pengguna dapat mengaktifkan aplikasi sebagai aplikasi pencatat di layar kunci. Misalnya, di <ph name="PRODUCT_NAME" /> 61, kumpulan aplikasi yang tersedia juga dibatasi oleh platform.
 
       Jika kebijakan tidak disetel, tidak akan ada batasan pada kumpulan aplikasi yang dapat diaktifkan pengguna di layar kunci sebagaimana diberlakukan oleh kebijakan.</translation>
+<translation id="6882028194958060206">Memperluas setelan konten Flash untuk semua konten (tidak digunakan lagi)</translation>
 <translation id="6889123056995503704">Pengguna akan menentukan perilaku downgrade saluran rilis</translation>
 <translation id="6894178810167845842">URL halaman Tab Baru</translation>
 <translation id="6897730193187922386">Sembunyikan pesan penghentian <ph name="CLOUD_PRINT_NAME" /></translation>
@@ -5035,7 +5045,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Jika tidak disetel, <ph name="BLOCK_POPUPS_POLICY_NAME" /> akan berlaku tetapi pengguna dapat mengubah setelan ini.</translation>
 <translation id="7731026922044991970">Kembalikan cookie di semua situs ke perilaku <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
 <translation id="7732907212083471072">Kebijakan yang dihapus</translation>
-<translation id="7737077721564799856">Mengonfigurasi kamera, setelan browser, setelan OS, pemindaian, Web Store, dan fitur-fitur Canvas untuk dinonaktifkan</translation>
 <translation id="77379430721695807">Jika kebijakan disetel, artinya Anda menentukan daftar URL yang polanya cocok dengan asal keamanan URL yang meminta. Jika terdapat kecocokan, akses ke perangkat perekaman video akan diberikan tanpa permintaan izin
 
       Untuk informasi mendetail tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
@@ -5062,7 +5071,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="776110834126722255">Tidak digunakan lagi</translation>
 <translation id="7763614521440615342">Tampilkan saran konten di halaman Tab Baru</translation>
 <translation id="7765879851993224640">Izinkan Smart Lock Signin digunakan.</translation>
-<translation id="7771298620150437359">Konfigurasikan konten dan urutan bahasa pilihan</translation>
+<translation id="7771298620150437359">Mengonfigurasi konten dan urutan bahasa pilihan</translation>
 <translation id="7774768074957326919">Gunakan setelan proxy sistem</translation>
 <translation id="777734450201217641">Mengaktifkan pintasan fitur aksesibilitas di layar login.
 
@@ -5081,6 +5090,13 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Jika kebijakan tidak disetel, pengguna dapat memilih apakah akan dimintai sandi untuk membuka kunci perangkat dari mode tidur.</translation>
 <translation id="7784062550705119230">Jika <ph name="PRINTERS_ALLOWLIST" /> dipilih untuk <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, menyetel <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> akan menentukan printer yang dapat digunakan oleh pengguna. Hanya printer dengan ID yang cocok dengan nilai dalam kebijakan ini yang akan tersedia bagi pengguna. ID harus sesuai dengan kolom <ph name="ID_FIELD" /> atau <ph name="GUID_FIELD" /> dalam file yang ditentukan di <ph name="DEVICE_PRINTERS_POLICY_NAME" /></translation>
 <translation id="7788511847830146438">Per Profil</translation>
+<translation id="7798441698807517880">Kebijakan ini telah dihapus sejak <ph name="PRODUCT_NAME" /> versi 89 karena <ph name="FLASH_PLUGIN_NAME" /> tidak digunakan lagi.
+
+      Menyetel kebijakan ke Benar (True) akan menjalankan semua konten <ph name="FLASH_PLUGIN_NAME" /> yang disematkan di situs yang mengizinkan <ph name="FLASH_PLUGIN_NAME" />, termasuk konten dari asal lain atau konten kecil.
+
+      Menyetel kebijakan ke Salah (False) atau membiarkannya tidak disetel dapat memblokir konten <ph name="FLASH_PLUGIN_NAME" /> dari asal lain atau konten kecil.
+
+      Catatan: untuk mengontrol situs mana yang dapat menjalankan <ph name="FLASH_PLUGIN_NAME" />, lihat kebijakan ini: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" />, dan <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="780629758750905699">Mengizinkan penambahan akun Family Link ke perangkat</translation>
 <translation id="7807139251387225825">Daftar jenis yang harus dikecualikan dari sinkronisasi</translation>
 <translation id="781268256210530471">Setelan plugin</translation>
@@ -5109,6 +5125,11 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="7850846808758624237">Jika kebijakan disetel ke Aktif, halaman beranda akan diimpor dari browser default sebelumnya saat pertama kali dijalankan. Jika kebijakan disetel ke Nonaktif atau tidak disetel, halaman beranda tidak akan diimpor saat pertama kali dijalankan.
 
       Pengguna dapat memicu dialog impor dan kotak centang halaman beranda akan dicentang atau dihapus centangnya agar cocok dengan nilai kebijakan ini.</translation>
+<translation id="7851772934080809511">Mengontrol apakah fungsi Kerberos aktif. Kerberos adalah protokol autentikasi yang dapat digunakan untuk mengautentikasi ke aplikasi web dan berbagi file.
+
+          Jika kebijakan ini diaktifkan, fungsi Kerberos akan diaktifkan. Akun Kerberos dapat ditambahkan melalui kebijakan 'Konfigurasikan akun Kerberos' atau melalui Setelan akun Kerberos di halaman setelan Kerberos.
+
+          Jika kebijakan ini dinonaktifkan atau tidak disetel, Setelan akun Kerberos akan dinonaktifkan. Tidak ada akun Kerberos yang dapat ditambahkan dan autentikasi Kerberos tidak dapat digunakan. Semua akun Kerberos yang ada dan sandi yang disimpan telah dihapus.</translation>
 <translation id="7863947545897944083">Mengaktifkan fitur aksesibilitas kontras tinggi di layar login.
 
           Jika kebijakan ini ditetapkan ke true, kontras tinggi akan selalu diaktifkan di layar login.
@@ -5137,11 +5158,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 
       Jika tidak ada kebijakan tertentu yang diprioritaskan, lihat <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> dan <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. Pola URL di antara 3 kebijakan ini tidak boleh bertentangan.</translation>
 <translation id="7887379840451099426">Setelan pengelolaan daya hanya berlaku saat menggunakan daya baterai.</translation>
-<translation id="7889788745439330797">Mengontrol apakah pengguna dapat menambahkan akun Kerberos.
-
-          Jika kebijakan ini diaktifkan atau tidak disetel, pengguna dapat menambahkan akun Kerberos melalui Setelan akun Kerberos di halaman Setelan Pengguna. Pengguna dapat sepenuhnya mengontrol akun-akun yang mereka tambahkan serta dapat memodifikasi atau menghapusnya.
-
-          Jika kebijakan ini dinonaktifkan, pengguna tidak dapat menambahkan akun Kerberos. Akun hanya dapat ditambahkan melalui kebijakan 'Konfigurasikan akun Kerberos'. Cara ini efektif untuk mengunci akun.</translation>
 <translation id="7891884447851425349">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> akan menentukan URL mesin telusur yang digunakan saat penelusuran default. URL harus menyertakan string <ph name="SEARCH_TERM_MARKER" />, yang diganti di kueri dengan istilah penelusuran pengguna.
 
       Anda dapat menentukan URL penelusuran Google sebagai: <ph name="GOOGLE_SEARCH_URL" />.</translation>
@@ -5395,11 +5411,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan,
 <translation id="8238421250255592181">Tanda boolean menunjukkan apakah keyboard virtual dapat memberikan pelengkapan otomatis.</translation>
 <translation id="8244171102276095471">Mengaktifkan paket penyandian RC4 di TLS</translation>
 <translation id="8244525275280476362">Penundaan mengambil maksimum setelah kebijakan invalidasi</translation>
-<translation id="8251411417369363637">Jika kebijakan disetel ke Benar (True), semua konten <ph name="FLASH_PLUGIN_NAME" /> yang disematkan di situs yang mengizinkan <ph name="FLASH_PLUGIN_NAME" /> akan dijalankan, termasuk konten dari asal lain atau konten kecil.
-
-      Jika kebijakan disetel ke Salah (False) atau tidak disetel, konten <ph name="FLASH_PLUGIN_NAME" /> dari asal lain atau konten kecil dapat diblokir.
-
-      Catatan: untuk mengontrol situs mana yang dapat menjalankan <ph name="FLASH_PLUGIN_NAME" />, lihat kebijakan ini: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" />, dan <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="82530263956734297">ID Ekstensi yang dikeluarkan dari daftar yang tidak diizinkan</translation>
 <translation id="8256688113167012935">Mengontrol nama akun yang ditampilkan <ph name="PRODUCT_OS_NAME" /> di layar masuk untuk akun lokal perangkat yang sesuai.
 

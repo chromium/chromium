@@ -22,6 +22,8 @@
 <translation id="1120938014254001895">تند کشیدن دو انگشت به بالا</translation>
 <translation id="1126928665165112660">ایتالیک نیست</translation>
 <translation id="113582498867142724">مجموعه <ph name="TAG" /> با <ph name="NUM" /> مورد</translation>
+<translation id="1146441463334103638">روشن یا خاموش کردن صفحه‌نمایش</translation>
+<translation id="1156488781945104845">زمان کنونی</translation>
 <translation id="1161762950103988776">پرش</translation>
 <translation id="1164857107703583584">از فرمان‌های پرش می‌توان برای پیمایش کارآمد در صفحه وب استفاده کرد.</translation>
 <translation id="1175914831232945926">ارقام</translation>
@@ -71,6 +73,7 @@
 <translation id="1405567553485452995">سبز روشن</translation>
 <translation id="1411043317877497323">قسمت تمرین</translation>
 <translation id="141454040365657399">سرصفحه</translation>
+<translation id="1417092723421264764">صفحه فعلی</translation>
 <translation id="1417889266572670458">آبی سورمه‌ای</translation>
 <translation id="1431911867058218151">بنفش کدر</translation>
 <translation id="1439316808600711881">rgn</translation>
@@ -199,6 +202,7 @@
 <translation id="242998846562331953">زیرنویس</translation>
 <translation id="2435422727584637732">نیلی</translation>
 <translation id="2450814015951372393">کادر انتخاب</translation>
+<translation id="2461822463642141190">فعلی</translation>
 <translation id="2462626033734746142">گروه دکمه رادیویی</translation>
 <translation id="2471138580042810658">عنوان ۶</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{ستاره}one{# ستاره}other{# ستاره}}</translation>
@@ -244,7 +248,6 @@
 <translation id="2766299274563946262">سلولی در سمت چپ وجود ندارد</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{#+}one{#+}other{#+}}</translation>
 <translation id="280499067616661124">‏«پیدا کردن در صفحه» ChromeVox</translation>
-<translation id="2808001342598757276">روشن کردن صفحه</translation>
 <translation id="2811019999044652585">‏برای رفتن به قسمت‌های دیگر صفحه، مثل نوارهای ابزار یا سینی سیستم، روی Control+Forward فشار دهید. در Chromebook، کلید Forward دقیقاً‌ در بالای کلید عدد ۲ قرار دارد.</translation>
 <translation id="2811204574343810641">ردیف</translation>
 <translation id="2816868829355607410">قسمت تمرین: فرمان‌های پرش</translation>
@@ -299,6 +302,7 @@
 <translation id="3109724472072898302">جمع شده</translation>
 <translation id="311015743332597320">با چهار انگشت تند به‌راست بکشید</translation>
 <translation id="3112457281078985179">‏برای روشن یا خاموش کردن ChromeVox، از Control+Alt+Z استفاده کنید.</translation>
+<translation id="3115800313647508384">صفحه‌نمایش خاموش شود؟</translation>
 <translation id="3131002934070407451">خواندن شماره‌ها به‌صورت:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">زیتونی</translation>
@@ -464,7 +468,7 @@
 <translation id="4275397969489577657">فعال کردن گزارش‌گیری از جریان رویداد</translation>
 <translation id="4278486392851938658">پیوند بازدیدشده قبلی وجود ندارد</translation>
 <translation id="4281245629646759298">زرد روشن</translation>
-<translation id="4289540628985791613">مرور کلی</translation>
+<translation id="4289540628985791613">نمای کلی</translation>
 <translation id="4294967782363273192">مرتب‌شده به‌صورت صعودی</translation>
 <translation id="4300318234632215983">اعلان نشانی وب پشت یک پیوند</translation>
 <translation id="4322625298640984693">قهوه‌ای مایل به زرد</translation>
@@ -631,7 +635,7 @@
 <translation id="5597170376237141345">کادر انتخاب بعدی</translation>
 <translation id="5598905979683743333"><ph name="NAME" />، دکمه رادیویی انتخاب نشد</translation>
 <translation id="5601172225407283979">انجام عملکرد پیش‌فرض</translation>
-<translation id="5608798115546226984">تکمیل خودکار درون برنامه</translation>
+<translation id="5608798115546226984">تکمیل خودکار به‌خط</translation>
 <translation id="5616029807486814372">درس بعدی</translation>
 <translation id="561939826962581046">زمان</translation>
 <translation id="5623778242535476823">rbtn</translation>
@@ -642,6 +646,7 @@
 <translation id="5655682562155942719">پرش از فرمان‌ها</translation>
 <translation id="56637627897541303">قسمت نوشتاری</translation>
 <translation id="5669637233317991674">برای پیمایش کردن در این درس، کلیدهای «جستجو + پیکان روبه‌راست»، یا «جستجو + پیکان روبه‌چپ» را فشار دهید</translation>
+<translation id="5677240841070992068">مکان فعلی</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
 <translation id="5682113568322255809">نشانگر مکانی</translation>
@@ -677,6 +682,7 @@
 <translation id="5901630391730855834">زرد</translation>
 <translation id="5906974869830879618">لطفاً پین را وارد کنید</translation>
 <translation id="5921587111466148855">فصل</translation>
+<translation id="5923780477617566089">تاریخ کنونی</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{علامت مساوی}one{# علامت مساوی}other{# علامت مساوی}}</translation>
 <translation id="5948123859135882163">جابه‌جایی بین تفسیر ساختاری و معنایی عبارات ریاضی</translation>
 <translation id="5955304353782037793">app</translation>
@@ -696,9 +702,9 @@
 <translation id="6034000775414344507">خاکستری کم‌رنگ</translation>
 <translation id="6036135911048686884">کاوش با لمس</translation>
 <translation id="6037602951055904232">حرکت به جلو</translation>
-<translation id="6044160928851315051">تاریک کردن صفحه</translation>
 <translation id="6082768461603900813">پیمایش ساده</translation>
 <translation id="609281021724813947">لغزنده قبلی وجود ندارد</translation>
+<translation id="6096942799340613495">با این کار، صفحه‌نمایش خاموش می‌شود. همیشه می‌توانید با فشار دادن کلید «جستجو + افزایش روشنایی» صفحه‌نمایش را روشن کنید.</translation>
 <translation id="6100239002225743044">یک خط به بالا بروید</translation>
 <translation id="6118126368611144850">‏برنامه‌های Android برای Chrome. اگر در دستگاهتان «فروشگاه Play» دارید، پیش‌نمایش استفاده از ChromeVox با برنامه‌های Android را ببینید. با بارگیری Google Chrome Canary از «فروشگاه Play»، پشتیبانی آزمایشی را امتحان کنید.</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -766,6 +772,7 @@
 <translation id="6696967141280706829">پیش‌گفتار</translation>
 <translation id="6697092096875747123">کادر ترکیبی قبلی</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{علامت تعجب}one{ # علامت تعجب}other{ # علامت تعجب}}</translation>
+<translation id="670717715607710284">خاموش کردن صفحه‌نمایش</translation>
 <translation id="6710213216561001401">قبلی</translation>
 <translation id="6714813999819678458">عنوان قبلی سطح ۲</translation>
 <translation id="6730312624811567147">‏از Search Left و Right برای Home یا End، از Search‏ Control Left یا Right برای Control Home یا End،‏ Search Up و Down برای Page Up یا Down استفاده کنید</translation>
@@ -945,6 +952,7 @@
 <translation id="8037651341025652929">نتیجه‌گیری</translation>
 <translation id="8042761080832772327">ویرایش نوشتار، ورودی جستجو</translation>
 <translation id="8049189770492311300">تایمر</translation>
+<translation id="8057472523431225012">مرحله فعلی</translation>
 <translation id="8058636807889143711">عبارت ریاضی بعدی وجود ندارد</translation>
 <translation id="8066678206530322333">بنر</translation>
 <translation id="8076492880354921740">برگه‌ها</translation>
@@ -962,6 +970,7 @@
 <translation id="816818801578874684">‏این اولین عنوان است. برای رفتن به عنوان بعدی، کلید «جستجو + H» را فشار دهید.</translation>
 <translation id="8173092779156526980">با چهار انگشت تند به‌چپ بکشید</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{زیرخط}one{# زیرخط}other{# زیرخط}}</translation>
+<translation id="817529114347680055">صفحه‌نمایش روشن</translation>
 <translation id="8179976553408161302">ورود</translation>
 <translation id="8184828902145951186">ردیف</translation>
 <translation id="8186185314313222077">جابه‌جایی به حالت تمام صفحه</translation>
@@ -984,10 +993,9 @@
 <translation id="8316881042119029234">بژ روشن</translation>
 <translation id="8324974933005349667">شخصی کردن تنظیمات «نوشتار به گفتار»</translation>
 <translation id="8326783648485765113">سبز چمنی</translation>
-<translation id="8328063869313048659">خاموش/روشن کردن صفحه تاریک</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{پوند}one{# علامت پوند}other{# علامت پوند}}</translation>
 <translation id="8378855320830505539">منطقه</translation>
-<translation id="8382679411218029383">تکمیل خودکار درون خطی و فهرست</translation>
+<translation id="8382679411218029383">تکمیل خودکار به‌خط و فهرست</translation>
 <translation id="8394908167088220973">پخش/مکث رسانه</translation>
 <translation id="8428213095426709021">تنظیمات</translation>
 <translation id="8428603554127842284">سطح <ph name="DEPTH" /></translation>

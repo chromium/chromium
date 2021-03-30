@@ -56,6 +56,7 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 <translation id="5671277269877808209">Quadrato</translation>
 <translation id="5775960006311140197">Modalità Esperto</translation>
 <translation id="5869546221129391014">Griglia</translation>
+<translation id="5975083100439434680">Diminuisci lo zoom</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6073451960410192870">Interrompi registrazione</translation>
 <translation id="6197807149213783179">Salva metadati</translation>
@@ -81,9 +82,9 @@ Se il feedback riguarda la qualità di immagini o video, allega una foto o un vi
 <translation id="7649070708921625228">Guida</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7974782136796202581">Mostra opzioni panoramica/inclinazione/zoom</translation>
 <translation id="7983668134180549431">Testo rilevato.</translation>
 <translation id="8067883171444229417">Guarda il video</translation>
+<translation id="8120146556401698679">Panoramica Inclinazione Zoom</translation>
 <translation id="8131740175452115882">Conferma</translation>
 <translation id="8145038249676204903">Passa alla modalità foto</translation>
 <translation id="8239780215768881278">Scatta istantanea video</translation>
@@ -94,6 +95,7 @@ Se il feedback riguarda la qualità di immagini o video, allega una foto o un vi
 <translation id="8815966864175525708">Passa alla modalità foto verticale</translation>
 <translation id="8828441885228359828">Riprendi la registrazione</translation>
 <translation id="8870695351537079478">Impossibile avviare la registrazione</translation>
+<translation id="8903921497873541725">Aumenta lo zoom</translation>
 <translation id="9045155556724273246">10 secondi</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 </translationbundle>

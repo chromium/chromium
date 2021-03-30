@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Off-line. Não é possível verificar se há atualizações</translation>
 <translation id="5854621639439811139">Dica do Chrome. Alguns botões agora estão na parte inferior da tela, como "Voltar", "Avançar" e "Pesquisar".</translation>
+<translation id="5876773482963502140">Se você permitir que o Chrome saiba sua localização, ele a enviará para os sites autorizados. Os sites podem solicitar sua localização para enviar informações locais para você, como notícias ou lojas próximas.</translation>
 <translation id="6036420186814142909">O Google Chrome tem recursos que ajudam a gerenciar seus dados de Internet e a velocidade de carregamento de páginas da Web.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Mudar para o Chrome</translation>
@@ -90,5 +91,4 @@
   2. Toque em "App do navegador padrão".
   3. Selecione o Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Se você permitir que o Chrome saiba sua localização, ele a enviará para o mecanismo de pesquisa padrão e para os sites aos quais você concedeu permissão. Os sites podem solicitar sua localização para enviar informações locais para você, como notícias ou lojas próximas.</translation>
 </translationbundle>

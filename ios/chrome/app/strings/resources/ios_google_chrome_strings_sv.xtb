@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Chrome kan inte söka efter uppdateringar offline</translation>
 <translation id="5854621639439811139">Tips för Chrome. Vissa knappar finns nu längst ned på skärmen, till exempel bakåtknappen, framåtknappen och Sök.</translation>
+<translation id="5876773482963502140">När du ger Chrome åtkomst till din plats skickas den från Chrome till alla webbplatser som du ger behörighet. Webbplatser kan fråga efter din plats när det finns lokal information att visa, till exempel butiker i närheten eller nyheter.</translation>
 <translation id="6036420186814142909">I Google Chrome finns det funktioner som du kan använda för att hantera dina internetuppgifter och inläsningshastigheten för webbsidor.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Byt till Chrome</translation>
@@ -90,5 +91,4 @@
   2. Tryck på Standardwebbläsarapp
   3. Välj Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">När du ger Chrome åtkomst till din plats skickas den från Chrome till din standardsökmotor och alla webbplatser som du ger behörighet till. Webbplatser kan fråga efter din plats när det finns lokal information att visa, till exempel butiker i närheten eller nyheter.</translation>
 </translationbundle>

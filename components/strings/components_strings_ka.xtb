@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">დეტალების ნახვა</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ითხოვს თქვენს მოწყობილობაზე დიდი მოცულობის მონაცემების სამუდამოდ შენახვის ნებართვას</translation>
 <translation id="1032854598605920125">საათის ისრის მიმართულებით შემოტრიალება</translation>
+<translation id="1036224116832931580">დინოზავრის თამაში, შეეხეთ ასახტომად და სათამაშოდ</translation>
 <translation id="1036348656032585052">გამორთვა</translation>
 <translation id="1038106730571050514">შეთავაზებების ჩვენება</translation>
 <translation id="1038842779957582377">უცნობი სახელი</translation>
@@ -275,6 +276,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{არცერთი}=1{1 საიტი}other{# საიტი}}</translation>
 <translation id="1945968466830820669">თქვენ შეიძლება მოგპარონ პერსონალური მონაცემები, ან დაკარგოთ წვდომა თქვენი ორგანიზაციის ანგარიშზე. Chromium გირჩევთ, ახლავე შეცვალოთ პაროლი.</translation>
 <translation id="1947454675006758438">ზედა მარჯვენა ნაწილის დასტეპლერება</translation>
+<translation id="1958218078413065209">თქვენი უმაღლესი ქულაა <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">შეუწყვეთ ხელი ვების უსაფრთხოების ყველასთვის გაუმჯობესებას <ph name="BEGIN_WHITEPAPER_LINK" />თქვენ მიერ მონახულებული ზოგიერთი გვერდის URL-ების, სისტემის შეზღუდული ინფორმაციისა და გვერდების გარკვეული კონტენტის<ph name="END_WHITEPAPER_LINK" /> Google-ისთვის გაგზავნით. <ph name="BEGIN_PRIVACY_PAGE_LINK" />კონფიდენციალურობის დებულება<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> სანიშნეები</translation>
 <translation id="1973335181906896915">სრიალიზაციის შეცდომა</translation>
@@ -541,6 +543,7 @@
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ის პარამეტრებიდან უსაფრთხოების შემოწმების გასაშვებად დააჭირეთ კლავიშს Tab, შემდეგ Enter-ს</translation>
 <translation id="3061707000357573562">ჩასწორების სერვისი</translation>
 <translation id="3064966200440839136">გარე აპლიკაციით გადახდის შემთხვევაში, ინკოგნიტო რეჟიმიდან გამოსვლა მოხდება. გსურთ გაგრძელება?</translation>
+<translation id="306573536155379004">თამაში დაიწყო.</translation>
 <translation id="3080254622891793721">გრაფიკა</translation>
 <translation id="3086579638707268289">თქვენს აქტივობაზე ვებში მიმდინარეობს მონიტორინგი</translation>
 <translation id="3087734570205094154">ქვედა საზღვარი</translation>
@@ -1532,6 +1535,7 @@
 <translation id="6934672428414710184">ეს სახელი მომდინარეობს თქვენი Google ანგარიშიდან</translation>
 <translation id="6944692733090228304">თქვენ შეიყვანეთ პაროლი საიტზე, რომელსაც არ მართავს <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. თქვენი ანგარიშის დასაცავად არ გამოიყენოთ იგივე პაროლი სხვა აპებსა და საიტებზე.</translation>
 <translation id="6945221475159498467">არჩევა</translation>
+<translation id="6948051842255602737">თამაში დასრულდა, თქვენი ქულაა <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">წამოღების მეთოდებისა და მოთხოვნების სანახავად აირჩიეთ მისამართი</translation>
 <translation id="6949872517221025916">პაროლის გადაყენება</translation>
 <translation id="6950684638814147129">შეცდომა JSON მნიშვნელობის ანალიზისას: <ph name="ERROR" /></translation>
@@ -1814,6 +1818,7 @@
 <translation id="7956713633345437162">მობილური სანიშნეები</translation>
 <translation id="7961015016161918242">არასოდეს</translation>
 <translation id="7966803981046576691">დავალების ანგარიშის ტიპი</translation>
+<translation id="79682505114836835">მნიშვნელობა „<ph name="VALUE" />“ არასწორი თექვსმეტობითი ფერია.</translation>
 <translation id="7976214039405368314">ზედმეტად ბევრი მოთხოვნაა</translation>
 <translation id="7977538094055660992">გამოტანის მოწყობილობა</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1941,6 +1946,7 @@
 <translation id="8446884382197647889">შეიტყვეთ მეტი</translation>
 <translation id="8457125768502047971">განუსაზღვრელი</translation>
 <translation id="8461694314515752532">სინქრონიზებული მონაცემების დაშიფვრა თქვენი საკუთარი საიდუმლო ფრაზით</translation>
+<translation id="8463101686637053101">დინოზავრის თამაში, ასახტომად და სათამაშოდ დააჭირეთ შორისის კლავიშს</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 საკრედიტო ბარათი}other{# საკრედიტო ბარათი}}</translation>
 <translation id="8473863474539038330">მისამართები და სხვა</translation>
 <translation id="8474910779563686872">დეველოპერის დეტალების ჩვენება</translation>
@@ -2076,6 +2082,7 @@
 <translation id="8996941253935762404">ეს საიტი შეიცავს მავნე პროგრამებს</translation>
 <translation id="8997023839087525404">სერვერმა წარმოადგინა სერტიფიკატი, რომლის საჯარო გამოქვეყნებაც სერტიფიკატთა გამჭვირვალობის შესახებ წესების შესაბამისად არ მომხდარა. აღნიშნული წესები სერტიფიკატის სანდოობის გადასამოწმებლად და თავდამსხმელებისგან თავდასაცავად გამოიყენება.</translation>
 <translation id="9001074447101275817">პროქსი <ph name="DOMAIN" /> საჭიროებს მომხმარებლის სახელსა და პაროლს.</translation>
+<translation id="9001963517402879850">ახტით!</translation>
 <translation id="9004367719664099443">VR სესია აქტიურია</translation>
 <translation id="9005998258318286617">PDF დოკუმენტი ვერ ჩაიტვირთა.</translation>
 <translation id="9008201768610948239">იგნორირება</translation>

@@ -22,6 +22,8 @@
 <translation id="1120938014254001895">អូសម្រាមដៃពីរ​ឡើងលើ</translation>
 <translation id="1126928665165112660">មិន​ទ្រេត</translation>
 <translation id="113582498867142724"><ph name="TAG" /> ការប្រមូលជាមួយធាតុ <ph name="NUM" /></translation>
+<translation id="1146441463334103638">បិទ ឬបើកអេក្រង់</translation>
+<translation id="1156488781945104845">ម៉ោង​បច្ចុប្បន្ន</translation>
 <translation id="1161762950103988776">ផ្លោះ</translation>
 <translation id="1164857107703583584">គ្រាប់ចុចបញ្ជា​ឱ្យរំលង​អាចត្រូវបានប្រើ​សម្រាប់​រុករក​ក្នុង​ទំព័របណ្ដាញ​យ៉ាងមាន​ប្រសិទ្ធភាព​។</translation>
 <translation id="1175914831232945926">តួលេខ</translation>
@@ -71,6 +73,7 @@
 <translation id="1405567553485452995">បៃតងខ្ចី</translation>
 <translation id="1411043317877497323">កន្លែង​អនុវត្ត</translation>
 <translation id="141454040365657399">ក្បាលទំព័រ</translation>
+<translation id="1417092723421264764">ទំព័រ​បច្ចុប្បន្ន</translation>
 <translation id="1417889266572670458">ខៀវចាស់</translation>
 <translation id="1431911867058218151">ស្វាយចាស់</translation>
 <translation id="1439316808600711881">rgn</translation>
@@ -199,6 +202,7 @@
 <translation id="242998846562331953">ចំណង​ជើងរង</translation>
 <translation id="2435422727584637732">ខៀវខ្ចី</translation>
 <translation id="2450814015951372393">ប្រអប់ធីក</translation>
+<translation id="2461822463642141190">បច្ចុប្បន្ន</translation>
 <translation id="2462626033734746142">ប៊ូតុងក្រុមវិទ្យុ</translation>
 <translation id="2471138580042810658">ផ្នែកក្បាល 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{សញ្ញាផ្កាយ}other{# សញ្ញាផ្កាយ}}</translation>
@@ -244,7 +248,6 @@
 <translation id="2766299274563946262">គ្មានក្រឡានៅសល់ទេ</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="280499067616661124">ទំព័រស្វែងរកក្នុង ChromeVox</translation>
-<translation id="2808001342598757276">បន្ថែម​ពន្លឺអេក្រង់វិញ</translation>
 <translation id="2811019999044652585">ដើម្បីរំលងទៅផ្នែកផ្សេងទៀតនៃអេក្រង់ ដូចជា៖ របារឧបករណ៍ ឬទម្រប្រព័ន្ធ សូមចុច Control+Forward ។ នៅលើ Chromebook គ្រាប់ចុច Forward គឺស្ថិតនៅចំពីលើគ្រាប់ចុចលេខ 2 ។</translation>
 <translation id="2811204574343810641">ជួរដេក</translation>
 <translation id="2816868829355607410">កន្លែង​អនុវត្ត៖ គ្រាប់ចុច​បញ្ជាឱ្យ​រំលង</translation>
@@ -299,6 +302,7 @@
 <translation id="3109724472072898302">បានបង្រួមចូល</translation>
 <translation id="311015743332597320">អូសម្រាមដៃ​បួនទៅស្ដាំ</translation>
 <translation id="3112457281078985179">ដើម្បីបើក ឬបិទ ChromeVox សូមប្រើ Control+Alt+Z ។</translation>
+<translation id="3115800313647508384">បិទ​អេក្រង់ឬ?</translation>
 <translation id="3131002934070407451">អាន​លេខ​ជា៖</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">បៃតងចាស់</translation>
@@ -642,6 +646,7 @@
 <translation id="5655682562155942719">លោតការបញ្ជា</translation>
 <translation id="56637627897541303">តំបន់អត្ថបទ</translation>
 <translation id="5669637233317991674">ចុចស្វែងរក + ព្រួញទៅស្ដាំ ឬស្វែងរក + ព្រួញទៅឆ្វេង ដើម្បី​រុករក​មេរៀន​នេះ</translation>
+<translation id="5677240841070992068">ទីតាំង​បច្ចុប្បន្ន</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
 <translation id="5682113568322255809">កន្លែងសម្គាល់</translation>
@@ -677,6 +682,7 @@
 <translation id="5901630391730855834">លឿង</translation>
 <translation id="5906974869830879618">សូមបញ្ចូល​លេខកូដ pin</translation>
 <translation id="5921587111466148855">ជំពូក</translation>
+<translation id="5923780477617566089">កាលបរិច្ឆេទ​បច្ចុប្បន្ន​</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{ស្មើ}other{# សញ្ញាស្មើ}}</translation>
 <translation id="5948123859135882163">បិទបើកការបកស្រាយការបញ្ចេញយោបល់គណិតវិទ្យារវាងទម្រង់ និងអត្ថន័យពាក្យ</translation>
 <translation id="5955304353782037793">កម្មវិធី</translation>
@@ -696,9 +702,9 @@
 <translation id="6034000775414344507">ប្រផេះ​ខ្ចី</translation>
 <translation id="6036135911048686884">រុករកដោយការចុច</translation>
 <translation id="6037602951055904232">អូសទៅមុខ</translation>
-<translation id="6044160928851315051">បន្ថយ​ពន្លឺអេក្រង់</translation>
 <translation id="6082768461603900813">ការរុករកមូលដ្ឋាន</translation>
 <translation id="609281021724813947">គ្មានរបាររំកិលមុនទេ</translation>
+<translation id="6096942799340613495">ការធ្វើបែបនេះនឹងបិទអេក្រង់។ អ្នកអាចបើកអេក្រង់វិញបានជានិច្ចដោយចុច Search + បង្កើនពន្លឺ។</translation>
 <translation id="6100239002225743044">ផ្លាស់ទី​ឡើងលើ​មួយជួរ</translation>
 <translation id="6118126368611144850">កម្មវិធី Android សម្រាប់ Chrome ។ ប្រសិនបើអ្នកមាន Play Store នៅលើឧបករណ៍របស់អ្នក សូម​សាកល្បង​ប្រើ​ ChromeVox ជាមួយកម្មវិធី Android មុនការប្រកាសឱ្យប្រើជាផ្លូវការ។ សូមសាកល្បងប្រើជំនួយសាកល្បងដោយទាញយក Google Chrome Canary ពី Play Store ។</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -766,6 +772,7 @@
 <translation id="6696967141280706829">សេចក្ដី​ផ្ដើម</translation>
 <translation id="6697092096875747123">ប្រអប់បន្សំពីមុន</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{សញ្ញាឧទាន}other{សញ្ញាឧទាន #}}</translation>
+<translation id="670717715607710284">បិទអេក្រង់</translation>
 <translation id="6710213216561001401">មុន</translation>
 <translation id="6714813999819678458">ផ្នែកក្បាលកម្រិត 2 ពីមុន។</translation>
 <translation id="6730312624811567147">ប្រើ Search Left ឬ Right សម្រាប់ Home ឬ End, ប្រើ Search Control Left ឬ Right សម្រាប់ Control Home ឬ End, ប្រើ Search Up ឬ Down ​សម្រាប់ Page Up ឬ Down</translation>
@@ -945,6 +952,7 @@
 <translation id="8037651341025652929">សេចក្ដី​បញ្ចប់</translation>
 <translation id="8042761080832772327">កែប្រែអត្ថបទ ស្វែងរកធាតុ</translation>
 <translation id="8049189770492311300">ឧបករណ៍កំណត់ពេល</translation>
+<translation id="8057472523431225012">ជំហានបច្ចុប្បន្ន</translation>
 <translation id="8058636807889143711">គ្មានកន្សោមគណិតវិទ្យាបន្ទាប់ទេ</translation>
 <translation id="8066678206530322333">បដា</translation>
 <translation id="8076492880354921740">ផ្ទាំង</translation>
@@ -962,6 +970,7 @@
 <translation id="816818801578874684">នេះជា​ចំណងជើង​ទីមួយ​។ ចុចស្វែងរក + H ដើម្បី​ទៅកាន់​ចំណងជើង​បន្ទាប់​។</translation>
 <translation id="8173092779156526980">អូសម្រាមដៃ​បួនទៅឆ្វេង</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{សញ្ញាគូសបន្ទាត់ពីក្រោម}other{# សញ្ញាគូសបន្ទាត់ពីក្រោម}}</translation>
+<translation id="817529114347680055">បើក​អេក្រង់</translation>
 <translation id="8179976553408161302">បញ្ចូល</translation>
 <translation id="8184828902145951186">ជួរដេក</translation>
 <translation id="8186185314313222077">បិទ/បើកពេញអេក្រង់</translation>
@@ -984,7 +993,6 @@
 <translation id="8316881042119029234">លឿងស្រាល</translation>
 <translation id="8324974933005349667">កំណត់ការកំណត់ការបំប្លែងអត្ថបទទៅជាការនិយាយឱ្យ​ស្រប​នឹងអ្នក</translation>
 <translation id="8326783648485765113">បៃតងខ្ចី</translation>
-<translation id="8328063869313048659">បិទ/បើកអេក្រង់ងងឹត</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{ផោន}other{# សញ្ញាផោន}}</translation>
 <translation id="8378855320830505539">តំបន់</translation>
 <translation id="8382679411218029383">ការបំពេញស្វ័យប្រវត្តិក្នុងជួរ និងបញ្ជី</translation>

@@ -178,6 +178,7 @@
 <translation id="5916664084637901428">På</translation>
 <translation id="5922853908706496913">Delar skärmen</translation>
 <translation id="5939518447894949180">Återställ</translation>
+<translation id="5975083100439434680">Zooma ut</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Styr webbplatsens åtkomst till enheten</translation>
 <translation id="6040143037577758943">Stäng</translation>
@@ -298,6 +299,7 @@
 <translation id="8801436777607969138">Blockera JavaScript på en enskild webbplats.</translation>
 <translation id="8816026460808729765">Blockera webbplatser från att använda enhetens sensorer</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8903921497873541725">Zooma in</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC är inte aktiverat på enheten. Aktivera det i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="8929372349074745002">Den här webbplatsen öppnas och svarar fort för de flesta användare</translation>

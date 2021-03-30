@@ -193,6 +193,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6070348360322141662">V záujme vyššej miery zabezpečenia budú dáta v prehliadači Google Chrome šifrované</translation>
 <translation id="608006075545470555">Pridanie pracovného profilu do tohto prehliadača</translation>
 <translation id="6113794647360055231">Prehliadač Chrome bol práve vylepšený</translation>
+<translation id="6145313976051292476">Otvoriť súbory PDF v Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="61852838583753520">Aktualizácia systému &amp;Chrome OS</translation>
@@ -205,7 +206,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6566149418543181476">Aktualizuje sa Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Systém Chrome OS</translation>
-<translation id="6650333065969705433">Ak chcete prehrávať chránené médiá pomocou doplnku Rosetta, musíte reštartovať Chrome.</translation>
 <translation id="6676384891291319759">Prístup do siete Internet</translation>
 <translation id="6679975945624592337">Povoliť prehliadaču Google Chrome spustenie na pozadí</translation>
 <translation id="6739177684496155661">Chcete pokračovať v novom profile Chromu?</translation>
@@ -269,7 +269,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Tento pracovný profil je úplne oddelený od vášho osobného.</translation>
 <translation id="8556340503434111824">K dispozícii je nová verzia prehliadača Google Chrome, ktorá je rýchlejšia ako kedykoľvek predtým.</translation>
-<translation id="861359755029082151">Rosetta umožňuje Chromu prehrávať chránené médiá na tejto stránke.</translation>
 <translation id="8614913330719544658">Google Chrome nereaguje. Chcete ho spustiť znova?</translation>
 <translation id="861702415419836452">Chrome potrebuje povolenie použiť fotoaparát, aby mohol vytvoriť 3D mapu vášho okolia</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome sa reštartuje o 1 minútu}few{Chrome sa reštartuje o # minúty}many{Chrome sa reštartuje o # minúty}other{Chrome sa reštartuje o # minút}}</translation>
@@ -283,7 +282,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8834965163890861871">Google Chrome sa pokúša upraviť heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
 <translation id="884296878221830158">Tiež určuje, ktorá stránka sa zobrazí pri spustení prehliadača Chrome alebo po kliknutí na tlačidlo Domovská stránka.</translation>
 <translation id="8862326446509486874">Nemáte potrebné práva na inštaláciu na úrovni systému. Skúste inštalátor spustiť znova ako správca.</translation>
-<translation id="8907709077090383765">Ak chcete povoliť Chromu prehrávať chránené médiá, musíte si nainštalovať doplnok Rosetta. Chcete si ho nainštalovať?</translation>
 <translation id="8914504000324227558">Znova spustiť prehliadač Chrome</translation>
 <translation id="8922193594870374009">Ak chcete zo zariadenia <ph name="ORIGIN" /> odoslať číslo do svojho telefónu s Androidom, prihláste sa v oboch zariadeniach do Chromu.</translation>
 <translation id="8986207147630327271">Do tohto prehliadača pridávate pracovný profil a svojmu správcovi udeľujete kontrolu iba nad ním.</translation>
@@ -293,6 +291,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="911206726377975832">Chcete tiež odstrániť svoje údaje prehliadania?</translation>
 <translation id="9138603949443464873">Ak chcete zmeny použiť, spustite Chrome znova</translation>
 <translation id="919706545465235479">Ak chcete spustiť synchronizáciu, aktualizujte Chrome</translation>
+<translation id="922152298093051471">Prispôsobiť Chrome</translation>
 <translation id="940313311831216333">Ak chcete získať prístup k obsahu Chromu vo všetkých svojich zariadeniach, prihláste sa a zapnite synchronizáciu.</translation>
 <translation id="989369509083708165">Google Chrome je vaším predvoleným prehliadačom</translation>
 </translationbundle>

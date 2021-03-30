@@ -268,7 +268,6 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="2856503607207334158">Login gagal</translation>
 <translation id="2860954141821109167">Pastikan aplikasi telepon diaktifkan di perangkat ini</translation>
 <translation id="2870560284913253234">Situs</translation>
-<translation id="2876369937070532032">Mengirimkan URL beberapa halaman yang Anda kunjungi ke Google, jika keamanan Anda berisiko</translation>
 <translation id="2888126860611144412">Tentang Chrome</translation>
 <translation id="2891154217021530873">Hentikan pemuatan halaman</translation>
 <translation id="2892647708214602204">Anda akan melihat notifikasi saat file siap</translation>
@@ -311,7 +310,6 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3157842584138209013">Lihat banyaknya kuota yang Anda hemat dari tombol Opsi Lainnya</translation>
 <translation id="3166827708714933426">Pintasan tab dan jendela</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Safe Browsing (melindungi Anda dan perangkat dari situs berbahaya)</translation>
 <translation id="3205824638308738187">Hampir selesai!</translation>
 <translation id="3207960819495026254">Diberi bookmark</translation>
 <translation id="3208584281581115441">Periksa sekarang</translation>
@@ -505,6 +503,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4561979708150884304">Tidak ada koneksi</translation>
 <translation id="4565377596337484307">Sembunyikan sandi</translation>
 <translation id="4572422548854449519">Login ke akun terkelola</translation>
+<translation id="4576892426230499203">Coba opsi verifikasi lain</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# menit yang lalu}other{# menit yang lalu}}</translation>
 <translation id="4587589328781138893">Situs</translation>
 <translation id="4594952190837476234">Halaman offline ini dibuat pada <ph name="CREATION_TIME" /> dan mungkin berbeda dengan versi onlinenya.</translation>
@@ -584,7 +583,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5011311129201317034"><ph name="SITE" /> ingin terhubung</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Izinkan</translation>
-<translation id="5040262127954254034">Privasi</translation>
 <translation id="5087580092889165836">Tambahkan kartu</translation>
 <translation id="5091249083535528968">Data penggunaan yang diperluas</translation>
 <translation id="509429900233858213">Terjadi kesalahan.</translation>
@@ -637,6 +635,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5441522332038954058">Beralih ke bilah alamat</translation>
 <translation id="544776284582297024">Untuk membuka tab dan mengunjungi halaman yang berbeda secara bersamaan, ketuk tombol tab terbuka</translation>
 <translation id="545042621069398927">Mempercepat download.</translation>
+<translation id="5454166040603940656">dengan <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Download halaman</translation>
 <translation id="548278423535722844">Buka di aplikasi peta</translation>
 <translation id="5483197086164197190">Navigate Chrome</translation>
@@ -777,6 +776,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6316139424528454185">Versi Android tidak didukung</translation>
 <translation id="6324034347079777476">Sinkronisasi sistem Android dinonaktifkan</translation>
 <translation id="6324977638108296054">Tidak dapat membuat link ke sorotan</translation>
+<translation id="6324997754869598316">(Error <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Bagikan dengan <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Enkripsi</translation>
 <translation id="6341580099087024258">Tanya lokasi menyimpan file</translation>
@@ -793,6 +793,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> di <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Edit bookmark</translation>
 <translation id="6406506848690869874">Sinkronisasi</translation>
+<translation id="6407224748847589805">Tidak dapat terhubung ke komputer. Coba opsi verifikasi lain.</translation>
 <translation id="6410404864818553978">Data penggunaan dasar</translation>
 <translation id="6410883413783534063">Buka tab untuk mengunjungi halaman yang berbeda secara bersamaan</translation>
 <translation id="6412673304250309937">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chrome. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
@@ -861,7 +862,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6813446258015311409">Login ke Chrome, dibuka.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">Tab <ph name="TAB_TITLE" /> dipilih</translation>
-<translation id="6845325883481699275">Bantu meningkatkan keamanan Chrome</translation>
 <translation id="6846298663435243399">Memuat...</translation>
 <translation id="6850409657436465440">Download sedang berlangsung</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> tab ditutup</translation>
@@ -989,7 +989,6 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="7704317875155739195">Lengkapi otomatis penelusuran dan URL</translation>
 <translation id="7707922173985738739">Gunakan data seluler</translation>
 <translation id="7725024127233776428">Halaman yang Anda bookmark muncul di sini</translation>
-<translation id="7746457520633464754">Untuk mendeteksi aplikasi dan situs berbahaya, Chrome mengirimkan URL beberapa halaman yang Anda kunjungi, informasi sistem terbatas, dan beberapa konten halaman ke Google</translation>
 <translation id="7757787379047923882">Teks dibagikan dari <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Pilih tanggal &amp; waktu</translation>
 <translation id="7762668264895820836">Kartu SD <ph name="SD_CARD_NUMBER" /></translation>

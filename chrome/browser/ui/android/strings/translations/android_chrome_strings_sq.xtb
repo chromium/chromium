@@ -268,7 +268,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="2856503607207334158">Identifikimi dështoi</translation>
 <translation id="2860954141821109167">Sigurohu që një aplikacion i telefonit të jetë i aktivizuar në këtë pajisje</translation>
 <translation id="2870560284913253234">Sajti</translation>
-<translation id="2876369937070532032">Dërgon URL-të e disa faqeve që viziton te Google, kur siguria jote është në rrezik</translation>
 <translation id="2888126860611144412">Rreth Chrome</translation>
 <translation id="2891154217021530873">Ndalo ngarkimin e faqes</translation>
 <translation id="2892647708214602204">Do të shikosh një njoftim kur ky skedar të jetë gati</translation>
@@ -311,7 +310,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3157842584138209013">Shiko se sa të dhëna kurseve nga butoni "Më shumë opsione"</translation>
 <translation id="3166827708714933426">Shkurtoret e skedës dhe dritares</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">"Shfletimi i sigurt" (të mbron ty dhe pajisjen tënde nga sajtet e rrezikshme)</translation>
 <translation id="3205824638308738187">Pothuajse mbaroi!</translation>
 <translation id="3207960819495026254">Regjistruar në faqeshënues</translation>
 <translation id="3208584281581115441">Kontrollo tani</translation>
@@ -505,6 +503,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4561979708150884304">Nuk ka lidhje</translation>
 <translation id="4565377596337484307">Fshih fjalëkalimin</translation>
 <translation id="4572422548854449519">Identifikohu në llogarinë e menaxhuar</translation>
+<translation id="4576892426230499203">Provo një opsion tjetër verifikimi</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minutë më parë}other{# minuta më parë}}</translation>
 <translation id="4587589328781138893">Sajtet</translation>
 <translation id="4594952190837476234">Kjo faqe jashtë linje është nga <ph name="CREATION_TIME" /> dhe mund të ndryshojë nga versioni në linjë.</translation>
@@ -584,7 +583,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5011311129201317034"><ph name="SITE" /> dëshiron që të lidhet</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Lejo</translation>
-<translation id="5040262127954254034">Privatësia</translation>
 <translation id="5087580092889165836">Shto kartë</translation>
 <translation id="5091249083535528968">Të dhënat e zgjeruara të përdorimit</translation>
 <translation id="509429900233858213">Ndodhi një gabim.</translation>
@@ -637,6 +635,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5441522332038954058">Kalo te shiriti i adresës</translation>
 <translation id="544776284582297024">Për të hapur skedat dhe për të vizituar faqe të ndryshme njëkohësisht, trokit butonin e skedave të hapura</translation>
 <translation id="545042621069398927">Po të përshpejtohet shkarkimi.</translation>
+<translation id="5454166040603940656">me <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Shkarko faqen</translation>
 <translation id="548278423535722844">Hape në aplikacionin e hartave</translation>
 <translation id="5483197086164197190">Si të navigosh në Chrome</translation>
@@ -777,6 +776,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6316139424528454185">Versioni i Android s'mbështetet</translation>
 <translation id="6324034347079777476">Sinkronizimi i sistemit Android u çaktivizua</translation>
 <translation id="6324977638108296054">Nuk mund të krijohet një lidhje për te teksti i theksuar</translation>
+<translation id="6324997754869598316">(Gabim <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Ndaje nëpërmjet <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Enkriptimi</translation>
 <translation id="6341580099087024258">Pyet ku të ruhen skedarët</translation>
@@ -793,6 +793,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> në <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Redakto faqeshënuesin</translation>
 <translation id="6406506848690869874">Sinkronizo</translation>
+<translation id="6407224748847589805">Nuk mund të lidhet me kompjuterin tënd. Provo një opsion tjetër verifikimi.</translation>
 <translation id="6410404864818553978">Të dhënat bazë të përdorimit</translation>
 <translation id="6410883413783534063">Hap skedat për të vizituar faqe të ndryshme njëkohësisht</translation>
 <translation id="6412673304250309937">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chrome. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd, ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë po ashtu "Shfletimit të sigurt" URL-të, duke përfshirë pjesë të përmbajtjes së faqes.</translation>
@@ -861,7 +862,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6813446258015311409">"Identifikohu në Chrome", i hapur.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">Skeda <ph name="TAB_TITLE" /> është zgjedhur</translation>
-<translation id="6845325883481699275">Ndihmo në përmirësimin e sigurisë së Chrome</translation>
 <translation id="6846298663435243399">Po ngarkohet...</translation>
 <translation id="6850409657436465440">Shkarkimi yt është ende në vazhdim</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> skeda janë mbyllur</translation>
@@ -989,7 +989,6 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="7704317875155739195">Plotësimi automatik i kërkimeve dhe i URL-ve</translation>
 <translation id="7707922173985738739">Përdor të dhënat celulare</translation>
 <translation id="7725024127233776428">Faqet që shënon shfaqen këtu</translation>
-<translation id="7746457520633464754">Për të zbuluar aplikacionet dhe sajtet e rrezikshme, Chrome dërgon URL-të e disa faqeve që viziton, informacione të kufizuara të sistemit dhe disa përmbajtje faqesh te Google</translation>
 <translation id="7757787379047923882">Teksti u nda nga <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Zgjidh datën dhe orën</translation>
 <translation id="7762668264895820836">Karta SD <ph name="SD_CARD_NUMBER" /></translation>

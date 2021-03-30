@@ -268,7 +268,6 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="2856503607207334158">Log masuk gagal</translation>
 <translation id="2860954141821109167">Pastikan apl telefon didayakan pada peranti ini</translation>
 <translation id="2870560284913253234">Tapak</translation>
-<translation id="2876369937070532032">Menghantar URL sesetengah halaman yang anda lawati kepada Google, apabila keselamatan anda terancam</translation>
 <translation id="2888126860611144412">Perihal Chrome</translation>
 <translation id="2891154217021530873">Hentikan pemuatan halaman</translation>
 <translation id="2892647708214602204">Anda akan melihat pemberitahuan apabila fail ini sudah sedia</translation>
@@ -311,7 +310,6 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="3157842584138209013">Lihat jumlah data yang dapat dijimatkan daripada butang Lagi Pilihan</translation>
 <translation id="3166827708714933426">Pintasan tab dan tetingkap</translation>
 <translation id="3169472444629675720">Temui</translation>
-<translation id="3181954750937456830">Penyemakan Imbas Selamat (melindungi anda dan peranti anda daripada tapak yang berbahaya)</translation>
 <translation id="3205824638308738187">Hampir selesai!</translation>
 <translation id="3207960819495026254">Ditandai halaman</translation>
 <translation id="3208584281581115441">Semak sekarang</translation>
@@ -505,6 +503,7 @@ Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain s
 <translation id="4561979708150884304">Tiada sambungan</translation>
 <translation id="4565377596337484307">Sembunyikan kata laluan</translation>
 <translation id="4572422548854449519">Log masuk ke akaun terurus</translation>
+<translation id="4576892426230499203">Cuba pilihan pengesahan lain</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minit yang lalu}other{# minit yang lalu}}</translation>
 <translation id="4587589328781138893">Tapak</translation>
 <translation id="4594952190837476234">Halaman luar talian ini dari <ph name="CREATION_TIME" /> dan mungkin berbeza daripada versi dalam talian.</translation>
@@ -584,7 +583,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5011311129201317034"><ph name="SITE" /> ingin menyambung</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Benarkan</translation>
-<translation id="5040262127954254034">Privasi</translation>
 <translation id="5087580092889165836">Tambah kad</translation>
 <translation id="5091249083535528968">Data penggunaan lanjutan</translation>
 <translation id="509429900233858213">Ralat telah berlaku.</translation>
@@ -637,6 +635,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5441522332038954058">Lompat ke bar alamat</translation>
 <translation id="544776284582297024">Untuk membuka tab dan melawat halaman yang berlainan pada masa yang sama, ketik butang buka tab</translation>
 <translation id="545042621069398927">Mempercepatkan muat turun anda.</translation>
+<translation id="5454166040603940656">dengan <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Muat turun halaman</translation>
 <translation id="548278423535722844">Buka dalam apl peta</translation>
 <translation id="5483197086164197190">Navigasi Chrome</translation>
@@ -777,6 +776,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="6316139424528454185">Versi Android tidak disokong</translation>
 <translation id="6324034347079777476">Penyegerakan sistem Android dilumpuhkan</translation>
 <translation id="6324977638108296054">Tidak dapat membuat pautan kepada serlahan</translation>
+<translation id="6324997754869598316">(Ralat <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Kongsi melalui <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Penyulitan</translation>
 <translation id="6341580099087024258">Tanya tempat fail hendak disimpan</translation>
@@ -793,6 +793,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> pada <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Edit penanda halaman</translation>
 <translation id="6406506848690869874">Segerak</translation>
+<translation id="6407224748847589805">Tidak dapat menyambung kepada komputer anda. Cuba pilihan pengesahan lain.</translation>
 <translation id="6410404864818553978">Data penggunaan asas</translation>
 <translation id="6410883413783534063">Buka tab untuk melawati halaman yang berlainan pada masa yang sama</translation>
 <translation id="6412673304250309937">Semak URL melalui perbandingan dengan senarai tapak tidak selamat yang disimpan dalam Chrome. Jika tapak cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chrome juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat.</translation>
@@ -861,7 +862,6 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="6813446258015311409">Log masuk ke Chrome, dibuka.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, tab, dipilih</translation>
-<translation id="6845325883481699275">Bantu tingkatkan keselamatan Chrome</translation>
 <translation id="6846298663435243399">Memuatkan…</translation>
 <translation id="6850409657436465440">Muat turun anda masih berlangsung</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> tab telah ditutup</translation>
@@ -989,7 +989,6 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="7704317875155739195">Autolengkap carian dan URL</translation>
 <translation id="7707922173985738739">Gunakan data mudah alih</translation>
 <translation id="7725024127233776428">Halaman yang anda tandai halaman dipaparkan di sini</translation>
-<translation id="7746457520633464754">Untuk mengesan apl dan tapak berbahaya, Chrome menghantar URL sesetengah halaman yang anda lawati, maklumat sistem yang terhad dan sesetengah kandungan halaman kepada Google</translation>
 <translation id="7757787379047923882">Teks dikongsi daripada <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Pilih tarikh &amp; masa</translation>
 <translation id="7762668264895820836">Kad SD <ph name="SD_CARD_NUMBER" /></translation>

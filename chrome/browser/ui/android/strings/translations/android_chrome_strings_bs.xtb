@@ -268,7 +268,6 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="2856503607207334158">Prijava nije uspjela</translation>
 <translation id="2860954141821109167">Provjerite je li na ovom uređaju omogućena aplikacija za telefon</translation>
 <translation id="2870560284913253234">Web lokacija</translation>
-<translation id="2876369937070532032">Googleu šalje URL-ove nekih stranica koje posjećujete kada je ugrožena vaša sigurnost</translation>
 <translation id="2888126860611144412">O Chromeu</translation>
 <translation id="2891154217021530873">Zaustavljanje učitavanja stranice</translation>
 <translation id="2892647708214602204">Vidjet ćete obavještenje kada fajl bude spreman</translation>
@@ -311,7 +310,6 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="3157842584138209013">Pogledajte količinu podataka koju ste uštedjeli koristeći dugme Više opcija</translation>
 <translation id="3166827708714933426">Kartice i prečice prozora</translation>
 <translation id="3169472444629675720">Otkrijte</translation>
-<translation id="3181954750937456830">Sigurno pregledavanje (štiti vas i vaš uređaj od opasnih web-lokacija)</translation>
 <translation id="3205824638308738187">Skoro je gotovo!</translation>
 <translation id="3207960819495026254">Označeno</translation>
 <translation id="3208584281581115441">Provjeri sada</translation>
@@ -505,6 +503,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4561979708150884304">Niste povezani na mrežu</translation>
 <translation id="4565377596337484307">Sakrij lozinku</translation>
 <translation id="4572422548854449519">Prijava na upravljani račun</translation>
+<translation id="4576892426230499203">Pokušajte s drugom opcijom za potvrdu</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{prije # minute}one{prije # minute}few{prije # minute}other{prije # minuta}}</translation>
 <translation id="4587589328781138893">Web lokacije</translation>
 <translation id="4594952190837476234">Stranica van mreže je od <ph name="CREATION_TIME" /> i može se razlikovati od verzije koja je na mreži.</translation>
@@ -584,7 +583,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5011311129201317034"><ph name="SITE" /> se želi povezati</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Dozvoli</translation>
-<translation id="5040262127954254034">Privatnost</translation>
 <translation id="5087580092889165836">Dodaj karticu</translation>
 <translation id="5091249083535528968">Prošireni podaci o korištenju</translation>
 <translation id="509429900233858213">Došlo je do greške.</translation>
@@ -637,6 +635,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5441522332038954058">Pređi na traku za adresu</translation>
 <translation id="544776284582297024">Da otvorite kartice i posjećujete različite stranice u isto vrijeme, dodirnite dugme Otvori kartice</translation>
 <translation id="545042621069398927">Ubrzavanje preuzimanja.</translation>
+<translation id="5454166040603940656">s pružaocem usluge <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Preuzmi stranicu</translation>
 <translation id="548278423535722844">Otvori u aplikacijama za mape</translation>
 <translation id="5483197086164197190">Navigirajte Chromeom</translation>
@@ -777,6 +776,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6316139424528454185">Verzija Androida nije podržana</translation>
 <translation id="6324034347079777476">Sinhronizacija Android sistema je onemogućena</translation>
 <translation id="6324977638108296054">Nije moguće kreirati link za istaknuti tekst</translation>
+<translation id="6324997754869598316">(Kȏd greške <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Dijeli pomoću aplikacije <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Enkripcija</translation>
 <translation id="6341580099087024258">Pitaj gdje pohranjivati fajlove</translation>
@@ -793,6 +793,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> na <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Uredite oznaku</translation>
 <translation id="6406506848690869874">Sinhronizacija</translation>
+<translation id="6407224748847589805">Nije se moguće povezati s računarom. Pokušajte s drugom opcijom za potvrdu.</translation>
 <translation id="6410404864818553978">Osnovni podaci o korištenju</translation>
 <translation id="6410883413783534063">Otvorite kartice da istovremeno posjetite različite stranice</translation>
 <translation id="6412673304250309937">Provjerava URL-ove s listom nesigurnih web lokacija pohranjenih u Chromeu. Ako web lokacija pokuša ukrasti vašu lozinku, ili kada preuzimate štetan fajl, Chrome može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje.</translation>
@@ -861,7 +862,6 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6813446258015311409">Prijava na Chrome je otvorena.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, kartica, odabrana</translation>
-<translation id="6845325883481699275">Pomognite poboljšati sigurnost na Chromeu</translation>
 <translation id="6846298663435243399">Učitavanje…</translation>
 <translation id="6850409657436465440">Vaše preuzimanje je još uvijek u toku</translation>
 <translation id="6850830437481525139">Broj zatvorenih kartica: <ph name="TAB_COUNT" /></translation>
@@ -989,7 +989,6 @@ Podaci iz vaših anonimnih sesija će se obrisati iz Chromea kada <ph name="BEGI
 <translation id="7704317875155739195">Automatsko dovršavanje pretraživanja i URL-ova</translation>
 <translation id="7707922173985738739">Koristi prijenos podataka na mobilnoj mreži</translation>
 <translation id="7725024127233776428">Stranice koje označite će se pojaviti ovdje</translation>
-<translation id="7746457520633464754">Radi otkrivanja opasnih aplikacija i web-lokacija Chrome šalje Googleu URL-ove nekih stranica koje posjećujete, ograničene podatke o sustavu i dio sadržaja web-stranica</translation>
 <translation id="7757787379047923882">Tekst je podijeljen s uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Odaberite datum i vrijeme</translation>
 <translation id="7762668264895820836">SD kartica <ph name="SD_CARD_NUMBER" /></translation>

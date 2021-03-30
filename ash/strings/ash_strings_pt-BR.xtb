@@ -277,6 +277,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3308453408813785101">O usuário <ph name="USER_EMAIL_ADDRESS" /> ainda poderá fazer login mais tarde.</translation>
 <translation id="3321628682574733415">Código de pai/mãe incorreto</translation>
 <translation id="332587331255250389">Substitua a bateria</translation>
+<translation id="3333741161915951567">O modem está sendo reiniciado. Aguarde 30 segundos para tentar novamente.</translation>
 <translation id="3341303451326249809">Captura de tela feita</translation>
 <translation id="334252345105450327">Fazer uma captura de tela</translation>
 <translation id="3351879221545518001">Você está transmitindo a tela.</translation>
@@ -396,6 +397,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Você pressionou o atalho de teclado para o alto contraste. Gostaria de ativá-lo?</translation>
 <translation id="4331809312908958774">Sistema operacional Chrome</translation>
+<translation id="4333628967105022692">O Lacros não é compatível com o login de vários usuários.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">O Assistente está sendo carregado…</translation>
 <translation id="4356930093361201197">modo de alto contraste</translation>
@@ -968,6 +970,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="9091626656156419976">Tela <ph name="DISPLAY_NAME" /> removida</translation>
 <translation id="9098969848082897657">Silenciar smartphone</translation>
 <translation id="9099154003160514616">Atualização do Lacros disponível</translation>
+<translation id="9105450214093926548">Não é possível fazer login em um segundo usuário enquanto o navegador Lacros está aberto. Use um segundo perfil de navegador no Lacros ou feche-o e tente novamente.</translation>
 <translation id="9133335900048457298">Não é possível gravar conteúdo protegido</translation>
 <translation id="9151726767154816831">Reinicie e execute um powerwash para atualizar</translation>
 <translation id="9166331175924255663">Alternar a alta visibilidade de Compartilhar por proximidade.</translation>

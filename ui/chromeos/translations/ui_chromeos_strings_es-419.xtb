@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />¡Todavía no retires el dispositivo!<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
        Si retiras el dispositivo mientras está en uso, puedes perder datos. Espera hasta que la operación finalice y, luego, expulsa el dispositivo con la aplicación Archivos.</translation>
+<translation id="5159560892333415631">Vaciar la papelera</translation>
 <translation id="5163869187418756376">Se produjo un error al compartir el contenido. Comprueba tu conexión y vuelve a intentarlo.</translation>
 <translation id="516592729076796170">Programmer Dvorak, EE. UU.</translation>
 <translation id="5170477580121653719">Espacio libre en Google Drive: <ph name="SPACE_AVAILABLE" /></translation>
@@ -419,6 +420,7 @@
 <translation id="5275973617553375938">Archivos recuperados de Google Drive</translation>
 <translation id="5288441970121584418">Hamburguesa</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">¿Confirmas que quieres vaciar la papelera?</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318819489018851358">Compartir con Linux</translation>
 <translation id="5323213332664049067">Latinoamericano</translation>
@@ -456,7 +458,7 @@
 <translation id="5700087501958648444">Información de audio</translation>
 <translation id="5724172041621205163">Tailandés con teclado pattachote</translation>
 <translation id="5731409020711461763">1 foto nueva</translation>
-<translation id="5752453871435543420">Copia de seguridad en la nube del Sistema operativo Chrome</translation>
+<translation id="5752453871435543420">Copia de seguridad en la nube del Chrome OS</translation>
 <translation id="5756666464756035725">QWERTY húngaro</translation>
 <translation id="5763377084591234761">Alemán (Suiza)</translation>
 <translation id="5775750595919327203">Urdu</translation>
@@ -572,7 +574,7 @@
 <translation id="6970230597523682626">Búlgaro</translation>
 <translation id="6973630695168034713">Carpetas</translation>
 <translation id="6976795442547527108">León</translation>
-<translation id="6978611942794658017">Este archivo está diseñado para computadoras que utilizan software de Windows, por lo que no es compatible con tu dispositivo, el cual ejecuta el Sistema operativo Chrome. Busca una aplicación equivalente adecuada en Chrome Web Store.</translation>
+<translation id="6978611942794658017">Este archivo está diseñado para computadoras que utilizan software de Windows, por lo que no es compatible con tu dispositivo, el cual ejecuta Chrome OS. Busca una aplicación equivalente adecuada en Chrome Web Store.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Sueco</translation>
 <translation id="6990081529015358884">Te has quedado sin espacio.</translation>
@@ -777,12 +779,13 @@
 <translation id="9130775360844693113">Los miembros de "<ph name="DESTINATION_NAME" />" tendrán acceso a estos elementos.</translation>
 <translation id="9131598836763251128">Selecciona uno o más archivos.</translation>
 <translation id="9133055936679483811">Se produjo un error al comprimir. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Este archivo está diseñado para computadoras que utilizan software de Macintosh, por lo que no es compatible con tu dispositivo, el cual ejecuta el Sistema operativo Chrome. Busca una aplicación equivalente adecuada en Chrome Web Store.</translation>
+<translation id="9134524245363717059">Este archivo está diseñado para computadoras que utilizan software de Macintosh, por lo que no es compatible con tu dispositivo, el cual ejecuta Chrome OS. Busca una aplicación equivalente adecuada en Chrome Web Store.</translation>
 <translation id="9144340019284012223">Catalán</translation>
 <translation id="9148058034647219655">Salir</translation>
 <translation id="9154418932169119429">Esta imagen no está disponible sin conexión.</translation>
 <translation id="9172592259078059678">Guyaratí (transliteración)</translation>
 <translation id="9173120999827300720">Inglés (EE.UU.) con teclado internacional</translation>
+<translation id="9174050671906956834">Los elementos de la papelera se borrarán definitivamente tras 30 días.</translation>
 <translation id="9189836632794948435">Kazajo</translation>
 <translation id="9213073329713032541">La instalación se inició de forma correcta.</translation>
 <translation id="9219103736887031265">Imágenes</translation>

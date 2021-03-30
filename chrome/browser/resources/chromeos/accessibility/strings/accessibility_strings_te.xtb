@@ -22,6 +22,8 @@
 <translation id="1120938014254001895">రెండు వేళ్లతో పైకి స్వైప్ చేయండి</translation>
 <translation id="1126928665165112660">ఇటాలిక్ కాదు</translation>
 <translation id="113582498867142724"><ph name="NUM" /> అంశాలు గల <ph name="TAG" /> సేకరణ</translation>
+<translation id="1146441463334103638">స్క్రీన్‌ను ఆన్, ఆఫ్ టోగుల్ చేయండి</translation>
+<translation id="1156488781945104845">ప్రస్తుత సమయం</translation>
 <translation id="1161762950103988776">దాటివేయి</translation>
 <translation id="1164857107703583584">వెబ్ పేజీ ద్వారా సమర్థవంతంగా నావిగేట్ చేయడానికి దాటవేసే కమాండ్‌లను ఉపయోగించవచ్చు.</translation>
 <translation id="1175914831232945926">అంకెలు</translation>
@@ -71,6 +73,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="1405567553485452995">లేత ఆకుపచ్చ రంగు</translation>
 <translation id="1411043317877497323">సాధన ప్రాంతం</translation>
 <translation id="141454040365657399">పేజీ హెడర్</translation>
+<translation id="1417092723421264764">ప్రస్తుత పేజీ</translation>
 <translation id="1417889266572670458">నేవీ నీలం రంగు</translation>
 <translation id="1431911867058218151">రేగు పండు రంగు</translation>
 <translation id="1439316808600711881">rgn</translation>
@@ -200,6 +203,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="242998846562331953">ఉపశీర్షిక</translation>
 <translation id="2435422727584637732">కాంతివంతమైన నీలి రంగు</translation>
 <translation id="2450814015951372393">చెక్‌ బాక్స్</translation>
+<translation id="2461822463642141190">ప్రస్తుత</translation>
 <translation id="2462626033734746142">రేడియో బటన్ సమూహం</translation>
 <translation id="2471138580042810658">శీర్షిక 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{నక్షత్రం గుర్తు}other{# నక్షత్రం గుర్తులు}}</translation>
@@ -245,7 +249,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="2766299274563946262">ఎడమవైపున సెల్ లేదు</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="280499067616661124">ChromeVox శోధన పేజీ</translation>
-<translation id="2808001342598757276">స్క్రీన్‌ను కాంతివంతంగా చేస్తుంది</translation>
 <translation id="2811019999044652585">స్క్రీన్‌పై ఉండే సాధనాల బార్‌లు లేదా సిస్టమ్ ట్రే వంటి మిగిలిన అంశాలకు వెళ్లడానికి, Control+ఫార్వర్డ్ బటన్‌ను నొక్కండి. Chromebookలో, ఫార్వర్డ్ కీ అనేది 2 సంఖ్య కీకి ఎగువన ఉంటుంది.</translation>
 <translation id="2811204574343810641">అడ్డు వరుస</translation>
 <translation id="2816868829355607410">సాధన ప్రాంతం: దాటవేసే కమాండ్‌లు</translation>
@@ -300,6 +303,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3109724472072898302">కుదించబడింది</translation>
 <translation id="311015743332597320">నాలుగు వేళ్లతో కుడివైపునకు స్వైప్ చేయండి</translation>
 <translation id="3112457281078985179">ChromeVoxని ఆన్ లేదా ఆఫ్ చేయడానికి, Control+Alt+Z ఉపయోగించండి.</translation>
+<translation id="3115800313647508384">స్క్రీన్‌ను ఆఫ్ చేయాలా?</translation>
 <translation id="3131002934070407451">సంఖ్యలను ఇలా చదవాలి:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">ఆలివ్ రంగు</translation>
@@ -643,6 +647,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="5655682562155942719">దాటివేసే ఆదేశాలు</translation>
 <translation id="56637627897541303">వచన ప్రదేశం</translation>
 <translation id="5669637233317991674">ఈ పాఠానికి నావిగేట్ చేయడానికి సెర్చ్ + కుడి వైపు బాణం, లేదా సెర్చ్ + ఎడమ వైపు బాణాన్ని నొక్కండి</translation>
+<translation id="5677240841070992068">ప్రస్తుత లొకేషన్</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
 <translation id="5682113568322255809">మైలురాయి</translation>
@@ -678,6 +683,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="5901630391730855834">పసుపు</translation>
 <translation id="5906974869830879618">దయచేసి ‌పిన్‌ని నమోదు చేయండి</translation>
 <translation id="5921587111466148855">అధ్యాయం</translation>
+<translation id="5923780477617566089">ప్రస్తుత తేదీ</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{సమాన గుర్తు}other{# సమాన గుర్తులు}}</translation>
 <translation id="5948123859135882163">గణిత వ్యక్తీకరణల వ్యాఖ్యానాన్ని వ్యవస్థీకృత వివరణ మరియు అర్థ వివరణ మధ్య టోగుల్ చేయండి</translation>
 <translation id="5955304353782037793">app</translation>
@@ -697,9 +703,9 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="6034000775414344507">లేత బూడిద రంగు</translation>
 <translation id="6036135911048686884">'అన్వేషించండి'ని తాకండి</translation>
 <translation id="6037602951055904232">ముందుకు ప్యాన్ చేయండి</translation>
-<translation id="6044160928851315051">స్క్రీన్‌ను కాంతిహీనంగా చేస్తుంది</translation>
 <translation id="6082768461603900813">ప్రాథమిక నావిగేషన్</translation>
 <translation id="609281021724813947">మునుపటి స్లయిడర్ లేదు</translation>
+<translation id="6096942799340613495">ఇది మీ స్క్రీన్‌ను ఆఫ్ చేస్తుంది. సెర్చ్ + ప్రకాశాన్ని పెంచు కీలను నొక్కడం ద్వారా మీరు తిరిగి స్క్రీన్‌ను ఎల్లప్పుడూ ఆన్ చేయవచ్చు.</translation>
 <translation id="6100239002225743044">ఒక పంక్తి పైకి జరుపు</translation>
 <translation id="6118126368611144850">Chrome కోసం Android యాప్‌లు. మీ పరికరంలో Play స్టోర్ ఉన్నట్లయితే, Android యాప్‌లతో ChromeVoxను పరిశీలించండి. Play స్టోర్ నుండి Google Chrome Canaryని డౌన్‌లోడ్ చేయడం ద్వారా ప్రయోగాత్మక మద్దతును ప్రయత్నించండి.</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -767,6 +773,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="6696967141280706829">ముందుమాట</translation>
 <translation id="6697092096875747123">మునుపటి కాంబో పెట్టె</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ఆశ్చర్యార్థక గుర్తు}other{# ఆశ్చర్యార్థక గుర్తులు}}</translation>
+<translation id="670717715607710284">స్క్రీన్ ఆఫ్‌ చేయండి</translation>
 <translation id="6710213216561001401">మునుపటి</translation>
 <translation id="6714813999819678458">మునుపటి స్థాయి 2 శీర్షిక</translation>
 <translation id="6730312624811567147">Home లేదా End బదులుగా Search Left లేదా Rightను, Control Home లేదా Endకు బదులుగా Search Control Left లేదా Rightను, Page Up లేదా Downకు బదులుగా Search Up లేదా Downను ఉపయోగించండి</translation>
@@ -946,6 +953,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="8037651341025652929">ముగింపు</translation>
 <translation id="8042761080832772327">వచనం, శోధన నమోదును సవరించండి</translation>
 <translation id="8049189770492311300">టైమర్</translation>
+<translation id="8057472523431225012">ప్రస్తుత దశ</translation>
 <translation id="8058636807889143711">తర్వాత గణిత వ్యక్తీకరణ లేదు</translation>
 <translation id="8066678206530322333">బ్యానర్</translation>
 <translation id="8076492880354921740">ట్యాబ్‌లు</translation>
@@ -963,6 +971,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="816818801578874684">ఇది మొదటి హెడ్డింగ్. తర్వాతి హెడ్డింగ్‌కు వెళ్ళడానికి సెర్చ్ + Hను నొక్కండి.</translation>
 <translation id="8173092779156526980">నాలుగు వేళ్లతో ఎడమవైపునకు స్వైప్ చేయండి</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{అండర్‌స్కోర్ గుర్తు}other{# అండర్‌స్కోర్ గుర్తులు}}</translation>
+<translation id="817529114347680055">స్క్రీన్‌ను ఆన్ చేయండి</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">అడ్డు</translation>
 <translation id="8186185314313222077">పూర్తి స్క్రీన్‌ను టోగుల్ చేస్తుంది</translation>
@@ -985,7 +994,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="8316881042119029234">పాత జల్తారు రంగు</translation>
 <translation id="8324974933005349667">వచనం నుండి ప్రసంగం సెట్టింగ్‌లను వ్యక్తిగతీకరించండి</translation>
 <translation id="8326783648485765113">పచ్చిక బయలు ఆకుపచ్చ</translation>
-<translation id="8328063869313048659">ముదురు నలుపు స్క్రీన్‌ని టోగుల్ చేయండి</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{పౌండ్ గుర్తు}other{# పౌండ్ గుర్తులు}}</translation>
 <translation id="8378855320830505539">ప్రాంతం</translation>
 <translation id="8382679411218029383">స్వీయపూర్తి ఇన్‌లైన్ మరియు జాబితా</translation>

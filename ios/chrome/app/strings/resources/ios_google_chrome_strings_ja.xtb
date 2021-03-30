@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">オフラインのため Chrome でアップデートを確認できません</translation>
 <translation id="5854621639439811139">Chrome の使い方のヒント: 戻る、進む、検索など一部のボタンは画面の下部に表示されるようになりました。</translation>
+<translation id="5876773482963502140">Chrome に位置情報の利用を許可すると、許可を与えたサイトに位置情報が提供されます。また、サイトで付近の店舗やニュースなどの地域情報を表示できる場合に位置情報を要求されることがあります。</translation>
 <translation id="6036420186814142909">Google Chromeには、インターネットのデータやウェブページの読み込み速度を管理できる機能があります。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Chrome に切り替え</translation>
@@ -90,5 +91,4 @@
   2. [デフォルトのブラウザアプリ] をタップします。
   3. [Chrome] を選択します。</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Chrome に位置情報の利用を許可した場合、その情報が Chrome から既定の検索エンジンや許可済みのサイトに送信されます。また、サイトで付近の店舗やニュースなどの地域情報を表示できる場合に位置情報を要求されることがあります。</translation>
 </translationbundle>

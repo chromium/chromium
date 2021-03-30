@@ -268,7 +268,6 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2856503607207334158">No s'ha pogut iniciar la sessió</translation>
 <translation id="2860954141821109167">Comprova que hi hagi una aplicació de telèfon activada en aquest dispositiu</translation>
 <translation id="2870560284913253234">Lloc web</translation>
-<translation id="2876369937070532032">Envia a Google els URL d'algunes de les pàgines que visites quan la teva seguretat està en risc</translation>
 <translation id="2888126860611144412">Sobre Chrome</translation>
 <translation id="2891154217021530873">Atura la càrrega de la pàgina</translation>
 <translation id="2892647708214602204">Veuràs una notificació quan aquest fitxer estigui a punt</translation>
@@ -311,7 +310,6 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3157842584138209013">Consulta la quantitat de dades que has estalviat des del botó Més opcions</translation>
 <translation id="3166827708714933426">Dreceres per a pestanyes i finestres</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Navegació segura (us protegeix a tu i al teu dispositiu de llocs web perillosos)</translation>
 <translation id="3205824638308738187">Falta poc per acabar.</translation>
 <translation id="3207960819495026254">S'ha afegit a les adreces d'interès.</translation>
 <translation id="3208584281581115441">Comprova ara</translation>
@@ -505,6 +503,7 @@ Privacy Sandbox encara s'està desenvolupant i només està disponible en determ
 <translation id="4561979708150884304">No hi ha connexió</translation>
 <translation id="4565377596337484307">Oculta la contrasenya</translation>
 <translation id="4572422548854449519">Inicia la sessió al compte gestionat</translation>
+<translation id="4576892426230499203">Prova una altra opció de verificació</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{fa # minut}other{fa # minuts}}</translation>
 <translation id="4587589328781138893">Llocs web</translation>
 <translation id="4594952190837476234">Aquesta pàgina sense connexió és del dia <ph name="CREATION_TIME" /> i pot ser diferent de la versió en línia.</translation>
@@ -584,7 +583,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5011311129201317034"><ph name="SITE" /> es vol connectar</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Permet</translation>
-<translation id="5040262127954254034">Privadesa</translation>
 <translation id="5087580092889165836">Afegeix una targeta</translation>
 <translation id="5091249083535528968">Dades d'ús ampliades</translation>
 <translation id="509429900233858213">S'ha produït un error.</translation>
@@ -637,6 +635,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5441522332038954058">Ves a la barra d'adreces</translation>
 <translation id="544776284582297024">Per obrir pestanyes i visitar diverses pàgines al mateix temps, toca el botó de pestanyes obertes</translation>
 <translation id="545042621069398927">S'està accelerant la baixada.</translation>
+<translation id="5454166040603940656">amb <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Baixa la pàgina</translation>
 <translation id="548278423535722844">Obre en una aplicació de mapes</translation>
 <translation id="5483197086164197190">Navegar per Chrome</translation>
@@ -777,6 +776,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6316139424528454185">Versió d'Android no admesa</translation>
 <translation id="6324034347079777476">La sincronització del sistema Android està desactivada</translation>
 <translation id="6324977638108296054">No es pot crear un enllaç que dirigeixi al contingut marcat</translation>
+<translation id="6324997754869598316">(Error <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Comparteix mitjançant <ph name="APPLICATION" />.</translation>
 <translation id="6337234675334993532">Encriptació</translation>
 <translation id="6341580099087024258">Pregunta on es desen els fitxers</translation>
@@ -793,6 +793,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> a <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Edita l'adreça d'interès</translation>
 <translation id="6406506848690869874">Sincronització</translation>
+<translation id="6407224748847589805">No es pot connectar amb el teu ordinador. Prova una altra opció de verificació.</translation>
 <translation id="6410404864818553978">Dades d'ús bàsiques</translation>
 <translation id="6410883413783534063">Obre pestanyes per visitar diverses pàgines al mateix temps</translation>
 <translation id="6412673304250309937">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chrome. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
@@ -861,7 +862,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6813446258015311409">S'ha obert Inicia la sessió a Chrome.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">Pestanya <ph name="TAB_TITLE" /> seleccionada</translation>
-<translation id="6845325883481699275">Ajuda a millorar la seguretat de Chrome</translation>
 <translation id="6846298663435243399">S'està carregant…</translation>
 <translation id="6850409657436465440">La baixada encara està en curs</translation>
 <translation id="6850830437481525139">S'han tancat <ph name="TAB_COUNT" /> pestanyes</translation>
@@ -989,7 +989,6 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="7704317875155739195">Completa automàticament les cerques i els URL</translation>
 <translation id="7707922173985738739">Utilitza dades mòbils</translation>
 <translation id="7725024127233776428">Les pàgines que afegeixis a les adreces d'interès es mostraran aquí</translation>
-<translation id="7746457520633464754">Per detectar aplicacions i llocs web perillosos, Chrome envia a Google els URL d'algunes de les pàgines que visites, informació limitada del sistema i part del contingut de les pàgines</translation>
 <translation id="7757787379047923882">Text compartit des del dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Tria la data i l'hora</translation>
 <translation id="7762668264895820836">Targeta SD <ph name="SD_CARD_NUMBER" /></translation>

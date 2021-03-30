@@ -397,6 +397,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />এই মুহূর্তত আপোনাৰ ডিভাইচটো আঁতৰাই নিদিব!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    ব্যৱহাৰ হৈ থকা সময়ত এই ডিভাইচটো এৰুৱালে ডেটা ক্ষয় হ’ব পাৰে।  কাৰ্যটো সম্পূৰ্ণ হোৱালৈকে অপেক্ষা কৰক আৰু তাৰপিছত Files এপ্ ব্যৱহাৰ কৰি ডিভাইচটো বাহিৰ কৰক।</translation>
+<translation id="5159560892333415631">ট্ৰেশ্ব খালী কৰক</translation>
 <translation id="5163869187418756376">শ্বেয়াৰ কৰিব পৰা নগ'ল। ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="516592729076796170">ইউ.এছ. প্ৰ‘গ্ৰামাৰ ডভ‘ৰাক</translation>
 <translation id="5170477580121653719">Google Driveৰ খালী ঠাই: <ph name="SPACE_AVAILABLE" />।</translation>
@@ -415,6 +416,7 @@
     <ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Driveৰ পৰা পুনৰুদ্ধাৰ কৰা ফাইল</translation>
 <translation id="5288441970121584418">বার্গাৰ</translation>
+<translation id="5299998344490869684">আপুনি ট্ৰেশ্ব খালি কৰিব বিচাৰে বুলি নিশ্চিতনে?</translation>
 <translation id="5317780077021120954">ছেভ কৰক</translation>
 <translation id="5318819489018851358">Linuxৰ জৰিয়তে শ্বেয়াৰ কৰক</translation>
 <translation id="5323213332664049067">লেটিন আমেৰিকান</translation>
@@ -778,6 +780,7 @@
 <translation id="9154418932169119429">এই প্ৰতিচ্ছবিটো অফলাইনত উপলব্ধ নহয়।</translation>
 <translation id="9172592259078059678">গুজৰাটী লিপ্যন্তৰণ</translation>
 <translation id="9173120999827300720">আন্তঃৰাষ্ট্ৰীয় কীব’ৰ্ডৰ সৈতে ইংৰাজী (যুক্তৰাষ্ট্ৰ)</translation>
+<translation id="9174050671906956834">ট্ৰেশ্বত থকা বস্তু ৩০ দিনৰ পাছত চিৰদিনৰ বাবে মচা হয়।</translation>
 <translation id="9189836632794948435">কাজাখ</translation>
 <translation id="9213073329713032541">ইনষ্টলেশ্বন সফলতাৰে আৰম্ভ কৰা হ’ল৷</translation>
 <translation id="9219103736887031265">Images</translation>

@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">সাইন-ইন করা যায়নি</translation>
 <translation id="2860954141821109167">এই ডিভাইসে ফোন অ্যাপ চালু করা আছে কিনা দেখে নিন</translation>
 <translation id="2870560284913253234">সাইট</translation>
-<translation id="2876369937070532032">নিরাপত্তা সংক্রান্ত কোনও ঝুঁকি থাকলে, আপনার দেখা কিছু পৃষ্ঠার ইউআরএল Google-কে পাঠায়</translation>
 <translation id="2888126860611144412">Chrome সম্বন্ধে</translation>
 <translation id="2891154217021530873">পৃষ্ঠা লোড করা বন্ধ করুন</translation>
 <translation id="2892647708214602204">এই ফাইলটি ডাউনলোড করার জন্য তৈরি হয়ে গেলে আপনি একটি বিজ্ঞপ্তি পাবেন</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">আরও বিকল্প বোতাম দিয়ে দেখুন আপনি কত ডেটা সাশ্রয় করেছেন</translation>
 <translation id="3166827708714933426">ট্যাব এবং উইন্ডোর শর্টকাটগুলি</translation>
 <translation id="3169472444629675720">আবিষ্কার করুন</translation>
-<translation id="3181954750937456830">নিরাপদ ব্রাউজিং (বিপজ্জনক সাইট থেকে আপনাকে এবং আপনার ডিভাইসকে রক্ষা করে)</translation>
 <translation id="3205824638308738187">প্রায় শেষ হয়ে গেছে!</translation>
 <translation id="3207960819495026254">বুকমার্ক করা হয়েছে</translation>
 <translation id="3208584281581115441">এখনই চেক করুন</translation>
@@ -587,7 +585,6 @@
 <translation id="5011311129201317034"><ph name="SITE" /> এদের সঙ্গে সংযুক্ত হতে চায়</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">অনুমতি দিন</translation>
-<translation id="5040262127954254034">গোপনীয়তা</translation>
 <translation id="5087580092889165836">কার্ড জুড়ুন</translation>
 <translation id="5091249083535528968">বেশি ব্যবহারের ডেটা</translation>
 <translation id="509429900233858213">একটি ত্রুটি ঘটেছে৷</translation>
@@ -640,6 +637,7 @@
 <translation id="5441522332038954058">অ্যাড্রেস বারে চলে যান</translation>
 <translation id="544776284582297024">ট্যাব খুলে বিভিন্ন পৃষ্ঠা একইসাথে ব্রাউজ করার জন্য 'ট্যাব খুলুন' বোতাম টিপুন</translation>
 <translation id="545042621069398927">আপনার ডাউনলোডের স্পিড বাড়ানো হচ্ছে।</translation>
+<translation id="5454166040603940656"><ph name="PROVIDER" /> সহ</translation>
 <translation id="5456381639095306749">পৃষ্ঠা ডাউনলোড করুন</translation>
 <translation id="548278423535722844">ম্যাপ অ্যাপ্লিকেশানে খুলুন</translation>
 <translation id="5483197086164197190">Chrome-এ নেভিগেট করুন</translation>
@@ -780,7 +778,7 @@
 <translation id="6316139424528454185">এই Android ভার্সন সমর্থিত নয়</translation>
 <translation id="6324034347079777476">Android সিস্টেম সিঙ্ক অক্ষম করা হয়েছে</translation>
 <translation id="6324977638108296054">হাইলাইট করা টেক্সটের লিঙ্ক কপি করা যাচ্ছে না</translation>
-<translation id="6324997754869598316">সমস্যা <ph name="ERROR_CODE" /></translation>
+<translation id="6324997754869598316">(সমস্যা <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> এর মাধ্যমে শেয়ার করুন</translation>
 <translation id="6337234675334993532">এনক্রিপশন</translation>
 <translation id="6341580099087024258">কোথায় ফাইল সেভ করতে চান</translation>
@@ -866,7 +864,6 @@
 <translation id="6813446258015311409">Chrome-এ সাইন-ইন করার পৃষ্ঠা খোলা আছে।</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, ট্যাব বেছে নেওয়া হয়েছে</translation>
-<translation id="6845325883481699275">Chrome-এর নিরাপত্তা উন্নত করতে সাহায্য করুন</translation>
 <translation id="6846298663435243399">লোড হচ্ছে...</translation>
 <translation id="6850409657436465440">ডাউনলোডটি এখনও চলছে</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" />টি ট্যাব বন্ধ হয়েছে</translation>
@@ -994,7 +991,6 @@
 <translation id="7704317875155739195">সার্চ এবং ইউআরএলগুলি নিজে থেকে সম্পূর্ণ হতে দিন</translation>
 <translation id="7707922173985738739">মোবাইল ডেটা ব্যবহার করুন</translation>
 <translation id="7725024127233776428">আপনার বুকমার্ক করা পৃষ্ঠা এখানে দেখানো হয়</translation>
-<translation id="7746457520633464754">বিপজ্জনক অ্যাপ ও সাইট শনাক্ত করতে Chrome আপনার দেখা পৃষ্ঠাগুলির ইউআরএল, সিস্টেমের কিছু তথ্য ও কিছু পৃষ্ঠার কন্টেন্ট Google-কে পাঠায়</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> থেকে টেক্সট শেয়ার করা হয়েছে</translation>
 <translation id="7761849928583394409">তারিখ ও সময় বেছে নিন</translation>
 <translation id="7762668264895820836"><ph name="SD_CARD_NUMBER" /> টি এসডি কার্ড</translation>

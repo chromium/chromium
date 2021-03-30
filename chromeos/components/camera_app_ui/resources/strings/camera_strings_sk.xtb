@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 × 4</translation>
 <translation id="1664224225747386870">Nič sa nezaznamenalo</translation>
+<translation id="1838104802459806957">Naklonenie nahor</translation>
 <translation id="1851616744363735765">POZASTAVENÉ</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> sa nepodarilo exportovať</translation>
 <translation id="1899697626337024495">Rozlíšenie fotky</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176">Aktívny fotoaparát: <ph name="CAMERA" /></translation>
 <translation id="2144806332417375165">Vlastné parametre videa</translation>
 <translation id="229579744168541441">Exportovať na disk</translation>
+<translation id="2320741269052147773">Posunúť doľava</translation>
 <translation id="2501278716633472235">Prejsť späť</translation>
 <translation id="2501853267655415902">Zaznamenávanie bolo zastavené</translation>
 <translation id="2501953888035679275">Foťte a zaznamenávajte videá fotoaparátom.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Fotky a videá nasnímané fotoaparátom budú presunuté do priečinka Stiahnuté súbory. Dostanete sa k nim v Súboroch.
 
         Fotky aj videá budú môcť používať aplikácie s povoleniami pre úložisko.</translation>
+<translation id="3067436040345934772">Posunutie doprava</translation>
 <translation id="3081586908890909590">Prepnúť na zaznamenávanie videa</translation>
 <translation id="313467653172006084">30 sním./s</translation>
 <translation id="3183731565330012717">Typ mriežky</translation>
@@ -56,6 +59,7 @@
 <translation id="5671277269877808209">Štvorec</translation>
 <translation id="5775960006311140197">Expertný režim</translation>
 <translation id="5869546221129391014">Mriežka</translation>
+<translation id="5975083100439434680">Oddialiť</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6073451960410192870">Zastaviť zaznamenávanie</translation>
 <translation id="6197807149213783179">Uložiť metadáta</translation>
@@ -81,19 +85,21 @@ Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a
 <translation id="7649070708921625228">Pomocník</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7670511624014457267">60 sním./s</translation>
-<translation id="7974782136796202581">Zobraziť možnosti posunutia, naklonenia a priblíženia</translation>
 <translation id="7983668134180549431">Bol rozpoznaný text.</translation>
 <translation id="8067883171444229417">Prehrať video</translation>
+<translation id="8120146556401698679">Posunúť nakloniť priblížiť</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
 <translation id="8145038249676204903">Prepnúť na fotenie</translation>
 <translation id="8239780215768881278">Vytvoriť snímku videa</translation>
 <translation id="8261506727792406068">Odstrániť</translation>
+<translation id="8425673304802773841">Naklonenie nadol</translation>
 <translation id="8428213095426709021">Nastavenia</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" /> p (<ph name="WIDTH" /> : <ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Zobraziť ukážku metadát</translation>
 <translation id="8815966864175525708">Prepnúť na nasnímanie portrétovej fotky</translation>
 <translation id="8828441885228359828">Pokračovať v nahrávaní</translation>
 <translation id="8870695351537079478">Zaznamenávanie sa nedá spustiť</translation>
+<translation id="8903921497873541725">Priblížiť</translation>
 <translation id="9045155556724273246">10 sekúnd</translation>
 <translation id="945522503751344254">Odoslať spätnú väzbu</translation>
 </translationbundle>

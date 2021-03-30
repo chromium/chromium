@@ -268,7 +268,6 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="2856503607207334158">Nu te-ai conectat</translation>
 <translation id="2860954141821109167">Verifică dacă pe dispozitiv este activată o aplicație de telefon</translation>
 <translation id="2870560284913253234">Site</translation>
-<translation id="2876369937070532032">Trimite la Google adrese URL ale unor pagini pe care le accesezi, când securitatea este în pericol</translation>
 <translation id="2888126860611144412">Despre Chrome</translation>
 <translation id="2891154217021530873">Oprește încărcarea paginii</translation>
 <translation id="2892647708214602204">Când fișierul este gata, se va afișa o notificare</translation>
@@ -311,7 +310,6 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3157842584138209013">Vezi ce volum de date ai economisit folosind butonul Mai multe opțiuni</translation>
 <translation id="3166827708714933426">Comenzi rapide pentru file și ferestre</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Navigare sigură (protecție împotriva site-urilor periculoase)</translation>
 <translation id="3205824638308738187">Aproape gata!</translation>
 <translation id="3207960819495026254">Marcată</translation>
 <translation id="3208584281581115441">Verifică acum</translation>
@@ -505,6 +503,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4561979708150884304">Nicio conexiune</translation>
 <translation id="4565377596337484307">Ascunde parola</translation>
 <translation id="4572422548854449519">Conectează-te la contul gestionat</translation>
+<translation id="4576892426230499203">Încearcă altă opțiune de confirmare</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Acum # minut}few{Acum # minute}other{Acum # de minute}}</translation>
 <translation id="4587589328781138893">Site-uri</translation>
 <translation id="4594952190837476234">Această pagină offline este din data de <ph name="CREATION_TIME" /> și poate fi diferită de versiunea online.</translation>
@@ -584,7 +583,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5011311129201317034"><ph name="SITE" /> dorește să se conecteze</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Permite</translation>
-<translation id="5040262127954254034">Confidențialitate</translation>
 <translation id="5087580092889165836">Adaugă un card</translation>
 <translation id="5091249083535528968">Date de utilizare detaliate</translation>
 <translation id="509429900233858213">A apărut o eroare.</translation>
@@ -637,6 +635,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5441522332038954058">Accesează bara de adrese</translation>
 <translation id="544776284582297024">Pentru a deschide file și a accesa pagini diferite în același timp, atinge butonul Deschide file</translation>
 <translation id="545042621069398927">Se accelerează descărcarea.</translation>
+<translation id="5454166040603940656">cu <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Descarcă pagina</translation>
 <translation id="548278423535722844">Deschide în aplicația Maps</translation>
 <translation id="5483197086164197190">Navigarea în Chrome</translation>
@@ -777,6 +776,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6316139424528454185">Versiunea Android nu este acceptată</translation>
 <translation id="6324034347079777476">Sincronizarea de sistem Android este dezactivată</translation>
 <translation id="6324977638108296054">Nu se poate crea linkul spre evidențiere</translation>
+<translation id="6324997754869598316">(Eroare <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Trimite prin <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Criptare</translation>
 <translation id="6341580099087024258">Întreabă unde să fie salvate fișierele</translation>
@@ -793,6 +793,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6402652558933147609"><ph name="ERROR_CODE" />, <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Modifică marcajul</translation>
 <translation id="6406506848690869874">Sincronizare</translation>
+<translation id="6407224748847589805">Nu se poate conecta la computer. Încearcă altă opțiune de confirmare.</translation>
 <translation id="6410404864818553978">Date de utilizare de bază</translation>
 <translation id="6410883413783534063">Deschide file pentru a accesa pagini diferite în același timp</translation>
 <translation id="6412673304250309937">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chrome. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură.</translation>
@@ -861,7 +862,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6813446258015311409">Conectează-te la Chrome, deschis.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, filă, selectată</translation>
-<translation id="6845325883481699275">Contribuie la îmbunătățirea securității pentru Chrome</translation>
 <translation id="6846298663435243399">Se încarcă…</translation>
 <translation id="6850409657436465440">Descărcarea este încă în desfășurare</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> file închise</translation>
@@ -989,7 +989,6 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="7704317875155739195">Completează automat căutările și adresele URL</translation>
 <translation id="7707922173985738739">va folosi datele mobile;</translation>
 <translation id="7725024127233776428">Paginile pe care le marchezi apar aici</translation>
-<translation id="7746457520633464754">Pentru a detecta aplicațiile și site-urile periculoase, Chrome trimite la Google adresele URL ale unor pagini pe care le accesezi, informații de sistem limitate și o parte din conținutul paginii</translation>
 <translation id="7757787379047923882">Text trimis de pe <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Alege data și ora</translation>
 <translation id="7762668264895820836">Cardul SD <ph name="SD_CARD_NUMBER" /></translation>

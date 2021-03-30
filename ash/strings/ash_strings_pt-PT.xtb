@@ -396,6 +396,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Premiu o atalho de teclado de alto contraste. Pretende ativá-lo?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4333628967105022692">O Lacros não é suportado enquanto vários utilizadores tiverem sessão iniciada.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">A carregar o Assistente...</translation>
 <translation id="4356930093361201197">modo de alto contraste</translation>
@@ -968,6 +969,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="9091626656156419976">Ecrã <ph name="DISPLAY_NAME" /> removido</translation>
 <translation id="9098969848082897657">Silenciar telemóvel</translation>
 <translation id="9099154003160514616">Atualização do Lacros disponível</translation>
+<translation id="9105450214093926548">Não é possível iniciar a sessão de um segundo utilizador enquanto o navegador Lacros estiver em execução. Em alternativa, utilize um segundo perfil de navegador no Lacros ou feche o Lacros e tente novamente.</translation>
 <translation id="9133335900048457298">Não é possível gravar conteúdo protegido</translation>
 <translation id="9151726767154816831">Reiniciar e efetuar um Powerwash para atualizar</translation>
 <translation id="9166331175924255663">Ative/desative a alta visibilidade da funcionalidade Partilhar na proximidade.</translation>

@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">正方形</translation>
 <translation id="5775960006311140197">專家模式</translation>
 <translation id="5869546221129391014">格線</translation>
+<translation id="5975083100439434680">縮小</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6073451960410192870">停止錄影</translation>
 <translation id="6197807149213783179">儲存中繼資料</translation>
@@ -81,9 +82,9 @@
 <translation id="7649070708921625228">說明</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7670511624014457267">每秒畫格數：60</translation>
-<translation id="7974782136796202581">顯示平移/傾斜/縮放選項</translation>
 <translation id="7983668134180549431">偵測到文字。</translation>
 <translation id="8067883171444229417">播放影片</translation>
+<translation id="8120146556401698679">平移 傾斜 縮放</translation>
 <translation id="8131740175452115882">確認</translation>
 <translation id="8145038249676204903">切換為拍照模式</translation>
 <translation id="8239780215768881278">拍攝影片快照</translation>
@@ -94,6 +95,7 @@
 <translation id="8815966864175525708">切換為肖像相片拍攝模式</translation>
 <translation id="8828441885228359828">繼續錄影</translation>
 <translation id="8870695351537079478">無法開始錄影</translation>
+<translation id="8903921497873541725">放大</translation>
 <translation id="9045155556724273246">10 秒</translation>
 <translation id="945522503751344254">提供意見</translation>
 </translationbundle>

@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">సైన్ ఇన్ చేయడం విఫలమైంది</translation>
 <translation id="2860954141821109167">ఈ పరికరంలో ఫోన్ యాప్ ప్రారంభించబడిందని నిర్ధారించుకోండి</translation>
 <translation id="2870560284913253234">సైట్</translation>
-<translation id="2876369937070532032">మీ భద్రతకు ప్రమాదం పొంచి ఉన్నప్పుడు, మీరు సందర్శించే కొన్ని పేజీల URLలను Googleకు పంపుతుంది</translation>
 <translation id="2888126860611144412">Chrome పరిచయం</translation>
 <translation id="2891154217021530873">పేజీ లోడ్ కాకుండా ఆపివేయండి</translation>
 <translation id="2892647708214602204">ఈ ఫైల్ సిద్ధంగా ఉన్నప్పుడు మీకు నోటిఫికేషన్ కనిపిస్తుంది</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">'మరిన్ని ఎంపికలు' బటన్ నుండి మీరు ఎంత డేటాను సేవ్ చేసారో చూడండి</translation>
 <translation id="3166827708714933426">ట్యాబ్ మరియు విండో షార్ట్‌కట్‌లు</translation>
 <translation id="3169472444629675720">కనుగొను</translation>
-<translation id="3181954750937456830">సురక్షిత బ్రౌజింగ్ (ప్రమాదకరమైన సైట్‌ల నుండి మిమ్మల్ని, మీ పరికరాన్ని రక్షిస్తుంది)</translation>
 <translation id="3205824638308738187">దాదాపు పూర్తయింది!</translation>
 <translation id="3207960819495026254">బుక్‌మార్క్ చేయబడింది</translation>
 <translation id="3208584281581115441">ఇప్పుడే చెక్ చేయండి</translation>
@@ -505,6 +503,7 @@
 <translation id="4561979708150884304">కనెక్షన్ లేదు</translation>
 <translation id="4565377596337484307">పాస్‌వర్డ్‌ను దాచిపెట్టు</translation>
 <translation id="4572422548854449519">నిర్వాహిత ఖాతాకు సైన్ ఇన్ చేయండి</translation>
+<translation id="4576892426230499203">మరొక వెరిఫికేషన్ ఆప్షన్‌ను ట్రై చేయండి</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# నిమిషం క్రితం}other{# నిమిషాల క్రితం}}</translation>
 <translation id="4587589328781138893">సైట్‌లు</translation>
 <translation id="4594952190837476234">ఈ ఆఫ్‌లైన్ పేజీ <ph name="CREATION_TIME" />కి చెందినది మరియు ఆన్‌లైన్ వెర్షన్ వేరుగా ఉండవచ్చు.</translation>
@@ -584,7 +583,6 @@
 <translation id="5011311129201317034"><ph name="SITE" /> దీనికి కనెక్ట్ చేయాలనుకుంటోంది</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">అనుమతించు</translation>
-<translation id="5040262127954254034">గోప్యత</translation>
 <translation id="5087580092889165836">కార్డ్‌ను జోడించు</translation>
 <translation id="5091249083535528968">పొడిగించిన డేటా వినియోగం</translation>
 <translation id="509429900233858213">ఒక ఎర్రర్ ఏర్పడింది.</translation>
@@ -637,6 +635,7 @@
 <translation id="5441522332038954058">చిరునామా పట్టీకి వెళ్లండి</translation>
 <translation id="544776284582297024">ఒకే సమయంలో ట్యాబ్‍లను తెరిచి వేర్వేరు పేజీలను సందర్శించడానికి, ట్యాబ్‍లను తెరువు బటన్‍ను ట్యాప్ చేయండి</translation>
 <translation id="545042621069398927">మీ డౌన్‌లోడ్‌‌ను వేగవంతం చేస్తోంది.</translation>
+<translation id="5454166040603940656"><ph name="PROVIDER" />తో</translation>
 <translation id="5456381639095306749">పేజీని డౌన్‌లోడ్ చేయండి</translation>
 <translation id="548278423535722844">మ్యాప్స్ యాప్‌లో తెరువు</translation>
 <translation id="5483197086164197190">Chrome గురించి తెలుసుకోండి</translation>
@@ -777,6 +776,7 @@
 <translation id="6316139424528454185">Android వెర్షన్‌కు మద్దతు లేదు</translation>
 <translation id="6324034347079777476">Android సిస్టమ్ సమకాలీకరణ నిలిపివేయబడింది</translation>
 <translation id="6324977638108296054">హైలైట్ చేసిన టెక్స్ట్‌కు లింక్ క్రియేట్ చేయబడదు</translation>
+<translation id="6324997754869598316">(ఎర్రర్ <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> ద్వారా భాగస్వామ్యం చేయి</translation>
 <translation id="6337234675334993532">ఎన్‌క్రిప్షన్</translation>
 <translation id="6341580099087024258">ఫైల్‌లను ఎక్కడ సేవ్ చేయాలో అడుగు</translation>
@@ -793,6 +793,7 @@
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" />లో <ph name="ERROR_CODE" /></translation>
 <translation id="6404511346730675251">బుక్‌మార్క్‌ను సవరించు</translation>
 <translation id="6406506848690869874">Sync</translation>
+<translation id="6407224748847589805">మీ కంప్యూటర్‌కు కనెక్ట్ చేయడం సాధ్యపడదు. మరొక వెరిఫికేషన్ ఆప్షన్‌ను ట్రై చేయండి.</translation>
 <translation id="6410404864818553978">ప్రాథమిక డేటా వినియోగం</translation>
 <translation id="6410883413783534063">ఒకే సమయంలో వేర్వేరు పేజీలను సందర్శించడానికి ట్యాబ్‌లను తెరవండి</translation>
 <translation id="6412673304250309937">Chromeలో స్టోర్ చేసిన సురక్షితం కాని సైట్‌ల జాబితాతో కూడిన URLలను చెక్ చేస్తుంది. ఏదైనా సైట్ మీ పాస్‌వర్డ్‌ను దొంగిలించే ప్రయత్నం చేసినా, లేదంటే ఏదైనా హానికరమైన ఫైల్‌ను మీరు డౌన్‌లోడ్ చేసినా, సదరు URLలను, ఆయా పేజీల కంటెంట్‌లోని కొన్ని భాగాలను కూడా Chrome, 'సురక్షిత బ్రౌజింగ్'కు పంపవచ్చు.</translation>
@@ -861,7 +862,6 @@
 <translation id="6813446258015311409">Chromeకు సైన్ ఇన్ చేయండి, తెరవబడింది.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, ట్యాబ్‌ను ఎంచుకున్నారు</translation>
-<translation id="6845325883481699275">Chrome భద్రతను మెరుగుపరచడంలో సహాయం చేయండి</translation>
 <translation id="6846298663435243399">లోడ్ చేస్తున్నాము…</translation>
 <translation id="6850409657436465440">మీ డౌన్‌లోడ్‌‌ ఇప్పటికీ జరుగుతోంది</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ట్యాబ్‌లు మూసివేయబడ్డాయి</translation>
@@ -989,7 +989,6 @@
 <translation id="7704317875155739195">ఆటో-ఫిల్ సెర్చ్‌లు, URLలు</translation>
 <translation id="7707922173985738739">మొబైల్ డేటాను ఉపయోగిస్తుంది</translation>
 <translation id="7725024127233776428">మీరు బుక్‌మార్క్ చేసే పేజీలు ఇక్కడ కనిపిస్తాయి</translation>
-<translation id="7746457520633464754">Chrome ప్రమాదకరమైన యాప్‌లు, సైట్‌లను గుర్తించడానికి, మీరు సందర్శించే కొన్ని పేజీల URLలు, పరిమిత సిస్టమ్ సమాచారం, కొంత పేజీ కంటెంట్‌ను Googleకు పంపుతుంది</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> నుండి షేర్ చేయబడిన వచనం</translation>
 <translation id="7761849928583394409">తేదీ, సమయం ఎంచుకోండి</translation>
 <translation id="7762668264895820836">SD కార్డ్ <ph name="SD_CARD_NUMBER" /></translation>

@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">ລະຫັດຜ່ານໝົດອາຍຸໃນ <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ບໍ່ມີວຽກການພິມທີ່ພວມດຳເນີນຢູ່</translation>
 <translation id="4297501883039923494">ຢຸດພິມ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
+<translation id="4344214025510306853">ແນບ APN</translation>
 <translation id="4378373042927530923">ບໍ່ໄດ້ເອີ້ນໃຊ້</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">My Drive</translation>
@@ -279,6 +280,7 @@
 <translation id="7059230779847288458">ກໍາລັງສາກ
 <ph name="TIME_VALUE" />: ຈົນເຕັມ</translation>
 <translation id="708426984172631313">ຢຸດແລ້ວ</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">ກຳ​ລັງ​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="7144878232160441200">ລອງໃໝ່ອີກ</translation>
 <translation id="714876143603641390">ການເຊື່ອມຕໍ່ LAN</translation>
@@ -364,6 +366,7 @@
 <translation id="8970109610781093811">ເອີ້ນໃຊ້ອີກຄັ້ງ</translation>
 <translation id="9003704114456258138">ຄວາມຖີ່</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9065203028668620118">ແກ້ໄຂ</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">ການນຳໃຊ້ໃນປັດຈຸບັນ</translation>

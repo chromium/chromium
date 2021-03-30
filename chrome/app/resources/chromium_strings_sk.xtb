@@ -12,7 +12,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1315551408014407711">Nastavte si nový profil prehliadača Chromium</translation>
 <translation id="1396446129537741364">Prehliadač Chromium sa snaží zobraziť heslá.</translation>
 <translation id="1414495520565016063">Ste prihlásený/-á do prehliadača Chromium.</translation>
-<translation id="1414973082589232775">Ak chcete prehrávať chránené médiá pomocou doplnku Rosetta, musíte reštartovať Chromium.</translation>
 <translation id="151962892725702025">Systému OS Chromium sa nepodarilo synchronizovať vaše údaje, pretože možnosť synchronizácie nie je pre vašu doménu k dispozícii.</translation>
 <translation id="1524282610922162960">Zdieľajte kartu prehliadača Chromium</translation>
 <translation id="1553461853655228091">Chromium potrebuje povolenie použiť fotoaparát, aby mohol vytvoriť 3D mapu vášho okolia</translation>
@@ -27,6 +26,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1966382378801805537">Chromium nedokáže určiť alebo nastaviť predvolený prehliadač</translation>
 <translation id="2008474315282236005">Táto akcia odstráni zo zariadenia jednu položku. Ak budete chcieť svoje údaje neskôr opäť načítať, prihláste sa do prehliadača Chromium ako <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Ak chcete skontrolovať, či sú vaše ostatné heslá chránené pred porušením ochrany údajov a inými bezpečnostnými hrozbami, <ph name="BEGIN_LINK" />prihláste sa do prehliadača Chromium<ph name="END_LINK" />.</translation>
+<translation id="2174178932569897599">Prispôsobiť Chromium</translation>
 <translation id="2185166961232948079">Chromium – prihlásenie do siete – <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Ak počítač zdieľate s rodinou a priateľmi, môžu v prehliadači Chromium prehliadať oddelene a tiež si ho nastaviť podľa vlastných požiadaviek.</translation>
 <translation id="2294245788148774212">Nepovinné: Pomôžte zlepšovať funkcie a výkonnosť systému Chromium OS automatickým odosielaním diagnostík a údajov o používaní Googlu.</translation>
@@ -137,11 +137,11 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="5480860683791598150">Chromium potrebuje prístup k vašej polohe, aby ju mohol zdieľať s týmto webom</translation>
 <translation id="549669000822060376">Počkajte, kým Chromium nainštaluje najnovšie aktualizácie systému.</translation>
 <translation id="5496810170689441661">Chromium sa pokúša upraviť heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
+<translation id="5527463683072221100">Otvoriť súbory PDF v prehliadači Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Je k dispozícii aktualizácia prehliadača Chromium}=1{Je k dispozícii aktualizácia prehliadača Chromium}few{Aktualizácia prehliadača Chromium je k dispozícii už # dni}many{Aktualizácia prehliadača Chromium je k dispozícii už # dňa}other{Aktualizácia prehliadača Chromium je k dispozícii už # dní}}</translation>
 <translation id="5634636535844844681">Chromium vyžaduje Windows 7 alebo vyšší.</translation>
 <translation id="5653831366781983928">Reštartujte Chromium</translation>
 <translation id="5698481217667032250">Zobraziť Chromium v tomto jazyku</translation>
-<translation id="5736967399513123100">Ak chcete povoliť prehliadaču Chromium prehrávať chránené médiá, musíte si nainštalovať doplnok Rosetta. Chcete si ho nainštalovať?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Vitajte v prehliadači Chromium</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
@@ -192,7 +192,6 @@ Niektoré funkcie nemusia byť k dispozícii. Zadajte iný adresár profilu aleb
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (skopírované do prehliadača Chromium)</translation>
 <translation id="6893813176749746474">Prehliadač Chromium bol aktualizovaný, ale najmenej 30 dní ste ho nepoužili.</translation>
-<translation id="6897548120660295439">Rosetta umožňuje prehliadaču Chromium prehrávať chránené médiá na tejto stránke.</translation>
 <translation id="691026815377248078">Prehliadač Chromium potrebuje prístup k rozhraniu Bluetooth, aby mohol pokračovať 
  v párovaní. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Otvoriť odkaz v okne inko&amp;gnito prehliadača Chromium</translation>

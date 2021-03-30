@@ -22,6 +22,8 @@
 <translation id="1120938014254001895">2 本の指で上にスワイプします</translation>
 <translation id="1126928665165112660">斜体オフ</translation>
 <translation id="113582498867142724"><ph name="TAG" /> コレクション（<ph name="NUM" /> 個の項目）</translation>
+<translation id="1146441463334103638">画面のオンとオフの切り替え</translation>
+<translation id="1156488781945104845">現在の時刻</translation>
 <translation id="1161762950103988776">ジャンプ</translation>
 <translation id="1164857107703583584">ジャンプ コマンドを使用すると、ウェブページ間をすばやく移動できます。</translation>
 <translation id="1175914831232945926">1 桁ずつ</translation>
@@ -71,6 +73,7 @@
 <translation id="1405567553485452995">ライトグリーン</translation>
 <translation id="1411043317877497323">練習エリア</translation>
 <translation id="141454040365657399">ページヘッダー</translation>
+<translation id="1417092723421264764">現在のページ</translation>
 <translation id="1417889266572670458">ネイビー</translation>
 <translation id="1431911867058218151">プラム</translation>
 <translation id="1439316808600711881">領域</translation>
@@ -199,6 +202,7 @@
 <translation id="242998846562331953">字幕</translation>
 <translation id="2435422727584637732">ドジャーブルー</translation>
 <translation id="2450814015951372393">チェックボックス</translation>
+<translation id="2461822463642141190">電流</translation>
 <translation id="2462626033734746142">ラジオボタン グループ</translation>
 <translation id="2471138580042810658">見出し 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{アスタリスク}other{# 個のアスタリスク}}</translation>
@@ -244,7 +248,6 @@
 <translation id="2766299274563946262">左にセルはありません</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="280499067616661124">ChromeVox でページ内を検索します</translation>
-<translation id="2808001342598757276">画面表示をオンにする</translation>
 <translation id="2811019999044652585">ツールバーやシステムトレイなど画面の他の部分に移動するには、Ctrl+Forward キーを押します。Chromebook では、Forward キーは数字キー 2 のすぐ上にあります。</translation>
 <translation id="2811204574343810641">行</translation>
 <translation id="2816868829355607410">練習エリア: ジャンプ コマンド</translation>
@@ -299,6 +302,7 @@
 <translation id="3109724472072898302">折りたたみ表示中</translation>
 <translation id="311015743332597320">4 本の指で右にスワイプします</translation>
 <translation id="3112457281078985179">ChromeVox をオンまたはオフにするには、Ctrl+Alt+Z キーを使用します。</translation>
+<translation id="3115800313647508384">画面をオフにしますか？</translation>
 <translation id="3131002934070407451">数字の読み上げ:</translation>
 <translation id="3134461040845705080">読み取り専用</translation>
 <translation id="3137663468179739624">オリーブ</translation>
@@ -642,6 +646,7 @@
 <translation id="5655682562155942719">ジャンプ コマンド</translation>
 <translation id="56637627897541303">テキスト領域</translation>
 <translation id="5669637233317991674">このレッスンを前後に移動するには、検索+右矢印キーまたは検索+左矢印キーを押します</translation>
+<translation id="5677240841070992068">現在地</translation>
 <translation id="5678161956734658133">メールを編集</translation>
 <translation id="5681643281275621376">定義</translation>
 <translation id="5682113568322255809">ランドマーク</translation>
@@ -677,6 +682,7 @@
 <translation id="5901630391730855834">黄</translation>
 <translation id="5906974869830879618">PIN を入力してください</translation>
 <translation id="5921587111466148855">章</translation>
+<translation id="5923780477617566089">現在の日付</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{等号}other{# 個の等号}}</translation>
 <translation id="5948123859135882163">数式の解釈を、構文と意味の間で切り替えます</translation>
 <translation id="5955304353782037793">アプリ</translation>
@@ -696,9 +702,9 @@
 <translation id="6034000775414344507">ライトグレー</translation>
 <translation id="6036135911048686884">タッチガイド</translation>
 <translation id="6037602951055904232">前方にパンします</translation>
-<translation id="6044160928851315051">画面表示をオフにする</translation>
 <translation id="6082768461603900813">基本的な操作</translation>
 <translation id="609281021724813947">前のスライダーはありません。</translation>
+<translation id="6096942799340613495">画面がオフになります。検索+明るさを上げるキーを押して、いつでも画面をオンに戻すことができます。</translation>
 <translation id="6100239002225743044">1 行上へ移動</translation>
 <translation id="6118126368611144850">Chrome 用 Android アプリ。お使いのデバイスに Play ストアがインストールされている場合は、Android アプリで ChromeVox をお試しいただけます。Play ストアから Google Chrome Canary をダウンロードして、試験的にサポートされている機能をご利用ください。</translation>
 <translation id="611827076493383239">アクセス済み</translation>
@@ -766,6 +772,7 @@
 <translation id="6696967141280706829">序文</translation>
 <translation id="6697092096875747123">前のコンボ ボックス</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{感嘆符}other{# 個の感嘆符}}</translation>
+<translation id="670717715607710284">画面オフ</translation>
 <translation id="6710213216561001401">前へ</translation>
 <translation id="6714813999819678458">前のレベル 2 見出し</translation>
 <translation id="6730312624811567147">検索、左または右矢印でホームまたはエンドになります。検索、コントロール、左または右矢印で、コントロール ホームまたはコントロール エンドになります。検索、上または下矢印でページアップまたはページダウンになります</translation>
@@ -782,7 +789,6 @@
 <translation id="6837853484260746864">音声を選択:</translation>
 <translation id="6858047746862060282">プロローグ</translation>
 <translation id="6859876496651143278">1 本の指で左にスワイプします</translation>
-<translation id="6861391673272648730">画面がオフになります。検索+明るさを上げるキーを押すと、画面を再びオンにすることができます。画面をオフにしますか？</translation>
 <translation id="6865519907510167493">スペルミス</translation>
 <translation id="6873188295213080042">ヒント: 検索+矢印キーで移動できます。</translation>
 <translation id="6894148351896207544">現在の日付と時刻を音声で読み上げます</translation>
@@ -946,6 +952,7 @@
 <translation id="8037651341025652929">まとめ</translation>
 <translation id="8042761080832772327">テキスト編集、検索エントリ</translation>
 <translation id="8049189770492311300">タイマー</translation>
+<translation id="8057472523431225012">現在の手順</translation>
 <translation id="8058636807889143711">次の数式はありません</translation>
 <translation id="8066678206530322333">バナー</translation>
 <translation id="8076492880354921740">タブ</translation>
@@ -963,6 +970,7 @@
 <translation id="816818801578874684">これは最初の見出しです。次の見出しに移動するには検索+H キーを押します。</translation>
 <translation id="8173092779156526980">4 本の指で左にスワイプします</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{アンダースコア}other{# 個のアンダースコア}}</translation>
+<translation id="817529114347680055">画面オン</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">行</translation>
 <translation id="8186185314313222077">全画面表示の切り替え</translation>
@@ -985,7 +993,6 @@
 <translation id="8316881042119029234">オールドレース</translation>
 <translation id="8324974933005349667">テキスト読み上げの設定をカスタマイズする</translation>
 <translation id="8326783648485765113">ローングリーン</translation>
-<translation id="8328063869313048659">暗い画面を切り替えます</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{ポンド}other{# 個のポンド記号}}</translation>
 <translation id="8378855320830505539">地域</translation>
 <translation id="8382679411218029383">オートコンプリートはインライン表示とリスト形式の両方</translation>

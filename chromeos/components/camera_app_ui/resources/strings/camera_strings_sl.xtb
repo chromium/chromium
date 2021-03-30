@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nič ni posneto</translation>
+<translation id="1838104802459806957">Nagni navzgor</translation>
 <translation id="1851616744363735765">ZAČASNO ZAUSTAVLJENO</translation>
 <translation id="1862930711583847113">Datoteke <ph name="FILE" /> ni mogoče izvoziti</translation>
 <translation id="1899697626337024495">Ločljivost fotografije</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176">Fotoaparat <ph name="CAMERA" /> je aktiven</translation>
 <translation id="2144806332417375165">Parametri videoposnetkov po meri</translation>
 <translation id="229579744168541441">Izvoz na disk</translation>
+<translation id="2320741269052147773">Premakni v levo</translation>
 <translation id="2501278716633472235">Nazaj</translation>
 <translation id="2501853267655415902">Snemanje je ustavljeno</translation>
 <translation id="2501953888035679275">Fotografirajte in snemajte videoposnetke s fotoaparatom.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Fotografije in videoposnetki, ki ste jih posneli s fotoaparatom, bodo premaknjeni v mapo Prenosi. Do njih lahko dostopate v aplikaciji Datoteke.
 
         Aplikacije z dovoljenji za shrambo bodo imele dostop do fotografij in videoposnetkov.</translation>
+<translation id="3067436040345934772">Premakni v desno</translation>
 <translation id="3081586908890909590">Preklop na snemanje videa</translation>
 <translation id="313467653172006084">30 sličic/s</translation>
 <translation id="3183731565330012717">Vrsta mreže</translation>
@@ -56,6 +59,7 @@
 <translation id="5671277269877808209">Kvadratno</translation>
 <translation id="5775960006311140197">Poznavalski način</translation>
 <translation id="5869546221129391014">Mreža</translation>
+<translation id="5975083100439434680">Pomanjšaj</translation>
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6073451960410192870">Ustavi snemanje</translation>
 <translation id="6197807149213783179">Shrani metapodatke</translation>
@@ -81,19 +85,21 @@
 <translation id="7649070708921625228">Pomoč</translation>
 <translation id="7658239707568436148">Prekliči</translation>
 <translation id="7670511624014457267">60 sličic/s</translation>
-<translation id="7974782136796202581">Prikaz možnosti za premikanje, nagibanje in povečanje/pomanjšanje</translation>
 <translation id="7983668134180549431">Zaznano je bilo besedilo.</translation>
 <translation id="8067883171444229417">Predvajanje videa</translation>
+<translation id="8120146556401698679">Premikanje, nagibanje in povečanje/pomanjšanje</translation>
 <translation id="8131740175452115882">Potrdi</translation>
 <translation id="8145038249676204903">Preklop na fotografiranje</translation>
 <translation id="8239780215768881278">Posnetek videa</translation>
 <translation id="8261506727792406068">Izbriši</translation>
+<translation id="8425673304802773841">Nagni navzdol</translation>
 <translation id="8428213095426709021">Nastavitve</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" /> : <ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Predogled metapodatkov</translation>
 <translation id="8815966864175525708">Preklop na snemanje portretnih fotografij</translation>
 <translation id="8828441885228359828">Nadaljevanje snemanja</translation>
 <translation id="8870695351537079478">Snemanja ni mogoče začeti</translation>
+<translation id="8903921497873541725">Povečaj</translation>
 <translation id="9045155556724273246">10 sekund</translation>
 <translation id="945522503751344254">Pošiljanje povratnih informacij</translation>
 </translationbundle>

@@ -195,6 +195,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6070348360322141662">Segurtasun gehiago izateko, Google Chrome-k datuak enkriptatuko ditu</translation>
 <translation id="608006075545470555">Gehitu laneko profila arakatzaile honetan</translation>
 <translation id="6113794647360055231">Chrome hobetu egin dugu</translation>
+<translation id="6145313976051292476">Ireki PDFak Chrome-n</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="61852838583753520">Eguneratu &amp;Chrome OS</translation>
@@ -207,7 +208,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome eguneratzen (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS sistema</translation>
-<translation id="6650333065969705433">Rosetta erabili nahi baduzu babestutako multimedia edukia erreproduzitzeko, Chrome berrabiarazi behar duzu.</translation>
 <translation id="6676384891291319759">Sartu Interneten</translation>
 <translation id="6679975945624592337">Onartu Google Chrome atzeko planoan abiaraztea</translation>
 <translation id="6739177684496155661">Chrome-eko beste profil batean egin nahi duzu aurrera?</translation>
@@ -271,7 +271,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Laneko profila eta profil pertsonala guztiz bereizita daude.</translation>
 <translation id="8556340503434111824">Google Chrome-ren bertsio berri bat erabilgarri dago; inoiz baino bizkorragoa da.</translation>
-<translation id="861359755029082151">Rosetta-rekin, Chrome-k orri honetako babestutako multimedia-edukia erreproduzi dezake.</translation>
 <translation id="8614913330719544658">Google Chrome-k ez du erantzuten. Berrabiarazi nahi duzu?</translation>
 <translation id="861702415419836452">Chrome-k kamera atzitzeko baimena behar du, ingurunearen hiru dimentsioko mapa bat sortzeko</translation>
 <translation id="8625237574518804553">{0,plural, =1{1 minutu barru berrabiaraziko da Chrome}other{# minutu barru berrabiaraziko da Chrome}}</translation>
@@ -285,7 +284,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="8834965163890861871">Pasahitzak editatzen saiatzen ari da Google Chrome. Hori baimentzeko, idatzi Windows-eko pasahitza.</translation>
 <translation id="884296878221830158">Chrome abiarazten duzunean edo Hasiera botoia sakatzen duzunean erakusten den orria ere kontrolatzen du.</translation>
 <translation id="8862326446509486874">Ez dituzu eskubide egokiak sistema mailako instalazio bat egiteko. Saiatu instalatzailea administratzaile gisa abiarazten.</translation>
-<translation id="8907709077090383765">Babestutako multimedia-edukia Chrome-n erreproduzitzeko, Rosetta instalatu behar duzu. Orain instalatu nahi duzu?</translation>
 <translation id="8914504000324227558">Berrabiarazi Chrome</translation>
 <translation id="8922193594870374009">Zenbaki bat <ph name="ORIGIN" /> webgunetik Android-eko telefonora bidaltzeko, hasi Chrome-ko saioa bi gailuetan.</translation>
 <translation id="8986207147630327271">Arakatzaile honetan laneko profila gehitzera zoaz, eta laneko profilaren gaineko kontrola soilik emango diozu administratzaileari.</translation>

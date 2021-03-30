@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Chromium ne peut pas utiliser votre appareil photo pour le moment</translation>
 <translation id="2195025571279539885">Souhaitez-vous que Chromium vous propose de traduire les pages de ce site rédigées en <ph name="LANGUAGE_NAME" /> lors de votre prochaine visite?</translation>
 <translation id="2590893390871230428">Synchroniser vos données Chromium</translation>
-<translation id="259614951763923692">Si vous autorisez l'utilisation de votre position, Chromium l'envoie à votre moteur de recherche par défaut et aux sites que vous autorisez. Les sites peuvent vous demander votre position lorsqu'ils ont de l'information locale à vous présenter, comme des magasins à proximité ou des actualités.</translation>
 <translation id="2650312721222849884">Pour voir vos onglets partout où vous utilisez Chromium, activez la synchronisation</translation>
 <translation id="2730884209570016437">Chromium ne peut pas utiliser votre appareil photo, car il est utilisé par une autre application</translation>
 <translation id="2915596697727466327">Chromium utilise Face ID pour assurer un accès autorisé à vos mots de passe.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Se déconnecter de Chromium?</translation>
 <translation id="6424492062988593837">Une nouvelle version améliorée de Chromium est maintenant offerte.</translation>
 <translation id="6820823224820483452">Chromium n'a pas pu vérifier tous les mots de passe. Réessayez demain.</translation>
+<translation id="6827294685447036764">Si vous l'autorisez à connaître votre position, Chromium la communique à tous les sites que vous autorisez. Les sites peuvent vous demander votre position lorsqu'ils ont de l'information locale à vous présenter, comme des magasins à proximité ou des actualités.</translation>
 <translation id="7018284295775193585">Impossible de mettre à jour Chromium</translation>
 <translation id="7099326575020694068">Chromium ne peut pas utiliser votre appareil photo en mode Vue partagée</translation>
 <translation id="7118091470949186573">Vous pouvez maintenant utiliser Chromium chaque fois que vous touchez des liens dans des messages, des documents et des applications.</translation>

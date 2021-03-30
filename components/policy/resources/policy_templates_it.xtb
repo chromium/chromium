@@ -419,11 +419,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1553532014072799546">Whitelist limiti di utilizzo per app</translation>
 <translation id="1553956579506604198">Blocca l'installazione delle estensioni esterne</translation>
 <translation id="1555248923316727072">Impostazioni di gestione dell'identità degli utenti SAML</translation>
-<translation id="1560205870554624777">Controlla se la funzionalità Kerberos è attiva. Kerberos è un protocollo di autenticazione che può essere utilizzato per eseguire l'autenticazione per applicazioni web e condivisioni di file.
-
-          Se questo criterio è attivato, la funzionalità Kerberos è attiva. Gli account Kerberos possono essere aggiunti tramite il criterio "Configura account Kerberos" o tramite le impostazioni Account Kerberos nella pagina Impostazioni persone.
-
-          Se questo criterio è disattivato o non impostato, le impostazioni Account Kerberos sono disattivate. Nessun account Kerberos può essere aggiunto e l'autenticazione Kerberos non può essere utilizzata. Tutti gli account Kerberos esistenti vengono eliminati, tutte le password memorizzate vengono eliminate.</translation>
 <translation id="1561424797596341174">La norma sostituisce le build di debug dell'host di accesso remoto</translation>
 <translation id="1561967320164410511">U2F più estensioni per singola attestazione</translation>
 <translation id="1567718448549957373">Se il criterio viene impostato su Attivato o se non viene configurato, le richieste di autenticazione <ph name="BASIC_AUTH" /> ricevute tramite connessioni HTTP non sicure sono consentite.
@@ -1145,6 +1140,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se questo criterio non viene impostato, la funzionalità Click-to-call sarà attiva per impostazione predefinita.</translation>
 <translation id="2482676533225429905">Messaggi nativi</translation>
 <translation id="2483146640187052324">Prevedi le azioni di rete su qualsiasi connessione di rete</translation>
+<translation id="2483335232019796218">Configura la videocamera, le impostazioni del browser, le impostazioni del sistema operativo, nonché le funzionalità di scansione, del Web Store, canvas e di Google News da disattivare</translation>
 <translation id="2496180316473517155">Cronologia di navigazione</translation>
 <translation id="2498238926436517902">Nascondi sempre automaticamente lo shelf</translation>
 <translation id="250022556568924228">Se il criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> scarica i Termini di servizio e li presenta agli utenti a ogni avvio di sessione con un account locale del dispositivo. Gli utenti possono accedere alla sessione dopo aver accettato i Termini di servizio.
@@ -1527,6 +1523,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
       Vedi il criterio <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> per bloccare app sullo shelf di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2976429807269247880">Impostazioni del comportamento per i cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedenti</translation>
+<translation id="2985097017239074272">Google News (supportato dalla versione 91)</translation>
 <translation id="2985927503455169394">Usa la modalità predefinita dell'esperienza di onboarding dell'assistente</translation>
 <translation id="2987155890997901449">Attiva ARC</translation>
 <translation id="2987227569419001736">Controlla l'utilizzo dell'API Web Bluetooth</translation>
@@ -2557,6 +2554,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="4450222911834151460">Se questo criterio viene impostato, tutti i tipi di dati specificati verranno esclusi dalla sincronizzazione sia per Google Sync sia per la sincronizzazione del profilo di roaming. Questa operazione può essere utile per ridurre le dimensioni del profilo di roaming o per limitare il tipo di dati caricati sui server di Google Sync.
 
       Attualmente i tipi di dati per questo criterio sono: "bookmarks", "readingList", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Tali nomi sono sensibili alle maiuscole.</translation>
+<translation id="4452653762766030431">Consente di controllare la disponibilità della funzione Condivisioni file di rete per Chrome OS</translation>
 <translation id="445270821089253489">Consente di stabilire i tipi di informazioni su dispositivi e utenti da segnalare.</translation>
 <translation id="4453913621209182880">Consenti solo la stampa con immagini di sfondo</translation>
 <translation id="4454820008017317557">Mostra l'icona della barra degli strumenti di <ph name="PRODUCT_NAME" /></translation>
@@ -2791,6 +2789,13 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se il criterio non viene configurato o presenta un valore non valido, la modalità di disattivazione delle funzionalità del sistema sarà "Bloccato".</translation>
 <translation id="4835470005923546373">Disattiva la modalità di stampa delle immagini di sfondo per impostazione predefinita</translation>
 <translation id="4835622243021053389">Attiva autenticazione NTLMv2</translation>
+<translation id="4846678215172543001">Questo criterio impedisce la visualizzazione di avvisi di URL simili sui siti elencati. Questi avvisi sono solitamente mostrati sui siti in cui <ph name="PRODUCT_NAME" /> crede che sia in atto un tentativo di spoofing di un altro sito noto all'utente.
+
+       Se il criterio viene attivato e impostato su uno o più domini, non verrà visualizzata alcuna pagina di avviso di somiglianza quando l'utente visita le pagine di quel dominio.
+
+       Se il criterio non viene impostato o se viene impostato su un elenco vuoto, gli avvisi potrebbero essere visualizzati su qualunque sito visitato dall'utente.
+
+       Un nome host può essere consentito nel caso di una completa corrispondenza del nome host o di una corrispondenza con un qualsiasi dominio. Ad esempio, gli avvisi per un URL come "https://foo.example.com/bar" potrebbero essere eliminati se l'elenco include "foo.example.com" o "example.com".</translation>
 <translation id="485419696366295465">Consente di gestire i criteri relativi al sottosistema <ph name="BOREALIS_NAME" />.</translation>
 <translation id="4855636880814771207">Se il criterio viene attivato o se non viene configurato, gli utenti possono attivare o disattivare il Bluetooth.
 
@@ -2989,7 +2994,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se il criterio non viene configurato, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
-<translation id="5090209345759901501">Applica l'impostazione dei contenuti Flash a tutti i contenuti</translation>
 <translation id="5090791951240382356">Consenti l'unione dei criteri del dizionario provenienti da origini diverse</translation>
 <translation id="5091315650312105069">Consenti l'autenticazione <ph name="BASIC_AUTH" /> per HTTP</translation>
 <translation id="5103112931744164177">Questo criterio consente di controllare quale stack software viene utilizzato per comunicare con il server DNS: il client DNS del sistema operativo o quello integrato di <ph name="PRODUCT_NAME" />. Questo criterio non influisce sui server DNS utilizzati: se, ad esempio, il sistema operativo viene configurato in modo da usare un server DNS aziendale, lo stesso server viene usato dal client DNS integrato. Non consente nemmeno di controllare se viene utilizzato il protocollo DNS-over-HTTPS; <ph name="PRODUCT_NAME" /> userà sempre il resolver integrato per le richieste DNS-over-HTTPS. Per informazioni relative al controllo del protocollo DNS-over-HTTPS, consulta il criterio <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />.
@@ -3970,6 +3974,11 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="647698599569353771">Consenti l'attivazione di Condivisione nelle vicinanze.</translation>
 <translation id="6478258366184919502">Origini della schermata di accesso</translation>
 <translation id="6478261301433199402">La configurazione del criterio consente di specificare l'immagine <ph name="PLUGIN_VM_NAME" /> per un utente. È necessario specificare il criterio come stringa in formato JSON, con <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> che specifica da dove viene scaricata l'immagine e l'hash SHA-256 <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> utilizzato per verificare l'integrità del download.</translation>
+<translation id="6489084406497912050">Consente di stabilire se gli utenti possono o meno aggiungere account Kerberos.
+
+          Se questo criterio viene attivato o se non viene configurato, gli utenti possono aggiungere account Kerberos tramite le impostazioni relative agli account Kerberos nella pagina di impostazioni Kerberos. Gli utenti hanno il controllo completo degli account che hanno aggiunto e possono modificarli o rimuoverli.
+
+          Se questo criterio viene disattivato, gli utenti non possono aggiungere account Kerberos. Gli account possono essere aggiunti solo tramite il criterio "Configura account Kerberos". Si tratta di una soluzione efficace per bloccare gli account.</translation>
 <translation id="6491139795995924304">Consenti Bluetooth sul dispositivo</translation>
 <translation id="6491872498385040936">Questa norma è obsoleta. È possibile utilizzare la norma <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />, che sostituisce questa norma e consente un perfezionamento più preciso.
 
@@ -4305,6 +4314,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       La configurazione del criterio consente agli utenti di attivare un'app nella schermata di blocco se l'ID estensione dell'app è presente come valore nell'elenco del criterio. Pertanto, se il criterio viene impostato su un elenco vuoto, l'opzione per scrivere note nella schermata di blocco viene disattivata. L'esistenza dell'ID di un'app nel criterio non implica necessariamente che gli utenti possano attivare l'app come app per scrivere note nella schermata di blocco. Ad esempio, in <ph name="PRODUCT_NAME" /> 61, il gruppo di app disponibili viene limitato anche dalla piattaforma.
 
       Se il criterio non viene configurato, non vengono applicate limitazioni imposte da tale criterio al gruppo di app che gli utenti possono attivare nella schermata di blocco.</translation>
+<translation id="6882028194958060206">Applica l'impostazione dei contenuti Flash a tutti i contenuti (deprecato)</translation>
 <translation id="6889123056995503704">Gli utenti decidono il comportamento del downgrade del canale</translation>
 <translation id="6894178810167845842">URL della pagina Nuova scheda</translation>
 <translation id="6897730193187922386">Elimina messaggi relativi al ritiro di <ph name="CLOUD_PRINT_NAME" /></translation>
@@ -4990,7 +5000,6 @@ Nota. Attualmente i riavvii automatici vengono attivati soltanto durante la visu
       Se non viene configurato, si applica il criterio <ph name="BLOCK_POPUPS_POLICY_NAME" />, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="7731026922044991970">Ripristina il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente per i cookie su tutti i siti</translation>
 <translation id="7732907212083471072">Criteri rimossi</translation>
-<translation id="7737077721564799856">Configura la videocamera, le impostazioni del browser, le impostazioni del sistema operativo, nonché le funzionalità di scansione, del Web Store e canvas da disattivare</translation>
 <translation id="77379430721695807">Se il criterio viene configurato, verrà specificato l'elenco di URL i cui pattern vengono confrontati con l'origine di sicurezza dell'URL richiedente. Una corrispondenza assicura l'accesso ai dispositivi per l'acquisizione video senza richieste
 
 Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
@@ -5036,6 +5045,13 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se non viene configurato, gli utenti possono scegliere se devono inserire una password o meno per sbloccare il dispositivo quando è in modalità di sospensione.</translation>
 <translation id="7784062550705119230">Se per il criterio <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" />, la configurazione del criterio <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> consente di specificare le stampanti che possono essere utilizzate dagli utenti. Soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio saranno a disposizione degli utenti. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="7788511847830146438">Per profilo</translation>
+<translation id="7798441698807517880">Questo criterio è stato rimosso dalla versione 89 di <ph name="PRODUCT_NAME" /> perché<ph name="FLASH_PLUGIN_NAME" /> è stato ritirato.
+
+      Se il criterio viene impostato su Vero, vengono eseguiti tutti i contenuti <ph name="FLASH_PLUGIN_NAME" /> incorporati nei siti web che consentono <ph name="FLASH_PLUGIN_NAME" />, inclusi i contenuti di altre origini o contenuti ridotti.
+
+      Se il criterio viene impostato su Falso o se non viene configurato, i contenuti <ph name="FLASH_PLUGIN_NAME" /> di altre origini o i contenuti ridotti potrebbero essere bloccati.
+
+      Nota: per stabilire quali siti web possono eseguire <ph name="FLASH_PLUGIN_NAME" />, controlla questi criteri: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="780629758750905699">Consenti l'aggiunta di account Family Link al dispositivo</translation>
 <translation id="7807139251387225825">Elenco di tipi di dati che dovrebbero essere esclusi dalla sincronizzazione</translation>
 <translation id="781268256210530471">Impostazioni plug-in</translation>
@@ -5064,6 +5080,11 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7850846808758624237">Se il criterio viene impostato su Attivato, la home page del precedente browser predefinito verrà importata alla prima esecuzione. Se il criterio viene impostato su Disattivato o se non viene configurato, la home page non verrà importata alla prima esecuzione.
 
       Gli utenti possono attivare una finestra di dialogo per l'importazione e la casella di controllo della home page verrà selezionata o deselezionata in modo che corrisponda al valore del criterio.</translation>
+<translation id="7851772934080809511">Consente di stabilire se attivare o meno la funzionalità Kerberos. Kerberos è un protocollo di autenticazione che può essere utilizzato per eseguire l'autenticazione per app web e condivisioni di file.
+
+          Se questo criterio viene attivato, la funzionalità Kerberos viene attivata. Gli account Kerberos possono essere aggiunti tramite il criterio "Configura account Kerberos" o tramite le impostazioni relative agli account Kerberos nella pagina di impostazioni Kerberos.
+
+          Se questo criterio viene disattivato o se non viene configurato, le impostazioni relative agli account Kerberos vengono disattivate. Nessun account Kerberos può essere aggiunto e l'autenticazione Kerberos non può essere utilizzata. Vengono eliminati tutti gli account Kerberos esistenti e tutte le password memorizzate.</translation>
 <translation id="7863947545897944083">Consente di attivare la funzione di accessibilità ad alto contrasto nella schermata di accesso.
 
           Se questo criterio è impostato su true, l'alto contrasto sarà sempre attivato nella schermata di accesso.
@@ -5092,11 +5113,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Poiché nessun criterio specifico prevale, vedi <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. I pattern URL di questi tre criteri non devono essere in conflitto.</translation>
 <translation id="7887379840451099426">Le impostazioni di gestione dell'alimentazione applicabili soltanto quando viene usata la batteria.</translation>
-<translation id="7889788745439330797">Consente di stabilire se gli utenti possono o meno aggiungere account Kerberos.
-
-          Se questo criterio è attivato o non configurato, gli utenti possono aggiungere account Kerberos tramite le impostazioni Account Kerberos nella pagina Impostazioni persone. Gli utenti hanno il controllo completo degli account che hanno aggiunto e possono modificarli o rimuoverli.
-
-          Se questo criterio è disattivato, gli utenti non possono aggiungere account Kerberos. Gli account possono essere aggiunti solo tramite il criterio "Configura account Kerberos". Si tratta di una soluzione efficace per bloccare gli account.</translation>
 <translation id="7891884447851425349">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> consente di specificare l'URL del motore di ricerca utilizzato durante una ricerca predefinita. L'URL dovrebbe includere la stringa <ph name="SEARCH_TERM_MARKER" />, sostituita nella query dai termini di ricerca degli utenti.
 
       Puoi specificare l'URL di ricerca di Google come: <ph name="GOOGLE_SEARCH_URL" />.</translation>
@@ -5350,11 +5366,6 @@ Se questo criterio non viene impostato, verrà applicato il comportamento predef
 <translation id="8238421250255592181">Un flag booleano che indica se la tastiera sullo schermo può offrire la funzionalità di completamento automatico.</translation>
 <translation id="8244171102276095471">Attiva i pacchetti di crittografia RC4 in TLS</translation>
 <translation id="8244525275280476362">Ritardo di recupero massimo dopo l'invalidazione di una norma</translation>
-<translation id="8251411417369363637">Se il criterio viene impostato su True, vengono eseguiti tutti i contenuti <ph name="FLASH_PLUGIN_NAME" /> incorporati nei siti web che consentono <ph name="FLASH_PLUGIN_NAME" />, inclusi i contenuti di altre origini o contenuti ridotti.
-
-      Se il criterio viene impostato su False o non viene impostato, i contenuti <ph name="FLASH_PLUGIN_NAME" /> di altre origini o i contenuti ridotti potrebbero essere bloccati.
-
-      Nota: per stabilire quali siti web possono eseguire <ph name="FLASH_PLUGIN_NAME" />, controlla questi criteri: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="82530263956734297">ID delle estensioni da escludere dalla lista bloccata</translation>
 <translation id="8256688113167012935">Controlla il nome account visualizzato da <ph name="PRODUCT_OS_NAME" /> nella schermata di accesso per il corrispondente account del dispositivo.
 

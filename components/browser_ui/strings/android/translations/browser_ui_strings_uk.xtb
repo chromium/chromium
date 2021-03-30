@@ -178,6 +178,7 @@
 <translation id="5916664084637901428">Увімкнено</translation>
 <translation id="5922853908706496913">Доступ до вашого екрана</translation>
 <translation id="5939518447894949180">Скинути</translation>
+<translation id="5975083100439434680">Зменшити масштаб</translation>
 <translation id="5976059395673079613">"<ph name="PERMISSION" />" – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Керуйте доступом цього сайту до вашого пристрою</translation>
 <translation id="6040143037577758943">Закрити</translation>
@@ -265,7 +266,7 @@
 <translation id="8116925261070264013">Звук вимкнено</translation>
 <translation id="8131740175452115882">Підтвердити</translation>
 <translation id="8197286292360124385">Дозволено: "<ph name="PERMISSION_1" />"</translation>
-<translation id="8200772114523450471">Поновити</translation>
+<translation id="8200772114523450471">Відновити</translation>
 <translation id="8206354486702514201">Це налаштування застосовується вашим адміністратором.</translation>
 <translation id="8249310407154411074">На початок</translation>
 <translation id="8261506727792406068">Видалити</translation>
@@ -298,6 +299,7 @@
 <translation id="8801436777607969138">Блокувати JavaScript на певному сайті.</translation>
 <translation id="8816026460808729765">Заборонити сайтам доступ до датчиків</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8903921497873541725">Збільшити масштаб</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC вимкнено на цьому пристрої. Увімкніть цю функцію в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="8929372349074745002">Зазвичай цей сайт швидко відкривається й відповідає</translation>

@@ -282,6 +282,7 @@ Sigue los pasos que se indican a continuación:</translation>
 <translation id="3928666092801078803">Combinar mis datos</translation>
 <translation id="3929457972718048006">Direcciones</translation>
 <translation id="3943492037546055397">Contraseñas</translation>
+<translation id="3967266340354872733">Para ver más ajustes relacionados con la privacidad, la seguridad y la recogida de datos, consulta <ph name="BEGIN_LINK" />Sincronización<ph name="END_LINK" /> y <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3968505803272650567">Gestionar intereses</translation>
 <translation id="3989635538409502728">Cerrar sesión</translation>
@@ -556,6 +557,7 @@ Se recomienda usar una contraseña única en cada sitio.</translation>
 <translation id="6713747756340119864">Aplicaciones de Google</translation>
 <translation id="6730682669179532099">No se pueden exportar las contraseñas</translation>
 <translation id="6748108480210050150">De</translation>
+<translation id="6760509555861141183">Volver a la pestaña reciente</translation>
 <translation id="6780034285637185932">Código postal</translation>
 <translation id="6785453220513215166">Enviando informe sobre fallos...</translation>
 <translation id="679325081238418596">Accede a tus marcadores, a tu historial, a tus contraseñas y a otros ajustes desde todos tus dispositivos</translation>
@@ -607,7 +609,6 @@ Se recomienda usar una contraseña única en cada sitio.</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. No se ha copiado la contraseña.</translation>
 <translation id="7291368939935408496">Preparando contraseñas...</translation>
 <translation id="7293171162284876153">Para iniciar la sincronización, activa "Sincronizar tus datos de Chrome".</translation>
-<translation id="7299000566397147023">Abrir pestaña más reciente</translation>
 <translation id="7313347584264171202">Aquí verás tus pestañas de incógnito</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% descargado</translation>
 <translation id="7340958967809483333">Opciones de Discover</translation>

@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Chromium saat ini tidak dapat menggunakan kamera</translation>
 <translation id="2195025571279539885">Ingin Chromium menawarkan untuk menerjemahkan halaman berbahasa <ph name="LANGUAGE_NAME" /> dari situs ini saat Anda mengunjunginya lagi?</translation>
 <translation id="2590893390871230428">Sinkronkan Data Chromium Anda</translation>
-<translation id="259614951763923692">Jika Anda mengizinkan Chromium mengetahui lokasi, Chromium akan mengirimkannya ke mesin telusur default dan situs apa pun yang diizinkan. Situs mungkin meminta lokasi Anda saat mereka memiliki info lokal untuk ditampilkan, seperti toko terdekat atau berita.</translation>
 <translation id="2650312721222849884">Untuk melihat tab Chromium Anda dari perangkat lain, aktifkan sinkronisasi</translation>
 <translation id="2730884209570016437">Chromium tidak dapat menggunakan kamera karena sedang digunakan aplikasi lain</translation>
 <translation id="2915596697727466327">Chromium menggunakan Face ID untuk memastikan akses terotorisasi ke sandi Anda.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Keluar dari Chromium?</translation>
 <translation id="6424492062988593837">Chromium jadi semakin baik! Versi baru telah tersedia.</translation>
 <translation id="6820823224820483452">Chromium tidak dapat memeriksa semua sandi. Coba lagi besok.</translation>
+<translation id="6827294685447036764">Jika Anda mengizinkan Chromium mengetahui lokasi, Chromium akan mengirimkannya ke situs apa pun yang diizinkan. Situs mungkin meminta lokasi Anda saat mereka memiliki info lokal untuk ditampilkan, seperti toko terdekat atau berita.</translation>
 <translation id="7018284295775193585">Chromium tidak dapat diupdate</translation>
 <translation id="7099326575020694068">Chromium tidak dapat menggunakan kamera dalam mode Layar Terpisah</translation>
 <translation id="7118091470949186573">Anda sekarang dapat menggunakan Chromium kapan saja dengan mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>

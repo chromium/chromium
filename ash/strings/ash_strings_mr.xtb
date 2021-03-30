@@ -277,6 +277,7 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> नंतरही साइन इन करू शकतो.</translation>
 <translation id="3321628682574733415">चुकीचा पालक कोड</translation>
 <translation id="332587331255250389">कृपया बॅटरी बदला</translation>
+<translation id="3333741161915951567">मोडेम रीबूट करा. पुन्हा प्रयत्न करण्यापूर्वी ३० सेकंद प्रतीक्षा करा.</translation>
 <translation id="3341303451326249809">स्क्रीनशॉट कॅप्चर केला</translation>
 <translation id="334252345105450327">स्क्रीनशॉट घ्या</translation>
 <translation id="3351879221545518001">तुम्ही सध्या स्क्रीन कास्ट करत आहात.</translation>
@@ -396,6 +397,7 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">तुम्ही उच्च कॉंट्रास्टसाठी कीबोर्ड शॉर्टकट दाबला आहे. तुम्हाला ते सुरू करायचे आहे का?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4333628967105022692">एकाहून अधिक वापरकर्त्यांनी साइन इन केले असेल तेव्हा Lacros सपोर्ट करत नाही.</translation>
 <translation id="4338109981321384717">भिंग</translation>
 <translation id="4351433414020964307">साहाय्यक लोड होत आहे...</translation>
 <translation id="4356930093361201197">हाय-काँट्रास्ट मोड</translation>
@@ -968,6 +970,8 @@
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> डिस्प्ले काढले</translation>
 <translation id="9098969848082897657">फोन सायलंट करा</translation>
 <translation id="9099154003160514616">Lacros अपडेट उपलब्ध</translation>
+<translation id="9105450214093926548">Lacros ब्राउझर रन होत असताना दुसऱ्या
+वापरकर्त्याला साइन इन करण्यास सपोर्ट नाही. त्याऐवजी कृपया Lacros मध्ये दुसरी ब्राउझर प्रोफाइल वापरा किंवा Lacros बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="9133335900048457298">सुरक्षित आशय रेकॉर्ड करू शकत नाही</translation>
 <translation id="9151726767154816831">अपडेटासाठी रीस्टार्ट करा आणि powerwash करा</translation>
 <translation id="9166331175924255663">Nearby सह शेअरिंग चा उच्च दृश्यमानता मोड टॉगल करा.</translation>

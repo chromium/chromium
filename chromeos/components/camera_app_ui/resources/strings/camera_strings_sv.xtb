@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">Kvadratiskt</translation>
 <translation id="5775960006311140197">Expertläge</translation>
 <translation id="5869546221129391014">Rutnät</translation>
+<translation id="5975083100439434680">Zooma ut</translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="6073451960410192870">Sluta spela in</translation>
 <translation id="6197807149213783179">Spara metadata</translation>
@@ -81,9 +82,9 @@ Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild e
 <translation id="7649070708921625228">Hjälp</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7974782136796202581">Visa alternativ för panorering, lutning och zoom</translation>
 <translation id="7983668134180549431">Text har identifierats.</translation>
 <translation id="8067883171444229417">Spela upp video</translation>
+<translation id="8120146556401698679">Panorera, luta och zooma</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
 <translation id="8145038249676204903">Byt till fotoläge</translation>
 <translation id="8239780215768881278">Spela in en ögonblicksvideo</translation>
@@ -94,6 +95,7 @@ Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild e
 <translation id="8815966864175525708">Byt till att ta porträttfoto</translation>
 <translation id="8828441885228359828">Återuppta inspelning</translation>
 <translation id="8870695351537079478">Det gick inte att starta inspelningen</translation>
+<translation id="8903921497873541725">Zooma in</translation>
 <translation id="9045155556724273246">Tio sekunder</translation>
 <translation id="945522503751344254">Skicka feedback</translation>
 </translationbundle>

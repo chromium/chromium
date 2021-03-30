@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">સાઇન ઇન નિષ્ફળ થયું</translation>
 <translation id="2860954141821109167">ખાતરી કરો કે આ ડિવાઇસ પર ફોન ઍપ ચાલુ કરેલી છે</translation>
 <translation id="2870560284913253234">સાઇટ</translation>
-<translation id="2876369937070532032">તમારી સુરક્ષા જોખમમાં હોય ત્યારે, તમે મુલાકાત લેતા હો તે કેટલાક પેજના URLs Googleને મોકલે છે</translation>
 <translation id="2888126860611144412">Chrome વિશે</translation>
 <translation id="2891154217021530873">પૃષ્ઠ લોડ કરવાનું રોકો</translation>
 <translation id="2892647708214602204">આ ફાઇલ તૈયાર હોય ત્યારે તમે એક નોટિફિકેશન જોશો</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">વધુ વિકલ્પો બટનની મદદથી તમે કેટલો ડેટા સાચવ્યો તે જુઓ</translation>
 <translation id="3166827708714933426">ટૅબ અને વિંડો શૉર્ટકટ્સ</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Safe Browsing (તમારું અને તમારા ડિવાઇસનું જોખમી સાઇટથી રક્ષણ કરે છે)</translation>
 <translation id="3205824638308738187">લગભગ સમાપ્ત થયું!</translation>
 <translation id="3207960819495026254">બુકમાર્ક કરેલ</translation>
 <translation id="3208584281581115441">હમણાં ચેક કરો</translation>
@@ -505,6 +503,7 @@
 <translation id="4561979708150884304">કોઈ કનેક્શન નથી</translation>
 <translation id="4565377596337484307">પાસવર્ડ છુપાવો</translation>
 <translation id="4572422548854449519">મેનેજ એકાઉન્ટમાં સાઇન ઇન કરો</translation>
+<translation id="4576892426230499203">ચકાસણી માટે બીજો કોઈ વિકલ્પ અજમાવો</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# મિનિટ પહેલાં}one{# મિનિટ પહેલાં}other{# મિનિટ પહેલાં}}</translation>
 <translation id="4587589328781138893">સાઇટ</translation>
 <translation id="4594952190837476234">આ ઑફલાઇન પેજ <ph name="CREATION_TIME" /> ના રોજનું છે અને તે ઑનલાઇન વર્ઝનથી અલગ હોઈ શકે છે.</translation>
@@ -584,7 +583,6 @@
 <translation id="5011311129201317034"><ph name="SITE" />, કનેક્ટ કરવા માગે છે</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">મંજૂરી આપો</translation>
-<translation id="5040262127954254034">પ્રાઇવસી</translation>
 <translation id="5087580092889165836">કાર્ડ ઉમેરો</translation>
 <translation id="5091249083535528968">વપરાશનો વધારાનો ડેટા</translation>
 <translation id="509429900233858213">કોઈ ભૂલ આવી છે.</translation>
@@ -637,6 +635,7 @@
 <translation id="5441522332038954058">સરનામાં બાર પર જાઓ</translation>
 <translation id="544776284582297024">ટૅબ ખોલી અને વિવિધ પેજની એક સાથે મુલાકાત લેવા માટે, ટૅબ ખોલો બટન પર ટૅપ કરો</translation>
 <translation id="545042621069398927">તમારા ડાઉનલોડની ગતિ વધારી રહ્યાં છીએ.</translation>
+<translation id="5454166040603940656"><ph name="PROVIDER" /> સાથે</translation>
 <translation id="5456381639095306749">પૃષ્ઠ ડાઉનલોડ કરો</translation>
 <translation id="548278423535722844">નકશા અ‍ૅપ્લિકેશનમાં ખોલો</translation>
 <translation id="5483197086164197190">Chrome પર નૅવિગેટ કરો</translation>
@@ -777,6 +776,7 @@
 <translation id="6316139424528454185">Android વર્ઝન અસમર્થિત છે</translation>
 <translation id="6324034347079777476">Android સિસ્ટમ સમન્વયન અક્ષમ છે</translation>
 <translation id="6324977638108296054">હાઇલાઇટ કરેલી ટેક્સ્ટની લિંક બનાવી શકતા નથી</translation>
+<translation id="6324997754869598316">(ભૂલ <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> મારફતે શેર કરો</translation>
 <translation id="6337234675334993532">એન્ક્રિપ્શન</translation>
 <translation id="6341580099087024258">ફાઇલો ક્યાં સાચવવી તે પૂછો</translation>
@@ -793,6 +793,7 @@
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> પર <ph name="ERROR_CODE" /></translation>
 <translation id="6404511346730675251">બુકમાર્કમાં ફેરફાર કરો</translation>
 <translation id="6406506848690869874">સમન્વયન</translation>
+<translation id="6407224748847589805">તમારા કમ્પ્યુટર સાથે કનેક્ટ કરી શકાતું નથી. ચકાસણી માટે બીજો કોઈ વિકલ્પ અજમાવો.</translation>
 <translation id="6410404864818553978">વપરાશનો મૂળભૂત ડેટા</translation>
 <translation id="6410883413783534063">એકસાથે વિભિન્ન પેજની મુલાકાત લેવા માટે ટૅબ ખોલો</translation>
 <translation id="6412673304250309937">URLsને Chromeમાં સંગ્રહિત અસુરક્ષિત સાઇટની સૂચિ સાથે ચેક કરે છે. જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chrome પેજ કન્ટેન્ટના બિટની સાથોસાથ URLs પણ Safe Browsingને મોકલી શકે છે.</translation>
@@ -861,7 +862,6 @@
 <translation id="6813446258015311409">Chromeમાં સાઇન ઇન કરવાની શીટ ખોલવામાં આવી.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, ટૅબ, પસંદ કરી</translation>
-<translation id="6845325883481699275">Chrome સુરક્ષાને વધુ સારી બનાવવામાં સહાય કરો</translation>
 <translation id="6846298663435243399">લોડ કરી રહ્યાં છે…</translation>
 <translation id="6850409657436465440">તમારું ડાઉનલોડ હજી પણ પ્રક્રિયામાં છે</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ટેબ્સ બંધ કર્યા</translation>
@@ -989,7 +989,6 @@
 <translation id="7704317875155739195">શોધ અને URLsને ઑટોમૅટિક રીતે પૂર્ણ કરો</translation>
 <translation id="7707922173985738739">મોબાઇલ ડેટાનો ઉપયોગ કરો</translation>
 <translation id="7725024127233776428">બુકમાર્ક કરેલા પેજ અહીં દેખાય છે</translation>
-<translation id="7746457520633464754">જોખમી ઍપ અને સાઇટ શોધી કાઢવા માટે, Chrome તમે મુલાકાત લો તે કેટલાક પેજના URLs, સિસ્ટમ વિશેની સીમિત માહિતી અને પેજનું કેટલુંક કન્ટેન્ટ Googleને મોકલે છે</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />માંથી ટેક્સ્ટ શેર કરી</translation>
 <translation id="7761849928583394409">તારીખ અને સમય પસંદ કરો</translation>
 <translation id="7762668264895820836">SD કાર્ડ <ph name="SD_CARD_NUMBER" /></translation>

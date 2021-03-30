@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Chromium getur ekki notað myndavélina sem stendur</translation>
 <translation id="2195025571279539885">Viltu að Chromium bjóðist næst til að þýða síður á <ph name="LANGUAGE_NAME" /> á þessu vefsvæði?</translation>
 <translation id="2590893390871230428">Samstilla gögnin þín í Chromium</translation>
-<translation id="259614951763923692">Ef þú leyfir Chromium að vita staðsetningu þína sendir Chromium hana á sjálfgefnu leitarvélina þína og þau vefsvæði sem þú veitir aðgang að staðsetningu. Vefsvæði kunna að biðja um staðsetningu þína þegar þau búa yfir staðbundum upplýsingum til að birta þér, t.d. um nálægar verslanir eða fréttir.</translation>
 <translation id="2650312721222849884">Kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chromium</translation>
 <translation id="2730884209570016437">Chromium getur ekki notað myndavélina því að annað forrit er að nota hana</translation>
 <translation id="2915596697727466327">Chromium notar andlitskennsl til að tryggja heimilaðan aðgang að aðgangsorðum þínum.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Skrá út af Chromium?</translation>
 <translation id="6424492062988593837">Chromium er nú enn betra! Ný útgáfa er í boði.</translation>
 <translation id="6820823224820483452">Chromium gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun.</translation>
+<translation id="6827294685447036764">Ef þú leyfir Chromium að vita staðsetningu þína sendir Chromium hana til þeirra vefsvæða sem þú leyfir. Vefsvæði kunna að biðja um staðsetningu þína þegar þau búa yfir staðbundum upplýsingum til að birta þér, t.d. um nálægar verslanir eða fréttir.</translation>
 <translation id="7018284295775193585">Ekki er hægt að uppfæra Chromium</translation>
 <translation id="7099326575020694068">Chromium getur ekki notað myndavélina á tvískiptum skjá</translation>
 <translation id="7118091470949186573">Núna getur þú notað Chromium hvenær sem þú ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>

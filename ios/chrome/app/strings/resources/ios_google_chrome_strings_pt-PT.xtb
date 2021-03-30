@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Está offline. O Chrome não consegue verificar se existem atualizações.</translation>
 <translation id="5854621639439811139">Sugestão para o Chrome: alguns botões encontram-se agora na parte inferior do ecrã, como Voltar, Avançar e Pesquisar.</translation>
+<translation id="5876773482963502140">Se permitir que o Chrome conheça a sua localização, este envia-a para quaisquer sites que permitir. Os sites podem solicitar a sua localização quando têm informações locais para lhe mostrar, como notícias ou lojas próximas.</translation>
 <translation id="6036420186814142909">O Google Chrome inclui funcionalidades que o/a ajudam a gerir os seus dados de Internet e a velocidade com que as páginas Web são carregadas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Mude para o Chrome</translation>
 <translation id="6238746320622508509">Permita que o Chrome bloqueie os seus separadores de navegação anónima.</translation>
@@ -89,5 +90,4 @@
   2. Toque em App de navegador predefinida
   3. Selecione o Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Se permitir que o Chrome conheça a sua localização, este envia-a para o seu motor de pesquisa predefinido e quaisquer sites que permitir. Os sites podem solicitar a sua localização quando têm informações locais para lhe mostrar, como notícias ou lojas próximas.</translation>
 </translationbundle>

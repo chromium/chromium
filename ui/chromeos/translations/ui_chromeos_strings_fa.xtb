@@ -400,6 +400,7 @@
 <translation id="5159383109919732130">‏<ph name="BEGIN_BOLD" />هنوز دستگاه خود را جدا نکنید!<ph name="END_BOLD" />
  <ph name="LINE_BREAKS" />
  جداکردن دستگاه هنگامی که در حال استفاده است ممکن است باعث از دست رفتن داده‌ها شود.  لطفاً تا به پایان رسیدن عملیات صبر کنید، سپس دستگاه را با استفاده از برنامه Files خارج نمایید.</translation>
+<translation id="5159560892333415631">خالی کردن حذف‌شده‌ها</translation>
 <translation id="5163869187418756376">اشتراک‌گذاری انجام نشد. اتصال خود را بررسی کرده، بعداً دوباره امتحان کنید.</translation>
 <translation id="516592729076796170">دووراک آمریکایی برنامه‌نویس‌ها</translation>
 <translation id="5170477580121653719">‏فضای باقیمانده در Google Drive: <ph name="SPACE_AVAILABLE" /> .</translation>
@@ -419,6 +420,7 @@
 <translation id="5275973617553375938">‏فایل‌های بازیابی‌شده از Google Drive</translation>
 <translation id="5288441970121584418">همبرگر</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">مطمئنید می‌خواهید «حذف‌شده‌ها» را خالی کنید؟</translation>
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5318819489018851358">‏هم‌رسانی با Linux</translation>
 <translation id="5323213332664049067">آمریکای لاتین</translation>
@@ -783,6 +785,7 @@
 <translation id="9154418932169119429">این تصویر به‌صورت آفلاین در دسترس نیست.</translation>
 <translation id="9172592259078059678">نویسه‌گردانی گجراتی</translation>
 <translation id="9173120999827300720">انگلیسی (آمریکایی) با صفحه‌کلید بین‌المللی</translation>
+<translation id="9174050671906956834">موارد موجود در «حذف‌شده‌ها» بعداز ٣۰ روز برای همیشه حذف می‌شود.</translation>
 <translation id="9189836632794948435">قزاقی</translation>
 <translation id="9213073329713032541">نصب باموفقیت شروع شد.</translation>
 <translation id="9219103736887031265">تصاویر</translation>

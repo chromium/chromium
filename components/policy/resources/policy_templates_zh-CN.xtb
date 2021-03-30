@@ -416,11 +416,6 @@
 <translation id="1553532014072799546">应用级使用时间限制白名单</translation>
 <translation id="1553956579506604198">禁止安装外部扩展程序</translation>
 <translation id="1555248923316727072">SAML 用户身份管理设置</translation>
-<translation id="1560205870554624777">控制是否启用 Kerberos 功能。Kerberos 是一种身份验证协议，可用于向网页及文件共享操作验证身份。
-
-          如果启用了此政策，则 Kerberos 功能处于启用状态。您可以通过“配置 Kerberos 帐号”政策或“用户设置”页面的“Kerberos 帐号”设置添加 Kerberos 帐号。
-
-          如果停用了或未设置此政策，则 Kerberos 帐号设置处于停用状态。此时无法添加任何 Kerberos 帐号，也无法使用 Kerberos 身份验证功能。系统会删除所有现有 Kerberos 帐号，以及所有已存储的密码。</translation>
 <translation id="1561424797596341174">覆盖与远程访问主机的调试版本号相关的政策</translation>
 <translation id="1561967320164410511">用于个人认证的 U2F 和扩展程序</translation>
 <translation id="1567718448549957373">如果此政策已启用或未设置，系统将会允许通过不安全的 HTTP 接收<ph name="BASIC_AUTH" />身份验证请求。
@@ -1132,6 +1127,7 @@
       如果未设置此政策，“点击通话”功能会默认处于启用状态。</translation>
 <translation id="2482676533225429905">本地消息传递</translation>
 <translation id="2483146640187052324">采用任何网络连接时，均预测网络操作</translation>
+<translation id="2483335232019796218">配置要停用的摄像头、浏览器设置、操作系统设置、扫描功能、网上应用店、画布和 Google 新闻功能</translation>
 <translation id="2496180316473517155">浏览记录</translation>
 <translation id="2498238926436517902">始终自动隐藏任务栏</translation>
 <translation id="250022556568924228">如果您设置了此政策，<ph name="PRODUCT_OS_NAME" />会下载《服务条款》，并会在用户开始进行设备本地帐号会话时将其呈现给用户。用户必须先接受《服务条款》才能登录会话。
@@ -1515,6 +1511,7 @@
 
       如需了解如何将应用固定到 <ph name="PRODUCT_OS_NAME" />任务栏中，请参阅 <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" />。</translation>
 <translation id="2976429807269247880">旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> Cookie 行为设置</translation>
+<translation id="2985097017239074272">Google 新闻（在 91 版及更高版本中受支持）</translation>
 <translation id="2985927503455169394">使用 Google 助理新手入门体验的默认模式</translation>
 <translation id="2987155890997901449">启用 ARC</translation>
 <translation id="2987227569419001736">控制对 Web Bluetooth API 的使用</translation>
@@ -1824,10 +1821,10 @@
 
       如果 <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> 政策未设置，则此政策不会产生任何效力。</translation>
 <translation id="341285788698114069">此政策用于控制音频进程在 Windows 上的优先级。
-      如果此政策已启用，音频进程将以高于普通优先级的优先级运行。
-      如果此政策已停用，音频进程将以普通优先级运行。
-      如果此政策未设置，系统将会使用音频进程的默认配置。
-      此政策只是一种临时措施，旨在让企业能够以更高的优先级运行音频，从而解决某些与音频捕获有关的性能问题。
+      如果已启用，音频进程将以高于普通优先级的优先级运行。
+      如果已停用，音频进程将以普通优先级运行。
+      如果未设置，系统将会使用音频进程的默认配置。
+      此政策只是一种临时措施，旨在让企业能够以更高的优先级运行音频，从而解决与音频捕获有关的特定性能问题。
       日后我们会移除此政策。</translation>
 <translation id="3412937883532015092">如果此政策设为一个数字，则意味着在打开备用浏览器之前，<ph name="PRODUCT_NAME" /> 会先按照与该数字等同的毫秒数显示一条消息。
 
@@ -2539,6 +2536,7 @@
 <translation id="4450222911834151460">如果您设置了此政策，系统将会从同步操作（无论是 Google 同步还是漫游个人资料同步）中排除所有指定的数据类型。这有助于缩减漫游个人资料的大小，或者限制向 Google 同步服务器上传的数据类型。
 
       此政策当前可用的数据类型为：“bookmarks”、“readingList”、“preferences”、“passwords”、“autofill”、“themes”、“typedUrls”、“extensions”、“apps”、“tabs”、“wifiConfiguration”。这些名称区分大小写！</translation>
+<translation id="4452653762766030431">控制是否允许在 Chrome 操作系统中使用“网络文件共享”功能</translation>
 <translation id="445270821089253489">控制要报告的用户和设备信息种类。</translation>
 <translation id="4453913621209182880">仅允许在有背景图片的情况下打印</translation>
 <translation id="4454820008017317557">显示 <ph name="PRODUCT_NAME" /> 工具栏图标</translation>
@@ -2772,6 +2770,13 @@
       如果此政策未设置或包含无效值，系统功能的停用模式将会是“已禁用”。</translation>
 <translation id="4835470005923546373">默认停用背景图片打印模式</translation>
 <translation id="4835622243021053389">启用 NTLMv2 身份验证。</translation>
+<translation id="4846678215172543001">通过设置此政策，您可禁止在所列网站上针对相似网址显示警告。一般情况下，当 <ph name="PRODUCT_NAME" /> 认定网站可能正试图仿冒用户熟悉的另一个网站时，就会在网站上显示这类警告。
+
+       如果此政策已启用，并且设为一个或多个域名，当用户访问相应网域上的网页时，系统将不会针对相似网址显示任何警告页面。
+
+       如果此政策未设置或设为一个空列表，系统可能会在用户访问的任一网站上显示这类警告。
+
+       允许主机名匹配整个主机或任一网域。例如，倘若此列表包含“foo.example.com”或“example.com”，诸如“https://foo.example.com/bar”之类的网址便可能不会显示这类警告。</translation>
 <translation id="485419696366295465">控制与 <ph name="BOREALIS_NAME" /> 子系统相关的政策。</translation>
 <translation id="4855636880814771207">如果此政策已启用或未设置，用户将可以开启或关闭蓝牙。
 
@@ -2967,7 +2972,6 @@
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
 
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
-<translation id="5090209345759901501">将 Flash 内容设置的涵盖面扩展至所有内容</translation>
 <translation id="5090791951240382356">允许合并来自多个不同来源的字典政策</translation>
 <translation id="5091315650312105069">允许通过 HTTP 进行<ph name="BASIC_AUTH" />身份验证</translation>
 <translation id="5103112931744164177">此政策用于控制使用哪个软件堆栈与 DNS 服务器通信：操作系统 DNS 客户端或 <ph name="PRODUCT_NAME" /> 的内置 DNS 客户端。此政策不会影响使用哪些 DNS 服务器：例如，如果操作系统已配置为使用一台企业 DNS 服务器，内置 DNS 客户端也会使用这台服务器。此政策也不会控制是否使用 DNS-over-HTTPS；<ph name="PRODUCT_NAME" /> 将始终使用内置的解析器发送 DNS-over-HTTPS 请求。如需了解如何控制 DNS-over-HTTPS，请参阅 <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> 政策。
@@ -3942,6 +3946,11 @@
 <translation id="647698599569353771">允许启用“附近分享”功能。</translation>
 <translation id="6478258366184919502">登录和屏幕来源</translation>
 <translation id="6478261301433199402">通过设置此政策，您可以指定用户的 <ph name="PLUGIN_VM_NAME" /> 映像。此政策应指定为一个 JSON 格式字符串：使用 <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> 指明相应映像的下载位置，并使用 <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> 指定用于验证下载内容是否完整的 SHA-256 哈希值。</translation>
+<translation id="6489084406497912050">控制用户是否可以添加 Kerberos 帐号。
+
+          如果此政策已启用或未设置，用户将可以通过 Kerberos 设置页中的“Kerberos 帐号”设置添加 Kerberos 帐号。用户对自己添加的帐号拥有完全控制权，可以修改或移除这些帐号。
+
+          如果此政策已停用，用户将无法添加 Kerberos 帐号。此时，只能通过“配置 Kerberos 帐号”政策添加 Kerberos 帐号。这一方式可以有效地锁定帐号。</translation>
 <translation id="6491139795995924304">允许在设备上使用蓝牙功能</translation>
 <translation id="6491872498385040936">此政策已被弃用。请考虑使用替换此政策的 <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />；借助该政策，您可以进行更加精确的微调。
 
@@ -4277,6 +4286,7 @@
       如果您设置了此政策，仅当此政策的列表值包含某个应用的扩展程序 ID 时，用户才能在锁定屏幕上开启该应用。所以，如果您将此政策设为空列表，系统就会关闭锁定屏幕上的笔记功能。即使此政策的值包含某个应用 ID，用户也未必能在锁定屏幕上将该应用作为笔记应用开启。例如，在 <ph name="PRODUCT_NAME" /> 61 中，可用应用集还会受到平台的限制。
 
       如果您未设置此政策，此政策便不会对用户能在锁定屏幕上启用的应用集施加任何限制。</translation>
+<translation id="6882028194958060206">将 Flash 内容设置的涵盖面扩展至所有内容（已弃用）</translation>
 <translation id="6889123056995503704">由用户决定版本降级行为</translation>
 <translation id="6894178810167845842">在新标签页中打开的页面网址</translation>
 <translation id="6897730193187922386">禁止显示 <ph name="CLOUD_PRINT_NAME" />弃用消息</translation>
@@ -4959,7 +4969,6 @@
       如果此政策未设置，则意味着 <ph name="BLOCK_POPUPS_POLICY_NAME" /> 政策适用，但用户可以更改此设置。</translation>
 <translation id="7731026922044991970">将所有网站上的 Cookie 都恢复为旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行为</translation>
 <translation id="7732907212083471072">已移除的政策</translation>
-<translation id="7737077721564799856">配置要停用的摄像头、浏览器设置、操作系统设置、扫描功能、网上应用店功能和画布功能</translation>
 <translation id="77379430721695807">通过设置此政策，您可以指定一个网址列表，在其中列出与请求网址的安全来源匹配的网址格式。如果找到了匹配项，系统会在不提示用户的情况下直接允许相应网址使用录像设备
 
       如需详细了解有效的 <ph name="URL_LABEL" /> 格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
@@ -5005,6 +5014,13 @@
       如果您未设置此政策，用户可以选择是否让系统提示输入密码以将处于睡眠状态的设备解锁。</translation>
 <translation id="7784062550705119230">如果为 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_ALLOWLIST" />，您便可通过设置 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 来指定用户可以使用哪些打印机。用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
 <translation id="7788511847830146438">根据个人资料</translation>
+<translation id="7798441698807517880">自 <ph name="PRODUCT_NAME" /> 89 版起，此政策已被移除，因为 <ph name="FLASH_PLUGIN_NAME" /> 已被弃用。
+
+      如果此政策设为 True，在允许运行 <ph name="FLASH_PLUGIN_NAME" /> 的网站中内嵌的所有 <ph name="FLASH_PLUGIN_NAME" /> 内容（包括其他来源的或不重要的内容）都会正常运行。
+
+      如果此政策设为 False 或未设置，系统可能会屏蔽其他来源的或不重要的 <ph name="FLASH_PLUGIN_NAME" /> 内容。
+
+      注意：如需控制哪些网站可以运行 <ph name="FLASH_PLUGIN_NAME" />，请参阅 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />、<ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> 和 <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策。</translation>
 <translation id="780629758750905699">允许向设备添加 Family Link 帐号</translation>
 <translation id="7807139251387225825">应从同步操作中排除的类型列表</translation>
 <translation id="781268256210530471">插件设置</translation>
@@ -5033,6 +5049,11 @@
 <translation id="7850846808758624237">如果此政策已启用，当首次运行浏览器时，系统将会从先前的默认浏览器导入主页。如果此政策已停用或未设置，当首次运行浏览器时，系统不会导入主页。
 
       用户可以触发导入对话框，系统将会根据此政策的值选中或不选中“主页”复选框。</translation>
+<translation id="7851772934080809511">控制是否启用 Kerberos 功能。Kerberos 是一种身份验证协议，可用于向 Web 应用及文件共享功能验证身份。
+
+          如果此政策已启用，Kerberos 功能会处于启用状态。您可以通过“配置 Kerberos 帐号”政策或通过 Kerberos 设置页中的“Kerberos 帐号”设置添加 Kerberos 帐号。
+
+          如果此政策已停用或未设置，Kerberos 帐号设置会处于停用状态。此时，您无法添加任何 Kerberos 帐号，也无法使用 Kerberos 身份验证功能。系统会删除所有现有 Kerberos 帐号以及所有已存储的密码。</translation>
 <translation id="7863947545897944083">在登录屏幕上启用高对比度模式无障碍功能。
 
           如果此政策设为 true，高对比度模式在登录屏幕上将始终处于启用状态。
@@ -5061,11 +5082,6 @@
 
       请另外查看一下 <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />（这三项政策并无优先级差异）。这 3 项政策中的网址格式不得存在冲突。</translation>
 <translation id="7887379840451099426">仅当使用电池供电时才适用的电源管理设置</translation>
-<translation id="7889788745439330797">控制用户是否可以添加 Kerberos 帐号。
-
-          如果启用了或未设置此政策，则用户可以通过“用户设置”页面的“Kerberos 帐号”设置添加 Kerberos 帐号。用户对自己添加的帐号拥有完全控制权，可以修改或移除这些帐号。
-
-          如果停用了此政策，则用户无法添加 Kerberos 帐号。只能通过“配置 Kerberos 帐号”政策添加帐号。这是锁定帐号的有效方式。</translation>
 <translation id="7891884447851425349">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> 来指定在默认搜索期间使用的搜索引擎网址。该网址应包含字符串<ph name="SEARCH_TERM_MARKER" />；当用户执行查询时，系统会将此字符串替换成用户的搜索字词。
 
       您可按以下格式指定 Google 的搜索网址：<ph name="GOOGLE_SEARCH_URL" />。</translation>
@@ -5319,11 +5335,6 @@
 <translation id="8238421250255592181">一个布尔值标记，用于表明屏幕键盘能否提供自动填充功能。</translation>
 <translation id="8244171102276095471">在 TLS 中启用 RC4 加密套件</translation>
 <translation id="8244525275280476362">政策失效后的最大提取延迟</translation>
-<translation id="8251411417369363637">如果此政策设为 True，允许运行 <ph name="FLASH_PLUGIN_NAME" /> 的网站中内嵌的所有 <ph name="FLASH_PLUGIN_NAME" /> 内容（包括其他来源的内容或不重要的内容）都会运行。
-
-      如果此政策设为 False 或未设置，系统可能会屏蔽其他来源的或不重要的 <ph name="FLASH_PLUGIN_NAME" /> 内容。
-
-      请注意：如需控制哪些网站可以运行 <ph name="FLASH_PLUGIN_NAME" />，请参阅 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />、<ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> 和 <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策。</translation>
 <translation id="82530263956734297">要从屏蔽名单中排除的扩展程序 ID</translation>
 <translation id="8256688113167012935">控制 <ph name="PRODUCT_OS_NAME" />在登录屏幕上为相应的设备本地帐号显示的帐号名。
 

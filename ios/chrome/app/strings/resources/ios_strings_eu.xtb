@@ -282,6 +282,7 @@ Jarraitu beheko urratsei:</translation>
 <translation id="3928666092801078803">Bateratu nire datuak</translation>
 <translation id="3929457972718048006">Helbideak</translation>
 <translation id="3943492037546055397">Pasahitzak</translation>
+<translation id="3967266340354872733">Pribatutasunarekin, segurtasunarekin eta datu-bilketarekin lotutako ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Sinkronizazioa<ph name="END_LINK" /> eta <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> ataletara.</translation>
 <translation id="3967822245660637423">Deskargatzen amaitu da</translation>
 <translation id="3968505803272650567">Kudeatu interesak</translation>
 <translation id="3989635538409502728">Amaitu saioa</translation>
@@ -556,6 +557,7 @@ Erabili pasahitz esklusibo bat webgune bakoitzerako.</translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Ezin dira esportatu pasahitzak</translation>
 <translation id="6748108480210050150">Igorlea</translation>
+<translation id="6760509555861141183">Itzuli aurreko fitxara</translation>
 <translation id="6780034285637185932">Posta-kodea</translation>
 <translation id="6785453220513215166">Hutsegite-txostena bidaltzen…</translation>
 <translation id="679325081238418596">Izan eskura laster-markak, historia, pasahitzak eta bestelakoak gailu guztietan</translation>
@@ -607,7 +609,6 @@ Erabili pasahitz esklusibo bat webgune bakoitzerako.</translation>
 <translation id="7272437679830969316">Ezin da egiaztatu identitatea. Ez da kopiatu pasahitza.</translation>
 <translation id="7291368939935408496">Pasahitzak prestatzen…</translation>
 <translation id="7293171162284876153">Sinkronizatzen hasteko, aktibatu "Sinkronizatu Chrome-ko datuak".</translation>
-<translation id="7299000566397147023">Ireki azken fitxa</translation>
 <translation id="7313347584264171202">Ezkutuko moduko fitxak aurkituko dituzu hemen</translation>
 <translation id="7336264872878993241">% <ph name="PERCENT" /> deskargatu da</translation>
 <translation id="7340958967809483333">Discover-en aukerak</translation>

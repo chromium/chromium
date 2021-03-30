@@ -282,6 +282,7 @@
 <translation id="3928666092801078803">ನನ್ನ ಡೇಟಾ ಒಂದುಗೂಡಿಸಿ</translation>
 <translation id="3929457972718048006">ವಿಳಾಸಗಳು</translation>
 <translation id="3943492037546055397">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
+<translation id="3967266340354872733">ಗೌಪ್ಯತೆ, ಸುರಕ್ಷತೆ ಮತ್ತು ಡೇಟಾ ಸಂಗ್ರಹಣೆಗೆ ಸಂಬಂಧಿಸಿದ ಹೆಚ್ಚಿನ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗಾಗಿ, <ph name="BEGIN_LINK" />ಸಿಂಕ್<ph name="END_LINK" /> ಮತ್ತು <ph name="BEGIN_LINK" />Google ಸೇವೆಗಳನ್ನು<ph name="END_LINK" /> ನೋಡಿ.</translation>
 <translation id="3967822245660637423">ಡೌನ್‌ಲೋಡ್‌‌ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="3968505803272650567">ಆಸಕ್ತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="3989635538409502728">ಸೈನ್ ಔಟ್</translation>
@@ -556,6 +557,7 @@
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="6748108480210050150">ಇವರಿಂದ</translation>
+<translation id="6760509555861141183">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗೆ ಹಿಂದಿರುಗಿ</translation>
 <translation id="6780034285637185932">ಪಿನ್‌ ಕೋಡ್</translation>
 <translation id="6785453220513215166">ಕ್ರ್ಯಾಶ್ ವರದಿಯನ್ನು ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ ...</translation>
 <translation id="679325081238418596">ನಿಮ್ಮ ಎಲ್ಲ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮದೇ ಆದ ಬುಕ್‌ಮಾರ್ಕ್‌‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹಾಗೂ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ.</translation>
@@ -607,7 +609,6 @@
 <translation id="7272437679830969316">ನಿಮ್ಮ ಗುರುತನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ನಕಲಿಸಲಾಗಿಲ್ಲ.</translation>
 <translation id="7291368939935408496">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="7293171162284876153">ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು, "ನಿಮ್ಮ Chrome ಡೇಟಾ ಸಿಂಕ್ ಮಾಡಿ" ಆಯ್ಕೆಯನ್ನು ಆನ್ ಮಾಡಿ.</translation>
-<translation id="7299000566397147023">ತೀರಾ ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ</translation>
 <translation id="7313347584264171202">ನಿಮ್ಮ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಇಲ್ಲಿ ಕಾಣಬಹುದು</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> ಪ್ರತಿಶತ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7340958967809483333">Discover ಗಾಗಿ ಆಯ್ಕೆಗಳು</translation>

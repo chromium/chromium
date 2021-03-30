@@ -193,6 +193,7 @@
 <translation id="2964349545761222050">മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="2969979262385602596">സൈൻ ഇൻ ചെയ്യുന്നത് പരാജയപ്പെട്ടു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2975121486251958312">അദൃശ്യ മോഡ് മാത്രമേ ലഭ്യമാകൂ</translation>
+<translation id="2981323609054805194">ദിവസം മുമ്പ്</translation>
 <translation id="2982481275546140226">ഡാറ്റ മായ്‌ക്കുക</translation>
 <translation id="298306318844797842">പേയ്‌മെന്റ് രീതി ചേർക്കുക...</translation>
 <translation id="2989805286512600854">പുതിയ ടാബില്‍ തുറക്കുക</translation>
@@ -282,6 +283,7 @@
 <translation id="3928666092801078803">എന്റെ വിവരങ്ങൾ സംയോജിപ്പിക്കുക</translation>
 <translation id="3929457972718048006">വിലാസങ്ങള്‍</translation>
 <translation id="3943492037546055397">പാസ്‌വേഡുകൾ</translation>
+<translation id="3967266340354872733">സ്വകാര്യത, സുരക്ഷ, ഡാറ്റാ ശേഖരണം എന്നിവയുമായി ബന്ധപ്പെട്ട കൂടുതൽ ക്രമീകരണത്തിന് <ph name="BEGIN_LINK" />സമന്വയവും<ph name="END_LINK" /> <ph name="BEGIN_LINK" />Google സേവനങ്ങളും<ph name="END_LINK" />കാണുക.</translation>
 <translation id="3967822245660637423">ഡൗൺലോഡ് പൂർത്തിയായി</translation>
 <translation id="3968505803272650567">താൽപ്പര്യങ്ങൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="3989635538409502728">സൈൻ ഔട്ട് ചെയ്യുക</translation>
@@ -555,7 +557,9 @@
 <translation id="6710079714193676716">നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്. ചില ഫീച്ചറുകൾ ലഭ്യമായേക്കില്ല. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google അപ്ലിക്കേഷനുകൾ</translation>
 <translation id="6730682669179532099">പാസ്‌വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യാനാവുന്നില്ല</translation>
+<translation id="6739790015462537309">മണിക്കൂർ മുമ്പ്</translation>
 <translation id="6748108480210050150">പ്രേഷിതന്‍</translation>
+<translation id="6760509555861141183">ഏറ്റവും അവസാനം തുറന്ന ടാബിലേക്ക് മടങ്ങുക</translation>
 <translation id="6780034285637185932">തപാൽ കോഡ്</translation>
 <translation id="6785453220513215166">ക്രാഷ് റിപ്പോർട്ട് അയയ്‌ക്കുന്നു...</translation>
 <translation id="679325081238418596">നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, പാസ്‌വേഡുകൾ, മറ്റ് ക്രമീകരണം എന്നിവ എല്ലാ ഉപകരണങ്ങളിലും ഉപയോഗിക്കുക</translation>
@@ -607,7 +611,6 @@
 <translation id="7272437679830969316">നിങ്ങളുടെ ഐഡന്റിറ്റി പരിശോധിച്ചുറപ്പിക്കാനാകില്ല. പാസ്‍വേഡ് പകർത്തിയില്ല.</translation>
 <translation id="7291368939935408496">പാസ്‍വേഡുകൾ തയ്യാറാക്കുന്നു...</translation>
 <translation id="7293171162284876153">സമന്വയം ആരംഭിക്കാൻ, "നിങ്ങളുടെ Chrome ഡാറ്റാ സമന്വയിപ്പിക്കൽ" ഓണാക്കുക.</translation>
-<translation id="7299000566397147023">ഏറ്റവും അവസാനം തുറന്ന ടാബ് തുറക്കുക</translation>
 <translation id="7313347584264171202">നിങ്ങളുടെ അദൃശ്യ ടാബുകൾ ഇവിടെ കാണാം</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> ശതമാനം ഡൗൺലോഡുചെയ്‌തു</translation>
 <translation id="7340958967809483333">Discover-നുള്ള ഓപ്ഷനുകൾ</translation>

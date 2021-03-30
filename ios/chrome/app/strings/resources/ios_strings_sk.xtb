@@ -193,6 +193,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2964349545761222050">Blokovať súbory cookie tretích strán</translation>
 <translation id="2969979262385602596">Prihlásenie zlyhalo. Skúste to neskôr.</translation>
 <translation id="2975121486251958312">K dispozícii je iba režim inkognito</translation>
+<translation id="2981323609054805194">pred d.</translation>
 <translation id="2982481275546140226">Vymazať dáta</translation>
 <translation id="298306318844797842">Pridať spôsob platby…</translation>
 <translation id="2989805286512600854">Otvoriť na novej karte</translation>
@@ -282,6 +283,7 @@ Postupujte podľa krokov nižšie:</translation>
 <translation id="3928666092801078803">Spojiť moje dáta</translation>
 <translation id="3929457972718048006">Adresy</translation>
 <translation id="3943492037546055397">Heslá</translation>
+<translation id="3967266340354872733">Ďalšie nastavenia týkajúce sa ochrany súkromia, zabezpečenia a zhromažďovania údajov nájdete v sekciách <ph name="BEGIN_LINK" />Synchronizácia<ph name="END_LINK" /> a <ph name="BEGIN_LINK" />služby Googlu<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Sťahovanie dokončené</translation>
 <translation id="3968505803272650567">Spravovať záujmy</translation>
 <translation id="3989635538409502728">Odhlásiť sa</translation>
@@ -555,7 +557,9 @@ Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="6710079714193676716">Spravuje vaša organizácia. Niektoré funkcie nemusia byť k dispozícii. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Heslá sa nedajú exportovať</translation>
+<translation id="6739790015462537309">pred h</translation>
 <translation id="6748108480210050150">Od</translation>
+<translation id="6760509555861141183">Návrat na poslednú kartu</translation>
 <translation id="6780034285637185932">PSČ</translation>
 <translation id="6785453220513215166">Prebieha odosielanie správy o zlyhaní...</translation>
 <translation id="679325081238418596">Používajte svoje záložky, históriu, heslá a ďalšie nastavenia vo všetkých svojich zariadeniach</translation>
@@ -607,7 +611,6 @@ Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="7272437679830969316">Vašu totožnosť nie je možné overiť. Heslo sa neskopírovalo.</translation>
 <translation id="7291368939935408496">Pripravujú sa heslá...</translation>
 <translation id="7293171162284876153">Ak chcete spustiť synchronizáciu, zapnite možnosť „Synchronizovať údaje Chromu“.</translation>
-<translation id="7299000566397147023">Otvorte najnovšiu kartu</translation>
 <translation id="7313347584264171202">Tu nájdete svoje karty inkognito</translation>
 <translation id="7336264872878993241">Stiahnuté: <ph name="PERCENT" /> percent</translation>
 <translation id="7340958967809483333">Možnosti kanála Objaviť</translation>

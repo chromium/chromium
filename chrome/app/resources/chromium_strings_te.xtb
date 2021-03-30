@@ -10,7 +10,6 @@
 <translation id="1315551408014407711">మీ కొత్త Chromium ప్రొఫైల్‍ను సెట్ అప్ చేయండి</translation>
 <translation id="1396446129537741364">Chromium పాస్‌వర్డ్‌లను చూపడానికి ప్రయత్నిస్తోంది.</translation>
 <translation id="1414495520565016063">మీరు Chromiumకు సైన్ ఇన్ చేసారు!</translation>
-<translation id="1414973082589232775">సురక్షితమైన మీడియాను ప్లే చేయడం కోసం Rosettaను ఉపయోగించడానికి, మీరు తప్పనిసరిగా Chromiumను రీస్టార్ట్ చేయాలి.</translation>
 <translation id="151962892725702025">మీ డొమైన్ కోసం సింక్‌ అందుబాటులో లేనందున, Chromium OS, మీ డేటాను సింక్ చేయ‌లేక‌పోయింది.</translation>
 <translation id="1524282610922162960">Chromium ట్యాబ్‌ను షేర్ చేయండి</translation>
 <translation id="1553461853655228091">మీ పరిసరాల 3D మ్యాప్‌ను సృష్టించడానికి Chromiumకు మీ కెమెరాను యాక్సెస్ చేసే అనుమతి కావాలి</translation>
@@ -133,11 +132,11 @@
 <translation id="5480860683791598150">ఈ సైట్‌తో మీ స్థానాన్ని షేర్ చేయడానికి Chromiumకు మీ స్థాన యాక్సెస్ అవసరం</translation>
 <translation id="549669000822060376">దయచేసి Chromium తాజా సిస్టమ్ నవీకరణలను ఇన్‌స్టాల్ చేస్తున్నప్పుడు వేచి ఉండండి.</translation>
 <translation id="5496810170689441661">పాస్‌వర్డ్‌లను ఎడిట్ చేయడానికి Chromium ప్రయత్నిస్తోంది. దీన్ని అనుమతించడానికి మీ Windows పాస్‌వర్డ్‌ను టైప్ చేయండి.</translation>
+<translation id="5527463683072221100">Chromiumలో PDFలను తెరవండి</translation>
 <translation id="5623402015214259806">{0,plural, =0{ఒక Chromium అప్‌డేట్ అందుబాటులో ఉంది}=1{ఒక Chromium అప్‌డేట్ అందుబాటులో ఉంది}other{ఒక Chromium అప్‌డేట్ # రోజులుగా అందుబాటులో ఉంది}}</translation>
 <translation id="5634636535844844681">Chromiumకి Windows 7 లేదా అంతకంటే ఆధునికమైనది ఉండటం ఆవశ్యకం.</translation>
 <translation id="5653831366781983928">దయచేసి ఇప్పుడు Chromiumను మళ్ళీ ప్రారంభించండి</translation>
 <translation id="5698481217667032250">Chromiumను ఈ భాషలో ప్రదర్శించు</translation>
-<translation id="5736967399513123100">సురక్షితమైన మీడియాను ప్లే చేయడం కోసం Chromiumను ఎనేబుల్ చేయడానికి, మీరు Rosettaను ఇన్‌స్టాల్ చేయాలి. మీరు దీన్ని ఇప్పుడు ఇన్‌స్టాల్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Chromiumకు స్వాగతం</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించు</translation>
@@ -188,7 +187,6 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromiumకి కాపీ చేయబడింది)</translation>
 <translation id="6893813176749746474">Chromium నవీకరించబడింది, కానీ మీరు దీన్ని గత 30 రోజులుగా ఉపయోగించలేదు.</translation>
-<translation id="6897548120660295439">ఈ పేజీలో సురక్షితమైన మీడియాను ప్లే చేయడానికి, Rosetta Chromiumను ఎనేబుల్ చేస్తుంది.</translation>
 <translation id="691026815377248078">పెయిరింగ్‌ను కొనసాగించడానికి Chromiumకు 
  బ్లూటూత్ యాక్సెస్ అవసరం. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Chromium అజ్ఞా&amp;త విండోలో లింక్‌ను తెరువు</translation>

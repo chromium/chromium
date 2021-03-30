@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">კამერა</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">ჩაწერილი არაფერია</translation>
+<translation id="1838104802459806957">ზემოთკენ დახრა</translation>
 <translation id="1851616744363735765">დაპაუზებული</translation>
 <translation id="1862930711583847113"><ph name="FILE" />-ის ექსპორტირება ვერ მოხერხდა</translation>
 <translation id="1899697626337024495">ფოტოს გარჩევადობა</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> აქტიურია</translation>
 <translation id="2144806332417375165">მორგებული ვიდეოპარამეტრები</translation>
 <translation id="229579744168541441">დისკზე ექსპორტირება</translation>
+<translation id="2320741269052147773">მარცხნივ პანირება</translation>
 <translation id="2501278716633472235">უკან დაბრუნება</translation>
 <translation id="2501853267655415902">ჩაწერა შეწყდა</translation>
 <translation id="2501953888035679275">გადაიღეთ აუდიო- და ვიდეოკონტენტი თქვენი კამერით.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">კამერით გადაღებული ფოტოები და ვიდეოები გადატანილი იქნება „ჩამოტვირთვების“ საქაღალდეში. მათზე წვდომა შეგიძლიათ ფაილების აპიდან.
 
         აპები, რომლებსაც მინიჭებული აქვს მეხსიერებაზე წვდომის ნებართვა, შეძლებს თქვენს ფოტოებსა და ვიდეოებზე წვდომას.</translation>
+<translation id="3067436040345934772">მარჯვნივ პანირება</translation>
 <translation id="3081586908890909590">ვიდეოს ჩაწერაზე გადართვა</translation>
 <translation id="313467653172006084">30 კადრი/წმ</translation>
 <translation id="3183731565330012717">ბადის ტიპი</translation>
@@ -56,6 +59,7 @@
 <translation id="5671277269877808209">კვადრატი</translation>
 <translation id="5775960006311140197">ექსპერტთა რეჟიმი</translation>
 <translation id="5869546221129391014">ბადე</translation>
+<translation id="5975083100439434680">დაშორება</translation>
 <translation id="6040143037577758943">დახურვა</translation>
 <translation id="6073451960410192870">ჩაწერის შეწყვეტა</translation>
 <translation id="6197807149213783179">მეტამონაცემების შენახვა</translation>
@@ -81,19 +85,21 @@
 <translation id="7649070708921625228">დახმარება</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
 <translation id="7670511624014457267">60 კადრი/წმ</translation>
-<translation id="7974782136796202581">პანირების/გადახრის/მასშტაბირების ვარიანტების ჩვენება</translation>
 <translation id="7983668134180549431">აღმოჩენილია ტექსტი.</translation>
 <translation id="8067883171444229417">ვიდეოს დაკვრა</translation>
+<translation id="8120146556401698679">პანირება/გადახრა/მასშტაბირება</translation>
 <translation id="8131740175452115882">დაადასტურება</translation>
 <translation id="8145038249676204903">ფოტოს გადაღებაზე გადართვა</translation>
 <translation id="8239780215768881278">ვიდეოსნეპშოტის გადაღება</translation>
 <translation id="8261506727792406068">წაშლა</translation>
+<translation id="8425673304802773841">ქვემოთკენ დახრა</translation>
 <translation id="8428213095426709021">პარამეტრები</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">მეტამონაცემების გადახედვა</translation>
 <translation id="8815966864175525708">ფოტოს პორტრეტის რეჟიმში გადაღებაზე გადართვა</translation>
 <translation id="8828441885228359828">ჩაწერის გაგრძელება</translation>
 <translation id="8870695351537079478">ჩაწერის დაწყება ვერ მოხერხდა</translation>
+<translation id="8903921497873541725">მასშტაბის გადიდება</translation>
 <translation id="9045155556724273246">10 წამი</translation>
 <translation id="945522503751344254">შეფასების გაგზავნა</translation>
 </translationbundle>

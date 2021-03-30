@@ -10,7 +10,6 @@
 <translation id="1315551408014407711">Налаштуйте новий профіль Chromium</translation>
 <translation id="1396446129537741364">Chromium намагається показати паролі.</translation>
 <translation id="1414495520565016063">Ви ввійшли в Chromium.</translation>
-<translation id="1414973082589232775">Щоб відтворювати захищений медіаконтент за допомогою додатка Rosetta, потрібно перезапустити Chromium.</translation>
 <translation id="151962892725702025">ОС Chromium не вдалося синхронізувати ваші дані, оскільки синхронізація для вашого домену недоступна.</translation>
 <translation id="1524282610922162960">Поділитися вкладкою Chromium</translation>
 <translation id="1553461853655228091">Chromium потрібен дозвіл на використання камери, щоб створити 3D-карту вашого оточення</translation>
@@ -135,11 +134,11 @@
 <translation id="5480860683791598150">Chromium потрібен доступ до геоданих, щоб повідомляти ваше місцезнаходження цьому сайту</translation>
 <translation id="549669000822060376">Зачекайте, доки Chromium установить найновіші оновлення системи.</translation>
 <translation id="5496810170689441661">Chromium намагається змінити паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
+<translation id="5527463683072221100">Відкривати файли PDF у Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Доступне оновлення Chromium}=1{Доступне оновлення Chromium}one{Оновлення Chromium доступне вже # день}few{Оновлення Chromium доступне вже # дні}many{Оновлення Chromium доступне вже # днів}other{Оновлення Chromium доступне вже # дня}}</translation>
 <translation id="5634636535844844681">Для роботи Chromium потрібно мати ОС Windows 7 або новішої версії.</translation>
 <translation id="5653831366781983928">Перезапустіть Chromium</translation>
 <translation id="5698481217667032250">Вибрати цю мову для Chromium</translation>
-<translation id="5736967399513123100">Щоб відтворювати в Chromium захищений медіаконтент, потрібно встановити додаток Rosetta. Зробити це зараз?</translation>
 <translation id="5820394555380036790">ОС Chromium</translation>
 <translation id="5862307444128926510">Вітаємо в Chromium</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
@@ -190,7 +189,6 @@
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (скопійовано в Chromium)</translation>
 <translation id="6893813176749746474">Chromium оновлено, проте ви не користувалися цим веб-переглядачем щонайменше 30 днів.</translation>
-<translation id="6897548120660295439">Завдяки додатку Rosetta у веб-переглядачі Chromium можна відтворювати захищений медіаконтент на цій сторінці.</translation>
 <translation id="691026815377248078">Щоб продовжити підключення, надайте веб-переглядачу Chromium
 доступ до Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Відкрити посилання в аноні&amp;мному вікні Chromium</translation>

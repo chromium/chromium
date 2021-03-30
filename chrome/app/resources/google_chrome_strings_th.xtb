@@ -186,6 +186,7 @@
 <translation id="6070348360322141662">Google Chrome จะเข้ารหัสลับข้อมูลของคุณเพื่อเพิ่มความปลอดภัยให้มากยิ่งขึ้น</translation>
 <translation id="608006075545470555">เพิ่มโปรไฟล์งานลงในเบราว์เซอร์นี้</translation>
 <translation id="6113794647360055231">Chrome ดีขึ้นกว่าเดิม</translation>
+<translation id="6145313976051292476">เปิด PDF ใน Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome เบต้า</translation>
 <translation id="61852838583753520">อัปเดต &amp;Chrome OS</translation>
@@ -198,7 +199,6 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">กำลังอัปเดต Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">ระบบ Chrome OS</translation>
-<translation id="6650333065969705433">คุณต้องรีสตาร์ท Chrome เพื่อใช้ Rosetta ในการเล่นสื่อที่มีการป้องกัน</translation>
 <translation id="6676384891291319759">เข้าถึงอินเทอร์เน็ต</translation>
 <translation id="6679975945624592337">ให้ Google Chrome ทำงานในพื้นหลัง</translation>
 <translation id="6739177684496155661">ดำเนินการต่อในโปรไฟล์ Chrome ใหม่ไหม</translation>
@@ -262,7 +262,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">โปรไฟล์งานนี้แยกออกจากโปรไฟล์ส่วนตัวโดยสิ้นเชิง</translation>
 <translation id="8556340503434111824">มี Chrome รุ่นใหม่ให้ใช้งานแล้วและเร็วกว่าเดิม</translation>
-<translation id="861359755029082151">Rosetta ช่วยให้ Chrome เล่นสื่อที่มีการป้องกันในหน้านี้ได้</translation>
 <translation id="8614913330719544658">Google Chrome ไม่ตอบสนอง เปิดใช้งานใหม่ตอนนี้หรือไม่</translation>
 <translation id="861702415419836452">Chrome ต้องการสิทธิ์เข้าถึงกล้องเพื่อสร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณ</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome จะเปิดขึ้นมาใหม่ใน 1 นาที}other{Chrome จะเปิดขึ้นมาใหม่ใน # นาที}}</translation>
@@ -276,7 +275,6 @@
 <translation id="8834965163890861871">Google Chrome กำลังพยายามแก้ไขรหัสผ่าน โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
 <translation id="884296878221830158">อีกทั้งยังควบคุมหน้าที่จะแสดงเมื่อคุณเปิด Chrome หรือคลิกปุ่ม "หน้าแรก"</translation>
 <translation id="8862326446509486874">คุณไม่มีสิทธิ์ในการติดตั้งระดับระบบ ทดลองใช้งานโปรแกรมติดตั้งอีกครั้งโดยกำหนดให้เป็นผู้ดูแลระบบ</translation>
-<translation id="8907709077090383765">คุณต้องติดตั้ง Rosetta เพื่อให้ Chrome เล่นสื่อที่มีการป้องกันได้ ต้องการติดตั้งตอนนี้เลยไหม</translation>
 <translation id="8914504000324227558">เปิด Chrome ขึ้นใหม่</translation>
 <translation id="8922193594870374009">หากต้องการส่งหมายเลขจาก <ph name="ORIGIN" /> ไปยังโทรศัพท์ Android ให้ลงชื่อเข้าใช้ Chrome ในอุปกรณ์ทั้งสองเครื่อง</translation>
 <translation id="8986207147630327271">คุณกำลังเพิ่มโปรไฟล์งานลงในเบราว์เซอร์นี้และให้ผู้ดูแลระบบเป็นผู้ควบคุมเฉพาะโปรไฟล์งานดังกล่าว</translation>

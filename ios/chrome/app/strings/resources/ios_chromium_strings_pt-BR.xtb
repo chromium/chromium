@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">O Chromium não pode usar a câmera agora</translation>
 <translation id="2195025571279539885">Quer que na próxima vez o Chromium ofereça a tradução de páginas em <ph name="LANGUAGE_NAME" /> deste site?</translation>
 <translation id="2590893390871230428">Sincronizar seus dados do Chromium</translation>
-<translation id="259614951763923692">Se você permitir que o Chromium saiba sua localização, ele a enviará para o mecanismo de pesquisa padrão e para os sites aos quais você concedeu permissão. Os sites podem solicitar sua localização para enviar informações locais para você, como notícias ou lojas próximas.</translation>
 <translation id="2650312721222849884">Para ver suas guias em qualquer lugar onde você usar o Chromium, ative a sincronização</translation>
 <translation id="2730884209570016437">O Chromium não pode usar a câmera porque ela está sendo usada por outro app</translation>
 <translation id="2915596697727466327">O Chromium usa o Face ID para garantir o acesso autorizado às suas senhas.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Sair do Chromium?</translation>
 <translation id="6424492062988593837">O Chromium ficou ainda melhor! Uma nova versão está disponível.</translation>
 <translation id="6820823224820483452">Não foi possível verificar todas as senhas com o Chromium. Tente novamente amanhã.</translation>
+<translation id="6827294685447036764">Se você permitir que o Chromium saiba sua localização, ele a enviará para os sites autorizados. Os sites podem solicitar sua localização para enviar informações locais para você, como notícias ou lojas próximas.</translation>
 <translation id="7018284295775193585">Não é possível atualizar o Chromium</translation>
 <translation id="7099326575020694068">O Chromium não pode usar a câmera no modo Visualização dividida</translation>
 <translation id="7118091470949186573">Agora você pode usar o Chromium sempre que toca em links em mensagens, documentos e outros apps.</translation>

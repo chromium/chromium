@@ -277,6 +277,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> keyinroq kira oladi.</translation>
 <translation id="3321628682574733415">Ota-ona kodi xato kiritildi</translation>
 <translation id="332587331255250389">Batareyani almashtiring</translation>
+<translation id="3333741161915951567">Modem qayta ishga tushmoqda. 30 soniyadan keyin qayta urining.</translation>
 <translation id="3341303451326249809">Skrinshot olindi</translation>
 <translation id="334252345105450327">Skrinshot olish</translation>
 <translation id="3351879221545518001">Hozir ekraningiz translatsiya qilinmoqda.</translation>
@@ -396,6 +397,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Yuqori kontrastli rejim tezkor havolasini bosdingiz. Ishga tushirilsinmi?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4333628967105022692">Bir nechta foydalanuvchi hisobiga kirganida Lacros ishlamaydi.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">Assistent yuklanmoqda...</translation>
 <translation id="4356930093361201197">yuqori kontrastli rejim</translation>
@@ -776,7 +778,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7607002721634913082">Vaqtincha to‘xtatildi</translation>
 <translation id="7618774594543487847">Neytral</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Yaqin-atrofga yuborish sozlamalarini ochish.</translation>
+<translation id="7633755430369750696">Nearby Share sozlamalarini ochish.</translation>
 <translation id="7641938616688887143">Yozib olish</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> sozlamalarini ochish</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (egasi)</translation>
@@ -968,9 +970,10 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> ekrani olib tashlandi</translation>
 <translation id="9098969848082897657">Soatni sukut qilish</translation>
 <translation id="9099154003160514616">Lacros yangilanishi mavjud</translation>
+<translation id="9105450214093926548">Lacros brauzeri ishlayotganda ikkinchi foydalanuvchining kirishi imkonsiz. Lacros brauzerida ikkinchi profildan foydalaning yoki Lacros brauzerini yopib, qaytadan urining.</translation>
 <translation id="9133335900048457298">Himoyalangan kontentni yozib olish imkonsiz</translation>
 <translation id="9151726767154816831">Tizimni yangilash uchun uni qaytadan ishga tushirib, Powerwash amalini bajaring</translation>
-<translation id="9166331175924255663">Yaqin-atrofga yuborish qurilmalariga ruxsatni ochish tugmasi.</translation>
+<translation id="9166331175924255663">Nearby Share uchun keng ruxsat berish.</translation>
 <translation id="9168436347345867845">Keyinroq</translation>
 <translation id="9179259655489829027">Bu funksiya kirish bajarilgan istalgan hisobga tez va parolsiz ruxsat beradi. Faqatgina ishonchli hisoblarga qo‘llang.</translation>
 <translation id="9183456764293710005">Butun ekran rejimidagi lupa</translation>

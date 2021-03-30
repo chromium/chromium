@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Không tháo thiết bị của bạn khi chưa đến lúc!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Tháo thiết bị của bạn khi đang được sử dụng có thể gây mất dữ liệu. Vui lòng đợi cho đến khi thao tác kết thúc, sau đó đẩy thiết bị ra bằng ứng dụng Tệp.</translation>
+<translation id="5159560892333415631">Dọn sạch thùng rác</translation>
 <translation id="5163869187418756376">Chia sẻ không thành công. Hãy kiểm tra kết nối và thử lại sau.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5170477580121653719">Dung lượng Google Drive còn lại: <ph name="SPACE_AVAILABLE" />.</translation>
@@ -419,6 +420,7 @@
 <translation id="5275973617553375938">Tệp được khôi phục từ Google Drive</translation>
 <translation id="5288441970121584418">Bánh mì kẹp</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">Bạn có chắc chắn muốn dọn sạch thùng rác không?</translation>
 <translation id="5317780077021120954">Lưu</translation>
 <translation id="5318819489018851358">Chia sẻ với Linux</translation>
 <translation id="5323213332664049067">Tiếng Mỹ Latinh</translation>
@@ -783,6 +785,7 @@
 <translation id="9154418932169119429">Hình ảnh này không có khi ngoại tuyến.</translation>
 <translation id="9172592259078059678">Tiếng Gujarati (chuyển tự)</translation>
 <translation id="9173120999827300720">Tiếng Anh (Mỹ) bằng bàn phím quốc tế</translation>
+<translation id="9174050671906956834">Các mục trong thùng rác sẽ bị xóa vĩnh viễn sau 30 ngày.</translation>
 <translation id="9189836632794948435">Tiếng Kazakh</translation>
 <translation id="9213073329713032541">Đã bắt đầu thành công quá trình cài đặt.</translation>
 <translation id="9219103736887031265">Hình ảnh</translation>

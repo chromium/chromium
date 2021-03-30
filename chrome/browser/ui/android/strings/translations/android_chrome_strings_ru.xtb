@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">Ошибка аутентификации</translation>
 <translation id="2860954141821109167">Убедитесь, что на устройстве есть приложение "Телефон".</translation>
 <translation id="2870560284913253234">Сайт</translation>
-<translation id="2876369937070532032">При угрозе безопасности отправлять в Google URL некоторых страниц, которые вы открываете</translation>
 <translation id="2888126860611144412">О браузере Chrome</translation>
 <translation id="2891154217021530873">Остановить загрузку страницы</translation>
 <translation id="2892647708214602204">Когда файл будет готов, на экране появится уведомление.</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">Чтобы узнать, сколько трафика вы сэкономили, нажмите кнопку "Ещё"</translation>
 <translation id="3166827708714933426">Работа с вкладками и окнами</translation>
 <translation id="3169472444629675720">Рекомендации</translation>
-<translation id="3181954750937456830">Безопасный просмотр (защищает вас и ваше устройство от опасных сайтов)</translation>
 <translation id="3205824638308738187">Почти готово!</translation>
 <translation id="3207960819495026254">Добавлено в закладки.</translation>
 <translation id="3208584281581115441">Выполнить проверку</translation>
@@ -505,6 +503,7 @@
 <translation id="4561979708150884304">Нет подключения</translation>
 <translation id="4565377596337484307">Скрыть пароль</translation>
 <translation id="4572422548854449519">Войдите в управляемый аккаунт</translation>
+<translation id="4576892426230499203">Выберите другой способ подтверждения.</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# минуту назад}one{# минуту назад}few{# минуты назад}many{# минут назад}other{# минуты назад}}</translation>
 <translation id="4587589328781138893">Сайты</translation>
 <translation id="4594952190837476234">Офлайн-версия страницы сохранена <ph name="CREATION_TIME" />. Она может отличаться от онлайн-версии.</translation>
@@ -584,7 +583,6 @@
 <translation id="5011311129201317034">Сайт <ph name="SITE" /> запрашивает подключение</translation>
 <translation id="5016205925109358554">С засечками</translation>
 <translation id="5039804452771397117">Разрешить</translation>
-<translation id="5040262127954254034">Конфиденциальность</translation>
 <translation id="5087580092889165836">Добавить карту</translation>
 <translation id="5091249083535528968">Расширенные данные</translation>
 <translation id="509429900233858213">Произошла ошибка.</translation>
@@ -637,6 +635,7 @@
 <translation id="5441522332038954058">Перейти к адресной строке</translation>
 <translation id="544776284582297024">Нажмите эту кнопку, чтобы открыть новую вкладку или переключиться на другую.</translation>
 <translation id="545042621069398927">Ускорение скачивания…</translation>
+<translation id="5454166040603940656">с помощью <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Скачать страницу</translation>
 <translation id="548278423535722844">Показать на карте</translation>
 <translation id="5483197086164197190">Navigate Chrome</translation>
@@ -777,6 +776,7 @@
 <translation id="6316139424528454185">Устаревшая версия Android</translation>
 <translation id="6324034347079777476">Синхронизация системы Android отключена</translation>
 <translation id="6324977638108296054">Невозможно создать ссылку на выделенный текст.</translation>
+<translation id="6324997754869598316">(Ошибка <ph name="ERROR_CODE" />.)</translation>
 <translation id="6333140779060797560">Отправить с помощью <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Шифрование</translation>
 <translation id="6341580099087024258">Спрашивать, куда сохранять файлы</translation>
@@ -792,7 +792,8 @@
 <translation id="6397616442223433927">Подключение восстановлено</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" />: <ph name="VIOLATED_URL" />.</translation>
 <translation id="6404511346730675251">Изменить закладку</translation>
-<translation id="6406506848690869874">Синхронизация...</translation>
+<translation id="6406506848690869874">Синхронизация</translation>
+<translation id="6407224748847589805">Не удается подключиться к компьютеру. Выберите другой способ подтверждения.</translation>
 <translation id="6410404864818553978">Основные данные</translation>
 <translation id="6410883413783534063">Используйте вкладки для одновременного посещения нескольких страниц.</translation>
 <translation id="6412673304250309937">Сверяет URL со списком небезопасных сайтов в Chrome. Кроме того, если вы скачаете вредоносный файл или сайт попытается похитить ваш пароль, Chrome может отправить URL с образцами контента на проверку с помощью Безопасного просмотра.</translation>
@@ -861,7 +862,6 @@
 <translation id="6813446258015311409">Окно "Войти в Chrome" открыто.</translation>
 <translation id="6820686453637990663">Код CVC</translation>
 <translation id="6824899148643461612">Выбрана вкладка "<ph name="TAB_TITLE" />"</translation>
-<translation id="6845325883481699275">Помочь Chrome стать ещё безопаснее</translation>
 <translation id="6846298663435243399">Загрузка…</translation>
 <translation id="6850409657436465440">Выполняется скачивание</translation>
 <translation id="6850830437481525139">Закрыто вкладок: <ph name="TAB_COUNT" />.</translation>
@@ -989,7 +989,6 @@
 <translation id="7704317875155739195">Заполнять поисковые запросы и URL автоматически</translation>
 <translation id="7707922173985738739">Использовать мобильный Интернет</translation>
 <translation id="7725024127233776428">Здесь будут страницы, которые вы добавляете в закладки.</translation>
-<translation id="7746457520633464754">Для обнаружения опасных приложений и сайтов Chrome отправляет в Google URL некоторых страниц, которые вы открываете, контент на них, а также определенные сведения о системе</translation>
 <translation id="7757787379047923882">Текст с устройства <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Выбрать дату и время</translation>
 <translation id="7762668264895820836">SD-карта <ph name="SD_CARD_NUMBER" /></translation>

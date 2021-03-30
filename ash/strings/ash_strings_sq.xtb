@@ -396,6 +396,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Ke shtypur shkurtoren e tastierës për kontrastin e lartë. Dëshiron ta aktivizosh?</translation>
 <translation id="4331809312908958774">Sistemi operativ Chrome</translation>
+<translation id="4333628967105022692">Lacros nuk mbështetet ndërsa janë të identifikuar disa përdorues.</translation>
 <translation id="4338109981321384717">Xhami zmadhues</translation>
 <translation id="4351433414020964307">"Asistenti" po ngarkohet...</translation>
 <translation id="4356930093361201197">modaliteti i kontrastit të lartë</translation>
@@ -968,6 +969,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="9091626656156419976">Ekrani <ph name="DISPLAY_NAME" /> u hoq</translation>
 <translation id="9098969848082897657">Vendose telefonin në heshtje</translation>
 <translation id="9099154003160514616">Ofrohet përditësim i Lacros</translation>
+<translation id="9105450214093926548">Identifikimi si përdorues i dytë nuk mbështetet kur shfletuesi Lacros është në ekzekutim. Përdor një profil të dytë të shfletuesit në Lacros më mirë ose mbylle Lacros dhe provo përsëri.</translation>
 <translation id="9133335900048457298">Përmbajtja e mbrojtur nuk mund të regjistrohet</translation>
 <translation id="9151726767154816831">Rifillo dhe bëj Powerwash për të përditësuar</translation>
 <translation id="9166331175924255663">Aktivizo/çaktivizo dukshmërinë e lartë për "Ndarjen në afërsi".</translation>

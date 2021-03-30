@@ -20,7 +20,6 @@
 <translation id="2178608107313874732">Chromium kann gerade nicht auf die Kamera zugreifen</translation>
 <translation id="2195025571279539885">Soll Chromium beim nächsten Mal eine Übersetzung von Seiten dieser Website anbieten, die auf <ph name="LANGUAGE_NAME" /> sind?</translation>
 <translation id="2590893390871230428">Chromium-Daten synchronisieren</translation>
-<translation id="259614951763923692">Wenn Sie zulassen, dass Chromium Ihren Standort kennt, sendet Chromium diesen an Ihre Standardsuchmaschine und an Websites, für die Sie die Berechtigung dazu erteilen. Möglicherweise fragen Websites nach Ihrem Standort, wenn sie lokale Informationen für Sie haben wie Geschäfte in der Nähe oder Nachrichten.</translation>
 <translation id="2650312721222849884">Aktivieren Sie die Synchronisierung, um Ihre Tabs überall dort aufzurufen, wo Sie Chromium verwenden</translation>
 <translation id="2730884209570016437">Chromium kann nicht auf die Kamera zugreifen, da diese gerade von einer anderen App verwendet wird</translation>
 <translation id="2915596697727466327">Chromium verwendet Face ID, um den autorisierten Zugriff auf Ihre Passwörter zu gewährleisten.</translation>
@@ -58,6 +57,7 @@
 <translation id="6268381023930128611">Von Chromium abmelden?</translation>
 <translation id="6424492062988593837">Chromium ist jetzt noch besser! Es ist eine neue Version verfügbar.</translation>
 <translation id="6820823224820483452">Chromium konnte nicht alle Passwörter prüfen. Versuchen Sie es morgen noch einmal.</translation>
+<translation id="6827294685447036764">Wenn Sie zulassen, dass Chromium Ihren Standort ermittelt, sendet der Browser diesen an Websites, für die Sie die Berechtigung dazu erteilen. Möglicherweise fragen Websites nach Ihrem Standort, wenn sie lokale Informationen wie Geschäfte in der Nähe oder Nachrichten für Sie haben.</translation>
 <translation id="7018284295775193585">Chromium kann nicht aktualisiert werden</translation>
 <translation id="7099326575020694068">Chromium kann die Kamera nicht im Modus "Geteilte Ansicht" nutzen</translation>
 <translation id="7118091470949186573">Sie können jetzt Chromium jederzeit nutzen, wenn Sie in Nachrichten, Dokumenten und anderen Apps auf Links tippen.</translation>

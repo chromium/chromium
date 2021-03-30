@@ -22,6 +22,8 @@
 <translation id="1120938014254001895">ଦୁଇଟି ଆଙ୍ଗୁଠିକୁ ଉପରକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="1126928665165112660">ଇଟାଲିକ୍ ନୁହେଁ</translation>
 <translation id="113582498867142724"><ph name="NUM" />ଟି ଆଇଟମ୍‌ ସହିତ <ph name="TAG" /> ସଂଗ୍ରହ</translation>
+<translation id="1146441463334103638">ସ୍କ୍ରିନ୍ ଚାଲୁ କିମ୍ବା ବନ୍ଦ କରିବାକୁ ଟୋଗଲ୍ କରନ୍ତୁ</translation>
+<translation id="1156488781945104845">ବର୍ତ୍ତମାନର ସମୟ</translation>
 <translation id="1161762950103988776">ଜମ୍ପ୍</translation>
 <translation id="1164857107703583584">ଏକ ୱେବ୍ ପୃଷ୍ଠାରେ ଅଧିକ ଭଲ ଭାବେ ନାଭିଗେଟ୍ କରିବା ପାଇଁ ଜମ୍ପ୍ କମାଣ୍ଡଗୁଡ଼ିକୁ ବ୍ୟବହାର କରାଯାଇପାରିବ।</translation>
 <translation id="1175914831232945926">ଅଙ୍କଗୁଡ଼ିକ</translation>
@@ -71,6 +73,7 @@
 <translation id="1405567553485452995">ହାଲୁକା ସବୁଜ</translation>
 <translation id="1411043317877497323">ଅଭ୍ୟାସ କ୍ଷେତ୍ର</translation>
 <translation id="141454040365657399">ପୃଷ୍ଠାର ହେଡର୍</translation>
+<translation id="1417092723421264764">ବର୍ତ୍ତମାନର ପୃଷ୍ଠା</translation>
 <translation id="1417889266572670458">ଗାଢ଼ ନୀଳ</translation>
 <translation id="1431911867058218151">ପ୍ଲମ୍</translation>
 <translation id="1439316808600711881">ଅଞ୍ଚଳ</translation>
@@ -199,6 +202,7 @@
 <translation id="242998846562331953">ଉପଶୀର୍ଷକ</translation>
 <translation id="2435422727584637732">ଡୋଜର୍ ନୀଳ</translation>
 <translation id="2450814015951372393">ଚେକ୍ ବକ୍ସ</translation>
+<translation id="2461822463642141190">ବର୍ତ୍ତମାନର</translation>
 <translation id="2462626033734746142">ରେଡିଓ ବଟନ୍ ଗୋଷ୍ଠୀ</translation>
 <translation id="2471138580042810658">ଶୀର୍ଷକ 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{ଆଷ୍ଟରିସ୍କ}other{#ଟି ଆଷ୍ଟରିସ୍କ}}</translation>
@@ -244,7 +248,6 @@
 <translation id="2766299274563946262">ବାମ ପାର୍ଶ୍ୱରେ କୌଣସି ସେଲ୍ ନାହିଁ</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="280499067616661124">ପୃଷ୍ଠାରେ ChromeVox ଖୋଜନ୍ତୁ</translation>
-<translation id="2808001342598757276">ସ୍କ୍ରିନ୍‌କୁ ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
 <translation id="2811019999044652585">ସ୍କ୍ରିନ୍‌ର ଅନ୍ୟଭାଗଗୁଡ଼ିକ ଯେପରିକି, ଟୁଲ୍‌ବାର୍ କିମ୍ବା ସିଷ୍ଟମ୍ ଟ୍ରେ ଆଦିକୁ ଯିବା ପାଇଁ, Control+Forward କୀ ଦବାନ୍ତୁ। ଏକ Chromebookରେ, ଫରୱାର୍ଡ କୀ, 2 ନମ୍ବର କୀ'ର ଠିକ୍ ଉପରେ ଅଛି।</translation>
 <translation id="2811204574343810641">ଧାଡ଼ି</translation>
 <translation id="2816868829355607410">ଅଭ୍ୟାସ କ୍ଷେତ୍ର: ଜମ୍ପ୍ କମାଣ୍ଡଗୁଡ଼ିକ</translation>
@@ -299,6 +302,7 @@
 <translation id="3109724472072898302">ସଙ୍କୁଚିତ କରାଗଲା</translation>
 <translation id="311015743332597320">ଚାରି ଆଙ୍ଗୁଠିରେ ଡାହାଣକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="3112457281078985179">ChromeVoxକୁ ଚାଲୁ କିମ୍ବା ବନ୍ଦ କରିବାକୁ Control+Alt+Zକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
+<translation id="3115800313647508384">ସ୍କ୍ରିନ୍ ବନ୍ଦ କରିବେ?</translation>
 <translation id="3131002934070407451">ନମ୍ବରକୁ ଏପରି ଭାବେ ପଢ଼ନ୍ତୁ:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">ଅଲିଭ୍</translation>
@@ -642,6 +646,7 @@
 <translation id="5655682562155942719">ନିର୍ଦ୍ଦେଶଗୁଡ଼ିକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="56637627897541303">ଟେକ୍ସଟ୍ କ୍ଷେତ୍ର</translation>
 <translation id="5669637233317991674">ଏହି ଲେସନକୁ ନାଭିଗେଟ୍ କରିବା ପାଇଁ Search + ଡାହାଣ ତୀର କୀ କିମ୍ବା Search + ବାମ ତୀର କୀ ଦବାନ୍ତୁ</translation>
+<translation id="5677240841070992068">ବର୍ତ୍ତମାନର ଲୋକେସନ୍</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">DEF</translation>
 <translation id="5682113568322255809">ଲ୍ୟାଣ୍ଡମାର୍କ</translation>
@@ -677,6 +682,7 @@
 <translation id="5901630391730855834">ହଳଦିଆ</translation>
 <translation id="5906974869830879618">ଦୟାକରି ଏକ ପିନ୍ ଲେଖନ୍ତୁ</translation>
 <translation id="5921587111466148855">ଅଧ୍ୟାୟ</translation>
+<translation id="5923780477617566089">ବର୍ତ୍ତମାନର ତାରିଖ</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{ସମାନ}other{#ଟି ସମାନ ଚିହ୍ନ}}</translation>
 <translation id="5948123859135882163">ନିର୍ମାଣାତ୍ମକ ଓ ଶବ୍ଦାର୍ଥ ମଧ୍ୟରେ ଥିବା ଗଣିତର ଭାବର ବ୍ୟାଖ୍ୟା ଟୋଗଲ୍ କରନ୍ତୁ</translation>
 <translation id="5955304353782037793">ଆପ୍</translation>
@@ -696,9 +702,9 @@
 <translation id="6034000775414344507">ହାଲ୍‌କା ଧୂସର</translation>
 <translation id="6036135911048686884">ଏକ୍ସପ୍ଲୋର୍ କରିବାକୁ ସ୍ପର୍ଶ କରନ୍ତୁ</translation>
 <translation id="6037602951055904232">ପ୍ୟାନ୍ ଫର୍‌ୱାର୍ଡ କରନ୍ତୁ</translation>
-<translation id="6044160928851315051">ସ୍କ୍ରିନ୍‌କୁ କଳା କରନ୍ତୁ</translation>
 <translation id="6082768461603900813">ମୌଳିକ ନାଭିଗେସନ୍</translation>
 <translation id="609281021724813947">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ସ୍ଲାଇଡର୍ ନାହିଁ</translation>
+<translation id="6096942799340613495">ଏହା ସ୍କ୍ରିନକୁ ବନ୍ଦ କରିଦିଏ। 'ସନ୍ଧାନ + ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ' ବଟନ୍ ଦବାଇ ଆପଣ ସର୍ବଦା ସ୍କ୍ରିନକୁ ପୁଣି ଚାଲୁ କରିପାରିବେ।</translation>
 <translation id="6100239002225743044">ଗୋଟିଏ ଲାଇନ୍ ଉପରକୁ ନିଅନ୍ତୁ</translation>
 <translation id="6118126368611144850">Chrome ପାଇଁ Android ଆପ୍ସ। ଯଦି ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ଆପଣଙ୍କର Play Store ଅଛି, ତେବେ Android ଆପ୍ସ ମାଧ୍ୟମରେ ChromeVoxରେ ଏକ ନଜର ପକାନ୍ତୁ। Play Storeରୁ Google Chrome Canary ଡାଉନ୍‌ଲୋଡ୍‌ କରି ପରୀକ୍ଷଣ ଭାବରେ ଦିଆଯାଇଥିବା ସୁବିଧା ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -766,6 +772,7 @@
 <translation id="6696967141280706829">ମୁଖବନ୍ଧ</translation>
 <translation id="6697092096875747123">ପୂର୍ବବର୍ତ୍ତୀ କମ୍ୱୋ ବକ୍ସ</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ବିସ୍ମୟସୂଚକ ଚିହ୍ନ}other{#ଟି ବିସ୍ମୟସୂଚକ ଚିହ୍ନ}}</translation>
+<translation id="670717715607710284">ସ୍କ୍ରିନ୍ ବନ୍ଦ ଅଛି</translation>
 <translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>
 <translation id="6714813999819678458">ପୂର୍ବବର୍ତ୍ତୀ ସ୍ତର 2 ଶୀର୍ଷକ</translation>
 <translation id="6730312624811567147">Home କିମ୍ବା End ପାଇଁ Search Left କିମ୍ବା Right, Control Home କିମ୍ବା End ପାଇଁ Search Control Left କିମ୍ବା Right, Page Up କିମ୍ବା Down ପାଇଁ Search Up କିମ୍ବା Down ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -945,6 +952,7 @@
 <translation id="8037651341025652929">ସମାପ୍ତି</translation>
 <translation id="8042761080832772327">ଟେକ୍ସଟ୍‍ ଏଡିଟ୍‍ କରନ୍ତୁ, ଲେଖା ଖୋଜନ୍ତୁ</translation>
 <translation id="8049189770492311300">ଟାଇମର୍</translation>
+<translation id="8057472523431225012">ବର୍ତ୍ତମାନର ଷ୍ଟେପ୍</translation>
 <translation id="8058636807889143711">କୌଣସି ପରବର୍ତ୍ତୀ ଗାଣିତିକ ଅଭିବ୍ୟକ୍ତି ନାହିଁ</translation>
 <translation id="8066678206530322333">ବ୍ୟାନର୍</translation>
 <translation id="8076492880354921740">ଟାବ୍</translation>
@@ -962,6 +970,7 @@
 <translation id="816818801578874684">ଏହା ପ୍ରଥମ ହେଡିଂ ଅଟେ। ପରବର୍ତ୍ତୀ ହେଡିଂକୁ ଯିବା ପାଇଁ Search + H କୀ ଦବାନ୍ତୁ।</translation>
 <translation id="8173092779156526980">ଚାରି ଆଙ୍ଗୁଠିରେ ବାମକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{ଟି ଅଣ୍ଡରସ୍କୋର୍‌}other{#ଟି ଅଣ୍ଡରସ୍କୋର୍‌}}</translation>
+<translation id="817529114347680055">ସ୍କ୍ରିନ୍ ଚାଲୁ ଅଛି</translation>
 <translation id="8179976553408161302">ପ୍ରବେଶ</translation>
 <translation id="8184828902145951186">ଧାଡ଼ି</translation>
 <translation id="8186185314313222077">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ୍ ଟୋଗଲ୍ କରନ୍ତୁ</translation>
@@ -984,7 +993,6 @@
 <translation id="8316881042119029234">ପୁରୁଣା ଲେସ୍</translation>
 <translation id="8324974933005349667">ଟେକ୍ସଟ୍‍ରୁ ସ୍ପିଚ୍ ସେଟିଂସ୍‍କୁ ବ୍ୟକ୍ତିଗତ କରନ୍ତୁ</translation>
 <translation id="8326783648485765113">ଲନ୍ ସବୁଜ</translation>
-<translation id="8328063869313048659">ଡାର୍କ୍ ସ୍କ୍ରିନ୍ ଟୋଗଲ୍ କରନ୍ତୁ</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{ପାଉଣ୍ଡ}other{#ଟି ପାଉଣ୍ଡ ଚିହ୍ନ}}</translation>
 <translation id="8378855320830505539">ଅଞ୍ଚଳ</translation>
 <translation id="8382679411218029383">ସ୍ୱତଃସମ୍ପୂର୍ଣ୍ଣ ଇନ୍‍ଲାଇନ୍ ଓ ତାଲିକା</translation>

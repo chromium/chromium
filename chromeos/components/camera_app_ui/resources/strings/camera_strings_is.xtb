@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Myndavél</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Ekkert var tekið upp</translation>
+<translation id="1838104802459806957">Halla upp</translation>
 <translation id="1851616744363735765">HLÉ</translation>
 <translation id="1862930711583847113">Ekki tókst að flytja <ph name="FILE" /> út</translation>
 <translation id="1899697626337024495">Upplausn mynda</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> er virk</translation>
 <translation id="2144806332417375165">Sérstilltar færibreytur myndskeiðs</translation>
 <translation id="229579744168541441">Flytja út á disk</translation>
+<translation id="2320741269052147773">Hliðra til vinstri</translation>
 <translation id="2501278716633472235">Fara til baka</translation>
 <translation id="2501853267655415902">Upptaka var stöðvuð</translation>
 <translation id="2501953888035679275">Taktu myndir og taktu upp myndskeið með myndavélinni þinni.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Myndir og myndskeið sem tekin eru með myndavélinni verða flutt í niðurhalsmöppuna. Þú getur fengið aðgang að þeim í „Skrár“.
 
         Forrit sem hafa heimild fyrir aðgangi að geymslu hafa aðgang að myndunum þínum og myndskeiðum.</translation>
+<translation id="3067436040345934772">Hliðra til hægri</translation>
 <translation id="3081586908890909590">Skipta yfir í upptöku myndskeiðs</translation>
 <translation id="313467653172006084">30 rammar á sekúndu</translation>
 <translation id="3183731565330012717">Gerð töflu</translation>
@@ -56,6 +59,7 @@
 <translation id="5671277269877808209">Ferningur</translation>
 <translation id="5775960006311140197">Ítarlegar stillingar</translation>
 <translation id="5869546221129391014">Tafla</translation>
+<translation id="5975083100439434680">Minnka aðdrátt</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6073451960410192870">Stöðva upptöku</translation>
 <translation id="6197807149213783179">Vista lýsigögn</translation>
@@ -81,19 +85,21 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="7649070708921625228">Hjálp</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7670511624014457267">60 rammar/sek.</translation>
-<translation id="7974782136796202581">Sýna hliðrunar-, halla- og aðdráttarvalkosti</translation>
 <translation id="7983668134180549431">Texti greindist.</translation>
 <translation id="8067883171444229417">Spila myndskeið</translation>
+<translation id="8120146556401698679">Hliðrun, halli og aðdráttur</translation>
 <translation id="8131740175452115882">Staðfesta</translation>
 <translation id="8145038249676204903">Skipta yfir í myndatöku</translation>
 <translation id="8239780215768881278">Taka skyndimynd í upptöku</translation>
 <translation id="8261506727792406068">Eyða</translation>
+<translation id="8425673304802773841">Halla niður</translation>
 <translation id="8428213095426709021">Stillingar</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Forskoða lýsigögn</translation>
 <translation id="8815966864175525708">Skipta yfir í töku andlitsmynda</translation>
 <translation id="8828441885228359828">Halda upptöku áfram</translation>
 <translation id="8870695351537079478">Ekki tókst að hefja upptöku</translation>
+<translation id="8903921497873541725">Auka aðdrátt</translation>
 <translation id="9045155556724273246">10 sekúndur</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
 </translationbundle>

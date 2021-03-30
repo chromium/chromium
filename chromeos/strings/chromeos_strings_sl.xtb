@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">Geslo poteče čez toliko časa: <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nobeno tiskalno opravilo ne poteka</translation>
 <translation id="4297501883039923494">Ustavljeno – neznana napaka</translation>
+<translation id="4344214025510306853">Priloži APN</translation>
 <translation id="4378373042927530923">Ni se izvedlo</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Moj disk</translation>
@@ -278,6 +279,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7040230719604914234">Operater</translation>
 <translation id="7059230779847288458">Polnjenje; do napolnjenosti še <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">USTAVLJENO</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">Povezovanje</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>
 <translation id="714876143603641390">Povezava z omrežjem LAN</translation>
@@ -363,6 +365,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8970109610781093811">Znova zaženi</translation>
 <translation id="9003704114456258138">Frekvenca</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9065203028668620118">Uredi</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Trenutna poraba</translation>

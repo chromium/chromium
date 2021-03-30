@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Vēl neatvienojiet ierīci!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Atvienojot ierīci lietošanas laikā, var tikt zaudēti dati. Lūdzu, uzgaidiet, līdz tiks pabeigta darbība, un pēc tam atvienojiet ierīci, izmantojot lietotni Faili.</translation>
+<translation id="5159560892333415631">Iztukšot atkritni</translation>
 <translation id="5163869187418756376">Kopīgošana neizdevās. Pārbaudiet savienojumu un vēlāk mēģiniet vēlreiz.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5170477580121653719">Pakalpojumā Google disks atlikušās brīvās vietas apjoms: <ph name="SPACE_AVAILABLE" />.</translation>
@@ -419,6 +420,7 @@
 <translation id="5275973617553375938">No Google diska atkoptie faili</translation>
 <translation id="5288441970121584418">Burgers</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">Vai tiešām vēlaties iztukšot atkritni?</translation>
 <translation id="5317780077021120954">Saglabāt</translation>
 <translation id="5318819489018851358">Kopīgot pakalpojumā Linux</translation>
 <translation id="5323213332664049067">Latīņamerikas</translation>
@@ -783,6 +785,7 @@
 <translation id="9154418932169119429">Šis attēls nav pieejams bezsaistē.</translation>
 <translation id="9172592259078059678">Gudžaratu, transliterācija</translation>
 <translation id="9173120999827300720">Angļu (ASV), ar starptautisko tastatūru</translation>
+<translation id="9174050671906956834">Atkritnē esošie vienumi tiek neatgriezeniski dzēsti pēc 30 dienām.</translation>
 <translation id="9189836632794948435">Kazahu</translation>
 <translation id="9213073329713032541">Instalēšana sekmīgi sākta.</translation>
 <translation id="9219103736887031265">Attēli</translation>

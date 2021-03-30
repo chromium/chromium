@@ -416,11 +416,6 @@
 <translation id="1553532014072799546">個別應用程式時間限制許可清單</translation>
 <translation id="1553956579506604198">禁止系統安裝外部擴充功能</translation>
 <translation id="1555248923316727072">SAML 使用者身分管理設定</translation>
-<translation id="1560205870554624777">控管是否要啟用 Kerberos 功能。Kerberos 是一種驗證通訊協定，可用於驗證網頁應用程式和檔案共用。
-
-          如果啟用這項政策，系統會啟用 Kerberos 功能。你可以透過「設定 Kerberos 帳戶」政策或「使用者」設定頁面中的「Kerberos 帳戶」設定來新增 Kerberos 帳戶。
-
-          如果停用或不設定這項政策，系統會停用 Kerberos 帳戶設定。使用者無法新增 Kerberos 帳戶，也無法使用 Kerberos 驗證。系統會刪除所有現有的 Kerberos 帳戶和所有已儲存的密碼。</translation>
 <translation id="1561424797596341174">針對遠端存取主機的偵錯版本覆寫政策</translation>
 <translation id="1561967320164410511">用於個人認證的 U2F 和擴充功能</translation>
 <translation id="1567718448549957373">如果將這項政策設為啟用或不設定，將可透過不安全的 HTTP 連線接收 <ph name="BASIC_AUTH" /> 驗證要求。
@@ -1134,6 +1129,7 @@
       如果不設定這項政策，系統在預設狀態下會啟用「點選通話」功能。</translation>
 <translation id="2482676533225429905">內建訊息傳遞</translation>
 <translation id="2483146640187052324">無論使用任何網路連線，皆預測網路動作</translation>
+<translation id="2483335232019796218">設定要停用的攝影機、瀏覽器設定、作業系統設定、掃描功能、線上應用程式商店、畫布以及 Google 新聞功能</translation>
 <translation id="2496180316473517155">瀏覽記錄</translation>
 <translation id="2498238926436517902">一律自動隱藏檔案櫃</translation>
 <translation id="250022556568924228">如果設定這項政策，<ph name="PRODUCT_OS_NAME" />會下載《服務條款》，並在裝置本機帳戶的工作階段啟動時向使用者顯示。使用者必須接受《服務條款》才能登入工作階段。
@@ -1516,6 +1512,7 @@
 
       如需將應用程式固定到 <ph name="PRODUCT_OS_NAME" />檔案櫃，請參閱 <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> 政策。</translation>
 <translation id="2976429807269247880">舊版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> Cookie 行為設定</translation>
+<translation id="2985097017239074272">Google 新聞 (自 91 版開始支援)</translation>
 <translation id="2985927503455169394">使用 Google 助理入門使用體驗的預設模式</translation>
 <translation id="2987155890997901449">啟用 ARC</translation>
 <translation id="2987227569419001736">控制 Web Bluetooth API 使用權限</translation>
@@ -2535,6 +2532,7 @@
 <translation id="4450222911834151460">如果設定了這項政策，系統會將所有指定的資料類型從同步處理作業 (包含 Google Sync 和漫遊設定檔的同步處理作業) 中排除。這有助於縮減漫遊設定檔的大小，或限制上傳到 Google Sync 伺服器的資料類型。
 
       這項政策目前涵蓋的資料類型為：「bookmarks」、「readingList」、「preferences」、「passwords」、「autofill」、「themes」、「typedUrls」、「extensions」、「apps」、「tabs」、「wifiConfigurations」。這些名稱有大小寫之分。</translation>
+<translation id="4452653762766030431">控管是否允許在 Chrome 作業系統使用網路檔案共用區</translation>
 <translation id="445270821089253489">控管 Chrome 回報的使用者與裝置資訊類型。</translation>
 <translation id="4453913621209182880">只允許使用背景圖形列印</translation>
 <translation id="4454820008017317557">顯示 <ph name="PRODUCT_NAME" /> 工具列圖示</translation>
@@ -2766,6 +2764,13 @@
       如果未設定這項政策或設為無效的值，系統功能的停用模式將設為「已封鎖」。</translation>
 <translation id="4835470005923546373">預設停用背景圖形列印模式</translation>
 <translation id="4835622243021053389">啟用 NTLMv2 驗證。</translation>
+<translation id="4846678215172543001">這項政策會禁止系統在列出的網站上顯示相似網址的警告訊息。一般而言，<ph name="PRODUCT_NAME" /> 認為網站可能試圖假冒成使用者熟悉的其他網站時，就會在網站上顯示這類警告訊息。
+
+       如果啟用這項政策並設為一或多個網域，當使用者造訪該網域的網頁時，系統不會顯示任何相似網址警告訊息的網頁。
+
+       如果不設定這項政策或設為空白清單，系統可能會在使用者造訪的任何網站上顯示警告訊息。
+
+       系統可允許與主機完全相符或網域相符的主機名稱。舉例來說，如果這份清單包含「foo.example.com」或「example.com」，「https://foo.example.com/bar」這類網址可能不會顯示警告訊息。</translation>
 <translation id="485419696366295465">控管 <ph name="BOREALIS_NAME" /> 子系統的相關政策。</translation>
 <translation id="4855636880814771207">如果將這項政策設為啟用或不設定，使用者將可開啟或關閉藍牙。
 
@@ -2963,7 +2968,6 @@
       如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
 
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
-<translation id="5090209345759901501">將 Flash 內容設定套用至所有內容</translation>
 <translation id="5090791951240382356">允許合併不同來源的字典政策</translation>
 <translation id="5091315650312105069">允許透過 HTTP 使用<ph name="BASIC_AUTH" />驗證</translation>
 <translation id="5103112931744164177">你可以透過這項政策指定要使用哪一個軟體堆疊與 DNS 伺服器進行通訊，選項包括作業系統 DNS 用戶端，以及 <ph name="PRODUCT_NAME" /> 的內建 DNS 用戶端。這項政策不會影響所用的 DNS 伺服器；比方說，如果作業系統設定使用企業的 DNS 伺服器，內建 DNS 用戶端同樣會使用該伺服器。這項政策也不會限制是否使用 DNS-over-HTTPS；<ph name="PRODUCT_NAME" /> 一律會使用內建的解析器來處理 DNS-over-HTTPS 要求。想瞭解如何控管 DNS-over-HTTPS，請參閱 <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> 政策。
@@ -3925,6 +3929,11 @@
 <translation id="647698599569353771">允許啟用鄰近分享功能。</translation>
 <translation id="6478258366184919502">登入及螢幕來源</translation>
 <translation id="6478261301433199402">你可以透過這項政策，指定使用者的 <ph name="PLUGIN_VM_NAME" /> 映像檔。請使用 JSON 格式字串指定這項政策，其中 <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> 可指定要下載映像檔的位置，而 <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> 可做為 SHA-256 雜湊，用於驗證下載內容的完整性。</translation>
+<translation id="6489084406497912050">控管使用者是否可以新增 Kerberos 帳戶。
+
+          如果將這項政策設為啟用或不設定，使用者可能可以透過 Kerberos 設定頁面中的「Kerberos 帳戶」設定來新增 Kerberos 帳戶。使用者可以完全控管自己新增的帳戶，也可以修改或移除帳戶。
+
+          如果停用這項政策，使用者就無法新增 Kerberos 帳戶，只能透過「設定 Kerberos 帳戶」政策新增帳戶。這個方法可以有效地鎖定帳戶。</translation>
 <translation id="6491139795995924304">允許在裝置上使用藍牙功能</translation>
 <translation id="6491872498385040936">這項政策已遭到淘汰。建議你使用 <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> 來覆寫這項政策，即可進一步微調各項設定。
 
@@ -4091,7 +4100,7 @@
 
       如果將這項政策設為停用或不設定，則列印指令會觸發列印預覽畫面。</translation>
 <translation id="6658245400435704251">指定裝置可以任意延遲下載某項更新的秒數上限 (以該項更新初次被推送到伺服器的時間為準)。你可以將這項裝置等待時間的其中一部分設定為等待的時間長度，剩下的部分則設定為檢查更新的次數。不論採取哪種方式，分散時間皆不得超過固定時間長度，這樣就可以避免裝置由於持續等待下載某項更新而停止回應。</translation>
-<translation id="6662162847932043943">你可以透過這項政策設定網站清單，指定哪些網站會自動取得權限，能夠存取所有現有序列埠。
+<translation id="6662162847932043943">你可以透過這項政策設定網站清單，指定哪些網站會自動取得權限，能夠存取所有可用的序列埠。
 
       網址必須是有效網址，否則系統會忽略這項政策。系統只會檢視網址的來源 (配置、主機和埠)。
 
@@ -4259,6 +4268,7 @@
       如果設定這項政策，當政策清單值包含某個應用程式的擴充功能 ID 時，使用者即可在螢幕鎖定畫面上開啟該應用程式。因此，如果將這項政策設為空白清單，系統會停用螢幕鎖定畫面上的筆記功能。即使這項政策中包含了應用程式 ID，使用者也不一定可以在螢幕鎖定畫面上，以筆記應用程式的形式開啟應用程式。比方說，在 <ph name="PRODUCT_NAME" /> 61 版中，可用的應用程式組合會另外受到平台的限制。
 
       如果不設定這項政策，使用者可在螢幕鎖定畫面上啟用的應用程式組合則不會受到政策限制。</translation>
+<translation id="6882028194958060206">將 Flash 內容設定套用至所有內容 (已淘汰)</translation>
 <translation id="6889123056995503704">使用者決定版本降級行為</translation>
 <translation id="6894178810167845842">新分頁網址</translation>
 <translation id="6897730193187922386">禁止顯示 <ph name="CLOUD_PRINT_NAME" />淘汰訊息</translation>
@@ -4936,7 +4946,6 @@
       如果不設定，系統會套用 <ph name="BLOCK_POPUPS_POLICY_NAME" />，但使用者可以變更這項設定。</translation>
 <translation id="7731026922044991970">將所有網站上的 Cookie 還原成舊版的 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行為</translation>
 <translation id="7732907212083471072">已移除的政策</translation>
-<translation id="7737077721564799856">設定要停用的攝影機、瀏覽器設定、作業系統設定、掃描功能、線上應用程式商店和畫布功能</translation>
 <translation id="77379430721695807">你可以透過這項政策指定網址清單，系統會將這份清單中的模式與要求網址的安全性來源進行比對。如果模式相符，系統會直接授予影片擷取裝置存取權限，而不會顯示提示
 
       如果想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
@@ -4982,6 +4991,13 @@
       如果不設定這項政策，使用者可選擇在解鎖休眠的裝置時，是否要收到輸入密碼的提示。</translation>
 <translation id="7784062550705119230">如果在 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_ALLOWLIST" />，系統會根據 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 的設定指定使用者可操作的印表機。只有 ID 與這項政策值相符的印表機，才會提供給使用者。印表機 ID 必須與 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。</translation>
 <translation id="7788511847830146438">根據設定檔</translation>
+<translation id="7798441698807517880">由於 <ph name="FLASH_PLUGIN_NAME" /> 已淘汰，因此這項政策自 <ph name="PRODUCT_NAME" /> 89 版起已移除。
+
+      如果將這項政策設為 True，系統會在允許 <ph name="FLASH_PLUGIN_NAME" /> 的網站上執行所有內嵌的 <ph name="FLASH_PLUGIN_NAME" /> 內容，包括來自其他來源的內容或檔案較小的內容。
+
+      如果將這項政策設為 False 或不設定，系統可能會封鎖來自其他來源或檔案較小的 <ph name="FLASH_PLUGIN_NAME" /> 內容。
+
+      注意：如要控管哪些網站可執行 <ph name="FLASH_PLUGIN_NAME" />，請參閱這些政策：<ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />、<ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> 和 <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />。</translation>
 <translation id="780629758750905699">允許將 Family Link 帳戶加入裝置</translation>
 <translation id="7807139251387225825">要從同步處理作業中排除的類型清單</translation>
 <translation id="781268256210530471">外掛程式設定</translation>
@@ -5010,6 +5026,11 @@
 <translation id="7850846808758624237">如果將這項政策設為啟用，瀏覽器會在首次執行時，從先前的預設瀏覽器中匯入首頁。如果將這項政策設為停用或不設定，瀏覽器首次執行時不會匯入首頁。
 
       使用者可以觸發匯入對話方塊，瀏覽器將根據這項政策的值，勾選或取消勾選首頁的核取方塊。</translation>
+<translation id="7851772934080809511">控管是否要啟用 Kerberos 功能。Kerberos 是一種驗證通訊協定，可用於驗證網頁應用程式和檔案共用區。
+
+          如果啟用這項政策，系統會啟用 Kerberos 功能。你可以透過「設定 Kerberos 帳戶」政策或 Kerberos 設定頁面中的「Kerberos 帳戶」設定來新增 Kerberos 帳戶。
+
+          如果將這項政策設為停用或不設定，系統會停用「Kerberos 帳戶」設定。使用者無法新增 Kerberos 帳戶，也無法使用 Kerberos 驗證。系統會刪除所有現有的 Kerberos 帳戶和所有已儲存的密碼。</translation>
 <translation id="7863947545897944083">在登入畫面上啟用高對比模式無障礙功能。
 
           如果將這項政策設為 True，系統將一律在登入畫面上啟用高對比模式。
@@ -5038,11 +5059,6 @@
 
       如果沒有優先執行的政策，請參閱 <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />。這 3 個政策中的網址模式不可衝突。</translation>
 <translation id="7887379840451099426">只有在裝置使用電池供電時才適用的電源管理設定</translation>
-<translation id="7889788745439330797">控管使用者是否可以新增 Kerberos 帳戶。
-
-          如果啟用或不設定這項政策，使用者可以透過「使用者」設定頁面中的「Kerberos 帳戶」設定來新增 Kerberos 帳戶。使用者可以完全控管自己新增的帳戶，也可以修改或移除帳戶。
-
-          如果停用這項政策，使用者就無法新增 Kerberos 帳戶，只能透過「設定 Kerberos 帳戶」政策新增帳戶。這個方法可以有效地鎖定帳戶。</translation>
 <translation id="7891884447851425349">如果已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策，你可以設定 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> 政策來指定在進行預設搜尋時所使用的搜尋引擎網址。網址應包含字串 <ph name="SEARCH_TERM_MARKER" />，系統會在查詢中將其替換為使用者的搜尋字詞。
 
       你可以將 Google 的搜尋網址指定為：<ph name="GOOGLE_SEARCH_URL" />。</translation>
@@ -5296,11 +5312,6 @@
 <translation id="8238421250255592181">布林值標記，表示螢幕小鍵盤是否能提供自動完成功能。</translation>
 <translation id="8244171102276095471">在傳輸層安全標準 (TLS) 中啟用 RC4 加密套件</translation>
 <translation id="8244525275280476362">政策失效後的最大擷取延遲</translation>
-<translation id="8251411417369363637">如果將這項政策設為 True，系統會在允許 <ph name="FLASH_PLUGIN_NAME" /> 的網站上執行所有內嵌的 <ph name="FLASH_PLUGIN_NAME" /> 內容，包括來自其他來源的內容或檔案較小的內容。
-
-      如果將這項政策設為 False 或不設定，系統可能會封鎖來自其他來源或檔案較小的 <ph name="FLASH_PLUGIN_NAME" /> 內容。
-
-      注意：如要控管哪些網站可執行 <ph name="FLASH_PLUGIN_NAME" />，請參閱這些政策：<ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />、<ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> 和 <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />。</translation>
 <translation id="82530263956734297">要從封鎖清單中排除的擴充功能 ID</translation>
 <translation id="8256688113167012935">控制 <ph name="PRODUCT_OS_NAME" /> 在登入畫面上顯示的帳戶名稱，以表示相對應的裝置本機帳戶。
 

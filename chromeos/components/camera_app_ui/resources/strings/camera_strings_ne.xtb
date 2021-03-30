@@ -39,7 +39,7 @@
 <translation id="3892148308691398805">पाठ कपी गर्नुहोस्</translation>
 <translation id="4000398125663085899">अब नयाँ फोटो तथा भिडियोहरू Files एपको फोल्डर अर्थात् "मेरा फाइल &gt; क्यामेरा" मा सुरक्षित गरिने छन्</translation>
 <translation id="4118525110028899586">रेकर्डिङ पज गर्नुहोस्</translation>
-<translation id="4269820728363426813">लिङ्क ठेगानाको प्रतिलिपि बनाउनुहोस्</translation>
+<translation id="4269820728363426813">लिङ्क ठेगाना कपी गर्नुहोस्</translation>
 <translation id="4279490309300973883">प्रतिबिम्ब गर्दै</translation>
 <translation id="4329152592498422850">वर्गाकार तस्बिर खिच्न थाल्नुहोस्</translation>
 <translation id="4383571725254449280">प्रिन्ट सम्पादनका लगहरू</translation>
@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">वर्गाकार</translation>
 <translation id="5775960006311140197">विशेषज्ञ मोड</translation>
 <translation id="5869546221129391014">ग्रिड</translation>
+<translation id="5975083100439434680">जुम आउट</translation>
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
 <translation id="6073451960410192870">रेकर्ड गर्न छाड्नुहोस्</translation>
 <translation id="6197807149213783179">मेटाडेटा सुरक्षित गर्नुहोस्</translation>
@@ -81,9 +82,9 @@
 <translation id="7649070708921625228">मद्दत</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7670511624014457267">६० FPS</translation>
-<translation id="7974782136796202581">प्यान गर्ने, ढल्काउने र जुम गर्ने विकल्पहरू देखाइयोस्</translation>
 <translation id="7983668134180549431">टेक्स्ट भेट्टियो।</translation>
 <translation id="8067883171444229417">भिडियो प्ले गर्नुहोस्</translation>
+<translation id="8120146556401698679">प्यान गर्नुहोस्, ढल्काउनुहोस्, जुम गर्नुहोस्</translation>
 <translation id="8131740175452115882">निश्चित</translation>
 <translation id="8145038249676204903">तस्बिर खिच्ने मोड प्रयोग गर्नुहोस्</translation>
 <translation id="8239780215768881278">भिडियो स्न्यापसट खिच्नुहोस्</translation>
@@ -94,6 +95,7 @@
 <translation id="8815966864175525708">पोर्ट्रेट तस्बिर खिच्न थाल्नुहोस्</translation>
 <translation id="8828441885228359828">रेकर्डिङ सुचारु गर्नुहोस्</translation>
 <translation id="8870695351537079478">रेकर्डिङ सुरु गर्न सकिएन</translation>
+<translation id="8903921497873541725">जुम इन</translation>
 <translation id="9045155556724273246">१० सेकेन्ड</translation>
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 </translationbundle>

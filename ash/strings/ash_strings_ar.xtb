@@ -396,6 +396,7 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">لقد ضغطت على اختصار لوحة المفاتيح للتباين العالي. هل ترغب في تفعيله؟</translation>
 <translation id="4331809312908958774">‏نظام تشغيل Chrome</translation>
+<translation id="4333628967105022692">‏لا يمكن استخدام متصفِّح Lacros إذا سجّل العديد من المستخدمين دخولهم.</translation>
 <translation id="4338109981321384717">العدسة المكبرة</translation>
 <translation id="4351433414020964307">جارٍ تحميل المساعد...</translation>
 <translation id="4356930093361201197">وضع التباين العالي</translation>
@@ -968,6 +969,7 @@
 <translation id="9091626656156419976">تمت إزالة عرض <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">كتم صوت الهاتف</translation>
 <translation id="9099154003160514616">‏يتوفّر تحديث للإصدار الحالي من متصفِّح Lacros</translation>
+<translation id="9105450214093926548">‏إنّ تسجيل الدخول بحساب مستخدم آخر غير متاح أثناء استخدام متصفِّح Lacros. يُرجى استخدام ملف شخصي آخر على متصفِّح Lacros بدلاً من ذلك أو إغلاق المتصفِّح ثم إعادة المحاولة.</translation>
 <translation id="9133335900048457298">لا يمكن تسجيل المحتوى المحمي</translation>
 <translation id="9151726767154816831">‏إعادة التشغيل وإجراء Powerwash للتحديث</translation>
 <translation id="9166331175924255663">إيقاف/تفعيل وضع الظهور لجميع الأجهزة القريبة لميزة "المشاركة عن قرب"</translation>

@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Chrome brez povezave ne more preveriti, ali so na voljo posodobitve</translation>
 <translation id="5854621639439811139">Nasvet za Chrome. Nekateri gumbi, na primer gumbi za nazaj, naprej in iskanje, so zdaj na dnu zaslona.</translation>
+<translation id="5876773482963502140">Če Chromu omogočite dostop do podatkov o lokaciji, jih Chrome pošlje na spletna mesta, ki jim podelite dovoljenje. Spletna mesta morda zahtevajo podatke o lokaciji, ko želijo prikazati lokalne informacije, na primer trgovine v bližini ali novice.</translation>
 <translation id="6036420186814142909">Google Chrome ima funkcije, s katerimi lažje upravljate internetne podatke in hitrost nalaganja spletnih strani.
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Preklop na Chrome</translation>
@@ -90,5 +91,4 @@
   2. Dotaknite se možnosti za privzeto aplikacijo za brskanje.
   3. Izberite Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Če Chromu omogočite dostop do podatkov o lokaciji, jih Chrome pošlje v privzeti iskalnik in na spletna mesta, ki jim podelite dovoljenje. Spletna mesta morda zahtevajo podatke o lokaciji, ko želijo prikazati lokalne informacije, na primer trgovine v bližini ali novice.</translation>
 </translationbundle>

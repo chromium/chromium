@@ -193,6 +193,7 @@
 <translation id="2964349545761222050">तृतीय पक्ष कुकी ब्लॉक करा</translation>
 <translation id="2969979262385602596">साइन इन करण्यात अयशस्वी. कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="2975121486251958312">फक्त गुप्त मोड उपलब्ध आहे</translation>
+<translation id="2981323609054805194">दिवसांपूर्वी</translation>
 <translation id="2982481275546140226">डेटा साफ करा</translation>
 <translation id="298306318844797842">पेमेंट पद्धत जोडा…</translation>
 <translation id="2989805286512600854">नवीन टॅबमध्ये उघडा</translation>
@@ -282,6 +283,7 @@
 <translation id="3928666092801078803">माझा डेटा एकत्र करा</translation>
 <translation id="3929457972718048006">पत्ते</translation>
 <translation id="3943492037546055397">पासवर्ड</translation>
+<translation id="3967266340354872733">गोपनीयता, सुरक्षा आणि डेटा संग्रह यांच्याशी संबंधित आणखी सेटिंग्जसाठी, <ph name="BEGIN_LINK" />सिंक<ph name="END_LINK" /> व <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> पाहा</translation>
 <translation id="3967822245660637423">पूर्ण डाउनलोड करा</translation>
 <translation id="3968505803272650567">स्वारस्ये व्यवस्थापित करा</translation>
 <translation id="3989635538409502728">साइन आउट</translation>
@@ -557,7 +559,9 @@
 <translation id="6710079714193676716">तुमच्या संस्थेने व्यवस्थापित केलेला. काही वैशिष्ट्ये कदाचित उपलब्ध नसतील. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">पासवर्ड एक्सपोर्ट करू शकत नाही</translation>
+<translation id="6739790015462537309">तासांपूर्वी</translation>
 <translation id="6748108480210050150">प्रेषक</translation>
+<translation id="6760509555861141183">अलीकडील टॅब वर जा</translation>
 <translation id="6780034285637185932">पिनकोड</translation>
 <translation id="6785453220513215166">क्रॅश अहवाल पाठवत आहे...</translation>
 <translation id="679325081238418596">आपल्या सर्व डिव्हाइसेसवर तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्ज मिळवा</translation>
@@ -609,7 +613,6 @@
 <translation id="7272437679830969316">तुमच्या ओळखीची पडताळणी करता आली नाही. पासवर्ड कॉपी केला नाही.</translation>
 <translation id="7291368939935408496">पासवर्ड तयार करत आहे…</translation>
 <translation id="7293171162284876153">सिंक सुरू करण्यासाठी, "तुमचा Chrome डेटा सिंक करा" सुरू करा.</translation>
-<translation id="7299000566397147023">सर्वात अलीकडील टॅब उघडा</translation>
 <translation id="7313347584264171202">तुमचे गुप्त टॅब तुम्हाला येथे सापडतील</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> टक्के डाउनलोड केले</translation>
 <translation id="7340958967809483333">Discover चे पर्याय</translation>

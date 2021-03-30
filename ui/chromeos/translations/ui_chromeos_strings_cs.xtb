@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Zatím zařízení neodebírejte.<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Pokud zařízení odeberete během používání, může dojít ke ztrátě dat. Počkejte prosím na dokončení operace a poté zařízení odpojte pomocí aplikace Soubory.</translation>
+<translation id="5159560892333415631">Vysypat koš</translation>
 <translation id="5163869187418756376">Sdílení se nezdařilo. Zkontrolujte připojení k síti a zkuste to znovu.</translation>
 <translation id="516592729076796170">Americká klávesnice Dvorak</translation>
 <translation id="5170477580121653719">Volné místo na Disku Google: <ph name="SPACE_AVAILABLE" />.</translation>
@@ -418,6 +419,7 @@
 <translation id="5275973617553375938">Obnovené soubory z Disku Google</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">Opravdu chcete vysypat koš?</translation>
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5318819489018851358">Sdílet s Linuxem</translation>
 <translation id="5323213332664049067">Latinská Amerika</translation>
@@ -782,6 +784,7 @@
 <translation id="9154418932169119429">Tento obrázek není k dispozici v režimu offline.</translation>
 <translation id="9172592259078059678">gudžarátština (přepis)</translation>
 <translation id="9173120999827300720">angličtina (USA) s mezinárodní klávesnicí</translation>
+<translation id="9174050671906956834">Položky jsou z koše po 30 dnech navždy smazány.</translation>
 <translation id="9189836632794948435">kazaština</translation>
 <translation id="9213073329713032541">Instalace byla úspěšně spuštěna.</translation>
 <translation id="9219103736887031265">Obrázky</translation>

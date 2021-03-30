@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">कॅमेरा</translation>
 <translation id="1627744224761163218">४ x ४</translation>
 <translation id="1664224225747386870">काहीही रेकॉर्ड केले गेले नाही</translation>
+<translation id="1838104802459806957">वर टिल्ट करा</translation>
 <translation id="1851616744363735765">थांबवले</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> एक्सपोर्ट करता आली नाही</translation>
 <translation id="1899697626337024495">फोटो रिझोल्युशन</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> अ‍ॅक्टिव्ह</translation>
 <translation id="2144806332417375165">कस्टम व्हिडिओ पॅरामीटर</translation>
 <translation id="229579744168541441">डिस्कवर एक्सपोर्ट करा</translation>
+<translation id="2320741269052147773">डावीकडे पॅन करा</translation>
 <translation id="2501278716633472235">परत जा</translation>
 <translation id="2501853267655415902">रेकॉर्डिंग थांबवले आहे</translation>
 <translation id="2501953888035679275">तुमच्‍या कॅमेर्‍याने फोटो घ्‍या आणि व्हिडिओ रेकॉर्ड करा.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">कॅमेर्‍याने घेतलेले फोटो आणि व्हिडिओ डाउनलोड फोल्डरवर हलवले जातील. तुम्ही ते Files मध्ये अ‍ॅक्सेस करू शकता.
 
         स्टोरेज परवानग्या असलेल्या अ‍ॅप्सना तुमच्या फोटो आणि व्हिडिओंचा अ‍ॅक्सेस असेल.</translation>
+<translation id="3067436040345934772">उजवीकडे पॅन करा</translation>
 <translation id="3081586908890909590">व्हिडिओ रेकॉर्ड करण्यासाठी स्विच करा</translation>
 <translation id="313467653172006084">३० FPS</translation>
 <translation id="3183731565330012717">ग्रिडचा प्रकार</translation>
@@ -56,6 +59,7 @@
 <translation id="5671277269877808209">चौरस</translation>
 <translation id="5775960006311140197">एक्सपोर्ट मोड</translation>
 <translation id="5869546221129391014">ग्रिड</translation>
+<translation id="5975083100439434680">झूम कमी करा</translation>
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="6073451960410192870">रेकॉर्डिंग थांबवा</translation>
 <translation id="6197807149213783179">मेटाडेटा सेव्ह करा</translation>
@@ -81,19 +85,21 @@
 <translation id="7649070708921625228">मदत</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7670511624014457267">६० FPS</translation>
-<translation id="7974782136796202581">पॅन/टिल्ट/झूम पर्याय दाखवा</translation>
 <translation id="7983668134180549431">मजकूर डिटेक्ट केला.</translation>
 <translation id="8067883171444229417">व्हिडिओ प्ले करा</translation>
+<translation id="8120146556401698679">पॅन टिल्ट झूम</translation>
 <translation id="8131740175452115882">पुष्टी करा</translation>
 <translation id="8145038249676204903">फोटो घेण्यासाठी स्विच करा</translation>
 <translation id="8239780215768881278">व्हिडिओ स्नॅपशॉट घ्या</translation>
 <translation id="8261506727792406068">हटवा</translation>
+<translation id="8425673304802773841">खाली टिल्ट करा</translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">मेटाडेटाचे पूर्वावलोकन करा</translation>
 <translation id="8815966864175525708">पोर्ट्रेट फोटो काढण्यासाठी स्विच करा</translation>
 <translation id="8828441885228359828">रेकॉर्डिंग पुन्‍हा सुरू करा</translation>
 <translation id="8870695351537079478">रेकॉर्डिंग सुरू करता आले नाही</translation>
+<translation id="8903921497873541725">झूम इन करा</translation>
 <translation id="9045155556724273246">१० सेकंद</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 </translationbundle>

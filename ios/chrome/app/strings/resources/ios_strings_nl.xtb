@@ -31,7 +31,7 @@
 <translation id="1219674500290482172">Kan geen verbinding maken met internet.</translation>
 <translation id="122699739164161391">Alle tabbladen sluiten</translation>
 <translation id="1229222343402087523">Zoek naar ${searchPhrase} in Chrome</translation>
-<translation id="1231733316453485619">Synchronisatie inschakelen?</translation>
+<translation id="1231733316453485619">Synchronisatie aanzetten?</translation>
 <translation id="1254117744268754948">Map kiezen</translation>
 <translation id="1265739287306757398">Meer informatie</translation>
 <translation id="1272079795634619415">Stop</translation>
@@ -43,7 +43,7 @@
 <translation id="132683371494960526">Dubbeltik om de hoofdmap te wijzigen.</translation>
 <translation id="1340643665687018190">Menu sluiten</translation>
 <translation id="1358214951266274152">Ga naar de gekopieerde link</translation>
-<translation id="1360432990279830238">Uitloggen en synchroniseren uitschakelen?</translation>
+<translation id="1360432990279830238">Uitloggen en synchroniseren uitzetten?</translation>
 <translation id="1375321115329958930">Opgeslagen wachtwoorden</translation>
 <translation id="1377255359165588604">Synchronisatie werkt niet meer.</translation>
 <translation id="1377321085342047638">Kaartnummer</translation>
@@ -54,7 +54,7 @@
 <translation id="1430915738399379752">Afdrukken</translation>
 <translation id="1449835205994625556">Wachtwoord verbergen</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> items</translation>
-<translation id="1491277525950327607">Dubbeltik om de instelling in of uit te schakelen</translation>
+<translation id="1491277525950327607">Dubbeltik om de instelling aan of uit te zetten</translation>
 <translation id="1492417797159476138">Je hebt deze gebruikersnaam al opgeslagen voor deze site</translation>
 <translation id="1509486075633541495">Inloggen op website</translation>
 <translation id="1509960214886564027">Functies op veel sites werken mogelijk niet meer</translation>
@@ -63,7 +63,7 @@
 <translation id="1535268707340844072">Je huidige instelling kan ervoor zorgen dat bepaalde sites niet goed werken. Ga naar <ph name="BEGIN_LINK" />Cookie-instellingen<ph name="END_LINK" /> om de cookies voor alle sites te beheren.</translation>
 <translation id="1540800554400757039">Adres 1</translation>
 <translation id="1545749641540134597">QR-code scannen</translation>
-<translation id="1552525382687785070">Synchronisatie is uitgeschakeld door de beheerder</translation>
+<translation id="1552525382687785070">Synchronisatie is uitgezet door de beheerder</translation>
 <translation id="1554477036522844996">Nieuw venster</translation>
 <translation id="1580715474678097352">Beveiliging tegen schadelijke websites</translation>
 <translation id="1580783302095112590">E-mail verzonden.</translation>
@@ -78,11 +78,11 @@
 <translation id="1657641691196698092">Geblokkeerde cookies</translation>
 <translation id="165877110639533037">Geen geopende tabbladen</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> naar <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="168715261339224929">Schakel synchronisatie in om al je bookmarks op al je apparaten te bekijken.</translation>
+<translation id="168715261339224929">Zet de synchronisatie aan om al je bookmarks op al je apparaten te bekijken.</translation>
 <translation id="1687475363370981210">Alles als gelezen markeren</translation>
 <translation id="1689333818294560261">Bijnaam</translation>
 <translation id="1690731385917361335">Geen items</translation>
-<translation id="1692118695553449118">Synchronisatie is ingeschakeld</translation>
+<translation id="1692118695553449118">Synchronisatie staat aan</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> geselecteerd</translation>
 <translation id="1740468249224277719">Dubbeltik om te installeren.</translation>
 <translation id="1746815479209538200">Voeg een nieuw tabblad toe als je op het web wilt browsen.</translation>
@@ -140,7 +140,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2421004566762153674">Cookies van derden blokkeren</translation>
 <translation id="2421044535038393232">Doorgaan met bewerken</translation>
 <translation id="2435457462613246316">Wachtwoord tonen</translation>
-<translation id="2497852260688568942">Synchronisatie is uitgeschakeld door je beheerder</translation>
+<translation id="2497852260688568942">Synchronisatie is uitgezet door je beheerder</translation>
 <translation id="2500374554657206846">Opties voor 'Wachtwoord opslaan'</translation>
 <translation id="2523363575747517183">Deze website probeert herhaaldelijk een andere app te openen.</translation>
 <translation id="2529021024822217800">Alles openen</translation>
@@ -282,6 +282,7 @@ Volg de onderstaande stappen:</translation>
 <translation id="3928666092801078803">Mijn gegevens combineren</translation>
 <translation id="3929457972718048006">Adressen</translation>
 <translation id="3943492037546055397">Wachtwoorden</translation>
+<translation id="3967266340354872733">Bekijk <ph name="BEGIN_LINK" />Synchronisatie<ph name="END_LINK" /> en <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer instellingen over privacy, beveiliging en gegevensverzameling.</translation>
 <translation id="3967822245660637423">Downloaden voltooid</translation>
 <translation id="3968505803272650567">Interesses beheren</translation>
 <translation id="3989635538409502728">Afmelden</translation>
@@ -308,7 +309,7 @@ Volg de onderstaande stappen:</translation>
 <translation id="424315890655130736">Wachtwoordzin opgeven</translation>
 <translation id="4263576668337963058">Beschikbare pagina-acties tonen</translation>
 <translation id="4267380167363222949">Volgend tabblad</translation>
-<translation id="4272631900155121838">Als je een QR-code wilt scannen, schakel je de camera in via Instellingen</translation>
+<translation id="4272631900155121838">Als je een QR-code wilt scannen, zet je de camera aan via Instellingen</translation>
 <translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4281844954008187215">Servicevoorwaarden</translation>
 <translation id="430793432425771671">Alles synchroniseren</translation>
@@ -339,7 +340,7 @@ Volg de onderstaande stappen:</translation>
 <translation id="4630540211544979320">Pagina's vertalen</translation>
 <translation id="4634124774493850572">Wachtwoord gebruiken</translation>
 <translation id="4636930964841734540">Info</translation>
-<translation id="4659126640776004816">Als je inlogt op je Google-account, wordt deze functie ingeschakeld.</translation>
+<translation id="4659126640776004816">Als je inlogt op je Google-account, wordt deze functie aangezet.</translation>
 <translation id="4659667755519643272">Tabbladschakelaar openen</translation>
 <translation id="46614316059270592">Wachtwoord opslaan</translation>
 <translation id="4666531726415300315">Ingelogd als <ph name="EMAIL" />.
@@ -372,7 +373,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="4904877109095351937">Markeren als gelezen</translation>
 <translation id="4908869848243824489">Discover van Google</translation>
 <translation id="4930268273022498155">Bestaande gegevens verwijderen. Je kunt ze terugkrijgen door weer over te schakelen naar <ph name="USER_EMAIL1" />.</translation>
-<translation id="4930714375720679147">Inschakelen</translation>
+<translation id="4930714375720679147">Aanzetten</translation>
 <translation id="4941089862236492464">Er is een probleem opgetreden bij het delen van je item.</translation>
 <translation id="4944543191714094452">Zoeken op pagina…</translation>
 <translation id="4945756290001680296">Wachtwoordinstellingen openen</translation>
@@ -388,7 +389,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5090832849094901128">Als je dit wachtwoord verwijdert, wordt je account op <ph name="WEBSITE" /> niet verwijderd.</translation>
 <translation id="5094827893301452931">Tweet voltooid.</translation>
 <translation id="5118764316110575523">Uit</translation>
-<translation id="5127805178023152808">Synchronisatie is uitgeschakeld</translation>
+<translation id="5127805178023152808">Synchronisatie staat uit</translation>
 <translation id="5132942445612118989">Je wachtwoorden, geschiedenis en meer synchroniseren op al je apparaten</translation>
 <translation id="5140288047769711648">Chrome onthoudt dit wachtwoord voor je. Je hoeft het niet zelf te onthouden.</translation>
 <translation id="5150492518600715772">Verzenden naar je apparaat</translation>
@@ -397,7 +398,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5188482106078495165">Je cookie-instellingen zijn van toepassing op alle tabbladen. Als je een nieuwe instelling wilt toepassen op een geopend tabblad, laad je het tabblad opnieuw.</translation>
 <translation id="5190835502935405962">Bookmarkbalk</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5228579091201413441">Synchronisatie inschakelen</translation>
+<translation id="5228579091201413441">Synchronisatie aanzetten</translation>
 <translation id="5234764350956374838">Sluiten</translation>
 <translation id="5245322853195994030">Synchronisatie annuleren</translation>
 <translation id="5271549068863921519">Wachtwoord opslaan</translation>
@@ -405,7 +406,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5300589172476337783">Tonen</translation>
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5327248766486351172">Naam</translation>
-<translation id="5339316356165661760">Synchroniseren inschakelen</translation>
+<translation id="5339316356165661760">Synchronisatie aanzetten</translation>
 <translation id="5360976571138293719">Bekijk <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer instellingen over privacy, beveiliging en gegevensverzameling.</translation>
 <translation id="5388358297987318779">Afbeelding openen</translation>
 <translation id="5407969256130905701">Wijzigingen niet opslaan</translation>
@@ -424,7 +425,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je apparaten moeten hetzelfde iCloud-account gebruiken.</translation>
 <translation id="5551897871312988470">Aanbieden om te vertalen</translation>
 <translation id="5556459405103347317">Opnieuw laden</translation>
-<translation id="5592679540098330836">Schakel synchronisatie in voor <ph name="NAME" /></translation>
+<translation id="5592679540098330836">Zet de synchronisatie aan voor <ph name="NAME" /></translation>
 <translation id="5614553682702429503">Wachtwoord opslaan?</translation>
 <translation id="5626245204502895507">Het bestand kan momenteel niet worden gedownload.</translation>
 <translation id="5631164295104953411">Betaalmethode toevoegen</translation>
@@ -492,7 +493,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6255097610484507482">Creditcard bewerken</translation>
 <translation id="6284652193729350524">Aanbieden om <ph name="LANGUAGE" /> te vertalen</translation>
 <translation id="6293101329759844770">Als je Safe Browsing wilt gebruiken, open je <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> en tik je op Safe Browsing.</translation>
-<translation id="6303969859164067831">Uitloggen en synchronisatie uitschakelen</translation>
+<translation id="6303969859164067831">Uitloggen en synchronisatie uitzetten</translation>
 <translation id="6308436439357671616">Hiermee kun je foto's maken en uploaden.</translation>
 <translation id="6324528485781869530">Synchronisatieaccount wisselen</translation>
 <translation id="6324669097367352121">Inloginstellingen</translation>
@@ -530,7 +531,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="6497772452874122664">Als je <ph name="TIME" /> vertrouwt, kun je een opgeslagen wachtwoord van een andere site gebruiken.
 
 Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
-<translation id="651505212789431520">Synchronisatie annuleren? Je kunt de synchronisatie op elk moment inschakelen via Instellingen.</translation>
+<translation id="651505212789431520">Synchronisatie annuleren? Je kunt de synchronisatie op elk moment aanzetten via Instellingen.</translation>
 <translation id="6524918542306337007">Incognitomodus is niet beschikbaar</translation>
 <translation id="6561262006871132942">Inzoomen</translation>
 <translation id="6585618849026997638">Je kunt terugkeren naar een pagina die belangrijk voor je is door een bookmark toe te voegen</translation>
@@ -556,6 +557,7 @@ Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Wachtwoorden kunnen niet worden geëxporteerd</translation>
 <translation id="6748108480210050150">Van</translation>
+<translation id="6760509555861141183">Terug naar recent tabblad</translation>
 <translation id="6780034285637185932">Postcode</translation>
 <translation id="6785453220513215166">Crashrapport verzenden...</translation>
 <translation id="679325081238418596">Je bookmarks, geschiedenis, wachtwoorden en andere instellingen beschikbaar maken op al je apparaten</translation>
@@ -565,12 +567,12 @@ Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <translation id="6831043979455480757">Vertalen</translation>
 <translation id="6851516051005285358">Desktopsite opvragen</translation>
 <translation id="6858855187367714033">Gescand</translation>
-<translation id="6859944681507688231">Als je een QR-code of creditcard wilt scannen, schakel je de camera in via Instellingen.</translation>
+<translation id="6859944681507688231">Als je een QR-code of creditcard wilt scannen, zet je de camera aan via Instellingen.</translation>
 <translation id="6869389390665537774">Je kunt de pagina's zien die je hebt bezocht en ze uit je geschiedenis verwijderen</translation>
 <translation id="6873263987691478642">Gesplitste weergave</translation>
 <translation id="6888009575607455378">Weet je zeker dat je de wijzigingen niet wilt opslaan?</translation>
 <translation id="6896758677409633944">Kopieer</translation>
-<translation id="6903907808598579934">Synchronisatie inschakelen</translation>
+<translation id="6903907808598579934">Synchronisatie aanzetten</translation>
 <translation id="6914583639806229067">Zoeken naar gekopieerde afbeelding</translation>
 <translation id="6914783257214138813">Je wachtwoorden zijn zichtbaar voor iedereen die het geëxporteerde bestand kan bekijken.</translation>
 <translation id="6930799952781667037">Tik om over te schakelen naar deze taal.</translation>
@@ -585,7 +587,7 @@ Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Recent gebruikte tabbladen</translation>
 <translation id="7006788746334555276">Instellingen voor content</translation>
-<translation id="7015203776128479407">Aanvankelijke synchronisatie-instelling is niet voltooid. Synchronisatie is uitgeschakeld.</translation>
+<translation id="7015203776128479407">Aanvankelijke synchronisatie-instelling is niet voltooid. Synchronisatie staat uit.</translation>
 <translation id="7029809446516969842">Wachtwoorden</translation>
 <translation id="7053983685419859001">Blokkeren</translation>
 <translation id="7062545763355031412">Accepteren en account wijzigen</translation>
@@ -606,8 +608,7 @@ Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <translation id="7265758999917665941">Nooit voor deze site</translation>
 <translation id="7272437679830969316">Kan je identiteit niet verifiëren. Wachtwoord niet gekopieerd.</translation>
 <translation id="7291368939935408496">Wachtwoorden voorbereiden...</translation>
-<translation id="7293171162284876153">Schakel 'Je Chrome-gegevens synchroniseren' in om de synchronisatie te starten.</translation>
-<translation id="7299000566397147023">Meest recente tabblad openen</translation>
+<translation id="7293171162284876153">Zet Je Chrome-gegevens synchroniseren aan om de synchronisatie te starten.</translation>
 <translation id="7313347584264171202">Hier vind je je incognitotabbladen</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> procent gedownload</translation>
 <translation id="7340958967809483333">Opties voor Discover</translation>
@@ -622,7 +623,7 @@ Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> ongelezen artikelen.</translation>
 <translation id="7412027924265291969">Doorgaan</translation>
 <translation id="7425346204213733349">Wijzigingen in je bookmarks, geschiedenis, wachtwoorden en andere instellingen worden niet meer gesynchroniseerd met je Google-account. Je bestaande gegevens blijven echter opgeslagen in je Google-account.</translation>
-<translation id="7435356471928173109">Uitgeschakeld door je beheerder</translation>
+<translation id="7435356471928173109">Uitgezet door je beheerder</translation>
 <translation id="7454057999980797137">Provincie</translation>
 <translation id="7456847797759667638">Open locatie...</translation>
 <translation id="7464701184726199289">Hiermee worden gesynchroniseerde gegevens van alle apparaten gewist. Opgeslagen site-instellingen worden niet verwijderd en kunnen je browsegedrag weerspiegelen. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -691,7 +692,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8073872304774253879">Zoekopdrachten en browsefunctionaliteit verbeteren</translation>
 <translation id="8076014560081431679">Opgeslagen site-instellingen worden niet verwijderd en kunnen je browsegedrag weerspiegelen. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Deze instelling wordt beheerd, dubbeltik voor meer informatie</translation>
-<translation id="8105368624971345109">Uitschakelen</translation>
+<translation id="8105368624971345109">Uitzetten</translation>
 <translation id="8114753159095730575">Bestand downloaden is beschikbaar. Opties beschikbaar onderaan het scherm.</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
 <translation id="8156478151976189188">Password Sync werkt niet</translation>
@@ -716,7 +717,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8487667956631253959">Aan</translation>
 <translation id="8487700953926739672">Offline beschikbaar</translation>
 <translation id="8490978609246021741">Wijzigingen opslaan</translation>
-<translation id="8495097701594799854">Uitgeschakeld door je organisatie.</translation>
+<translation id="8495097701594799854">Uitgezet door je organisatie.</translation>
 <translation id="8503813439785031346">Gebruikersnaam</translation>
 <translation id="850600235656508448">Openen in incognitomodus</translation>
 <translation id="8510057420705599706">Hiermee word je uitgelogd en wordt de synchronisatie stopgezet. Je bookmarks, geschiedenis, wachtwoorden en andere Chrome-gegevens blijven op dit apparaat staan.</translation>
@@ -725,7 +726,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8529767659511976195">Nieuw</translation>
 <translation id="8532105204136943229">Vervaljaar</translation>
 <translation id="8533166274275423134">Ergens anders geopend</translation>
-<translation id="8533670235862049797">'Safe Browsing' is ingeschakeld</translation>
+<translation id="8533670235862049797">Safe Browsing staat aan</translation>
 <translation id="8534481786647257214">Google+ bericht voltooid.</translation>
 <translation id="8548878600947630424">Zoeken op deze pagina...</translation>
 <translation id="8574235780160508979">De servicevoorwaarden van Chrome veranderen op 31 maart. <ph name="BEGIN_LINK" />Lees ze door<ph name="END_LINK" /></translation>
@@ -734,7 +735,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8605219856220328675">Tabblad sluiten</translation>
 <translation id="8620640915598389714">Bewerken</translation>
 <translation id="863090005774946393">Je browser wordt beheerd door je organisatie. Bepaalde functies zijn misschien uitgezet.</translation>
-<translation id="8636825310635137004">Schakel synchronisatie in om de tabbladen op je andere apparaten te bekijken</translation>
+<translation id="8636825310635137004">Zet synchronisatie aan om de tabbladen op je andere apparaten te bekijken</translation>
 <translation id="8654802032646794042">Annuleren</translation>
 <translation id="8668210798914567634">Deze pagina is opgeslagen in je leeslijst.</translation>
 <translation id="8680787084697685621">De inloggegevens voor het account zijn verouderd.</translation>
@@ -756,7 +757,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8870413625673593573">Recent gesloten</translation>
 <translation id="8881801611828450202">Zoeken op <ph name="SEARCH_ENGINE" /> naar deze afbeelding</translation>
 <translation id="8909135823018751308">Delen</translation>
-<translation id="8917490105272468696">Ja, inschakelen</translation>
+<translation id="8917490105272468696">Ja, aanzetten</translation>
 <translation id="895541991026785598">Een probleem melden</translation>
 <translation id="8976382372951310360">Hulp</translation>
 <translation id="8981454092730389528">Google-activiteitsopties</translation>
@@ -769,7 +770,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9079935439869366234">Alles als ongelezen markeren</translation>
 <translation id="9081058212938299310">Wachtwoord voor <ph name="USERNAME" /> updaten?</translation>
 <translation id="9083392325882095631">1 item</translation>
-<translation id="9083838294503912307">Schakel synchronisatie in om verschillende apparaten te synchroniseren en te personaliseren.</translation>
+<translation id="9083838294503912307">Zet de synchronisatie aan om verschillende apparaten te synchroniseren en te personaliseren.</translation>
 <translation id="9087108903408689779">Wachtwoord voorgesteld door Chrome:</translation>
 <translation id="9094033019050270033">Wachtwoord updaten</translation>
 <translation id="9100610230175265781">Wachtwoordzin vereist</translation>

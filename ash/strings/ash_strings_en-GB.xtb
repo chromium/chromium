@@ -277,6 +277,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> can still sign in later.</translation>
 <translation id="3321628682574733415">Incorrect parent code</translation>
 <translation id="332587331255250389">Please replace the battery</translation>
+<translation id="3333741161915951567">Modem reboot. Wait 30 sec before trying again.</translation>
 <translation id="3341303451326249809">Screenshot captured</translation>
 <translation id="334252345105450327">Take a screenshot</translation>
 <translation id="3351879221545518001">You are currently casting the screen.</translation>
@@ -969,6 +970,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="9091626656156419976">Removed display <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silence phone</translation>
 <translation id="9099154003160514616">Lacros update available</translation>
+<translation id="9105450214093926548">Signing in a second user is not supported while the Lacros browser is running. Please use a second browser profile in Lacros instead, or close Lacros and try again.</translation>
 <translation id="9133335900048457298">Can't record protected content</translation>
 <translation id="9151726767154816831">Restart and powerwash to update</translation>
 <translation id="9166331175924255663">Toggle Nearby Share high visibility.</translation>

@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">Չհաջողվեց մուտք գործել</translation>
 <translation id="2860954141821109167">Համոզվեք, որ «Հեռախոս» հավելվածը միացված է այս սարքում</translation>
 <translation id="2870560284913253234">Կայք</translation>
-<translation id="2876369937070532032">Ձեր այցելած որոշ էջերի URL-ներն ուղարկվում են Google-ին, երբ ձեր հաշիվը կամ սարքը վտանգված է</translation>
 <translation id="2888126860611144412">Chrome-ի մասին</translation>
 <translation id="2891154217021530873">Կանգնեցնել էջի բեռնումը</translation>
 <translation id="2892647708214602204">Դուք ծանուցում կտեսնեք, երբ այս ֆայլը պատրաստ լինի</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">«Այլ ընտրանքներ» կոճակի միջոցով դիտեք պահված տվյալների ծավալը</translation>
 <translation id="3166827708714933426">Ներդիրների և պատուհանների դյուրանցումներ</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Անվտանգ դիտարկում (պաշտպանում է ձեզ և ձեր սարքը վտանգավոր կայքերից)</translation>
 <translation id="3205824638308738187">Գրեթե ավարտված է:</translation>
 <translation id="3207960819495026254">Էջանշված է</translation>
 <translation id="3208584281581115441">Ստուգել հիմա</translation>
@@ -505,6 +503,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="4561979708150884304">Կապ չկա</translation>
 <translation id="4565377596337484307">Թաքցնել գաղտնաբառը</translation>
 <translation id="4572422548854449519">Մուտք գործեք կառավարվող հաշիվ</translation>
+<translation id="4576892426230499203">Ընտրեք հաստատման այլ տարբերակ</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# րոպե առաջ}one{# րոպե առաջ}other{# րոպե առաջ}}</translation>
 <translation id="4587589328781138893">Կայքեր</translation>
 <translation id="4594952190837476234">Այս էջը պահվել է <ph name="CREATION_TIME" />-ին, և կարող է տարբերվել առցանց տարբերակից։</translation>
@@ -520,7 +519,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> էջանիշ ջնջվեց</translation>
 <translation id="4668347365065281350">Կայքերի կողմից պահված բոլոր տվյալները, ներառյալ քուքիներն ու սարքում պահված մյուս տվյալները</translation>
 <translation id="4684427112815847243">Համաժամացնել բոլորը</translation>
-<translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}}</translation>
+<translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}}</translation>
 <translation id="4696983787092045100">Ուղարկել SMS սարքերին</translation>
 <translation id="4698034686595694889">Դիտեք <ph name="APP_NAME" /> հավելվածի անցանց ռեժիմում</translation>
 <translation id="4699172675775169585">Քեշավորված պատկերներ և ֆայլեր</translation>
@@ -584,7 +583,6 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="5011311129201317034"><ph name="SITE" /> կայքն ուզում է միանալ</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Թույլ տալ</translation>
-<translation id="5040262127954254034">Գաղտնիություն</translation>
 <translation id="5087580092889165836">Ավելացնել քարտ</translation>
 <translation id="5091249083535528968">Օգտագործման լրացուցիչ տվյալներ</translation>
 <translation id="509429900233858213">Սխալ առաջացավ:</translation>
@@ -637,6 +635,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="5441522332038954058">Անցնել հասցեագոտի</translation>
 <translation id="544776284582297024">Ներդիրներ բացելու և միաժամանակ մի քանի էջեր այցելելու համար սեղմեք «բաց ներդիրներ» կոճակը</translation>
 <translation id="545042621069398927">Ներբեռնումն արագացվում է։</translation>
+<translation id="5454166040603940656"><ph name="PROVIDER" />-ի հետ</translation>
 <translation id="5456381639095306749">Ներբեռնել էջը</translation>
 <translation id="548278423535722844">Բացեք Քարտեզներ հավելվածում</translation>
 <translation id="5483197086164197190">Նավարկում Chrome-ում</translation>
@@ -777,11 +776,12 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="6316139424528454185">Android-ի հնացած տարբերակ</translation>
 <translation id="6324034347079777476">Android համակարգի համաժամացումն անջատված է</translation>
 <translation id="6324977638108296054">Չհաջողվեց ստեղծել ընդգծված տեքստի հղում։</translation>
+<translation id="6324997754869598316">(Սխալ <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Կիսվել <ph name="APPLICATION" />-ի միջոցով</translation>
 <translation id="6337234675334993532">Գաղտնագրում</translation>
 <translation id="6341580099087024258">Հարցնել, թե որտեղ պահել ֆայլերը</translation>
 <translation id="6342069812937806050">Հենց նոր</translation>
-<translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ու առաքման ևս <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> հասցե}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> more}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ու առաքման ևս <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> հասցե}}</translation>
+<translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ու առաքման ևս <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> հասցե}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ու առաքման ևս <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> հասցե}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ու առաքման ևս <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> հասցե}}</translation>
 <translation id="6345878117466430440">Նշել որպես կարդացված</translation>
 <translation id="6363990818884053551">Համաժամացումը սկսելու համար հաստատեք ձեր ինքնությունը</translation>
 <translation id="6364438453358674297">Հեռացնե՞լ առաջարկը պատմությունից:</translation>
@@ -793,6 +793,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="6402652558933147609"><ph name="ERROR_CODE" />՝ <ph name="VIOLATED_URL" /> էջում</translation>
 <translation id="6404511346730675251">Փոփոխել էջանիշը</translation>
 <translation id="6406506848690869874">Համաժամացում</translation>
+<translation id="6407224748847589805">Չհաջողվեց միանալ ձեր համակարգչին։ Ընտրեք հաստատման այլ տարբերակ։</translation>
 <translation id="6410404864818553978">Օգտագործման հիմնական տվյալներ</translation>
 <translation id="6410883413783534063">Միաժամանակ մի քանի էջեր այցելելու համար ներդիրներ բացեք</translation>
 <translation id="6412673304250309937">Ստուգում է URL-ները Chrome-ում պահված վտանգավոր կայքերի ցանկի միջոցով։ Եթե կայքը փորձում է գողանալ ձեր գաղտնաբառը, կամ երբ վնասակար ֆայլ եք ներբեռնում, Chrome-ը կարող է ուղարկել URL-ն ու էջի բովանդակությունը՝ անվտանգ դիտարկման միջոցով ստուգելու համար։</translation>
@@ -838,7 +839,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="663674369910034433">Գաղտնիության, անվտանգության և տվյալների հավաքման հետ կապված լրացուցիչ կարգավորումներին կարող եք ծանոթանալ <ph name="BEGIN_LINK1" />Համաժամացում<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google-ի ծառայություններ<ph name="END_LINK2" /> բաժիններում։</translation>
 <translation id="6643016212128521049">Մաքրել</translation>
 <translation id="6643649862576733715">Դասավորել ըստ պահված տվյալների ծավալի</translation>
-<translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}one{<ph name="CONTACT_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}other{<ph name="CONTACT_PREVIEW" />\u2026 ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}}</translation>
+<translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}one{<ph name="CONTACT_PREVIEW" />\u2026 ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}other{<ph name="CONTACT_PREVIEW" />\u2026 ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}}</translation>
 <translation id="6649642165559792194">Նախադիտել պատկերը <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="6656545060687952787">Սարքեր գտնելու համար Chrome-ին անհրաժեշտ է տեղադրության հասանելիություն: <ph name="BEGIN_LINK" />Թարմացնել թույլտվությունները<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
@@ -861,7 +862,6 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="6813446258015311409">Մուտք գործել Chrome, բացված է։</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">«<ph name="TAB_TITLE" />» ներդիրն ընտրված է</translation>
-<translation id="6845325883481699275">Օգնել ավելի անվտանգ դարձնել Chrome-ը</translation>
 <translation id="6846298663435243399">Բեռնում…</translation>
 <translation id="6850409657436465440">Ներբեռնումն ընթացքում է</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> փակված ներդիր</translation>
@@ -989,14 +989,13 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="7704317875155739195">Ավտոմատ լրացնել որոնման հարցումները և URL-ները</translation>
 <translation id="7707922173985738739">Օգտագործել բջջային ինտերնետ</translation>
 <translation id="7725024127233776428">Ձեր էջանշած էջերը կցուցադրվեն այստեղ</translation>
-<translation id="7746457520633464754">Վտանգավոր կայքերն ու հավելվածները հայտնաբերելու համար Chrome-ը Google-ին է ուղարկում ձեր այցելած որոշ էջերի URL-ներն ու դրանց բովանդակությունը և որոշակի տեղեկություններ համակարգի մասին։</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> սարքից ուղարկված հաղորդագրություն</translation>
 <translation id="7761849928583394409">Ընտրեք ամսաթիվը և ժամը</translation>
 <translation id="7762668264895820836">SD քարտ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Ավելացնել հասցե</translation>
 <translation id="7772032839648071052">Հաստատեք անցաբառը</translation>
 <translation id="7772375229873196092">Փակել <ph name="APP_NAME" />-ը</translation>
-<translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> եղանակ}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> եղանակ}}</translation>
+<translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> եղանակ}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> եղանակ}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> եղանակ}}</translation>
 <translation id="7778840695157240389">Վերադարձեք ավելի ուշ՝ նոր բովանդակություն տեսնելու համար</translation>
 <translation id="7786595606756654269">Google Օգնականն առաջարկում է ավելի հարմար ձայնային որոնում համացանցում և փոխազդեցություն բացված կայքերի հետ։ Google Օգնականը կստանա այն կայքերի հասցեներն ու բովանդակությունը, որոնցից օգտվում եք իր միջոցով։</translation>
 <translation id="7791543448312431591">Ավելացնել</translation>
@@ -1140,7 +1139,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="8662811608048051533">Դուք դուրս կգրվեք կայքերի մեծ մասից։</translation>
 <translation id="8664979001105139458">Այս անունով ֆայլ արդեն գոյություն ունի</translation>
 <translation id="8683039184091909753">պատկեր</translation>
-<translation id="8687353297350450808">{N_BARS,plural, =1{Ազդանշանի ուժգնությունը՝ # գծիկ}one{Signal Strength Level: # bars}other{Ազդանշանի ուժգնությունը՝ # գծիկ}}</translation>
+<translation id="8687353297350450808">{N_BARS,plural, =1{Ազդանշանի ուժգնությունը՝ # գծիկ}one{Ազդանշանի ուժգնությունը՝ # գծիկ}other{Ազդանշանի ուժգնությունը՝ # գծիկ}}</translation>
 <translation id="869891660844655955">Սպառման ժամկետ</translation>
 <translation id="8699120352855309748">Չառաջարկել թարգմանել այս լեզուները</translation>
 <translation id="8712637175834984815">Պատրաստ է</translation>

@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">See details</translation>
 <translation id="1030706264415084469"><ph name="URL" /> wants to permanently store large data on your device</translation>
 <translation id="1032854598605920125">Rotate clockwise</translation>
+<translation id="1036224116832931580">Dino game; tap to jump and play</translation>
 <translation id="1036348656032585052">Turn off</translation>
 <translation id="1038106730571050514">Show suggestions</translation>
 <translation id="1038842779957582377">unknown name</translation>
@@ -278,6 +279,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="192020519938775529">{COUNT,plural, =0{None}=1{1 site}other{# sites}}</translation>
 <translation id="1945968466830820669">You could lose access to your organisation's account or experience identity theft. Chromium recommends changing your password now.</translation>
 <translation id="1947454675006758438">Staple top right</translation>
+<translation id="1958218078413065209">Your highest score is <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Help improve security on the web for everyone by sending <ph name="BEGIN_WHITEPAPER_LINK" />URLs of some pages that you visit, limited system information, and some page content<ph name="END_WHITEPAPER_LINK" /> to Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Privacy policy<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Bookmarks</translation>
 <translation id="1973335181906896915">Serialisation error</translation>
@@ -546,6 +548,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to run safety check in Chrome settings</translation>
 <translation id="3061707000357573562">Patch Service</translation>
 <translation id="3064966200440839136">Leaving incognito mode to pay via an external application. Continue?</translation>
+<translation id="306573536155379004">Game started.</translation>
 <translation id="3080254622891793721">Graphic</translation>
 <translation id="3086579638707268289">Your activity on the web is being monitored</translation>
 <translation id="3087734570205094154">Bottom</translation>
@@ -1542,6 +1545,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6934672428414710184">This name is from your Google Account</translation>
 <translation id="6944692733090228304">You entered your password on a site that’s not managed by <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. To protect your account, don’t reuse your password on other apps and sites.</translation>
 <translation id="6945221475159498467">Select</translation>
+<translation id="6948051842255602737">Game over; your score is <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">To see pickup methods and requirements, select an address</translation>
 <translation id="6949872517221025916">Reset password</translation>
 <translation id="6950684638814147129">Error while parsing JSON value: <ph name="ERROR" /></translation>
@@ -1824,6 +1828,7 @@ Additional details:
 <translation id="7956713633345437162">Mobile bookmarks</translation>
 <translation id="7961015016161918242">Never</translation>
 <translation id="7966803981046576691">Job account type</translation>
+<translation id="79682505114836835">Value '<ph name="VALUE" />' is an invalid hex colour.</translation>
 <translation id="7976214039405368314">Too many requests</translation>
 <translation id="7977538094055660992">Output device</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1951,6 +1956,7 @@ Additional details:
 <translation id="8446884382197647889">Learn More</translation>
 <translation id="8457125768502047971">Indefinite</translation>
 <translation id="8461694314515752532">Encrypt synced data with your own sync passphrase</translation>
+<translation id="8463101686637053101">Dino game; press space to jump and play</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 credit card}other{# credit cards}}</translation>
 <translation id="8473863474539038330">Addresses and more</translation>
 <translation id="8474910779563686872">Show developer details</translation>
@@ -2086,6 +2092,7 @@ Additional details:
 <translation id="8996941253935762404">The site ahead contains harmful programs</translation>
 <translation id="8997023839087525404">The server presented a certificate that was not publicly disclosed using the Certificate Transparency policy. This is a requirement for some certificates, to ensure that they are trustworthy and protect against attackers.</translation>
 <translation id="9001074447101275817">The proxy <ph name="DOMAIN" /> requires a username and password.</translation>
+<translation id="9001963517402879850">Jump!</translation>
 <translation id="9004367719664099443">VR session in progress</translation>
 <translation id="9005998258318286617">Failed to load PDF document.</translation>
 <translation id="9008201768610948239">Ignore</translation>

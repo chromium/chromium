@@ -396,6 +396,7 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Դուք սեղմել եք բարձր կոնտրաստի դյուրանցման ստեղները: Ուզում եք միացնե՞լ այն:</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4333628967105022692">Lacros-ը չի աջակցվում, երբ մեկից ավելի օգտատերեր են մուտք գործում</translation>
 <translation id="4338109981321384717">Խոշորացույց</translation>
 <translation id="4351433414020964307">Օգնականը բեռնվում է...</translation>
 <translation id="4356930093361201197">բարձր կոնտրաստի ռեժիմ</translation>
@@ -968,6 +969,7 @@
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> էկրանը հեռացվեց</translation>
 <translation id="9098969848082897657">Անջատել հեռախոսի ձայնը</translation>
 <translation id="9099154003160514616">Հասանելի է Lacros-ի թարմացում</translation>
+<translation id="9105450214093926548">Մի քանի հաշիվների մուտքը չի աջակցվում, երբ գործարկված է Lacros դիտարկիչը։ Օգտագործեք դիտարկիչի երկրորդ պրոֆիլ Lacros-ում կամ փակեք Lacros-ը և նորից փորձեք։</translation>
 <translation id="9133335900048457298">Հնարավոր չէ տեսագրել պաշտպանված բովանդակությունը</translation>
 <translation id="9151726767154816831">Թարմացնելու համար վերագործարկեք և կատարեք Powerwash:</translation>
 <translation id="9166331175924255663">Միացնել/անջատել «Փոխանակում մոտակա սարքերի հետ» գործառույթի բարձր տեսանելիությունը</translation>

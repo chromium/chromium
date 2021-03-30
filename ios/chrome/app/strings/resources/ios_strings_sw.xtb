@@ -193,6 +193,7 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="2964349545761222050">Zuia Vidakuzi vya Tovuti Nyingine</translation>
 <translation id="2969979262385602596">Haikufaulu kuingia katika akaunti. Tafadhali jaribu tena baadaye.</translation>
 <translation id="2975121486251958312">Ni Hali Fiche tu Inayopatikana</translation>
+<translation id="2981323609054805194">siku zilizopita</translation>
 <translation id="2982481275546140226">Futa Data</translation>
 <translation id="298306318844797842">Weka Njia ya Kulipa...</translation>
 <translation id="2989805286512600854">Fungua katika Kichupo Kipya</translation>
@@ -282,6 +283,7 @@ Fuata hatua zifuatazo:</translation>
 <translation id="3928666092801078803">Unganisha data yangu</translation>
 <translation id="3929457972718048006">Anwani</translation>
 <translation id="3943492037546055397">Manenosiri</translation>
+<translation id="3967266340354872733">Ili upate mipangilio zaidi inayohusiana na faragha, usalama na ukusanyaji wa data, angalia <ph name="BEGIN_LINK" />Usawazishaji<ph name="END_LINK" /> na <ph name="BEGIN_LINK" />Huduma za Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Faili imekamilika kupakuliwa</translation>
 <translation id="3968505803272650567">Dhibiti Mambo Yanayokuvutia</translation>
 <translation id="3989635538409502728">Ondoka</translation>
@@ -555,7 +557,9 @@ Jaribu kutumia nenosiri la kipekee kwa kila tovuti.</translation>
 <translation id="6710079714193676716">Inadhibitiwa na shirika lako. Huenda baadhi ya vipengele visipatikane. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Programu za Google</translation>
 <translation id="6730682669179532099">Imeshindwa Kuhamisha Manenosiri</translation>
+<translation id="6739790015462537309">Saa zilizopita</translation>
 <translation id="6748108480210050150">Kutoka</translation>
+<translation id="6760509555861141183">Rudi kwenye Kichupo cha Hivi Karibuni</translation>
 <translation id="6780034285637185932">Msimbo wa Eneo</translation>
 <translation id="6785453220513215166">Inatuma ripoti ya kuacha kufanya kazi...</translation>
 <translation id="679325081238418596">Pata alamisho zako, historia, manenosiri na mipangilio yako mingine kwenye vifaa vyako vyote.</translation>
@@ -607,7 +611,6 @@ Jaribu kutumia nenosiri la kipekee kwa kila tovuti.</translation>
 <translation id="7272437679830969316">Utambulisho wako haujathibitishwa. Nenosiri halijanakiliwa.</translation>
 <translation id="7291368939935408496">Inatayarisha Manenosiri...</translation>
 <translation id="7293171162284876153">Ili uanze kusawazisha, washa mipangilio ya "Sawazisha data yako kwenye Chrome".</translation>
-<translation id="7299000566397147023">Fungua Kichupo cha Hivi Karibuni Zaidi</translation>
 <translation id="7313347584264171202">Utapata vichupo fiche hapa</translation>
 <translation id="7336264872878993241">Faili imepakuliwa asilimia <ph name="PERCENT" /></translation>
 <translation id="7340958967809483333">Chaguo za Dokezo</translation>

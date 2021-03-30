@@ -12,7 +12,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1315551408014407711">Weka mipangilio ya wasifu wako mpya wa Chromium</translation>
 <translation id="1396446129537741364">Chromium inajaribu kuonyesha manenosiri.</translation>
 <translation id="1414495520565016063">Umeingia kwenye Chromium!</translation>
-<translation id="1414973082589232775">Ili uweze kutumia Rosetta kucheza maudhui yaliyolindwa, ni lazima ufunge kisha ufungue Chromium.</translation>
 <translation id="151962892725702025">Mfumo wa Uendeshaji wa Chromium haukuweza kusawazisha data yako kwa sababu Usawazishaji haupatikani kwa kikoa chako.</translation>
 <translation id="1524282610922162960">Shiriki kichupo cha Chromium</translation>
 <translation id="1553461853655228091">Chromium inahitaji ruhusa ya kufikia kamera yako ili iunde ramani ya 3D ya mazingira yako</translation>
@@ -27,6 +26,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1966382378801805537">Chromium haijafaulu kubainisha wala kuweka kivinjari chaguomsingi</translation>
 <translation id="2008474315282236005">Hatua hii itafuta kipengee 1 kwenye kifaa hiki. Ili urejeshe data yako baadaye, ingia katika Chromium ukitumia <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Ili uangalie kama manenosiri yako mengine ni salama dhidi ya ufichuzi haramu wa data na matatizo mengine ya usalama, <ph name="BEGIN_LINK" />ingia katika akaunti kwenye Chromium<ph name="END_LINK" />.</translation>
+<translation id="2174178932569897599">Weka mipangilio ya Chromium upendavyo</translation>
 <translation id="2185166961232948079">Chromium - Kuingia katika Akaunti ya Mtandao - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Kama unatumia kompyuta pamoja na wengine, marafiki na familia wanaweza kuvinjari tofauti na kusanidi Chromium jinsi wapendavyo.</translation>
 <translation id="2294245788148774212">Si lazima: Tusaidie kuboresha utendaji na vipengele vya Mfumo wa Uendeshaji wa Chromium kwa kutuma kiotomatiki data ya matumizi na uchunguzi kwa Google.</translation>
@@ -137,11 +137,11 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="5480860683791598150">Chromium inahitaji kufikia maelezo ya mahali ulipo ili kushiriki mahali ulipo na tovuti hii</translation>
 <translation id="549669000822060376">Tafadhali subiri Chromium inaposakinisha sasisho mpya ya mfumo.</translation>
 <translation id="5496810170689441661">Chromium inajaribu kubadilisha manenosiri. Andika nenosiri lako la Windows ili uiruhusu.</translation>
+<translation id="5527463683072221100">Fungua PDF katika Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Sasisho la Chromium linapatikana}=1{Sasisho la Chromium linapatikana}other{Sasisho la Chromium limekuwepo kwa siku #}}</translation>
 <translation id="5634636535844844681">Chromium inahitaji Windows 7 au toleo jipya zaidi.</translation>
 <translation id="5653831366781983928">Tafadhali zima kisha uwashe Chromium sasa</translation>
 <translation id="5698481217667032250">Onyesha Chromium katika lugha hii</translation>
-<translation id="5736967399513123100">Ili uiwezeshe Chromium kucheza maudhui yaliyolindwa, unahitaji kusakinisha Rosetta. Ungependa kuisakinisha sasa?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Karibu kwenye Chromium</translation>
 <translation id="5895138241574237353">Zzima na uwashe</translation>
@@ -192,7 +192,6 @@ Baadhi ya vipengele huenda visipatikane. Tafadhali bainisha saraka tofauti ya wa
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (imenakiliwa kwenye Chromium)</translation>
 <translation id="6893813176749746474">Chromium imesasishwa, lakini hujaitumia angalau kwa siku 30.</translation>
-<translation id="6897548120660295439">Rosetta huiwezesha Chromium kucheza maudhui yaliyolindwa kwenye ukurasa huu.</translation>
 <translation id="691026815377248078">Chromium inahitaji ruhusa ya kufikia Bluetooth ili iendelee 
  kuoanisha. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Fungua kiungo katika dirisha fiche la Chromium</translation>

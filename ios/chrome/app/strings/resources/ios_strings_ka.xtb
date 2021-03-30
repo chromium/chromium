@@ -193,6 +193,7 @@
 <translation id="2964349545761222050">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა</translation>
 <translation id="2969979262385602596">ვერ შევიდა. მოგვიანებით სცადეთ.</translation>
 <translation id="2975121486251958312">ხელმისაწვდომია მხოლოდ ინკოგნიტო რეჟიმი</translation>
+<translation id="2981323609054805194">დღის წინ</translation>
 <translation id="2982481275546140226">მონაცემების გასუფთავება</translation>
 <translation id="298306318844797842">გადახდის მეთოდის დამატება…</translation>
 <translation id="2989805286512600854">ახალ ჩანართზე გახსნა</translation>
@@ -282,6 +283,7 @@
 <translation id="3928666092801078803">ჩემი მონაცემების კომბინირება</translation>
 <translation id="3929457972718048006">მისამართები</translation>
 <translation id="3943492037546055397">პაროლები</translation>
+<translation id="3967266340354872733">კონფიდენციალურობასთან, უსაფრთხოებასთან და მონაცემთა შეგროვებასთან დაკავშირებული სხვა პარამეტრებისთვის იხილეთ <ph name="BEGIN_LINK" />სინქრონიზაცია<ph name="END_LINK" /> და <ph name="BEGIN_LINK" />Google სერვისები<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">ჩამოტვირთვა დასრულდა</translation>
 <translation id="3968505803272650567">ინტერესების მართვა</translation>
 <translation id="3989635538409502728">სისტემიდან გამოსვლა</translation>
@@ -555,7 +557,9 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6710079714193676716">მართავს თქვენი ორგანიზაცია. შესაძლოა, ზოგიერთი ფუნქცია მიუწვდომელი იყოს. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">პაროლების ექსპორტი ვერ მოხერხდა</translation>
+<translation id="6739790015462537309">საათის წინ</translation>
 <translation id="6748108480210050150">გამომგზავნი</translation>
+<translation id="6760509555861141183">ბოლოდროინდელ ჩანართზე დაბრუნება</translation>
 <translation id="6780034285637185932">საფოსტო კოდი</translation>
 <translation id="6785453220513215166">შეცდომების შესახებ მოხსენების გაგზავნა…</translation>
 <translation id="679325081238418596">მიიღეთ თქვენი სანიშნეები, ისტორია, პაროლები და სხვა პარამეტრები ყველა თქვენს მოწყობილობაში</translation>
@@ -607,7 +611,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7272437679830969316">თქვენი ვინაობა ვერ დადასტურდა. პაროლი არ დაკოპირდა.</translation>
 <translation id="7291368939935408496">მიმდინარეობს პაროლების მომზადება...</translation>
 <translation id="7293171162284876153">სიქრონიზაციის დასაწყებად ჩართეთ „თქვენი Chrome მონაცემების სინქრონიზაციის“ პარამეტრი.</translation>
-<translation id="7299000566397147023">გახსენით ყველაზე ბოლოდროინდელი ჩანართი</translation>
 <translation id="7313347584264171202">აქ იპოვით თქვენს ინკოგნიტო ჩანართებს</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> პროცენტი ჩამოიტვირთა</translation>
 <translation id="7340958967809483333">Discover-ის ვარიანტები</translation>

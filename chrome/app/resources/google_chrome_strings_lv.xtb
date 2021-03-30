@@ -191,6 +191,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6070348360322141662">Papildu drošības nolūkos Google Chrome šifrēs jūsu datus.</translation>
 <translation id="608006075545470555">Darba profila pievienošana šai pārlūkprogrammai</translation>
 <translation id="6113794647360055231">Pārlūkā Chrome ir veikti uzlabojumi</translation>
+<translation id="6145313976051292476">Atvērt PDF failus pārlūkā Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> — Google Chrome beta versija</translation>
 <translation id="61852838583753520">Atjaunināt &amp;Chrome OS</translation>
@@ -203,7 +204,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> — Google Chrome izstrādātāju versija</translation>
 <translation id="6566149418543181476">Notiek Google Chrome atjaunināšana (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS sistēma</translation>
-<translation id="6650333065969705433">Lai aizsargāta multivides satura atskaņošanai izmantotu Rosetta, jums jārestartē pārlūks Chrome.</translation>
 <translation id="6676384891291319759">Piekļūt internetam</translation>
 <translation id="6679975945624592337">Ļaut pārlūkam Google Chrome darboties fonā</translation>
 <translation id="6739177684496155661">Vai turpināt jaunā Chrome profilā?</translation>
@@ -267,7 +267,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Šis darba profils ir pilnīgi nesaistīts ar jūsu personīgo profilu.</translation>
 <translation id="8556340503434111824">Ir pieejama jauna Google Chrome versija, un tā ir ātrāka nekā jebkad agrāk.</translation>
-<translation id="861359755029082151">Izmantojot Rosetta, pārlūkā Chrome var atskaņot aizsargātu multivides saturu šajā lapā.</translation>
 <translation id="8614913330719544658">Google Chrome nereaģē. Vai restartēt to tūlīt?</translation>
 <translation id="861702415419836452">Pārlūkam Chrome ir nepieciešama atļauja piekļūt jūsu kamerai, lai varētu izveidot jūsu apkārtnes 3D karti</translation>
 <translation id="8625237574518804553">{0,plural, =1{Pārlūks Chrome pēc 1 minūtes tiks restartēts}zero{Pārlūks Chrome pēc # minūtēm tiks restartēts}one{Pārlūks Chrome pēc # minūtes tiks restartēts}other{Pārlūks Chrome pēc # minūtēm tiks restartēts}}</translation>
@@ -281,7 +280,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="8834965163890861871">Google Chrome mēģina rediģēt paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="884296878221830158">Tas nosaka arī to, kāda lapa tiks rādīta, kad atvērsiet pārlūku Chrome vai noklikšķināsiet uz pogas “Sākums”.</translation>
 <translation id="8862326446509486874">Jums nav vajadzīgo tiesību, lai instalētu sistēmas līmenī. Mēģiniet vēlreiz palaist instalēšanas programmu kā administrators.</translation>
-<translation id="8907709077090383765">Lai pārlūkā Chrome iespējotu aizsargāta multivides satura atskaņošanu, jums jāinstalē Rosetta. Vai vēlaties to instalēt tūlīt?</translation>
 <translation id="8914504000324227558">Atkārtoti palaist pārlūkprogrammu Chrome</translation>
 <translation id="8922193594870374009">Lai nosūtītu numuru no vietnes <ph name="ORIGIN" /> uz savu Android tālruni, abās ierīcēs pierakstieties pārlūkā Chrome.</translation>
 <translation id="8986207147630327271">Jūs pievienosiet šai pārlūkprogrammai darba profilu un piešķirsiet administratoram kontroli tikai pār darba profilu.</translation>

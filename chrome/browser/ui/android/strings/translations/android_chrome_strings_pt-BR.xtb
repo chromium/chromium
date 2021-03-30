@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">Versão do aplicativo</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1450753235335490080">Falha no compartilhamento de <ph name="CONTENT_TYPE" /></translation>
+<translation id="147113415845704694">Diga "Qual é a previsão do tempo para hoje?"</translation>
 <translation id="1477626028522505441">Falha no download do arquivo <ph name="FILE_NAME" /> devido a problemas de servidor.</translation>
 <translation id="1492417797159476138">Você já salvou este nome de usuário para este site</translation>
 <translation id="1506061864768559482">Mecanismo de pesquisa</translation>
@@ -268,7 +269,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="2856503607207334158">Falha no login</translation>
 <translation id="2860954141821109167">Verifique se há um aplicativo para telefones ativado neste dispositivo</translation>
 <translation id="2870560284913253234">Site</translation>
-<translation id="2876369937070532032">Quando há risco de segurança, envia para o Google os URLs de algumas páginas que você visita</translation>
 <translation id="2888126860611144412">Sobre o Google Chrome</translation>
 <translation id="2891154217021530873">Para de carregar a página</translation>
 <translation id="2892647708214602204">Você verá uma notificação quando o arquivo estiver pronto</translation>
@@ -311,7 +311,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3157842584138209013">Veja o volume de dados que você economizou no botão Mais opções</translation>
 <translation id="3166827708714933426">Atalhos de guias e janelas</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Navegação segura: protege você e seu dispositivo de sites perigosos</translation>
 <translation id="3205824638308738187">Quase lá.</translation>
 <translation id="3207960819495026254">Adicionado aos favoritos</translation>
 <translation id="3208584281581115441">Confirmar agora</translation>
@@ -506,6 +505,7 @@ Essa tecnologia ainda está em desenvolvimento ativo e está disponível apenas 
 <translation id="4561979708150884304">Sem conexão</translation>
 <translation id="4565377596337484307">Ocultar senha</translation>
 <translation id="4572422548854449519">Fazer login em conta gerenciada</translation>
+<translation id="4576892426230499203">Tente outra opção de verificação</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuto atrás}one{# minutos atrás}other{# minutos atrás}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Esta página off-line é de <ph name="CREATION_TIME" /> e pode ser diferente da versão on-line.</translation>
@@ -571,6 +571,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="49268022542405662">Suas senhas serão exportadas e transferidas por download como um arquivo de texto. Elas ficarão visíveis para qualquer pessoa e app que tiver acesso à pasta de destino.</translation>
 <translation id="4932247056774066048">Você está saindo de uma conta gerenciada por <ph name="DOMAIN_NAME" />, por isso seus dados do Chrome serão excluídos deste dispositivo. No entanto, eles permanecerão na sua Conta do Google.</translation>
 <translation id="4936039914467572121">Acesse este site mais rapidamente</translation>
+<translation id="4941179133499732445">Toque no microfone para pesquisar usando sua voz</translation>
 <translation id="4943703118917034429">Realidade virtual</translation>
 <translation id="4943872375798546930">Nenhum resultado</translation>
 <translation id="4961107849584082341">Traduza esta página para qualquer idioma</translation>
@@ -585,7 +586,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5011311129201317034"><ph name="SITE" /> deseja se conectar</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Permitir</translation>
-<translation id="5040262127954254034">Privacidade</translation>
+<translation id="5061533557687621530">Para consultar a previsão do tempo, toque no microfone e diga "Qual é a previsão do tempo para hoje?"</translation>
 <translation id="5087580092889165836">Adicionar cartão</translation>
 <translation id="5091249083535528968">Dados de uso estendidos</translation>
 <translation id="509429900233858213">Ocorreu um erro.</translation>
@@ -600,6 +601,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Falha em 1 download.}one{Falha em # download.}other{Falha em # downloads.}}</translation>
 <translation id="5170568018924773124">Mostrar na pasta</translation>
 <translation id="5184329579814168207">Abrir no Google Chrome</translation>
+<translation id="5188992787241350004">Pesquise usando a voz</translation>
 <translation id="5191251636205085390">Descubra e controle novas tecnologias para substituir cookies de terceiros</translation>
 <translation id="5193988420012215838">Copiado para a área de transferência</translation>
 <translation id="5199929503336119739">Perfil de trabalho</translation>
@@ -638,6 +640,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5441522332038954058">Ir para a barra de endereço</translation>
 <translation id="544776284582297024">Para abrir guias e acessar páginas diferentes ao mesmo tempo, toque no botão "abrir guias"</translation>
 <translation id="545042621069398927">Acelerando seu download.</translation>
+<translation id="5454166040603940656">com <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Fazer o download da página</translation>
 <translation id="548278423535722844">Abrir no app de mapa</translation>
 <translation id="5483197086164197190">Navegar no Chrome</translation>
@@ -778,6 +781,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6316139424528454185">Versão Android não compatível</translation>
 <translation id="6324034347079777476">Sincronização do sistema Android desativada</translation>
 <translation id="6324977638108296054">Não é possível criar um link para o conteúdo destacado</translation>
+<translation id="6324997754869598316">(Erro <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Compartilhar via <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Criptografia</translation>
 <translation id="6341580099087024258">Perguntar onde salvar os arquivos</translation>
@@ -794,6 +798,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> em <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Editar favorito</translation>
 <translation id="6406506848690869874">Sincronizar</translation>
+<translation id="6407224748847589805">Não foi possível se conectar ao seu computador. Tente outra opção de verificação.</translation>
 <translation id="6410404864818553978">Dados de uso básicos</translation>
 <translation id="6410883413783534063">Abra guias para acessar páginas diferentes ao mesmo tempo</translation>
 <translation id="6412673304250309937">Verifica se os URLs estão em uma lista de sites não seguros armazenada no Chrome. Se um site tentar roubar sua senha ou se você fizer o download de um arquivo nocivo, o Chrome também poderá enviar URLs, incluindo partes do conteúdo da página, para o "Navegação segura".</translation>
@@ -862,7 +867,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6813446258015311409">Fazer login no Chrome, aberta.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">A guia <ph name="TAB_TITLE" /> está selecionada</translation>
-<translation id="6845325883481699275">Ajudar a melhorar a segurança do Chrome</translation>
 <translation id="6846298663435243399">Carregando…</translation>
 <translation id="6850409657436465440">Seu download ainda está em andamento</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> guias fechadas</translation>
@@ -990,7 +994,6 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="7704317875155739195">Preencher automaticamente pesquisas e URLs</translation>
 <translation id="7707922173985738739">Usar dados móveis</translation>
 <translation id="7725024127233776428">As páginas favoritas são exibidas aqui</translation>
-<translation id="7746457520633464754">Para detectar apps e sites perigosos, o Chrome envia para o Google URLs de algumas páginas visitadas, informações limitadas do sistema e um pouco do conteúdo da página</translation>
 <translation id="7757787379047923882">Texto compartilhado por <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Escolher data e hora</translation>
 <translation id="7762668264895820836">Cartão SD <ph name="SD_CARD_NUMBER" /></translation>

@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Chromium no pot utilitzar la càmera en aquest moment</translation>
 <translation id="2195025571279539885">La propera vegada, voleu que Chromium s'ofereixi per traduir les pàgines d'aquest lloc escrites en <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="2590893390871230428">Sincronitza les dades de Chromium</translation>
-<translation id="259614951763923692">Si permets que Chromium sàpiga la teva ubicació, l'enviarà al motor de cerca predeterminat i als llocs web a què donis permís. Pot ser que els llocs web demanin la teva ubicació quan tinguin informació local per mostrar-te, com ara botigues o notícies a prop.</translation>
 <translation id="2650312721222849884">Per veure les pestanyes des de tots els llocs on facis servir Chromium, activa la sincronització</translation>
 <translation id="2730884209570016437">Chromium no pot utilitzar la càmera perquè l'està utilitzant una altra aplicació</translation>
 <translation id="2915596697727466327">Chromium utilitza Face ID per garantir l'accés autoritzat a les contrasenyes.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Voleu tancar la sessió de Chromium?</translation>
 <translation id="6424492062988593837">Chrome ara és millor. Hi ha una versió nova disponible.</translation>
 <translation id="6820823224820483452">Chromium no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà.</translation>
+<translation id="6827294685447036764">Si permets que Chromium sàpiga la teva ubicació, l'enviarà als llocs web a què donis permís. Pot ser que els llocs web demanin la teva ubicació quan tinguin informació local per mostrar-te, com ara botigues o notícies a prop.</translation>
 <translation id="7018284295775193585">Chromium no es pot actualitzar</translation>
 <translation id="7099326575020694068">Chromium no pot utilitzar la càmera en mode de visualització dividida</translation>
 <translation id="7118091470949186573">Ara pots utilitzar Chromium cada vegada que toquis enllaços en missatges, documents i altres aplicacions</translation>

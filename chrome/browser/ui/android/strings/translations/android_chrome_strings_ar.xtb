@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">تعذَّر تسجيل الدخول.</translation>
 <translation id="2860954141821109167">يُرجى التأكُّد من تفعيل تطبيق هاتف على هذا الجهاز.</translation>
 <translation id="2870560284913253234">الموقع</translation>
-<translation id="2876369937070532032">‏يتم إرسال عناوين URL لبعض الصفحات التي تزورها إلى Google، عندما يكون أمانك في خطر</translation>
 <translation id="2888126860611144412">‏لمحة عن Chrome</translation>
 <translation id="2891154217021530873">إيقاف تحميل الصفحة</translation>
 <translation id="2892647708214602204">سيظهر لك إشعار عندما يكون هذا الملف جاهزًا للتنزيل.</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">الاطّلاع على مقدار البيانات التي وفّرتها بالنقر على "مزيد من الخيارات"</translation>
 <translation id="3166827708714933426">اختصارات علامات التبويب والنوافذ</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">التصفُّح الآمن (يحميك ويحمي جهازك من المواقع الإلكترونية الضارة)</translation>
 <translation id="3205824638308738187">أوشك التحديث على الانتهاء.</translation>
 <translation id="3207960819495026254">تمت إضافتها إلى الإشارات المرجعية.</translation>
 <translation id="3208584281581115441">التحقّق الآن</translation>
@@ -505,6 +503,7 @@
 <translation id="4561979708150884304">لا يتوفّر اتصال بالإنترنت</translation>
 <translation id="4565377596337484307">إخفاء كلمة المرور</translation>
 <translation id="4572422548854449519">تسجيل الدخول إلى الحساب المدار</translation>
+<translation id="4576892426230499203">تجربة خيار آخر لإثبات الهوية</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{قبل دقيقة واحدة (#)}zero{قبل # دقيقة}two{قبل دقيقتين (#)}few{قبل # دقائق}many{قبل # دقيقة}other{قبل # دقيقة}}</translation>
 <translation id="4587589328781138893">المواقع</translation>
 <translation id="4594952190837476234">تم إنشاء هذه الصفحة المتوفّرة بلا اتصال بالإنترنت في <ph name="CREATION_TIME" />، وقد تختلف عن النسخة المتوفِّرة على الإنترنت.</translation>
@@ -584,7 +583,6 @@
 <translation id="5011311129201317034">يريد <ph name="SITE" /> الاتصال</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">سماح</translation>
-<translation id="5040262127954254034">الخصوصية</translation>
 <translation id="5087580092889165836">إضافة بطاقة</translation>
 <translation id="5091249083535528968">بيانات الاستخدام الموسَّعة</translation>
 <translation id="509429900233858213">حدث خطأ.</translation>
@@ -637,6 +635,7 @@
 <translation id="5441522332038954058">الانتقال السريع إلى شريط العناوين</translation>
 <translation id="544776284582297024">لفتح علامات تبويب وزيارة صفحات مختلفة في آنٍ واحد، انقر على زر "علامات التبويب المفتوحة".</translation>
 <translation id="545042621069398927">جارٍ تسريع التنزيل.</translation>
+<translation id="5454166040603940656">مع <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">تنزيل الصفحة</translation>
 <translation id="548278423535722844">فتح في تطبيق الخرائط</translation>
 <translation id="5483197086164197190">‏التنقُّل في Chrome</translation>
@@ -777,6 +776,7 @@
 <translation id="6316139424528454185">‏إصدار Android غير متوافق</translation>
 <translation id="6324034347079777476">‏تمّ إيقاف مزامنة نظام Android</translation>
 <translation id="6324977638108296054">يتعذّر إنشاء رابط يؤدي إلى النصوص التي تم تمييزها.</translation>
+<translation id="6324997754869598316">(الخطأ <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">المشاركة عن طريق <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">ترميز</translation>
 <translation id="6341580099087024258">السؤال عن مكان حفظ الملفات</translation>
@@ -793,6 +793,7 @@
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> في <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">تعديل الإشارة المرجعية</translation>
 <translation id="6406506848690869874">المزامنة</translation>
+<translation id="6407224748847589805">تعذّر الاتصال بجهاز الكمبيوتر. يمكنك تجربة خيار آخر لإثبات الهوية.</translation>
 <translation id="6410404864818553978">بيانات الاستخدام الأساسية</translation>
 <translation id="6410883413783534063">يمكنك فتح علامات تبويب لزيارة صفحات مختلفة في آنٍ واحد.</translation>
 <translation id="6412673304250309937">‏يعمل على التحقّق من عناوين URL التي تحتوي على قائمة بمواقع إلكترونية غير آمنة مُخزّنة في Chrome. وإذا حاول موقع إلكتروني سرقة كلمة المرور أو إذا نزّلت ملفًا ضارًا، قد يرسل متصفّح Chrome أيضًا عناوين URL تتضمّن أجزاء من محتوى الصفحة إلى "التصفّح الآمن".</translation>
@@ -861,7 +862,6 @@
 <translation id="6813446258015311409">‏تسجيل الدخول إلى Chrome، تم فتح البطاقة السفلية.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">تم اختيار علامة التبويب <ph name="TAB_TITLE" />.</translation>
-<translation id="6845325883481699275">‏المساعدة في تحسين أمان Chrome</translation>
 <translation id="6846298663435243399">جارٍ التحميل…</translation>
 <translation id="6850409657436465440">لا يزال التنزيل قيد التقدُّم</translation>
 <translation id="6850830437481525139">تم إغلاق <ph name="TAB_COUNT" /> علامة تبويب</translation>
@@ -989,7 +989,6 @@
 <translation id="7704317875155739195">‏الإكمال التلقائي لعناوين URL وعمليات البحث</translation>
 <translation id="7707922173985738739">استخدام بيانات الجوّال</translation>
 <translation id="7725024127233776428">يتم عرض الصفحات التي يتم وضع إشارة عليها هنا.</translation>
-<translation id="7746457520633464754">‏لرصد التطبيقات ومواقع الويب الضارة، يُرسل Chrome عناوين URL لبعض الصفحات التي زرتها ومعلومات محدودة للنظام وبعض أنواع محتوى الصفحات إلى Google.</translation>
 <translation id="7757787379047923882">تمت مشاركة النص من <ph name="DEVICE_NAME" />.</translation>
 <translation id="7761849928583394409">اختيار التاريخ والوقت</translation>
 <translation id="7762668264895820836">‏بطاقة SD <ph name="SD_CARD_NUMBER" /></translation>

@@ -187,6 +187,7 @@
 <translation id="6070348360322141662">Pentru un plus de securitate, Google Chrome îți va cripta datele</translation>
 <translation id="608006075545470555">Adaugă un profil de serviciu în acest browser</translation>
 <translation id="6113794647360055231">Chrome a devenit și mai bun</translation>
+<translation id="6145313976051292476">Deschide fișierele PDF în Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="61852838583753520">Actualizați sistemul de operare &amp;Chrome</translation>
@@ -199,7 +200,6 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome se actualizează (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Sistemul de operare Chrome</translation>
-<translation id="6650333065969705433">Ca să poți reda conținut media protejat în Rosetta, trebuie să repornești Chrome.</translation>
 <translation id="6676384891291319759">Accesează internetul</translation>
 <translation id="6679975945624592337">Permite Google Chrome să ruleze în fundal</translation>
 <translation id="6739177684496155661">Continui cu un profil Chrome nou?</translation>
@@ -263,7 +263,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Acest profil de serviciu este complet separat de profilul tău personal.</translation>
 <translation id="8556340503434111824">Este disponibilă o nouă versiune de Google Chrome, iar aceasta este mai rapidă ca oricând.</translation>
-<translation id="861359755029082151">Rosetta face posibilă redarea conținutului media protejat din această pagină în Chrome.</translation>
 <translation id="8614913330719544658">Google Chrome nu mai răspunde. Îl repornești acum?</translation>
 <translation id="861702415419836452">Chrome are nevoie de permisiunea de a accesa camera foto pentru a crea o hartă 3D a lucrurilor din jurul tău</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome se va relansa într-un minut}few{Chrome se va relansa în # minute}other{Chrome se va relansa în # de minute}}</translation>
@@ -277,7 +276,6 @@
 <translation id="8834965163890861871">Google Chrome încearcă să modifice parolele. Pentru a permite acest lucru, introdu parola pentru Windows.</translation>
 <translation id="884296878221830158">Stabilește și ce pagină se afișează când pornești Chrome sau dai clic pe butonul Pagina principală.</translation>
 <translation id="8862326446509486874">Nu ai drepturile adecvate pentru instalarea la nivel de sistem. Încearcă să rulezi din nou programul de instalare ca Administrator.</translation>
-<translation id="8907709077090383765">Ca să poți reda conținut media protejat în Chrome, trebuie să instalezi Rosetta. Vrei să instalezi acum?</translation>
 <translation id="8914504000324227558">Relansați Chrome</translation>
 <translation id="8922193594870374009">Pentru a trimite un număr de pe <ph name="ORIGIN" /> pe telefonul Android, conectează-te la Chrome pe ambele dispozitive.</translation>
 <translation id="8986207147630327271">Adaugi un profil de serviciu în acest browser și îi acorzi administratorului permisiunea de a gestiona numai profilul de serviciu.</translation>

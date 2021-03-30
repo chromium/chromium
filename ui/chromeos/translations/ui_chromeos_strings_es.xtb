@@ -225,7 +225,7 @@
 <translation id="3408236822532681288">Alemán (Alemania) con teclado Neo 2</translation>
 <translation id="3414856743105198592">Si formateas las unidades extraíbles, se borrarán todos los datos. ¿Quieres continuar?</translation>
 <translation id="3437801641691368414">Hora de creación</translation>
-<translation id="343907260260897561">Cámara instantánea</translation>
+<translation id="343907260260897561">Cámara de fotos</translation>
 <translation id="3455931012307786678">Estonio</translation>
 <translation id="3466147780910026086">Escaneando dispositivo multimedia...</translation>
 <translation id="3468522857997926824">Se ha realizado la copia de seguridad de <ph name="FILE_COUNT" /> fotos en <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />¡No desconectes todavía el dispositivo!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Si desconectas el dispositivo mientras se utiliza, puedes perder tus datos. Espera hasta que finalice la operación y, a continuación, desconecta el dispositivo con la aplicación Archivos.</translation>
+<translation id="5159560892333415631">Vaciar papelera</translation>
 <translation id="5163869187418756376">Se ha producido un error al compartir contenido. Comprueba la conexión e inténtalo de nuevo más tarde.</translation>
 <translation id="516592729076796170">Programmer Dvorak de EE. UU.</translation>
 <translation id="5170477580121653719">Espacio libre de Google Drive: <ph name="SPACE_AVAILABLE" /></translation>
@@ -419,6 +420,7 @@
 <translation id="5275973617553375938">Archivos recuperados de Google Drive</translation>
 <translation id="5288441970121584418">Hamburguesa</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">¿Seguro que quieres vaciar la papelera?</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318819489018851358">Compartir con Linux</translation>
 <translation id="5323213332664049067">español (Latinoamérica)</translation>
@@ -508,7 +510,7 @@
 <translation id="6248400709929739064">Habilitar subtítulos</translation>
 <translation id="6269630227984243955">Malayo</translation>
 <translation id="6287852322318138013">Seleccionar una aplicación para abrir este archivo</translation>
-<translation id="6321303798550928047">Saludar con la mano</translation>
+<translation id="6321303798550928047">Mano saludando</translation>
 <translation id="6339145975392024142">EE. UU. (PC)</translation>
 <translation id="6346310558342052870">Acceso restringido</translation>
 <translation id="6356685157277930264">Ventana de comentarios de archivos</translation>
@@ -783,6 +785,7 @@
 <translation id="9154418932169119429">Esta imagen no está disponible sin conexión.</translation>
 <translation id="9172592259078059678">Guyaratí (transliteración)</translation>
 <translation id="9173120999827300720">Inglés (EE. UU.) con teclado internacional</translation>
+<translation id="9174050671906956834">Los elementos de la papelera se eliminan definitivamente después de 30 días.</translation>
 <translation id="9189836632794948435">Kazajo</translation>
 <translation id="9213073329713032541">Se ha iniciado la instalación correctamente.</translation>
 <translation id="9219103736887031265">Imágenes</translation>

@@ -282,6 +282,7 @@
 <translation id="3928666092801078803">שילוב הנתונים שלי</translation>
 <translation id="3929457972718048006">כתובות</translation>
 <translation id="3943492037546055397">סיסמאות</translation>
+<translation id="3967266340354872733">‏אפשר למצוא הגדרות נוספות בנושא פרטיות, אבטחה ואיסוף נתונים בדפים <ph name="BEGIN_LINK" />סנכרון<ph name="END_LINK" /> ו<ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="3968505803272650567">ניהול תחומי עניין</translation>
 <translation id="3989635538409502728">יציאה</translation>
@@ -556,6 +557,7 @@
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">אי אפשר לייצא סיסמאות</translation>
 <translation id="6748108480210050150">מאת</translation>
+<translation id="6760509555861141183">חזרה לכרטיסייה הקודמת</translation>
 <translation id="6780034285637185932">מיקוד</translation>
 <translation id="6785453220513215166">שליחת דוח קריסה מתבצעת...</translation>
 <translation id="679325081238418596">קבלת הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות בכל המכשירים</translation>
@@ -607,7 +609,6 @@
 <translation id="7272437679830969316">לא ניתן לאמת את הזהות שלך. הסיסמה לא הועתקה.</translation>
 <translation id="7291368939935408496">הכנת הסיסמאות מתבצעת...</translation>
 <translation id="7293171162284876153">‏כדי להתחיל לסנכרן צריך להפעיל את האפשרות "סנכרון הנתונים מ-Chrome".</translation>
-<translation id="7299000566397147023">פתיחת הכרטיסייה האחרונה</translation>
 <translation id="7313347584264171202">הכרטיסיות במצב אנונימי זמינות כאן</translation>
 <translation id="7336264872878993241">הושלמה הורדה של <ph name="PERCENT" /> אחוז</translation>
 <translation id="7340958967809483333">‏אפשרויות של Discover</translation>

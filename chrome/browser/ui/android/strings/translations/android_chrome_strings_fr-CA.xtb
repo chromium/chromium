@@ -268,7 +268,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2856503607207334158">Échec de connexion</translation>
 <translation id="2860954141821109167">Assurez-vous qu'une application de téléphonie est activée sur cet appareil</translation>
 <translation id="2870560284913253234">Site</translation>
-<translation id="2876369937070532032">Envoie des URL de certaines pages que vous visitez à Google, lorsque votre sécurité pourrait être compromise</translation>
 <translation id="2888126860611144412">À propos de Google Chrome</translation>
 <translation id="2891154217021530873">Arrêter le chargement de la page</translation>
 <translation id="2892647708214602204">Vous verrez une notification lorsque ce fichier sera prêt</translation>
@@ -311,7 +310,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3157842584138209013">Affichez la quantité de données enregistrées à partir du bouton Plus d'options</translation>
 <translation id="3166827708714933426">Raccourcis relatifs aux onglets et aux fenêtres</translation>
 <translation id="3169472444629675720">Découvrir</translation>
-<translation id="3181954750937456830">Navigation sécurisée (vous protège, vous et votre appareil, des sites dangereux)</translation>
 <translation id="3205824638308738187">C'est presque fini!</translation>
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3208584281581115441">Vérifier maintenant</translation>
@@ -505,6 +503,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4561979708150884304">Aucune connexion</translation>
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
 <translation id="4572422548854449519">Connectez-vous à un compte géré</translation>
+<translation id="4576892426230499203">Essayez avec une autre option de vérification</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Il y a # minute}one{Il y a # minute}other{Il y a # minutes}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Cette page hors connexion a été créée le <ph name="CREATION_TIME" /> et peut différer de la version en ligne.</translation>
@@ -584,7 +583,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5011311129201317034"><ph name="SITE" /> veut se connecter</translation>
 <translation id="5016205925109358554">Avec empattement</translation>
 <translation id="5039804452771397117">Autoriser</translation>
-<translation id="5040262127954254034">Confidentialité</translation>
 <translation id="5087580092889165836">Ajouter une carte</translation>
 <translation id="5091249083535528968">Données d'utilisation étendues</translation>
 <translation id="509429900233858213">Une erreur s'est produite.</translation>
@@ -637,6 +635,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5441522332038954058">Accéder à la barre d'adresse</translation>
 <translation id="544776284582297024">Pour ouvrir des onglets et visiter différentes pages en même temps, touchez le bouton des onglets ouverts</translation>
 <translation id="545042621069398927">Accélération de votre téléchargement en cours…</translation>
+<translation id="5454166040603940656">avec <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Télécharger la page</translation>
 <translation id="548278423535722844">Ouvrir dans l'application Maps</translation>
 <translation id="5483197086164197190">Naviguer dans Chrome</translation>
@@ -777,6 +776,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6316139424528454185">Version Android non compatible</translation>
 <translation id="6324034347079777476">La synchronisation du système Android est désactivée</translation>
 <translation id="6324977638108296054">Impossible de créer un lien vers l'élément en surbrillance</translation>
+<translation id="6324997754869598316">(Erreur <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Partager à l'aide de <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Chiffrement</translation>
 <translation id="6341580099087024258">Demander où enregistrer les fichiers</translation>
@@ -793,6 +793,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> sur <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Modifier le favori</translation>
 <translation id="6406506848690869874">Synchronisation</translation>
+<translation id="6407224748847589805">Impossible d'établir la connexion avec votre ordinateur. Essayez avec une autre option de vérification.</translation>
 <translation id="6410404864818553978">Données d'utilisation de base</translation>
 <translation id="6410883413783534063">Ouvrez des onglets pour visiter différentes pages en même temps</translation>
 <translation id="6412673304250309937">Il vérifie les URL en fonction d'une liste de sites non sécuritaires stockée dans Chrome. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la navigation sécurisée.</translation>
@@ -861,7 +862,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6813446258015311409">Se connecter à Chrome, ouvert.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, onglet, sélectionné</translation>
-<translation id="6845325883481699275">Contribuer à améliorer la sécurité de Chrome</translation>
 <translation id="6846298663435243399">Chargement en cours...</translation>
 <translation id="6850409657436465440">Votre téléchargement est toujours en cours</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> onglets fermés</translation>
@@ -989,7 +989,6 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="7704317875155739195">Saisie semi-automatique des recherches et des URL</translation>
 <translation id="7707922173985738739">Utiliser les données mobiles</translation>
 <translation id="7725024127233776428">Les pages que vous ajoutez aux favoris s'affichent ici</translation>
-<translation id="7746457520633464754">Pour détecter les applications et les sites dangereux, Chrome envoie à Google l'URL de certaines pages que vous visitez, certaines données système et du contenu partiel des pages en question</translation>
 <translation id="7757787379047923882">Texte partagé à partir de <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Sélectionner une date et une heure</translation>
 <translation id="7762668264895820836">Carte SD <ph name="SD_CARD_NUMBER" /></translation>

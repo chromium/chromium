@@ -282,6 +282,7 @@ Følg vejledningen nedenfor:</translation>
 <translation id="3928666092801078803">Kombiner mine data</translation>
 <translation id="3929457972718048006">Adresser</translation>
 <translation id="3943492037546055397">Adgangskoder</translation>
+<translation id="3967266340354872733">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling under <ph name="BEGIN_LINK" />Synkronisering<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" /></translation>
 <translation id="3967822245660637423">Download fuldført</translation>
 <translation id="3968505803272650567">Administrer interesser</translation>
 <translation id="3989635538409502728">Log ud</translation>
@@ -556,6 +557,7 @@ Du bør bruge en unik adgangskode for hvert website.</translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Der kan ikke eksporteres adgangskoder</translation>
 <translation id="6748108480210050150">Fra</translation>
+<translation id="6760509555861141183">Gå tilbage til den seneste fane</translation>
 <translation id="6780034285637185932">Postnummer</translation>
 <translation id="6785453220513215166">Der sendes en nedbrudsrapport...</translation>
 <translation id="679325081238418596">Få dine bogmærker, din historik, dine adgangskoder og dine indstillinger på alle dine enheder</translation>
@@ -607,7 +609,6 @@ Du bør bruge en unik adgangskode for hvert website.</translation>
 <translation id="7272437679830969316">Din identitet kunne ikke bekræftes. Adgangskoden blev ikke kopieret.</translation>
 <translation id="7291368939935408496">Forbereder adgangskoder...</translation>
 <translation id="7293171162284876153">Aktivér "Synkroniser dine Chrome-data" for starte synkroniseringen.</translation>
-<translation id="7299000566397147023">Åbn den seneste brugte fane</translation>
 <translation id="7313347584264171202">Her finder du dine inkognitofaner</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> procent er downloadet</translation>
 <translation id="7340958967809483333">Indstillinger for Discover</translation>

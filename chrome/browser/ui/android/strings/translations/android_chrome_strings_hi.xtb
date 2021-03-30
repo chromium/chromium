@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">साइन इन नहीं हो सका</translation>
 <translation id="2860954141821109167">पक्का करें कि इस डिवाइस पर फ़ोन ऐप्लिकेशन चालू है</translation>
 <translation id="2870560284913253234">साइट</translation>
-<translation id="2876369937070532032">आपकी सुरक्षा को खतरा होने पर उन पेज के यूआरएल भेजे जाते हैं जिन पर आप Google के ज़रिए जाते हैं.</translation>
 <translation id="2888126860611144412">Chrome के बारे में</translation>
 <translation id="2891154217021530873">पेज को लोड करना रोकें</translation>
 <translation id="2892647708214602204">इस फ़ाइल के तैयार होने पर आपको एक सूचना दिखेगी</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">ज़्यादा विकल्प बटन से देखें कि आपने कितना डेटा बचाया है</translation>
 <translation id="3166827708714933426">टैब और विंडो शॉर्टकट</translation>
 <translation id="3169472444629675720">तलाश करें</translation>
-<translation id="3181954750937456830">सुरक्षित ब्राउज़िंग (आपकी और आपके डिवाइस की खतरनाक साइट से सुरक्षा करती है)</translation>
 <translation id="3205824638308738187">करीब-करीब पूरा हो गया!</translation>
 <translation id="3207960819495026254">बुकमार्क किया गया</translation>
 <translation id="3208584281581115441">अभी देखें</translation>
@@ -505,6 +503,7 @@
 <translation id="4561979708150884304">कोई कनेक्शन नहीं</translation>
 <translation id="4565377596337484307">पासवर्ड छिपाएं</translation>
 <translation id="4572422548854449519">प्रबंधित खाते में साइन इन करें</translation>
+<translation id="4576892426230499203">पुष्टि करने के लिए कोई दूसरा तरीका आज़माएं</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# मिनट पहले}one{# मिनट पहले}other{# मिनट पहले}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">यह पेज <ph name="CREATION_TIME" /> का है और यह ऑनलाइन वर्शन से अलग हो सकता है.</translation>
@@ -584,7 +583,6 @@
 <translation id="5011311129201317034"><ph name="SITE" /> कनेक्ट करना चाहती है</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">अनुमति दें</translation>
-<translation id="5040262127954254034">निजता</translation>
 <translation id="5087580092889165836">कार्ड जोड़ें</translation>
 <translation id="5091249083535528968">इस्तेमाल के बारे में ज़्यादा डेटा</translation>
 <translation id="509429900233858213">कोई गड़बड़ी हुई.</translation>
@@ -637,6 +635,7 @@
 <translation id="5441522332038954058">सीधे पता बार पर जाएं</translation>
 <translation id="544776284582297024">टैब खोलने और एक ही समय में अलग-अलग पेजों पर जाने के लिए, 'टैब खोलें' बटन पर टैप करें</translation>
 <translation id="545042621069398927">आपके डाउनलोड की गति बढ़ाई जा रही है.</translation>
+<translation id="5454166040603940656"><ph name="PROVIDER" /> के साथ</translation>
 <translation id="5456381639095306749">पेज डाउनलोड करें</translation>
 <translation id="548278423535722844">मैप ऐप्लिकेशन में खोलें</translation>
 <translation id="5483197086164197190">Navigate Chrome</translation>
@@ -777,6 +776,7 @@
 <translation id="6316139424528454185">Android वर्शन काम नहीं कर रहा है</translation>
 <translation id="6324034347079777476">Android सिस्टम समन्वयन अक्षम है</translation>
 <translation id="6324977638108296054">हाइलाइट किए गए टेक्स्ट का लिंक नहीं बनाया जा सकता</translation>
+<translation id="6324997754869598316">(गड़बड़ी <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> के द्वारा शेयर करें</translation>
 <translation id="6337234675334993532">सुरक्षित करने का तरीका</translation>
 <translation id="6341580099087024258">फ़ाइलें सेव करने की जगह पूछें</translation>
@@ -793,6 +793,7 @@
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> पर <ph name="ERROR_CODE" /></translation>
 <translation id="6404511346730675251">बुकमार्क में बदलाव करें</translation>
 <translation id="6406506848690869874">सिंक</translation>
+<translation id="6407224748847589805">आपके कंप्यूटर से कनेक्ट नहीं किया जा सका. पुष्टि करने के लिए कोई दूसरा तरीका आज़माएं.</translation>
 <translation id="6410404864818553978">इस्तेमाल के बारे में बुनियादी डेटा</translation>
 <translation id="6410883413783534063">एक ही समय में अलग-अलग पेजों पर जाने के लिए कई टैब खोलें</translation>
 <translation id="6412673304250309937">Chrome में पहले से सेव असुरक्षित साइटों के साथ यूआरएल की जांच करता है. अगर कोई साइट आपका पासवर्ड चुराने की कोशिश करती है या आप कोई नुकसान पहुंचाने वाली फ़ाइल डाउनलोड करते हैं, तो Chrome सुरक्षित ब्राउज़िंग की सेवा को उनका यूआरएल भेजता है. यूआरएल के साथ इनमें उन पेज की कुछ सामग्री भी शामिल होती है.</translation>
@@ -861,7 +862,6 @@
 <translation id="6813446258015311409">'Chrome में साइन इन करें' पेज खोला गया.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, टैब, चुना गया</translation>
-<translation id="6845325883481699275">'Chrome सुरक्षा' को बेहतर बनाने में मदद करें</translation>
 <translation id="6846298663435243399">लोड हो रहा है…</translation>
 <translation id="6850409657436465440">आपका डाउनलोड अब भी जारी है</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> टैब बंद किए गए</translation>
@@ -989,7 +989,6 @@
 <translation id="7704317875155739195">खोजों और यूआरएल को अपने आप पूरा करें</translation>
 <translation id="7707922173985738739">मोबाइल डेटा का उपयोग करें</translation>
 <translation id="7725024127233776428">आप जो पेज बुकमार्क करते हैं वे यहां दिखाई देंगे</translation>
-<translation id="7746457520633464754">खतरनाक ऐप्लिकेशन और साइटों का पता लगाने के लिए, Chrome ऐसे कुछ पेज का यूआरएल Google को भेजता है जिन पर आप जाते हैं. साथ ही, वह सिस्टम की सीमित जानकारी और पेज की कुछ सामग्री भी Google को भेजता है</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> से टेक्स्ट शेयर किया गया</translation>
 <translation id="7761849928583394409">तारीख और समय चुनें</translation>
 <translation id="7762668264895820836">SD कार्ड <ph name="SD_CARD_NUMBER" /></translation>

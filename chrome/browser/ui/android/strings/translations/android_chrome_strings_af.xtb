@@ -268,7 +268,6 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="2856503607207334158">Kon nie aanmeld nie</translation>
 <translation id="2860954141821109167">Maak seker dat 'n foonprogram op hierdie toestel geaktiveer is</translation>
 <translation id="2870560284913253234">Werf</translation>
-<translation id="2876369937070532032">Stuur URL'e van sommige bladsye wat jy besoek aan Google wanneer jou sekuriteit bedreig word</translation>
 <translation id="2888126860611144412">Meer oor Chrome</translation>
 <translation id="2891154217021530873">Stop bladsylaai</translation>
 <translation id="2892647708214602204">Jy sal 'n kennisgewing sien wanneer hierdie lêer gereed is</translation>
@@ -311,7 +310,6 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="3157842584138209013">Sien deur die Meer Opsies-knoppie hoeveel data jy bespaar het</translation>
 <translation id="3166827708714933426">Oortjie- en vensterkortpaaie</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Veiligblaai (beskerm jou en jou toestel teen gevaarlike werwe)</translation>
 <translation id="3205824638308738187">Amper klaar!</translation>
 <translation id="3207960819495026254">Geboekmerk</translation>
 <translation id="3208584281581115441">Kontroleer nou</translation>
@@ -505,6 +503,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4561979708150884304">Geen verbinding nie</translation>
 <translation id="4565377596337484307">Versteek wagwoord</translation>
 <translation id="4572422548854449519">Meld by 'n bestuurde rekening aan</translation>
+<translation id="4576892426230499203">Probeer 'n ander verifikasie-opsie</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuut gelede}other{# minute gelede}}</translation>
 <translation id="4587589328781138893">Werwe</translation>
 <translation id="4594952190837476234">Hierdie vanlyn bladsy is van <ph name="CREATION_TIME" /> af en kan van die aanlyn weergawe verskil.</translation>
@@ -584,7 +583,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5011311129201317034"><ph name="SITE" /> wil koppel</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Laat toe</translation>
-<translation id="5040262127954254034">Privaatheid</translation>
 <translation id="5087580092889165836">Voeg kaart by</translation>
 <translation id="5091249083535528968">Uitgebreide datagebruik</translation>
 <translation id="509429900233858213">'n Fout het voorgekom.</translation>
@@ -637,6 +635,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5441522332038954058">Spring na die adresbalk</translation>
 <translation id="544776284582297024">Tik op die Maak Oortjies Oop-knoppie om oortjies oop te maak en verskillende bladsye op dieselfde tyd te besoek</translation>
 <translation id="545042621069398927">Maak jou aflaai vinniger.</translation>
+<translation id="5454166040603940656">met <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Laai bladsy af</translation>
 <translation id="548278423535722844">Maak in kaarteprogram oop</translation>
 <translation id="5483197086164197190">Navigeer in Chrome</translation>
@@ -777,6 +776,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6316139424528454185">Steun nie Android-weergawe nie</translation>
 <translation id="6324034347079777476">Android-stelsel se sinkronisering is gedeaktiveer</translation>
 <translation id="6324977638108296054">Kan nie skakel na hoogtepunt skep nie</translation>
+<translation id="6324997754869598316">(Fout <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Deel via <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Enkriptering</translation>
 <translation id="6341580099087024258">Vra waar om lêers te stoor</translation>
@@ -793,6 +793,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> op <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Wysig boekmerk</translation>
 <translation id="6406506848690869874">Sinkronisering</translation>
+<translation id="6407224748847589805">Kan nie jou rekenaar koppel nie. Probeer 'n ander verifikasie-opsie.</translation>
 <translation id="6410404864818553978">Basiese gebruiksdata</translation>
 <translation id="6410883413783534063">Maak oortjies oop om verskillende bladsye op dieselfde tyd te besoek</translation>
 <translation id="6412673304250309937">Vergelyk URL'e met 'n lys onveilige werwe wat in Chrome geberg word. As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chrome dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur.</translation>
@@ -861,7 +862,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6813446258015311409">Meld by Chrome aan; oopgemaak.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, oortjie, gekies</translation>
-<translation id="6845325883481699275">Help om Chrome-sekuriteit te verbeter</translation>
 <translation id="6846298663435243399">Laai tans …</translation>
 <translation id="6850409657436465440">Jou aflaai is nog aan die gang</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> oortjies is toegemaak</translation>
@@ -989,7 +989,6 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="7704317875155739195">Outovoltooi soektogte en URL'e</translation>
 <translation id="7707922173985738739">Gebruik mobiele data</translation>
 <translation id="7725024127233776428">Bladsye wat jy boekmerk, verskyn hier</translation>
-<translation id="7746457520633464754">Chrome stuur URL'e van sommige bladsye wat jy besoek, beperkte stelselinligting en sekere bladinhoud aan Google om gevaarlike programme en werwe te bespeur</translation>
 <translation id="7757787379047923882">Teks gedeel vanaf <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Kies datum en tyd</translation>
 <translation id="7762668264895820836">SD-kaart <ph name="SD_CARD_NUMBER" /></translation>

@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">Kvadratas</translation>
 <translation id="5775960006311140197">Eksperto režimas</translation>
 <translation id="5869546221129391014">Tinklelis</translation>
+<translation id="5975083100439434680">Tolinti</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="6073451960410192870">Sustabdyti įrašymą</translation>
 <translation id="6197807149213783179">Išsaugoti metaduomenis</translation>
@@ -81,9 +82,9 @@ Jei atsiliepimas susijęs su vaizdo arba vaizdo įrašo kokybe, pridėkite nuotr
 <translation id="7649070708921625228">Pagalba</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7670511624014457267">60 KPS</translation>
-<translation id="7974782136796202581">Rodyti pastūmimo, pakreipimo ir mastelio keitimo parinktis</translation>
 <translation id="7983668134180549431">Aptiktas tekstas.</translation>
 <translation id="8067883171444229417">Leisti vaizdo įrašą</translation>
+<translation id="8120146556401698679">Pastumti, pakreipti, keisti mastelį</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>
 <translation id="8145038249676204903">Perjungti į fotografavimo režimą</translation>
 <translation id="8239780215768881278">Užfiksuoti momentinę vaizdo įrašo nuotrauką</translation>
@@ -94,6 +95,7 @@ Jei atsiliepimas susijęs su vaizdo arba vaizdo įrašo kokybe, pridėkite nuotr
 <translation id="8815966864175525708">Perjungti į portretinės nuotraukos režimą</translation>
 <translation id="8828441885228359828">Tęsti įrašymą</translation>
 <translation id="8870695351537079478">Nepavyko pradėti įrašymo</translation>
+<translation id="8903921497873541725">Artinti</translation>
 <translation id="9045155556724273246">10 sek.</translation>
 <translation id="945522503751344254">Siųsti atsiliepimą</translation>
 </translationbundle>

@@ -187,6 +187,7 @@
 <translation id="6070348360322141662">Para maior segurança, o Google Chrome criptografará seus dados</translation>
 <translation id="608006075545470555">Adicionar um perfil de trabalho a este navegador</translation>
 <translation id="6113794647360055231">O Chrome ficou ainda melhor</translation>
+<translation id="6145313976051292476">Abrir PDFs no Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" />: Google Chrome Beta</translation>
 <translation id="61852838583753520">Atualizar o Chrome OS</translation>
@@ -199,7 +200,6 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" />: Google Chrome Dev</translation>
 <translation id="6566149418543181476">Atualizando o Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Sistema Chrome OS</translation>
-<translation id="6650333065969705433">Para usar o Rosetta para reproduzir mídia protegida, reinicie o Chrome.</translation>
 <translation id="6676384891291319759">Acessar a internet</translation>
 <translation id="6679975945624592337">Permitir a execução do Google Chrome em segundo plano</translation>
 <translation id="6739177684496155661">Continuar em um novo perfil do Chrome?</translation>
@@ -263,7 +263,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Este perfil de trabalho é completamente separado do seu perfil pessoal.</translation>
 <translation id="8556340503434111824">Há uma nova versão ainda mais rápida do Google Chrome disponível.</translation>
-<translation id="861359755029082151">O Rosetta permite que o Chrome reproduza a mídia protegida nesta página.</translation>
 <translation id="8614913330719544658">O Google Chrome não responde. Reiniciar agora?</translation>
 <translation id="861702415419836452">O Chrome precisa de permissão para acessar sua câmera e criar um mapa 3D do ambiente a sua volta</translation>
 <translation id="8625237574518804553">{0,plural, =1{O Chrome será reiniciado em 1 minuto}one{O Chrome será reiniciado em # minuto}other{O Chrome será reiniciado em # minutos}}</translation>
@@ -277,7 +276,6 @@
 <translation id="8834965163890861871">O Google Chrome está tentando editar senhas. Digite a senha do Windows para permitir essa ação.</translation>
 <translation id="884296878221830158">Controla também qual página deve ser exibida quando você inicia o Chrome ou clica no botão "Página inicial".</translation>
 <translation id="8862326446509486874">Você não tem os direitos adequados para instalação no nível do sistema. Tente executar o instalador novamente como administrador.</translation>
-<translation id="8907709077090383765">Para permitir que o Chrome reproduza mídia protegida, instale o Rosetta. Quer instalar agora?</translation>
 <translation id="8914504000324227558">Reiniciar o Google Chrome</translation>
 <translation id="8922193594870374009">Para enviar um número de <ph name="ORIGIN" /> ao seu smartphone Android, faça login no Chrome nos dois dispositivos.</translation>
 <translation id="8986207147630327271">Você está adicionando um perfil de trabalho a este navegador. O administrador poderá controlar apenas o perfil de trabalho.</translation>
@@ -287,6 +285,7 @@
 <translation id="911206726377975832">Excluir também dados de navegação?</translation>
 <translation id="9138603949443464873">Para que as alterações sejam aplicadas, reinicie o Chrome</translation>
 <translation id="919706545465235479">Atualize o Chrome para iniciar a sincronização</translation>
+<translation id="922152298093051471">Personalizar o Chrome</translation>
 <translation id="940313311831216333">Para ter acesso aos recursos do Chrome em todos os seus dispositivos, faça login e ative a sincronização.</translation>
 <translation id="989369509083708165">O Google Chrome é seu navegador padrão</translation>
 </translationbundle>

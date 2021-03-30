@@ -282,6 +282,7 @@
 <translation id="3928666092801078803">Комбиниране на данните ми</translation>
 <translation id="3929457972718048006">Адреси</translation>
 <translation id="3943492037546055397">Пароли</translation>
+<translation id="3967266340354872733">За още настройки за поверителността, сигурността и събирането на данни вижте <ph name="BEGIN_LINK" />Синхронизиране<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Изтеглянето завърши</translation>
 <translation id="3968505803272650567">Управление на интересите</translation>
 <translation id="3989635538409502728">Изход</translation>
@@ -556,6 +557,7 @@
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Паролите не могат да бъдат експортирани</translation>
 <translation id="6748108480210050150">От</translation>
+<translation id="6760509555861141183">Назад към най-скорошния раздел</translation>
 <translation id="6780034285637185932">Пощенски код</translation>
 <translation id="6785453220513215166">Сигналите за сривове се изпращат...</translation>
 <translation id="679325081238418596">Получете отметките, историята, паролите и другите си настройки на всичките си устройства</translation>
@@ -607,7 +609,6 @@
 <translation id="7272437679830969316">Паролата не бе копирана поради неуспешно удостоверяване.</translation>
 <translation id="7291368939935408496">Паролите се подготвят...</translation>
 <translation id="7293171162284876153">За да стартирате синхронизирането, включете „Синхронизиране на данните ви в Chrome“.</translation>
-<translation id="7299000566397147023">Отваряне на най-скорошния раздел</translation>
 <translation id="7313347584264171202">Тук ще се показват разделите ви в режим „инкогнито“</translation>
 <translation id="7336264872878993241">Изтеглено: <ph name="PERCENT" />%</translation>
 <translation id="7340958967809483333">Опции за Discover</translation>

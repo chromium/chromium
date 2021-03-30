@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Chromium şu anda kameranızı kullanamıyor</translation>
 <translation id="2195025571279539885">Chromium'un bir dahaki sefere bu siteden <ph name="LANGUAGE_NAME" /> dilindeki sayfaları çevirmeyi önermesini ister misiniz?</translation>
 <translation id="2590893390871230428">Chromium Verilerimi Senkronize Et</translation>
-<translation id="259614951763923692">Chromium'un konumunuzu bilmesine izin verirseniz Chromium, konumunuzunu varsayılan arama motorunuza ve izin verdiğiniz tüm sitelere gönderir. Siteler, yakındaki mağazalar veya haberler gibi size gösterecek yerel bilgileri olduğunda konumunuza erişmek isteyebilir.</translation>
 <translation id="2650312721222849884">Chromium kullandığınız her yerde sekmelerinizi görmek için senkronizasyonu açın.</translation>
 <translation id="2730884209570016437">Kameranız başka bir uygulama tarafından kullanıldığından Chromium, kameranızı kullanamıyor.</translation>
 <translation id="2915596697727466327">Chromium, şifrelerinize yetkili erişim sağlanması için Face ID kullanır.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Chromium oturumunu kapatıyor musunuz?</translation>
 <translation id="6424492062988593837">Chromium daha da iyi hale geldi! Yeni bir sürüm var.</translation>
 <translation id="6820823224820483452">Chromium, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin.</translation>
+<translation id="6827294685447036764">Konumunuzu bilmesine izin verirseniz Chromium bu bilgiyi, izin verdiğiniz tüm sitelere gönderir. Yakındaki mağazalar veya haberler gibi size gösterecek yerel bilgileri olduğunda siteler konum bilginize erişmek isteyebilir.</translation>
 <translation id="7018284295775193585">Chromium güncellenemiyor</translation>
 <translation id="7099326575020694068">Chromium, kameranızı Bölünmüş Görünüm modunda kullanamıyor</translation>
 <translation id="7118091470949186573">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chromium'u kullanabilirsiniz.</translation>

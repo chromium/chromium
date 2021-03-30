@@ -196,6 +196,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6070348360322141662">보안 강화를 위해 Chrome에서 사용자 데이터를 암호화합니다.</translation>
 <translation id="608006075545470555">이 브라우저에 직장 프로필 추가</translation>
 <translation id="6113794647360055231">더욱 업그레이드된 Chrome</translation>
+<translation id="6145313976051292476">Chrome에서 PDF 열기</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Chrome 베타</translation>
 <translation id="61852838583753520">Chrome OS 업데이트(&amp;C)</translation>
@@ -208,7 +209,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - 개발자용 Chrome</translation>
 <translation id="6566149418543181476">Chrome 업데이트 중(<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS 시스템</translation>
-<translation id="6650333065969705433">Rosetta를 사용하여 보호된 미디어를 재생하려면 Chrome을 다시 시작해야 합니다</translation>
 <translation id="6676384891291319759">인터넷 연결</translation>
 <translation id="6679975945624592337">백그라운드에서 Chrome을 실행</translation>
 <translation id="6739177684496155661">새 Chrome 프로필에서 계속하시겠습니까?</translation>
@@ -272,7 +272,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8540666473246803645">Chrome</translation>
 <translation id="8550334526674375523">이 직장 프로필은 개인 프로필과 완전히 분리됩니다.</translation>
 <translation id="8556340503434111824">이전보다 더 빨라진 Chrome 새 버전을 사용할 수 있습니다.</translation>
-<translation id="861359755029082151">Chrome에서는 Rosetta를 통해 이 페이지에서 보호된 미디어를 재생할 수 있습니다.</translation>
 <translation id="8614913330719544658">Chrome이 응답하지 않습니다. 다시 시작하시겠습니까?</translation>
 <translation id="861702415419836452">Chrome에서 주변 3D 지도를 만들려면 카메라 액세스 권한이 필요합니다.</translation>
 <translation id="8625237574518804553">{0,plural, =1{1분 후 Chrome이 다시 시작됩니다}other{#분 후 Chrome이 다시 시작됩니다}}</translation>
@@ -286,7 +285,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8834965163890861871">Chrome에서 비밀번호를 수정하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="884296878221830158">또한 Chrome을 시작하거나 홈 버튼을 클릭할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="8862326446509486874">시스템 수준의 설치 권한이 없습니다. 관리자 권한으로 설치 프로그램을 다시 실행해 보세요.</translation>
-<translation id="8907709077090383765">Chrome에서 보호된 미디어를 재생하려면 Rosetta를 설치해야 합니다. 지금 설치하시겠습니까?</translation>
 <translation id="8914504000324227558">Chrome 다시 시작</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
 <translation id="8986207147630327271">직장 프로필을 이 브라우저에 추가하고 직장 프로필 제어 권한을 관리자에게 부여합니다.</translation>

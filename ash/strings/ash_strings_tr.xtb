@@ -396,6 +396,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Yüksek kontrast kısayoluna bastınız. Bu özelliği açmak istiyor musunuz?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4333628967105022692">Lacros, birden fazla kullanıcı oturum açmış durumdayken desteklenmiyor.</translation>
 <translation id="4338109981321384717">Büyüteç</translation>
 <translation id="4351433414020964307">Asistan yükleniyor...</translation>
 <translation id="4356930093361201197">yüksek kontrast modu</translation>
@@ -969,6 +970,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> adlı ekran kaldırıldı</translation>
 <translation id="9098969848082897657">Telefonu sessize al</translation>
 <translation id="9099154003160514616">Lacros güncellemesi var</translation>
+<translation id="9105450214093926548">Lacros tarayıcı çalışırken ikinci bir kullanıcının oturum açması desteklenmiyor. Bunun yerine lütfen Lacros'ta ikinci bir tarayıcı profili kullanın veya Lacros'u kapatıp tekrar deneyin.</translation>
 <translation id="9133335900048457298">Korunan içerik kaydedilemez</translation>
 <translation id="9151726767154816831">Güncellemek için yeniden başlatın ve Powerwash uygulayın</translation>
 <translation id="9166331175924255663">Yakındakilerle Paylaş özelliğinin yüksek görünürlüğünü açar/kapatır.</translation>

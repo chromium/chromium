@@ -12,7 +12,7 @@
 <translation id="2147651015520127414">Chrome heeft geverifieerd dat <ph name="ISSUER" /> het certificaat voor deze website heeft verstrekt.</translation>
 <translation id="2199719347983604670">Gegevens van Chrome-synchronisatie</translation>
 <translation id="2342919707875585281">Chrome deelt je locatie met sites die je toestaat.</translation>
-<translation id="2347208864470321755">Als deze functie is ingeschakeld, biedt Chrome aan pagina's die zijn geschreven in andere talen te vertalen met Google Translate. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="2347208864470321755">Als deze functie aanstaat, biedt Chrome aan pagina's die zijn geschreven in andere talen te vertalen met Google Translate. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Chrome instellen als je standaardbrowser</translation>
 <translation id="2574249610672786438">Log in op al je apparaten om je tabbladen te bekijken vanaf elk apparaat waarop je Chrome gebruikt</translation>
 <translation id="2576431527583832481">Chrome is nu nog beter! Er is een nieuwe versie beschikbaar.</translation>
@@ -27,7 +27,7 @@
 <translation id="3196546062792660320">Chrome bespaart je tijd door je accounts beschikbaar te maken op internet. Je kunt accounts toevoegen of verwijderen bij Instellingen.</translation>
 <translation id="3282568296779691940">Inloggen bij Chrome</translation>
 <translation id="3345341804167540816">Chrome overal gebruiken</translation>
-<translation id="3522659714780527202">Schakel synchroniseren in om je tabbladen te bekijken vanaf elk apparaat waarop je Chrome gebruikt</translation>
+<translation id="3522659714780527202">Zet de synchronisatie aan om je tabbladen te bekijken vanaf elk apparaat waarop je Chrome gebruikt</translation>
 <translation id="3533694711092285624">Geen opgeslagen wachtwoorden. Chrome kan je wachtwoorden controleren als je deze hebt opgeslagen.</translation>
 <translation id="3706101708757577809">Je kunt Chrome nu gebruiken als je op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="3720541637541300822">Incognitotabbladen vergrendelen als je Chrome sluit</translation>
@@ -35,7 +35,7 @@
 <translation id="38949020760388809">Kies of je je Chrome-gegevens voor dit apparaat wilt verwijderen of behouden.</translation>
 <translation id="3980220367029651214">Je wijzigt het synchronisatieaccount van <ph name="USER_EMAIL1" /> in <ph name="USER_EMAIL2" />. Je bestaande Chrome-gegevens worden beheerd door <ph name="DOMAIN" />. Hierdoor worden je gegevens van dit apparaat verwijderd. Je gegevens blijven echter opgeslagen in <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Je organisatie vereist dat je uitgelogd blijft bij Chrome.</translation>
-<translation id="3988789688219830639">Google Chrome heeft geen toegang tot je foto's of video's. Schakel toegang in via iOS-instellingen &gt; Privacy &gt; Foto's.</translation>
+<translation id="3988789688219830639">Google Chrome heeft geen toegang tot je foto's of video's. Geef in iOS toegang via Instellingen &gt; Privacy &gt; Foto's.</translation>
 <translation id="4099578267706723511">Verzend automatisch gebruiksstatistieken en crashmeldingen naar Google.</translation>
 <translation id="415767770115540173">Gebruik Google beter in Chrome op basis van je locatie.</translation>
 <translation id="417201473131094001">Niet ondersteund in Chrome Canary</translation>
@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Offline. Chrome kan niet checken op updates</translation>
 <translation id="5854621639439811139">Chrome-tip. Sommige knoppen zoals Terug, Vooruit en Zoeken zie je nu onderaan het scherm.</translation>
+<translation id="5876773482963502140">Als je Chrome toestaat je locatie te gebruiken, stuurt Chrome deze naar sites waarvoor je toestemming geeft. Sites kunnen om je locatie vragen als ze je lokale informatie willen laten zien, zoals winkels in de buurt of lokaal nieuws.</translation>
 <translation id="6036420186814142909">Google Chrome bevat functies die je helpen je internetgegevens te beheren en te bepalen hoe snel je webpagina's kunt laden.
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Overschakelen naar Chrome</translation>
@@ -76,7 +77,7 @@
 <translation id="7501046334262221972">Open Instellingen om Chrome in te stellen als standaardbrowser. Tik op 'Standaard browser-app' en selecteer Chrome.</translation>
 <translation id="756809126120519699">Chrome-gegevens gewist</translation>
 <translation id="7626032353295482388">Welkom bij Chrome</translation>
-<translation id="7662994914830945754">Log in en schakel synchroniseren in om je tabbladen te bekijken vanaf elk apparaat waarop je Chrome gebruikt</translation>
+<translation id="7662994914830945754">Log in en zet de synchronisatie aan om je tabbladen te bekijken vanaf elk apparaat waarop je Chrome gebruikt</translation>
 <translation id="766361182512894255">Je wachtwoord is gelekt bij een gegevenslek. Chrome raadt je aan om het wachtwoord nu te wijzigen.</translation>
 <translation id="7698568245838009292">Chrome vraagt toegang tot de camera</translation>
 <translation id="7855730255114109580">Google Chrome is up-to-date</translation>
@@ -90,5 +91,4 @@
 2. Tik op Standaard browser-app.
 3. Selecteer Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Als je Chrome toestaat je locatie te gebruiken, stuurt Chrome deze naar je standaard zoekmachine en naar sites waarvoor je toestemming geeft. Sites kunnen om je locatie vragen als ze je lokale informatie willen laten zien, zoals winkels in de buurt of lokaal nieuws.</translation>
 </translationbundle>

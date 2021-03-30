@@ -282,6 +282,7 @@ Aşağıdaki adımları uygulayın:</translation>
 <translation id="3928666092801078803">Verilerimi birleştir</translation>
 <translation id="3929457972718048006">Adresler</translation>
 <translation id="3943492037546055397">Şifreler</translation>
+<translation id="3967266340354872733">Gizlilik, güvenlik ve veri toplamayla ilgili daha fazla ayar için <ph name="BEGIN_LINK" />Senkronizasyon<ph name="END_LINK" /> ve <ph name="BEGIN_LINK" />Google Hizmetleri<ph name="END_LINK" /> konularına bakın.</translation>
 <translation id="3967822245660637423">İndirme tamamlandı</translation>
 <translation id="3968505803272650567">İlgi Alanlarını Yönet</translation>
 <translation id="3989635538409502728">Çıkış</translation>
@@ -556,6 +557,7 @@ Her site için benzersiz bir şifre kullanmaya çalışın.</translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Şifreler Dışa Aktarılamıyor</translation>
 <translation id="6748108480210050150">Nereden</translation>
+<translation id="6760509555861141183">Son Sekmeye Dön</translation>
 <translation id="6780034285637185932">Posta Kodu</translation>
 <translation id="6785453220513215166">Kilitlenme raporu gönderiliyor...</translation>
 <translation id="679325081238418596">Yer işaretlerinizi, geçmişinizi, şifrelerinizi ve diğer ayarlarınızı tüm cihazlarınızda kullanın.</translation>
@@ -607,7 +609,6 @@ Her site için benzersiz bir şifre kullanmaya çalışın.</translation>
 <translation id="7272437679830969316">Kimliğiniz doğrulanamıyor. Şifre kopyalanmadı.</translation>
 <translation id="7291368939935408496">Şifreler Hazırlanıyor...</translation>
 <translation id="7293171162284876153">Senkronizasyonu başlatmak için "Chrome verilerimi senkronize et" ayarını etkinleştirin.</translation>
-<translation id="7299000566397147023">En Son Sekmeyi Açın</translation>
 <translation id="7313347584264171202">Gizli sekmelerinizi burada bulabilirsiniz</translation>
 <translation id="7336264872878993241">Yüzde <ph name="PERCENT" /> indirildi</translation>
 <translation id="7340958967809483333">Keşfet seçenekleri</translation>

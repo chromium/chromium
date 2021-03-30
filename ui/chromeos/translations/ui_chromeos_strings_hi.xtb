@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />इस समय अपना डिवाइस न निकालें!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    उपयोग के दौरान अपना डिवाइस निकाल लेने से डेटा की हानि हो सकती है. कृपया कार्रवाई पूरी हो जाने तक इंतज़ार करें, फिर Files ऐप्लिकेशन का उपयोग करके डिवाइस को निकाल लें.</translation>
+<translation id="5159560892333415631">ट्रैश को खाली करें</translation>
 <translation id="5163869187418756376">शेयर नहीं किया जा सका. अपना कनेक्शन जाँचें और बाद में फिर से कोशिश करें.</translation>
 <translation id="516592729076796170">यूएस प्रोग्रामर ड्वोरक</translation>
 <translation id="5170477580121653719">Google डिस्क स्थान शेष: <ph name="SPACE_AVAILABLE" />.</translation>
@@ -419,6 +420,7 @@
 <translation id="5275973617553375938">Google डिस्क से पुनर्प्राप्त की गई फ़ाइलें</translation>
 <translation id="5288441970121584418">बर्गर</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">क्या आप वाकई में ट्रैश को खाली करना चाहते हैं?</translation>
 <translation id="5317780077021120954">सेव करें</translation>
 <translation id="5318819489018851358">Linux के साथ शेयर करें</translation>
 <translation id="5323213332664049067">लैटिन अमेरिकी</translation>
@@ -783,6 +785,7 @@
 <translation id="9154418932169119429">यह इमेज ऑफ़लाइन उपलब्ध नहीं है.</translation>
 <translation id="9172592259078059678">गुजराती ट्रांसलिट्रेशन</translation>
 <translation id="9173120999827300720">इंटरनैशनल कीबोर्ड के साथ अंग्रेज़ी (यूएस)</translation>
+<translation id="9174050671906956834">ट्रैश में मौजूद आइटम, 30 दिनों के बाद हमेशा के लिए मिटा दिए जाते हैं.</translation>
 <translation id="9189836632794948435">कज़ाक़</translation>
 <translation id="9213073329713032541">ठीक से इंस्टॉल होना शुरू हो गया है.</translation>
 <translation id="9219103736887031265">Images</translation>

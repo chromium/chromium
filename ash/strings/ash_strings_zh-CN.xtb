@@ -396,6 +396,7 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">您按下了高对比度的键盘快捷键。要开启这项功能吗？</translation>
 <translation id="4331809312908958774">Chrome 操作系统</translation>
+<translation id="4333628967105022692">当有多个用户登录时，Lacros 不受支持。</translation>
 <translation id="4338109981321384717">放大镜</translation>
 <translation id="4351433414020964307">智能助理正在加载中…</translation>
 <translation id="4356930093361201197">高对比度模式</translation>
@@ -968,6 +969,7 @@
 <translation id="9091626656156419976">已移除显示器“<ph name="DISPLAY_NAME" />”</translation>
 <translation id="9098969848082897657">将手机设为静音</translation>
 <translation id="9099154003160514616">有可用的 Lacros 更新</translation>
+<translation id="9105450214093926548">当 Lacros 浏览器正在运行时，不支持多用户登录。请在 Lacros 中改用另一浏览器配置文件，或者关闭 Lacros 并重试。</translation>
 <translation id="9133335900048457298">无法录制受保护的内容</translation>
 <translation id="9151726767154816831">重新启动并通过 Powerwash 来进行更新</translation>
 <translation id="9166331175924255663">开启/关闭“附近分享”的高可见度模式。</translation>

@@ -396,6 +396,7 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">คุณกดแป้นพิมพ์ลัดสำหรับคอนทราสต์สูง จะเปิดคอนทราสต์สูงไหม</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4333628967105022692">ไม่รองรับ Lacros ขณะที่มีผู้ใช้ลงชื่อเข้าใช้หลายคน</translation>
 <translation id="4338109981321384717">แว่นขยาย</translation>
 <translation id="4351433414020964307">Assistant กำลังโหลด...</translation>
 <translation id="4356930093361201197">โหมดคอนทราสต์สูง</translation>
@@ -968,6 +969,7 @@
 <translation id="9091626656156419976">นำจอแสดงผล <ph name="DISPLAY_NAME" /> ออกแล้ว</translation>
 <translation id="9098969848082897657">ปิดเสียงโทรศัพท์</translation>
 <translation id="9099154003160514616">มีการอัปเดต Lacros</translation>
+<translation id="9105450214093926548">ผู้ใช้คนที่ 2 ไม่สามารถลงชื่อเข้าใช้ขณะที่เบราว์เซอร์ Lacros ทำงานอยู่ โปรดใช้โปรไฟล์ที่ 2 ของเบราว์เซอร์ Lacros แทน หรือปิด Lacros แล้วลองอีกครั้ง</translation>
 <translation id="9133335900048457298">บันทึกเนื้อหาที่ได้รับการคุ้มครองไม่ได้</translation>
 <translation id="9151726767154816831">รีสตาร์ทและ Powerwash เพื่ออัปเดต</translation>
 <translation id="9166331175924255663">เปิด/ปิดระดับการเข้าถึงสูงของการแชร์ใกล้เคียง</translation>

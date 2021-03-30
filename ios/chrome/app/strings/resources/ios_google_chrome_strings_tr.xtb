@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Çevrimdışı, Chrome güncellemeleri denetleyemiyor</translation>
 <translation id="5854621639439811139">Chrome için ipucu: Geri, İleri ve Ara gibi bazı düğmeler artık ekranınızın alt bölümünde bulunuyor.</translation>
+<translation id="5876773482963502140">Konumunuzu bilmesine izin verirseniz Chrome, bu bilgiyi, izin verdiğiniz tüm sitelere gönderir. Yakındaki mağazalar veya haberler gibi size gösterecek yerel bilgileri olduğunda siteler konum bilginize erişmek isteyebilir.</translation>
 <translation id="6036420186814142909">Google Chrome İnternet verilerinizi yönetmenize ve web sayfalarını hızlı yükleyebilmenize yardımcı olacak özelliklere sahiptir.
 <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Chrome'a Geçin</translation>
@@ -90,5 +91,4 @@
   2. Varsayılan Tarayıcı Uygulaması'na dokunun
   3. Chrome'u seçin.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Chrome'un konumunuzu bilmesine izin verirseniz Chrome, konumunuzu varsayılan arama motorunuza ve izin verdiğiniz tüm sitelere gönderir. Siteler, yakındaki mağazalar veya haberler gibi size gösterecek yerel bilgileri olduğunda konumunuza erişmek isteyebilir.</translation>
 </translationbundle>

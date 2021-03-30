@@ -282,6 +282,7 @@
 <translation id="3928666092801078803">የእኔን ውሂብ አጣምር</translation>
 <translation id="3929457972718048006">አድራሻዎች</translation>
 <translation id="3943492037546055397">የይለፍ ቃላት</translation>
+<translation id="3967266340354872733">ከግላዊነት፣ ደህንነት እና የውሂብ ስብስብ ጋር ለሚዛመዱ ተጨማሪ ቅንብሮች <ph name="BEGIN_LINK" />ስምረት<ph name="END_LINK" /> እና የ<ph name="BEGIN_LINK" />Google አገልግሎቶች<ph name="END_LINK" />ን ይመልከቱ</translation>
 <translation id="3967822245660637423">ማውረድ ተጠናቅቋል</translation>
 <translation id="3968505803272650567">ፍላጎቶችን አቀናብር</translation>
 <translation id="3989635538409502728">ዘግተህ ውጣ</translation>
@@ -556,6 +557,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">የይለፍ ቃላትን ወደ ውጭ መላክ አልተቻለም</translation>
 <translation id="6748108480210050150">ከ</translation>
+<translation id="6760509555861141183">ወደ የቅርብ ጊዜ ትር ይመለሱ</translation>
 <translation id="6780034285637185932">ዚፕ ኮድ</translation>
 <translation id="6785453220513215166">የብልሽት ሪፖርት በመላክ ላይ...</translation>
 <translation id="679325081238418596">የእርስዎን ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች በሁሉም መሣሪያዎችዎ ላይ ያግኙ።</translation>
@@ -607,7 +609,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7272437679830969316">የእርስዎን ማንነት ማረጋገጥ አልተቻለም። የይለፍ ቃል አልተቀዳም።</translation>
 <translation id="7291368939935408496">የይለፍ ቃላትን በማዘጋጀት ላይ...</translation>
 <translation id="7293171162284876153">ስምረትን ለመጀመር «የChrome ውሂብዎን ያስምሩ»ን ያብሩት።</translation>
-<translation id="7299000566397147023">በጣም የቅርብ ጊዜ ትርን ይክፈቱ</translation>
 <translation id="7313347584264171202">የእርስዎን ማንነት የማያሳውቁ ትሮች እዚህ ያገኛሉ</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> በመቶ ወርዷል</translation>
 <translation id="7340958967809483333">ለምርምር አማራጮች</translation>

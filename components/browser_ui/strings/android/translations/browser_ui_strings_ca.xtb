@@ -178,6 +178,7 @@
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5922853908706496913">S'està compartint la pantalla</translation>
 <translation id="5939518447894949180">Restableix</translation>
+<translation id="5975083100439434680">Redueix</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Controla l'accés al teu dispositiu d'aquest lloc web</translation>
 <translation id="6040143037577758943">Tanca</translation>
@@ -298,6 +299,7 @@
 <translation id="8801436777607969138">Bloqueja JavaScript en un lloc web concret.</translation>
 <translation id="8816026460808729765">Impedeix que els llocs web accedeixin als sensors</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8903921497873541725">Amplia</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">L'NFC està desactivada en aquest dispositiu. Activa-la a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="8929372349074745002">Aquest lloc web s'obre i respon ràpidament per a la majoria de persones</translation>

@@ -413,11 +413,6 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
 <translation id="1553532014072799546">Zulassungsliste für App-Zeitbeschränkungen</translation>
 <translation id="1553956579506604198">Installation externer Erweiterungen blockieren</translation>
 <translation id="1555248923316727072">SAML-Einstellungen zur Verwaltung der Nutzeridentität</translation>
-<translation id="1560205870554624777">Diese Richtlinie steuert, ob die Kerberos-Funktion aktiviert ist. Kerberos ist ein Authentifizierungsprotokoll, das bei Web-Apps und Dateifreigaben zur Authentifizierung verwendet werden kann.
-
-          Wenn diese Richtlinie aktiviert wird, ist die Kerberos-Funktion aktiviert. Kerberos-Konten können entweder über die Richtlinie "Kerberos-Konten konfigurieren" oder über die Einstellungen für Kerberos-Konten auf der Seite "Personen" hinzugefügt werden.
-
-          Ist die Richtlinie deaktiviert oder nicht konfiguriert, sind die Einstellungen für Kerberos-Konten deaktiviert. In diesem Fall können keine Kerberos-Konten hinzugefügt werden und die Nutzung der Kerberos-Authentifizierung ist nicht möglich. Alle vorhandenen Kerberos-Konten werden gelöscht, ebenso wie alle gespeicherten Passwörter.</translation>
 <translation id="1561424797596341174">Überschreiben von Richtlinien für Fehlerbehebungs-Builds des Hosts für den Remotezugriff</translation>
 <translation id="1561967320164410511">U2F plus Erweiterungen zur individuellen Bestätigung</translation>
 <translation id="1567718448549957373">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, sind <ph name="BASIC_AUTH" />-Authentifizierungsherausforderungen zulässig, die über nicht sicheres HTTP empfangen wurden.
@@ -1131,6 +1126,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Wird sie nicht konfiguriert, ist die Funktion "Zum Anrufen klicken" standardmäßig aktiviert.</translation>
 <translation id="2482676533225429905">Natives Messaging</translation>
 <translation id="2483146640187052324">Netzwerkaktionen über alle Netzwerkverbindungen vervollständigen</translation>
+<translation id="2483335232019796218">Die Kamera, Browser- und Betriebssystemeinstellungen sowie Scan-, Web Store-, Canvas- und Google News-Funktionen deaktivieren</translation>
 <translation id="2496180316473517155">Browserverlauf</translation>
 <translation id="2498238926436517902">Ablage immer automatisch ausblenden</translation>
 <translation id="250022556568924228">Wenn die Richtlinie aktiviert ist, lädt <ph name="PRODUCT_OS_NAME" /> die Nutzungsbedingungen herunter und zeigt sie jedes Mal an, wenn eine Sitzung mit einem lokalen Gerätekonto gestartet wird. Die Nutzer können sich erst in der Sitzung anmelden, nachdem sie die Nutzungsbedingungen akzeptiert haben.
@@ -1519,6 +1515,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       In „<ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" />“ wird beschrieben, wie Sie Apps an die <ph name="PRODUCT_OS_NAME" />-Ablage anpinnen können.</translation>
 <translation id="2976429807269247880">Einstellungen für das Verhalten des alten „<ph name="ATTRIBUTE_SAMESITE_NAME" />“-Cookies</translation>
+<translation id="2985097017239074272">Google News (wird seit Version 91 unterstützt)</translation>
 <translation id="2985927503455169394">Standardmodus für das Einrichten von Assistant verwenden</translation>
 <translation id="2987155890997901449">ARC aktivieren</translation>
 <translation id="2987227569419001736">Verwendung der Web Bluetooth API steuern</translation>
@@ -2551,6 +2548,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 <translation id="4450222911834151460">Wenn Sie diese Richtlinie konfigurieren, werden alle angegebenen Datentypen von der Synchronisierung ausgeschlossen. Dies gilt sowohl für Google Sync als auch für die Synchronisierung von Roaming-Profilen. Dadurch lässt sich die Größe von Roaming-Profilen reduzieren und Sie können einschränken, welche Arten von Daten auf die Google Sync-Server hochgeladen werden.
 
       Aktuell werden folgende Datentypen unterstützt: „bookmarks“, „readingList“, „preferences“, „passwords“, „autofill“, „themes“, „typedUrls“, „extensions“, „apps“, „tabs“ und „wifiConfigurations“. Bei diesen Namen muss die Groß- und Kleinschreibung beachtet werden.</translation>
+<translation id="4452653762766030431">Steuert die Verfügbarkeit von Netzwerkfreigaben unter Chrome OS</translation>
 <translation id="445270821089253489">Legt fest, welche Art von Nutzer- und Geräteinformationen gesendet wird.</translation>
 <translation id="4453913621209182880">Drucken nur mit Hintergrundgrafiken zulassen</translation>
 <translation id="4454820008017317557">Symbol von <ph name="PRODUCT_NAME" /> in der Symbolleiste anzeigen</translation>
@@ -2784,6 +2782,13 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
       Wenn sie nicht konfiguriert ist oder einen ungültigen Wert enthält, ist der Deaktivierungsmodus in den Systemfunktionen auf „blockiert“ gesetzt.</translation>
 <translation id="4835470005923546373">Standardmäßig Druckmodus mit Hintergrundgrafiken deaktivieren</translation>
 <translation id="4835622243021053389">NTLMv2-Authentifizierung aktivieren.</translation>
+<translation id="4846678215172543001">Die Richtlinie verhindert, dass für die aufgeführten Websites Warnungen zu nachgeahmten URLs angezeigt werden. Diese Warnungen werden normalerweise dann eingeblendet, wenn <ph name="PRODUCT_NAME" /> feststellt, dass sich eine Website als eine dem Nutzer bekannte Website ausgeben könnte.
+
+       Ist die Richtlinie aktiviert und für eine oder mehrere Domains konfiguriert, werden keine Warnungen zu nachgeahmten URLs angezeigt, wenn Nutzer Seiten auf der jeweiligen Domain aufrufen.
+
+       Wenn diese Richtlinie nicht konfiguriert oder auf eine leere Liste festgelegt ist, können jederzeit Warnungen zu nachgeahmten URLs erscheinen.
+
+       Ein Hostname kann bei vollständiger Host- oder beliebiger Domainübereinstimmung erlaubt sein. Beispiel: Für die URL „https://foo.beispiel.de/bar“ werden Warnungen möglicherweise unterdrückt, wenn „foo.beispiel.de“ oder „beispiel.de“ zur Liste hinzugefügt wurden.</translation>
 <translation id="485419696366295465">Steuert zum <ph name="BOREALIS_NAME" />-Subsystem gehörige Richtlinien.</translation>
 <translation id="4855636880814771207">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer Bluetooth aktivieren oder deaktivieren.
 
@@ -2982,7 +2987,6 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
       Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
-<translation id="5090209345759901501">Einstellung für Flash-Inhalt auf alle Inhalte anwenden</translation>
 <translation id="5090791951240382356">Zusammenführen von Wörterbuchrichtlinien aus unterschiedlichen Quellen erlauben</translation>
 <translation id="5091315650312105069"><ph name="BASIC_AUTH" /> die Authentifizierung für HTTP erlauben</translation>
 <translation id="5103112931744164177">Mit dieser Richtlinie wird festgelegt, welcher Software-Stack zur Kommunikation mit dem DNS-Server verwendet wird: der DNS-Client des Betriebssystems oder der integrierte DNS-Client von <ph name="PRODUCT_NAME" />. Sie beeinflusst nicht, welche DNS-Server verwendet werden. Wenn beispielsweise das Betriebssystem für die Verwendung eines Unternehmens-DNS-Servers konfiguriert ist, verwendet der integrierte DNS-Client genau diesen Server. Mit der Richtlinie wird auch nicht gesteuert, ob DoH (DNS over HTTPS) verwendet wird. <ph name="PRODUCT_NAME" /> nutzt immer den integrierten Resolver für DoH-Anfragen. Weitere Informationen zum Steuern von DoH finden Sie in der Richtlinie „<ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />“.
@@ -3977,6 +3981,11 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 <translation id="647698599569353771">Aktivieren von Nearby Share zulassen.</translation>
 <translation id="6478258366184919502">Ursprünge für Anmeldebildschirm</translation>
 <translation id="6478261301433199402">Wenn diese Richtlinie konfiguriert ist, wird das <ph name="PLUGIN_VM_NAME" />-Bild für den Nutzer festgelegt. Geben Sie diese Richtlinie als String im JSON-Format an, wobei <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> angibt, wo das Bild heruntergeladen werden kann. Zusätzlich wird <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> als ein SHA-256-Hash-Wert festgelegt, mit dem die Integrität des Downloads bestätigt wird.</translation>
+<translation id="6489084406497912050">Damit wird festgelegt, ob Nutzer Kerberos-Konten hinzufügen können.
+
+          Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer Kerberos-Konten über die Kontoeinstellungen von Kerberos auf der Kerberos-Einstellungsseite hinzufügen. Die Nutzer haben die vollständige Kontrolle über Konten, die sie hinzufügen, und können diese ändern oder entfernen.
+
+          Wenn die Richtlinie deaktiviert ist, können Nutzer keine Kerberos-Konten hinzufügen. Dies ist dann nur über die Richtlinie „Kerberos-Konten konfigurieren“ möglich. So lassen sich Konten effektiv sperren.</translation>
 <translation id="6491139795995924304">Bluetooth auf Gerät zulassen</translation>
 <translation id="6491872498385040936">Diese Richtlinie wurde eingestellt. Sie können stattdessen "<ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />" verwenden. Damit wird diese Richtlinie überschrieben und eine bessere Feinabstimmung ermöglicht.
 
@@ -4313,6 +4322,7 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
       Wenn die Richtlinie aktiviert und die Erweiterungs-ID einer App in der entsprechenden Liste aufgeführt ist, können Nutzer diese App auf dem Sperrbildschirm starten. Die Vorgabe einer leeren Liste führt demnach dazu, dass auf dem Sperrbildschirm keine Notizen erstellt werden können. Die Konfiguration der Richtlinie mit einer App-ID bedeutet jedoch nicht unbedingt, dass Nutzer die jeweilige App als Notizen-App auf dem Sperrbildschirm aktivieren können. Bei <ph name="PRODUCT_NAME" /> 61 ist beispielsweise auch durch die Plattform festgelegt, welche Apps verfügbar sind.
 
       Wenn die Richtlinie nicht konfiguriert ist, werden dadurch die Apps, die Nutzer auf dem Sperrbildschirm aktivieren können, nicht durch die Richtlinie eingeschränkt.</translation>
+<translation id="6882028194958060206">Einstellung für Flash-Inhalt auf alle Inhalte anwenden (wird nicht länger unterstützt)</translation>
 <translation id="6889123056995503704">Nutzer entscheiden über das Verhalten zum Versionsdowngrade</translation>
 <translation id="6894178810167845842">URL für "Neuer Tab"-Seite</translation>
 <translation id="6897730193187922386">Nachrichten zu veralteten Funktionen von <ph name="CLOUD_PRINT_NAME" /> unterdrücken</translation>
@@ -4993,7 +5003,6 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
       Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="BLOCK_POPUPS_POLICY_NAME" />, aber Nutzer können diese Einstellung ändern.</translation>
 <translation id="7731026922044991970">Auf allen Websites das alte "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Verhalten für Cookies wiederherstellen</translation>
 <translation id="7732907212083471072">Entfernte Richtlinien</translation>
-<translation id="7737077721564799856">Die Kamera, Browser- und Betriebssystemeinstellungen sowie Scan-, Web Store- und Canvas-Funktionen deaktivieren</translation>
 <translation id="77379430721695807">Wenn Sie diese Richtlinie konfigurieren, geben Sie eine Liste von URLs an, deren Muster mit dem SecurityOrigin-Objekt der anfragenden URL abgeglichen werden. Bei einer Übereinstimmung wird ohne Nachfrage Zugriff auf Videoaufnahmegeräte gewährt.
 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
@@ -5039,6 +5048,13 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
       Wenn die Richtlinie nicht konfiguriert ist, kann der Nutzer festlegen, ob er nach einem Passwort zum Entsperren des Geräts bei Inaktivität gefragt werden möchte.</translation>
 <translation id="7784062550705119230">Wenn <ph name="PRINTERS_ALLOWLIST" /> für <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer verwenden können. Den Nutzern stehen nur die Drucker zur Verfügung, deren IDs mit den Werten in dieser Richtlinie übereinstimmen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="DEVICE_PRINTERS_POLICY_NAME" /> angegeben ist.</translation>
 <translation id="7788511847830146438">Nach Profil</translation>
+<translation id="7798441698807517880">Diese Richtlinie ist seit Version 89 von <ph name="PRODUCT_NAME" /> nicht mehr enthalten, da <ph name="FLASH_PLUGIN_NAME" /> eingestellt wurde.
+
+      Wenn die Richtlinie auf „True“ gesetzt ist, werden alle <ph name="FLASH_PLUGIN_NAME" />-Inhalte ausgeführt, die auf Websites eingebettet sind, die <ph name="FLASH_PLUGIN_NAME" /> zulassen. Hierzu gehören auch Inhalte anderer Herkunft sowie kleine Inhalte.
+
+      Ist die Richtlinie auf „False“ festgelegt oder nicht konfiguriert, werden <ph name="FLASH_PLUGIN_NAME" />-Inhalte anderer Herkunft oder kleine Inhalte ggf. blockiert.
+
+      Hinweis: Wenn Sie konfigurieren möchten, welche Websites <ph name="FLASH_PLUGIN_NAME" /> ausführen dürfen, finden Sie unter den folgenden Richtlinien weitere Informationen: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> und <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="780629758750905699">Hinzufügen von Family Link-Konten auf diesem Gerät erlauben</translation>
 <translation id="7807139251387225825">Liste von Typen, die von der Synchronisierung ausgeschlossen werden sollen</translation>
 <translation id="781268256210530471">Plug-in-Einstellungen</translation>
@@ -5067,6 +5083,11 @@ Diese Richtlinie kann nur über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME"
 <translation id="7850846808758624237">Wenn die Richtlinie aktiviert ist, wird bei der ersten Ausführung die Startseite des vorherigen Standardbrowsers importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird bei der ersten Ausführung keine Startseite importiert.
 
       Nutzer können einen Importdialog öffnen. Das Kästchen für die Startseite wird je nach Konfiguration dieser Richtlinie aktiviert oder deaktiviert.</translation>
+<translation id="7851772934080809511">Diese Richtlinie steuert, ob die Kerberos-Funktion aktiviert ist. Kerberos ist ein Authentifizierungsprotokoll, das bei Web-Apps und Dateifreigaben zur Authentifizierung verwendet werden kann.
+
+          Wenn diese Richtlinie aktiviert wird, ist die Kerberos-Funktion aktiviert. Kerberos-Konten können entweder über die Richtlinie „Kerberos-Konten konfigurieren“ oder über die Kontoeinstellungen von Kerberos auf der Kerberos-Einstellungsseite hinzugefügt werden.
+
+          Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, stehen die Kontoeinstellungen von Kerberos nicht zur Verfügung. In diesem Fall können keine Kerberos-Konten hinzugefügt werden und die Nutzung der Kerberos-Authentifizierung ist nicht möglich. Alle vorhandenen Kerberos-Konten werden gelöscht, ebenso wie alle gespeicherten Passwörter.</translation>
 <translation id="7863947545897944083">Hiermit wird die Bedienungshilfe für hohen Kontrast auf dem Anmeldebildschirm aktiviert.
 
           Wird diese Richtlinie auf "true" gesetzt, ist der hohe Kontrast auf dem Anmeldebildschirm immer aktiviert.
@@ -5095,11 +5116,6 @@ Diese Richtlinie kann nur über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME"
 
       Selbst wenn keine Richtlinie Vorrang hat, schauen Sie sich <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> und <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" /> an. Es darf hinsichtlich der URL-Muster keine Konflikte zwischen diesen drei Richtlinien geben.</translation>
 <translation id="7887379840451099426">Einstellungen für die Energieverwaltung, die nur im Akkubetrieb gelten</translation>
-<translation id="7889788745439330797">Damit wird festgelegt, ob Nutzer Kerberos-Konten hinzufügen können.
-
-          Ist die Richtlinie aktiviert oder nicht konfiguriert, können Nutzer Kerberos-Konten über die Einstellungen für Kerberos-Konten auf der Seite "Personen" hinzufügen. Die Nutzer haben die vollständige Kontrolle über Konten, die sie hinzufügen, und können diese ändern oder entfernen.
-
-          Wenn die Richtlinie deaktiviert ist, können Nutzer keine Kerberos-Konten hinzufügen. Dies ist dann nur über die Richtlinie "Kerberos-Konten konfigurieren" möglich. So lassen sich Konten effektiv sperren.</translation>
 <translation id="7891884447851425349">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" />" die URL der Standardsuchmaschine an. Die URL sollte den String <ph name="SEARCH_TERM_MARKER" /> enthalten, der während des Suchvorgangs durch die Suchbegriffe des Nutzers ersetzt wird.
 
       Sie können die Such-URL von Google so angeben: <ph name="GOOGLE_SEARCH_URL" />.</translation>
@@ -5353,11 +5369,6 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird das Standardverhalten angewen
 <translation id="8238421250255592181">Boolescher Parameter, der angibt, ob für die Bildschirmtastatur die automatische Vervollständigung aktiviert ist.</translation>
 <translation id="8244171102276095471">RC4-Verschlüsselungssammlungen in TLS aktivieren</translation>
 <translation id="8244525275280476362">Maximale Abrufverzögerung nach der Außerkraftsetzung einer Richtlinie</translation>
-<translation id="8251411417369363637">Wird die Richtlinie auf "True" gesetzt, werden alle <ph name="FLASH_PLUGIN_NAME" />-Inhalte ausgeführt, die auf Websites eingebettet sind, die <ph name="FLASH_PLUGIN_NAME" /> zulassen. Hierzu gehören auch Inhalte anderer Herkunft sowie kleine Inhalte.
-
-      Wenn die Richtlinie auf "False" gesetzt oder nicht konfiguriert ist, werden <ph name="FLASH_PLUGIN_NAME" />-Inhalte anderer Herkunft oder kleine Inhalte ggf. blockiert.
-
-      Hinweis: Wenn Sie steuern möchten, welche Websites <ph name="FLASH_PLUGIN_NAME" /> ausführen dürfen, finden Sie unter den folgenden Richtlinien weitere Informationen: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> und <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="82530263956734297">Aus der Sperrliste auszuschließende Erweiterungs-IDs</translation>
 <translation id="8256688113167012935">Gibt an, welchen Kontonamen <ph name="PRODUCT_OS_NAME" /> für das entsprechende lokale Gerätekonto auf der Anmeldeseite anzeigt.
 

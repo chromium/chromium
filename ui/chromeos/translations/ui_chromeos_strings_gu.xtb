@@ -225,7 +225,7 @@
 <translation id="3408236822532681288">જર્મન (જર્મની), નીઓ 2 કીબોર્ડ સાથે</translation>
 <translation id="3414856743105198592">દૂર કરવા યોગ્ય મીડિયાને ફોર્મેટ કરવાથી તમામ ડેટા ભૂંસાઈ જાય છે. શું તમે ચાલુ રાખવા ઈચ્છો છો?</translation>
 <translation id="3437801641691368414">બનાવ્યાનો સમય</translation>
-<translation id="343907260260897561">ઇન્સ્ટન્ટ કૅમેરા</translation>
+<translation id="343907260260897561">ઝટપટ કૅમેરા</translation>
 <translation id="3455931012307786678">એસ્ટોનિયન</translation>
 <translation id="3466147780910026086">તમારા મીડિયા ઉપકરણને સ્કેન કરી રહ્યું છે...</translation>
 <translation id="3468522857997926824"><ph name="BEGIN_LINK" />Google ડ્રાઇવ<ph name="END_LINK" /> પર <ph name="FILE_COUNT" /> ફોટાનો બેક અપ લેવાયો</translation>
@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />તમારા ઉપકરણને હમણાં જ દૂર કરશો નહીં!<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
        ઉપયોગમાં રહેલા તમારા ઉપકરણને દૂર કરવાથી ડેટાનું નુકસાન થઈ શકે છે. ક્રિયા પૂર્ણ થાય ત્યાં સુધી કૃપા કરીને રાહ જુઓ, તે પછી ફાઇલ્સ એપ્લિકેશનનો ઉપયોગ કરીને ઉપકરણને કાઢી નાખો.</translation>
+<translation id="5159560892333415631">ટ્રેશ ખાલી કરો</translation>
 <translation id="5163869187418756376">શેરિંગ નિષ્ફળ થયું. તમારું કનેક્શન તપાસો અને થોડીવાર પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="516592729076796170">યુએસ પ્રોગ્રામર ડ્વોરેક</translation>
 <translation id="5170477580121653719">Google ડ્રાઇવ સ્થાન બાકી: <ph name="SPACE_AVAILABLE" />.</translation>
@@ -419,6 +420,7 @@
 <translation id="5275973617553375938">Google ડ્રાઇવમાંથી પુનર્પ્રાપ્ત ફાઇલો</translation>
 <translation id="5288441970121584418">બર્ગર</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">શું તમે ખરેખર ટ્રેશ ખાલી કરવા માગો છો?</translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5318819489018851358">Linux સાથે શેર કરો</translation>
 <translation id="5323213332664049067">લેટિન અમેરિકન</translation>
@@ -781,6 +783,7 @@
 <translation id="9154418932169119429">આ છબી ઑફલાઇન ઉપલબ્ધ નથી.</translation>
 <translation id="9172592259078059678">ગુજરાતી લિપ્યંતર</translation>
 <translation id="9173120999827300720">અંગ્રેજી (યુએસ), આંતરરાષ્ટ્રીય કીબોર્ડ સાથે</translation>
+<translation id="9174050671906956834">30 દિવસ પછી ટ્રેશમાંની આઇટમ કાયમ માટે ડિલીટ કરવામાં આવે છે.</translation>
 <translation id="9189836632794948435">કઝાક</translation>
 <translation id="9213073329713032541">ઇન્સ્ટૉલેશન સફળતાપૂર્વક શરૂ થયું.</translation>
 <translation id="9219103736887031265">Images</translation>

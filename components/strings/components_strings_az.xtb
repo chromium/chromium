@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Detallara baxın</translation>
 <translation id="1030706264415084469"><ph name="URL" /> böyük həcmli datanı həmişəlik cihazınızda yadda saxlamaq istəyir</translation>
 <translation id="1032854598605920125">Saat əqrəbi istiqamətində fırladın</translation>
+<translation id="1036224116832931580">Dinozavr oyunu, tullanmaq və oynamaq üçün toxunun</translation>
 <translation id="1036348656032585052">Deaktiv edin</translation>
 <translation id="1038106730571050514">Təklifləri göstərin</translation>
 <translation id="1038842779957582377">bilinməyən ad</translation>
@@ -279,6 +280,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{Yoxdur}=1{1 sayt}other{# sayt}}</translation>
 <translation id="1945968466830820669">Təşkilat hesabına girişi itirə və ya kimlik oğurluğu ilə üzləşə bilərsiniz. Chromium parollarınızı indi dəyişməyi məsləhət görür.</translation>
 <translation id="1947454675006758438">Yuxarı sağ tərəfdən ştapel vurun</translation>
+<translation id="1958218078413065209">Ən yüksək xalınız: <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />Daxil olduğunuz bəzi səhifələrin keçidlərini, məhdud sistem məlumatlarını və bəzi səhifə məzmununu<ph name="END_WHITEPAPER_LINK" /> Google'a göndərməklə vebdə hər kəs üçün təhlükəsizliyi artırmağa yardım edin. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Məxfilik siyasəti<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Əlfəcinləri</translation>
 <translation id="1973335181906896915">Serializasiya xətası</translation>
@@ -547,6 +549,7 @@
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome ayarlarında Təhlükəsizlik Yoxlanışını icra edin</translation>
 <translation id="3061707000357573562">Təmir Xidməti</translation>
 <translation id="3064966200440839136">Xarici tətbiqlə ödəniş etmək üçün gizli rejimdən çıxırsınız. Davam edilsin?</translation>
+<translation id="306573536155379004">Oyun başladı.</translation>
 <translation id="3080254622891793721">Qrafik</translation>
 <translation id="3086579638707268289">Vebdəki fəaliyyətinizə nəzarət edilir</translation>
 <translation id="3087734570205094154">Alt</translation>
@@ -1538,6 +1541,7 @@
 <translation id="6934672428414710184">Bu ad Sizin Google Hesabınızdandır.</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> tərəfindən idarə olunmayan saytda parolunuzu daxil etdiniz. Hesabınızı qorumaq üçün digər tətbiq və saytlarda parolunuzdan təkrar istifadə etməyin.</translation>
 <translation id="6945221475159498467">Seçin</translation>
+<translation id="6948051842255602737">Oyun bitdi, <ph name="SCORE" /> xal topladınız.</translation>
 <translation id="6948701128805548767">Götürmə üsulları və tələblərinə baxın, ünvan seçin</translation>
 <translation id="6949872517221025916">Parolu Sıfırlayın</translation>
 <translation id="6950684638814147129">JSON dəyəri əldə edilərkən xəta baş verdi: <ph name="ERROR" /></translation>
@@ -1820,6 +1824,7 @@
 <translation id="7956713633345437162">Mobil əlfəcinlər</translation>
 <translation id="7961015016161918242">Heç vaxt</translation>
 <translation id="7966803981046576691">İş hesabı növü</translation>
+<translation id="79682505114836835">"<ph name="VALUE" />" dəyəri yanlış altılıq rəngdir.</translation>
 <translation id="7976214039405368314">Həddən çox sorğu var</translation>
 <translation id="7977538094055660992">Çıxış cihazı</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1947,6 +1952,7 @@
 <translation id="8446884382197647889">Ətraflı Məlumat</translation>
 <translation id="8457125768502047971">Qeyri-müəyyən</translation>
 <translation id="8461694314515752532">Sinxronizasiya parolunuz ilə sinxronizasiya edilmiş datanı şifrələyin</translation>
+<translation id="8463101686637053101">Dinozavr oyunu, tullanmaq və oynamaq üçün boşluq düyməsinə basın</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredit kartı}other{# kredit kartı}}</translation>
 <translation id="8473863474539038330">Ünvanlar və s.</translation>
 <translation id="8474910779563686872">Tərtibatçı detallarını göstərin</translation>
@@ -2082,6 +2088,7 @@
 <translation id="8996941253935762404">Qarşıdakı saytda ziyanverici proqramlar var</translation>
 <translation id="8997023839087525404">Server, Sertifikat Şəffaflığı siyasəti istifadə edilərək aşkarlanmamış sertifikatı təqdim etdi. Bu, sertifikatların etibarlı və hücum edənlərə qarşı qorunduğuna əmin olmaq üçün tələb olunur.</translation>
 <translation id="9001074447101275817"><ph name="DOMAIN" /> proksisi istifadəçi adı və parol tələb edir.</translation>
+<translation id="9001963517402879850">Tullanın!</translation>
 <translation id="9004367719664099443">VR sessiyası davam edir</translation>
 <translation id="9005998258318286617">PDF sənədini yükləmək alınmadı.</translation>
 <translation id="9008201768610948239">İqnor</translation>

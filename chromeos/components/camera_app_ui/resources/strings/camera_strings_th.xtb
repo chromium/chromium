@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">สี่เหลี่ยมจัตุรัส</translation>
 <translation id="5775960006311140197">โหมดผู้เชี่ยวชาญ</translation>
 <translation id="5869546221129391014">ตาราง</translation>
+<translation id="5975083100439434680">ย่อ</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6073451960410192870">หยุดบันทึก</translation>
 <translation id="6197807149213783179">บันทึกข้อมูลเมตา</translation>
@@ -81,9 +82,9 @@
 <translation id="7649070708921625228">ความช่วยเหลือ</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7974782136796202581">แสดงตัวเลือกการเลื่อน การเอียง การซูม</translation>
 <translation id="7983668134180549431">ตรวจพบข้อความ</translation>
 <translation id="8067883171444229417">เล่นวิดีโอ</translation>
+<translation id="8120146556401698679">เลื่อน เอียง ซูม</translation>
 <translation id="8131740175452115882">ยืนยัน</translation>
 <translation id="8145038249676204903">เปลี่ยนเป็นโหมดถ่ายภาพ</translation>
 <translation id="8239780215768881278">ถ่ายสแนปชอตในวิดีโอ</translation>
@@ -94,6 +95,7 @@
 <translation id="8815966864175525708">เปลี่ยนเป็นถ่ายภาพบุคคล</translation>
 <translation id="8828441885228359828">บันทึกต่อ</translation>
 <translation id="8870695351537079478">เริ่มบันทึกวิดีโอไม่ได้</translation>
+<translation id="8903921497873541725">ขยาย</translation>
 <translation id="9045155556724273246">10 วินาที</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
 </translationbundle>

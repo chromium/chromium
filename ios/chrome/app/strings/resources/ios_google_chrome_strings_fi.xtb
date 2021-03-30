@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Chrome ei voi tarkistaa, onko päivityksiä saatavilla</translation>
 <translation id="5854621639439811139">Chrome-vinkki: Takaisin, Seuraava, Haku ja jotkin muut painikkeet löytyvät nyt näytön alareunasta.</translation>
+<translation id="5876773482963502140">Jos Chrome saa nähdä sijaintisi, sijainti lähetetään sivustoille, jotka sallit. Sivustot voivat kysyä sijaintiasi, jos niillä on sinulle paikallisia tietoja, esim. uutisia tai lähistöllä olevia kauppoja.</translation>
 <translation id="6036420186814142909">Google Chrome sisältää ominaisuuksia, joiden avulla voit hallita tiedonsiirtoasi ja verkkosivujen latausnopeutta.
 <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Vaihda Chromeen</translation>
@@ -90,5 +91,4 @@
   2. Valitse Oletusselain
   3. Valitse Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Jos Chrome saa nähdä sijaintisi, sijainti lähetetään oletushakukoneellesi ja sivustoille, jotka sallit. Sivustot voivat kysyä sijaintiasi, jos niillä on sinulle paikallisia tietoja, esim. uutisia tai lähistöllä olevia kauppoja.</translation>
 </translationbundle>

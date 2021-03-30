@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Chromium momentálne nemôže použiť váš fotoaparát</translation>
 <translation id="2195025571279539885">Chcete, aby prehliadač Chromium nabudúce ponúkol možnosť prekladu stránok v jazyku <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="2590893390871230428">Synchronizácia údajov prehliadača Chromium</translation>
-<translation id="259614951763923692">Ak prehliadaču Chromium povolíte prístup k polohe, odošle ju predvolenému vyhľadávaču a všetkým webom, ktorým to povolíte. Weby vás môžu požiadať o polohu, keď vám chcú zobraziť miestne informácie, napríklad obchody v okolí alebo správy.</translation>
 <translation id="2650312721222849884">Ak chcete vidieť svoje karty vo všetkých zariadeniach, v ktorých používate Chromium, zapnite synchronizáciu</translation>
 <translation id="2730884209570016437">Chromium nemôže použiť váš fotoaparát, pretože ho práve používa iná aplikácia</translation>
 <translation id="2915596697727466327">Chromium používa overenie Face ID na zaistenie oprávneného prístupu k heslám.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Odhlásiť sa z prehliadača Chromium?</translation>
 <translation id="6424492062988593837">Systém Chromium bol práve vylepšený. K dispozícii je nová verzia.</translation>
 <translation id="6820823224820483452">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra.</translation>
+<translation id="6827294685447036764">Ak povolíte prehliadaču Chromium prístup k svojej polohe, bude ju odosielať všetkým webom, ktoré povolíte. Weby vás môžu požiadať o polohu, keď vám chcú zobraziť miestne informácie, napríklad obchody v okolí alebo správy.</translation>
 <translation id="7018284295775193585">Chromium sa nedá aktualizovať</translation>
 <translation id="7099326575020694068">Chromium nemôže použiť váš fotoaparát v režime Rozdelené zobrazenie</translation>
 <translation id="7118091470949186573">Chromium môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>

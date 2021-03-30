@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Chromium kan inte använda kameran just nu</translation>
 <translation id="2195025571279539885">Vill du att Chromium ska översätta sidor skrivna på <ph name="LANGUAGE_NAME" /> på den här webbplatsen nästa gång?</translation>
 <translation id="2590893390871230428">Synkronisera data i Chromium</translation>
-<translation id="259614951763923692">När du ger Chromium åtkomst till din plats skickas den från Chromium till din standardsökmotor och alla webbplatser som du ger behörighet till. Webbplatser kan fråga efter din plats när det finns lokal information att visa, till exempel butiker i närheten eller nyheter.</translation>
 <translation id="2650312721222849884">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chromium</translation>
 <translation id="2730884209570016437">Chromium kan inte använda kameran eftersom den används av en annan app</translation>
 <translation id="2915596697727466327">Chromium använder Face ID för att se till att endast behöriga har åtkomst till lösenorden.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Vill du logga ut från Chromium?</translation>
 <translation id="6424492062988593837">Chrome har blivit ännu bättre! En ny version finns tillgänglig.</translation>
 <translation id="6820823224820483452">Chromium kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>
+<translation id="6827294685447036764">När du ger Chromium åtkomst till din plats skickas den från Chromium till alla webbplatser som du ger behörighet. Webbplatser kan fråga efter din plats när det finns lokal information att visa, till exempel butiker i närheten eller nyheter.</translation>
 <translation id="7018284295775193585">Chromium kan inte uppdateras</translation>
 <translation id="7099326575020694068">Chromium kan inte använda kameran i delad vy</translation>
 <translation id="7118091470949186573">Nu kan du använda Chromium varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>

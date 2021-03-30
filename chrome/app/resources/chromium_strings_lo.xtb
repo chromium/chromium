@@ -12,7 +12,6 @@
 <translation id="1315551408014407711">ຕັ້ງຄ່າໂປຣໄຟລ໌ Chromium ໃໝ່ຂອງທ່ານ</translation>
 <translation id="1396446129537741364">Chromium ກໍາລັງພະຍາຍາມສະແດງລະຫັດຜ່ານ.</translation>
 <translation id="1414495520565016063">ທ່ານ​ລົງຊື່ເຂົ້າ​ໃຊ້ Chromium ແລ້ວ​!</translation>
-<translation id="1414973082589232775">ເພື່ອໃຊ້ Rosetta ຫຼິ້ນມີເດຍທີ່ມີການປ້ອງກັນ, ທ່ານຕ້ອງຣິສະຕາດ Chromium.</translation>
 <translation id="151962892725702025">Chromium OS ບໍ່​ສາ​ມາດຊິງຄ໌ຂໍ້​ມູນ​ຂອງ​ທ່ານໄດ້ ເພາະວ່າບໍ່ມີການຊິງຄ໌ຢູ່ໃນໂດເມນຂອງທ່ານ.</translation>
 <translation id="1524282610922162960">ແບ່ງປັນແຖບ Chromium</translation>
 <translation id="1553461853655228091">Chromium ຕ້ອງການການອະນຸຍາດເພື່ອເຂົ້າເຖິງກ້ອງຂອງທ່ານເພື່ອສ້າງແຜນທີ່ 3 ມິຕິຂອງສະພາບແວດລ້ອມອ້ອມຂ້າງຂອງທ່ານ</translation>
@@ -27,6 +26,7 @@
 <translation id="1966382378801805537">Chromium ບໍ່ສາມາດກຳນົດ ຫຼື ຕັ້ງໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນໄດ້</translation>
 <translation id="2008474315282236005">ນີ້ຈະລຶບ 1 ລາຍການອອກຈາກອຸປະກອນນີ້. ເພື່ອກູ້ຂໍ້ມູນຂອງທ່ານຄືນໃນພາຍຫຼັງ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chromium ເປັນ <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">ເພື່ອກວດເບິ່ງວ່າລະຫັດຜ່ານອື່ນຂອງທ່ານປອດໄພຈາກການລະເມີດຂໍ້ມູນ ແລະ ບັນຫາຄວາມປອດໄພອື່ນຫຼືບໍ່, ກະລຸນາ <ph name="BEGIN_LINK" />ເຂົ້າສູ່ລະບົບ Chromium<ph name="END_LINK" />.</translation>
+<translation id="2174178932569897599">ປັບແຕ່ງ Chromium</translation>
 <translation id="2185166961232948079">Chromium - ການເຂົ້າສູ່ລະບົບເຄືອຂ່າຍ - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">ຖ້າທ່ານແຊຣ໌ຄອມພິວເຕີ, ໝູ່​ເພື່ອນ ແລະຄອບຄົວຂອງທ່ານ ສາມາດທ່ອງເນັດໄດ້ແຍກຕ່າງຫາກ ແລະຕັ້ງ Chromium ໄດ້ຕາມ​ແບບທີ່ພວກເຂົາຕ້ອງການ.</translation>
 <translation id="2294245788148774212">ບໍ່ບັງຄັບ: ຊ່ວຍປັບປຸງຄຸນສົມບັດ ແລະ ປະສິດທິພາບຂອງ Chromium OS ໂດຍການສົ່ງຂໍ້ມູນການວິເຄາະ ແລະ ການນຳໃຊ້ໃຫ້ Google ໂດຍອັດຕະໂນມັດ.</translation>
@@ -137,11 +137,11 @@
 <translation id="5480860683791598150">Chromium ຕ້ອງການເຂົ້າເຖິງສະຖານທີ່ຂອງທ່ານເພື່ອແບ່ງປັນສະຖານທີ່ຂອງທ່ານກັບເວັບໄຊນີ້</translation>
 <translation id="549669000822060376">ກະ​ລຸ​ນາ​ລໍ​ຖ້າ​ໃນ​ຂະ​ນະ​ທີ່ Chromium ​ຕິດ​ຕັ້ງ​ການອັບເດດລະບົບຫລ້າ​ສຸດ.</translation>
 <translation id="5496810170689441661">Chromium ກໍາລັງພະຍາຍາມແກ້ໄຂລະຫັດຜ່ານ. ພິມລະຫັດຜ່ານ Windows ຂອງທ່ານ ເພື່ອອະນຸຍາດໃຫ້ສຳເນົາໄດ້.</translation>
+<translation id="5527463683072221100">ເປີດ PDF ໃນ Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{ມີການອັບເດດ Chromium}=1{ມີການອັບເດດ Chromium}other{ມີການອັບເດດ Chromium ເປັນເວລາ # ມື້ແລ້ວ}}</translation>
 <translation id="5634636535844844681">Chromium ຕ້ອງໃຊ້ Windows 7 ຫຼື ສູງກວ່າ.</translation>
 <translation id="5653831366781983928">ກະລຸນາປິດເປີດ Chromium ຄືນໃໝ່ຕອນນີ້</translation>
 <translation id="5698481217667032250">ສະ​ແດງ Chromium ເປັນພາສານີ້</translation>
-<translation id="5736967399513123100">ເພື່ອໃຫ້ Chromium ສາມາດຫຼິ້ນມີເດຍທີ່ມີການປ້ອງກັນໄດ້, ທ່ານຈຳເປັນຕ້ອງຕິດຕັ້ງ Rosetta. ທ່ານຕ້ອງການຕິດຕັ້ງມັນຕອນນີ້ບໍ?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">ຍິນ​ດີ​ຕ້ອນ​ຮັບສູ່ Chromium</translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
@@ -192,7 +192,6 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (ສຳເນົາໄວ້ໃນ Chromium ແລ້ວ)</translation>
 <translation id="6893813176749746474">ອັບເດດ Chromium ແລ້ວ, ແຕ່ທ່ານບໍ່ໄດ້ໃຊ້ມັນເປັນເວລາຢ່າງໜ້ອຍ 30 ວັນແລ້ວ​.</translation>
-<translation id="6897548120660295439">Rosetta ເຮັດໃຫ້ Chromium ສາມາດຫຼິ້ນມີເດຍທີ່ມີການປ້ອງກັນໃນໜ້ານີ້ໄດ້.</translation>
 <translation id="691026815377248078">Chromium ຕ້ອງການສິດເຂົ້າເຖິງ Bluetooth ເພື່ອສືບຕໍ່ 
  ການຈັບຄູ່. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນຂອງ Chromium</translation>

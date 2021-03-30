@@ -178,6 +178,7 @@
 <translation id="5916664084637901428">An</translation>
 <translation id="5922853908706496913">Bildschirmfreigabe läuft</translation>
 <translation id="5939518447894949180">Zurücksetzen</translation>
+<translation id="5975083100439434680">Verkleinern</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Zugriff dieser Website auf Ihr Gerät steuern</translation>
 <translation id="6040143037577758943">Schließen</translation>
@@ -298,6 +299,7 @@
 <translation id="8801436777607969138">Hier können Sie Websites angeben, für die JavaScript blockiert werden soll.</translation>
 <translation id="8816026460808729765">Zugriff auf Sensoren für Websites blockieren</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8903921497873541725">Vergrößern</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC ist für dieses Gerät deaktiviert. Sie können die Funktion in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
 <translation id="8929372349074745002">Diese Website lädt und reagiert meistens schnell</translation>

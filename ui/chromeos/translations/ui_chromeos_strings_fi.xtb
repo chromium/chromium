@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Älä irrota laitettasi vielä!<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
        Jos irrotat laitteen sen ollessa käytössä, voit menettää tietoja. Odota, kunnes toiminto on suoritettu, ja poista laite sitten käytöstä Tiedostot-sovelluksen kautta.</translation>
+<translation id="5159560892333415631">Tyhjennä roskakori</translation>
 <translation id="5163869187418756376">Jakaminen epäonnistui. Tarkista internetyhteytesi ja yritä myöhemmin uudelleen.</translation>
 <translation id="516592729076796170">US, Dvorak ohjelmoijille</translation>
 <translation id="5170477580121653719">Google Drive -tallennustilaa jäljellä: <ph name="SPACE_AVAILABLE" />.</translation>
@@ -419,6 +420,7 @@
 <translation id="5275973617553375938">Google Drivesta palautetut tiedostot</translation>
 <translation id="5288441970121584418">Hampurilainen</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">Haluatko varmasti tyhjentää roskakorin?</translation>
 <translation id="5317780077021120954">Tallenna</translation>
 <translation id="5318819489018851358">Jaa Linuxilla</translation>
 <translation id="5323213332664049067">Latinalainen Amerikka</translation>
@@ -783,6 +785,7 @@
 <translation id="9154418932169119429">Tämä kuva ei ole käytettävissä offline-tilassa.</translation>
 <translation id="9172592259078059678">translitteroitu gudžarati</translation>
 <translation id="9173120999827300720">englanti (Yhdysvallat), kansainvälinen näppäimistö</translation>
+<translation id="9174050671906956834">Roskakorin kohteet poistetaan pysyvästi 30 päivän kuluttua.</translation>
 <translation id="9189836632794948435">kazakki</translation>
 <translation id="9213073329713032541">Asennus käynnistyi.</translation>
 <translation id="9219103736887031265">Kuvat</translation>

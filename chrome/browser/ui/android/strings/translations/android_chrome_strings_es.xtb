@@ -268,7 +268,6 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="2856503607207334158">No se ha podido iniciar sesión</translation>
 <translation id="2860954141821109167">Comprueba que se haya habilitado una aplicación de teléfono en este dispositivo</translation>
 <translation id="2870560284913253234">Sitio</translation>
-<translation id="2876369937070532032">Envía a Google las URL de algunas de las páginas que visitas cuando tu seguridad corre peligro</translation>
 <translation id="2888126860611144412">Información de Chrome</translation>
 <translation id="2891154217021530873">Detener la carga de la página</translation>
 <translation id="2892647708214602204">Cuando el archivo esté listo, verás una notificación</translation>
@@ -311,7 +310,6 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3157842584138209013">Consulta la cantidad de datos que has ahorrado con el botón Más opciones</translation>
 <translation id="3166827708714933426">Combinaciones de teclas de pestañas y ventanas</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Navegación segura (te protege a ti y a tu dispositivo frente a sitios peligrosos)</translation>
 <translation id="3205824638308738187">¡Ya falta poco!</translation>
 <translation id="3207960819495026254">Añadido a marcadores</translation>
 <translation id="3208584281581115441">Comprobar ahora</translation>
@@ -505,6 +503,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4561979708150884304">No hay conexión</translation>
 <translation id="4565377596337484307">Ocultar contraseña</translation>
 <translation id="4572422548854449519">Inicia sesión en la cuenta gestionada</translation>
+<translation id="4576892426230499203">Prueba con otra opción de verificación</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Hace # minuto}other{Hace # minutos}}</translation>
 <translation id="4587589328781138893">Sitios web</translation>
 <translation id="4594952190837476234">Esta página sin conexión se creó el <ph name="CREATION_TIME" /> y puede ser distinta de la versión online.</translation>
@@ -584,7 +583,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5011311129201317034"><ph name="SITE" /> quiere conectarse</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Permitir</translation>
-<translation id="5040262127954254034">Privacidad</translation>
 <translation id="5087580092889165836">Añadir tarjeta</translation>
 <translation id="5091249083535528968">Datos de uso ampliados</translation>
 <translation id="509429900233858213">Se ha producido un error.</translation>
@@ -637,6 +635,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5441522332038954058">Te dirige a la barra de direcciones</translation>
 <translation id="544776284582297024">Para abrir pestañas y visitar varias páginas al mismo tiempo, toca el botón "pestañas abiertas"</translation>
 <translation id="545042621069398927">Acelerando descarga.</translation>
+<translation id="5454166040603940656">con <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Descargar página</translation>
 <translation id="548278423535722844">Abrirla en una aplicación de mapas</translation>
 <translation id="5483197086164197190">Desplazarte por Chrome</translation>
@@ -777,6 +776,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6316139424528454185">Esta versión de Android no es compatible</translation>
 <translation id="6324034347079777476">Sincronización del sistema Android inhabilitada</translation>
 <translation id="6324977638108296054">No se puede crear un enlace al texto destacado</translation>
+<translation id="6324997754869598316">(Error <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Compartir a través de <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Cifrado</translation>
 <translation id="6341580099087024258">Preguntar dónde guardar los archivos</translation>
@@ -793,6 +793,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6402652558933147609">Error <ph name="ERROR_CODE" /> en <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Editar marcador</translation>
 <translation id="6406506848690869874">Sincronización</translation>
+<translation id="6407224748847589805">No se ha podido establecer conexión con tu ordenador. Prueba con otra opción de verificación.</translation>
 <translation id="6410404864818553978">Datos de uso básicos</translation>
 <translation id="6410883413783534063">Abre pestañas para visitar varias páginas al mismo tiempo</translation>
 <translation id="6412673304250309937">Comprueba las URL guardadas en Chrome con una lista de sitios que no son seguros. Si un sitio web intenta robarte la contraseña o te descargas un archivo dañino, puede que Chrome también envíe URL, así como fragmentos de contenido de la página, a Navegación segura.</translation>
@@ -861,7 +862,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6813446258015311409">Inicia sesión en Chrome, abierto.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">Pestaña <ph name="TAB_TITLE" /> seleccionada</translation>
-<translation id="6845325883481699275">Ayudar a mejorar la seguridad de Chrome</translation>
 <translation id="6846298663435243399">Cargando…</translation>
 <translation id="6850409657436465440">Tu descarga sigue en curso</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> pestañas cerradas</translation>
@@ -989,7 +989,6 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="7704317875155739195">Autocompletar búsquedas y URLs</translation>
 <translation id="7707922173985738739">Se utilizarán datos móviles</translation>
 <translation id="7725024127233776428">Las páginas que añadas a marcadores aparecerán aquí</translation>
-<translation id="7746457520633464754">Para detectar aplicaciones y sitios peligrosos, Chrome envía a Google las URL de algunas de las páginas que visitas, información limitada del sistema y parte del contenido de las páginas.</translation>
 <translation id="7757787379047923882">Texto compartido desde <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Elegir fecha y hora</translation>
 <translation id="7762668264895820836">Tarjeta SD <ph name="SD_CARD_NUMBER" /></translation>

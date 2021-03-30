@@ -22,6 +22,8 @@
 <translation id="1120938014254001895">Leret dua jari ke atas</translation>
 <translation id="1126928665165112660">Bukan huruf condong</translation>
 <translation id="113582498867142724">Koleksi <ph name="TAG" /> dengan <ph name="NUM" /> item</translation>
+<translation id="1146441463334103638">Hidupkan atau matikan skrin</translation>
+<translation id="1156488781945104845">Masa semasa</translation>
 <translation id="1161762950103988776">Langkau</translation>
 <translation id="1164857107703583584">Perintah lompat boleh digunakan untuk menavigasi halaman web dengan cekap.</translation>
 <translation id="1175914831232945926">Digit</translation>
@@ -71,6 +73,7 @@
 <translation id="1405567553485452995">Hijau Cerah</translation>
 <translation id="1411043317877497323">Kawasan latihan</translation>
 <translation id="141454040365657399">Pengepala halaman</translation>
+<translation id="1417092723421264764">Halaman semasa</translation>
 <translation id="1417889266572670458">Biru Kelasi</translation>
 <translation id="1431911867058218151">Ijas</translation>
 <translation id="1439316808600711881">rgn</translation>
@@ -199,6 +202,7 @@
 <translation id="242998846562331953">Sari kata</translation>
 <translation id="2435422727584637732">Biru Dodger</translation>
 <translation id="2450814015951372393">Kotak pilihan</translation>
+<translation id="2461822463642141190">Semasa</translation>
 <translation id="2462626033734746142">Kumpulan butang radio</translation>
 <translation id="2471138580042810658">Tajuk 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{asterisk}other{# asterisk}}</translation>
@@ -244,7 +248,6 @@
 <translation id="2766299274563946262">Tiada sel di kiri</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="280499067616661124">Cari dalam halaman Chromevox</translation>
-<translation id="2808001342598757276">Terangkan skrin</translation>
 <translation id="2811019999044652585">Untuk melompat ke bahagian lain dalam skrin itu, misalnya bar alat atau dulang sistem, tekan Control + Forward. Pada Chromebook, kekunci Forward berada betul-betul di atas kekunci nombor 2.</translation>
 <translation id="2811204574343810641">Baris</translation>
 <translation id="2816868829355607410">Kawasan latihan: Perintah lompat</translation>
@@ -299,6 +302,7 @@
 <translation id="3109724472072898302">Diruntuhkan</translation>
 <translation id="311015743332597320">Leret empat jari ke kanan</translation>
 <translation id="3112457281078985179">Untuk menghidupkan atau mematikan ChromeVox, gunakan Control+Alt+Z.</translation>
+<translation id="3115800313647508384">Matikan skrin?</translation>
 <translation id="3131002934070407451">Baca nombor sebagai:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Hijau Buah Zaitun</translation>
@@ -642,6 +646,7 @@
 <translation id="5655682562155942719">Perintah Melangkau</translation>
 <translation id="56637627897541303">Kawasan teks</translation>
 <translation id="5669637233317991674">Tekan Carian + Anak Panah ke Kanan atau Carian + Anak Panah ke Kiri untuk menavigasi pelajaran ini</translation>
+<translation id="5677240841070992068">Lokasi semasa</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
 <translation id="5682113568322255809">Mercu Tanda</translation>
@@ -677,6 +682,7 @@
 <translation id="5901630391730855834">Kuning</translation>
 <translation id="5906974869830879618">Sila masukkan pin</translation>
 <translation id="5921587111466148855">Bab</translation>
+<translation id="5923780477617566089">Tarikh semasa</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{sama dengan}other{# tanda sama dengan}}</translation>
 <translation id="5948123859135882163">Togol tafsiran ungkapan matematik antara struktur dan semantik</translation>
 <translation id="5955304353782037793">apl</translation>
@@ -696,9 +702,9 @@
 <translation id="6034000775414344507">Kelabu Cerah</translation>
 <translation id="6036135911048686884">Sentuh Teroka</translation>
 <translation id="6037602951055904232">Sorot ke hadapan</translation>
-<translation id="6044160928851315051">Gelapkan skrin</translation>
 <translation id="6082768461603900813">Navigasi Asas</translation>
 <translation id="609281021724813947">Tiada peluncur sebelumnya</translation>
+<translation id="6096942799340613495">Tindakan ini akan mematikan skrin. Anda boleh menghidupkan semula skrin pada bila-bila masa dengan menekan kekunci Carian + Tingkatkan kecerahan.</translation>
 <translation id="6100239002225743044">Beralih satu baris ke atas</translation>
 <translation id="6118126368611144850">Apl Android untuk Chrome. Jika Gedung Play dipasang pada peranti anda, tinjau ChromeVox dengan apl Android. Cuba sokongan percubaan dengan memuat turun Google Chrome Canary daripada Gedung Play.</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -766,6 +772,7 @@
 <translation id="6696967141280706829">Kata penghantar</translation>
 <translation id="6697092096875747123">Kotak kombo sebelumnya</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{tanda seru}other{# tanda seru}}</translation>
+<translation id="670717715607710284">Matikan skrin</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="6714813999819678458">Tajuk tahap 2 sebelumnya</translation>
 <translation id="6730312624811567147">Gunakan Cari Kiri atau Kanan untuk Home atau End, Cari Control Kiri atau Kanan untuk Control Home atau End, Cari Atas atau Bawah untuk Page Up atau Down</translation>
@@ -945,6 +952,7 @@
 <translation id="8037651341025652929">Kesimpulan</translation>
 <translation id="8042761080832772327">Edit teks, masukan carian</translation>
 <translation id="8049189770492311300">Pemasa</translation>
+<translation id="8057472523431225012">Langkah semasa</translation>
 <translation id="8058636807889143711">Tiada ungkapan matematik seterusnya</translation>
 <translation id="8066678206530322333">Sepanduk</translation>
 <translation id="8076492880354921740">Tab</translation>
@@ -962,6 +970,7 @@
 <translation id="816818801578874684">Ini ialah tajuk yang pertama. Tekan Carian + H untuk pergi ke tajuk seterusnya.</translation>
 <translation id="8173092779156526980">Leret empat jari ke kiri</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{garis bawah}other{# garis bawah}}</translation>
+<translation id="817529114347680055">Hidupkan skrin</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">baris</translation>
 <translation id="8186185314313222077">togol skrin penuh</translation>
@@ -984,7 +993,6 @@
 <translation id="8316881042119029234">Renda Lama</translation>
 <translation id="8324974933005349667">Peribadikan tetapan Teks ke Pertuturan</translation>
 <translation id="8326783648485765113">Hijau Laman</translation>
-<translation id="8328063869313048659">Togol skrin gelap</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{paun}other{# tanda paun}}</translation>
 <translation id="8378855320830505539">Wilayah</translation>
 <translation id="8382679411218029383">Autolengkap sebaris dan senarai</translation>

@@ -61,7 +61,7 @@
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Activeringsstatus</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">Schakel Bluetooth in om apparaten in de buurt te vinden</translation>
+<translation id="2338501278241028356">Zet Bluetooth aan om apparaten in de buurt te vinden</translation>
 <translation id="2364498172489649528">Geslaagd</translation>
 <translation id="2391082728065870591">Feedbackrapport sturen</translation>
 <translation id="2418150275289244458">Openen in instellingen</translation>
@@ -131,7 +131,7 @@
 <translation id="4145784616224233563">HTTP-firewall</translation>
 <translation id="4155551848414053977">Zorg dat de scanner aanstaat en beschikbaar is via je netwerk of een directe verbinding.</translation>
 <translation id="4170700058716978431">MISLUKT</translation>
-<translation id="4176463684765177261">Uitgeschakeld</translation>
+<translation id="4176463684765177261">Uitgezet</translation>
 <translation id="4227825898293920515">Wachtwoord verloopt over <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Er worden geen afdruktaken uitgevoerd</translation>
 <translation id="4297501883039923494">Gestopt: onbekende fout</translation>
@@ -363,6 +363,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8970109610781093811">Opnieuw uitvoeren</translation>
 <translation id="9003704114456258138">Frequentie</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9065203028668620118">Bewerken</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Huidig gebruik</translation>

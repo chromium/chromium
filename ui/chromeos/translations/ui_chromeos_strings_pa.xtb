@@ -87,7 +87,7 @@
 <translation id="1853795129690976061">ਇਹ ਫੋਲਡਰ Linux ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="1864756863218646478">ਫਾਈਲ ਨਹੀਂ ਲੱਭੀ ਜਾ ਸਕੀ।</translation>
 <translation id="1920670151694390848">ਮਲਿਆਲਮ ਲਿਪੀਅੰਤਰਨ</translation>
-<translation id="1920798810075583923">ਤਰਬੂਜ</translation>
+<translation id="1920798810075583923">ਤਰਬੂਜ਼</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> ਨੂੰ ਫਾਰਮੈਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1931134289871235022">ਸਲੋਵਾਕ</translation>
 <translation id="1933345018156373194">ਜਗ੍ਹਾ ਬਦਲਣਾ ਅਸਫਲ ਰਿਹਾ, ਅਣਕਿਆਸੀ ਗੜਬੜ: <ph name="ERROR_MESSAGE" /></translation>
@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />ਅਜੇ ਆਪਣੀ ਡੀਵਾਈਸ ਨਾ ਹਟਾਓ!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    ਡੀਵਾਈਸ ਦੇ ਵਰਤੋਂ ਵਿੱਚ ਹੋਣ ਵੇਲੇ ਇਸਨੂੰ ਹਟਾਉਣ ਨਾਲ ਡਾਟਾ ਨਸ਼ਟ ਹੋ ਸਕਦਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਓਪਰੇਸ਼ਨ ਦੇ ਖ਼ਤਮ ਹੋਣ ਤੱਕ ਉਡੀਕ ਕਰੋ, ਫਿਰ Files ਐਪ ਵਰਤਦੇ ਹੋਏ ਡੀਵਾਈਸ ਨੂੰ ਹਟਾਓ।</translation>
+<translation id="5159560892333415631">ਰੱਦੀ ਨੂੰ ਖਾਲੀ ਕਰੋ</translation>
 <translation id="5163869187418756376">ਸਾਂਝਾਕਰਨ ਅਸਫਲ। ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5170477580121653719">Google Drive ਸਪੇਸ ਬਾਕੀ: <ph name="SPACE_AVAILABLE" />.</translation>
@@ -418,6 +419,7 @@
     ਸਾਂਝਾ ਕਰੋ, ਬਣਾਓ, ਅਤੇ ਉਹਨਾਂ 'ਤੇ ਸਹਿਯੋਗ ਦਿਓ।<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive ਤੋਂ ਰਿਕਵਰ ਕੀਤੀਆਂ ਫਾਈਲਾਂ</translation>
 <translation id="5288441970121584418">ਬਰਗਰ</translation>
+<translation id="5299998344490869684">ਕੀ ਤੁਸੀਂ ਰੱਦੀ ਨੂੰ ਖਾਲੀ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5318819489018851358">Linux ਨਾਲ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="5323213332664049067">ਲਾਤੀਨੀ ਅਮਰੀਕੀ</translation>
@@ -782,6 +784,7 @@
 <translation id="9154418932169119429">ਇਹ ਚਿੱਤਰ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="9172592259078059678">ਗੁਜਰਾਤੀ ਲਿਪੀਅੰਤਰਨ</translation>
 <translation id="9173120999827300720">ਅੰਤਰਰਾਸ਼ਟਰੀ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਅੰਗਰੇਜ਼ੀ (ਯੂ.ਐੱਸ.)</translation>
+<translation id="9174050671906956834">ਰੱਦੀ ਵਿਚਲੀਆਂ ਆਈਟਮਾਂ ਨੂੰ 30 ਦਿਨਾਂ ਬਾਅਦ ਹਮੇਸ਼ਾਂ ਲਈ ਮਿਟਾ ਦਿੱਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="9189836632794948435">ਕਜ਼ਾਖ</translation>
 <translation id="9213073329713032541">ਸਥਾਪਨਾ ਸਫਲਤਾਪੂਰਵਕ ਸ਼ੁਰੂ ਹੋਈ।</translation>
 <translation id="9219103736887031265">ਚਿੱਤਰ</translation>

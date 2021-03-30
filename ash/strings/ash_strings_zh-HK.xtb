@@ -396,6 +396,7 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">您已按下高對比度的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
 <translation id="4331809312908958774">Chrome 作業系統</translation>
+<translation id="4333628967105022692">有多位使用者登入時不支援 Lacros 瀏覽器。</translation>
 <translation id="4338109981321384717">放大鏡</translation>
 <translation id="4351433414020964307">正在載入小幫手…</translation>
 <translation id="4356930093361201197">高對比模式</translation>
@@ -967,6 +968,7 @@
 <translation id="9091626656156419976">已移除「<ph name="DISPLAY_NAME" />」畫面</translation>
 <translation id="9098969848082897657">將手機設為靜音</translation>
 <translation id="9099154003160514616">有可用的 Lacros 更新</translation>
+<translation id="9105450214093926548">Lacros 瀏覽器執行時，系統不支援第二位使用者登入。請改為在 Lacros 中使用第二個瀏覽器設定檔，或者關閉 Lacros，然後再試一次。</translation>
 <translation id="9133335900048457298">無法錄影受保護的內容</translation>
 <translation id="9151726767154816831">重新啟動並執行 Powerwash 以進行更新</translation>
 <translation id="9166331175924255663">將「咫尺共享」功能切換為向附近的所有裝置顯示。</translation>

@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">Збой уваходу ў сістэму</translation>
 <translation id="2860954141821109167">Праверце, ці ўключана на гэтай прыладзе праграма для тэлефона</translation>
 <translation id="2870560284913253234">Сайт</translation>
-<translation id="2876369937070532032">Адпраўляе URL-адрасы некаторых наведаных вамі старонак у Google, калі ваша бяспека пад пагрозай</translation>
 <translation id="2888126860611144412">Пра браўзер Chrome</translation>
 <translation id="2891154217021530873">Спыніць загрузку старонкі</translation>
 <translation id="2892647708214602204">Калі файл будзе гатовы, вы ўбачыце апавяшчэнне</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">Глядзіце, колькі трафіка вы сэканомілі, з дапамогай кнопкі "Дадатковыя параметры"</translation>
 <translation id="3166827708714933426">Спалучэнні клавіш для працы з укладкамі і вокнамі</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Бяспечны прагляд (абараняе вас і прыладу ад небяспечных сайтаў)</translation>
 <translation id="3205824638308738187">Амаль гатова!</translation>
 <translation id="3207960819495026254">Дададзена ў закладкі</translation>
 <translation id="3208584281581115441">Праверыць</translation>
@@ -505,6 +503,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="4561979708150884304">Няма падключэння</translation>
 <translation id="4565377596337484307">Схаваць пароль</translation>
 <translation id="4572422548854449519">Увайдзіце ва ўліковы запіс пад кіраваннем</translation>
+<translation id="4576892426230499203">Паспрабуйце іншы спосаб спраўджання</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{1 хвіліну таму}one{# хвіліну таму}few{# хвіліны таму}many{# хвілін таму}other{# хвіліны таму}}</translation>
 <translation id="4587589328781138893">Сайты</translation>
 <translation id="4594952190837476234">Гэта пазасеткавая старонка створана <ph name="CREATION_TIME" /> і можа адрознівацца ад сваёй інтэрнэт-версіі.</translation>
@@ -584,7 +583,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5011311129201317034"><ph name="SITE" /> хоча падключыцца</translation>
 <translation id="5016205925109358554">З засечкамі</translation>
 <translation id="5039804452771397117">Дазволіць</translation>
-<translation id="5040262127954254034">Прыватнасць</translation>
 <translation id="5087580092889165836">Дадаць картку</translation>
 <translation id="5091249083535528968">Пашыраныя даныя пра выкарыстанне</translation>
 <translation id="509429900233858213">Адбылася памылка.</translation>
@@ -637,6 +635,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5441522332038954058">Перайсці да адраснага радка</translation>
 <translation id="544776284582297024">Каб праглядаць некалькі старонак адначасова, націсніце кнопку "Адкрыць укладкі"</translation>
 <translation id="545042621069398927">Спампоўка паскараецца.</translation>
+<translation id="5454166040603940656">крыніца: <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Спампаваць старонку</translation>
 <translation id="548278423535722844">Адкрыць у праграме карт</translation>
 <translation id="5483197086164197190">Навігацыя ў Chrome</translation>
@@ -777,6 +776,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="6316139424528454185">Версія Android не падтрымлів.</translation>
 <translation id="6324034347079777476">Сінхранізацыя сістэмы Android выключана</translation>
 <translation id="6324977638108296054">Не ўдалося стварыць спасылку на вылучаны тэкст</translation>
+<translation id="6324997754869598316">(Памылка <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Абагуліць праз <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Шыфраванне</translation>
 <translation id="6341580099087024258">Запытваць месца для захоўвання файлаў</translation>
@@ -793,6 +793,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> на <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Змяніце закладку</translation>
 <translation id="6406506848690869874">Сінхранізаваць</translation>
+<translation id="6407224748847589805">Не ўдалося падключыцца да вашага камп'ютара. Паспрабуйце іншы спосаб спраўджання.</translation>
 <translation id="6410404864818553978">Асноўныя даныя пра выкарыстанне</translation>
 <translation id="6410883413783534063">Каб праглядаць некалькі старонак адначасова, карыстайцеся ўкладкамі</translation>
 <translation id="6412673304250309937">Правярае, ці знаходзяцца URL-адрасы ў спісе небяспечных сайтаў, захаваным у Chrome. Пры спробе сайта выкрасці пароль або пры спампоўванні шкоднага файла браўзер Chrome можа таксама адпраўляць у Бяспечны прагляд URL-адрасы, уключаючы фрагменты змесціва старонкі.</translation>
@@ -861,7 +862,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="6813446258015311409">Аркуш "Увайсці ў Chrome" адкрыты.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, укладка, выбрана</translation>
-<translation id="6845325883481699275">Дапамагаць павысіць бяспеку Chrome</translation>
 <translation id="6846298663435243399">Ідзе загрузка…</translation>
 <translation id="6850409657436465440">Спампоўка ўсё яшчэ працягваецца</translation>
 <translation id="6850830437481525139">Закрытыя ўкладкі (<ph name="TAB_COUNT" />)</translation>
@@ -989,7 +989,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="7704317875155739195">Аўтаматычна дапісваць пошукавыя запыты і URL-адрасы</translation>
 <translation id="7707922173985738739">Выкарыстоўваць мабільную перадачу даных</translation>
 <translation id="7725024127233776428">Тут будуць паказвацца старонкі, якія вы дадалі ў закладкі</translation>
-<translation id="7746457520633464754">Каб выявіць небяспечныя праграмы і сайты, Chrome адпраўляе URL-адрасы некаторых наведаных вамі старонак, пэўную сістэмную інфармацыю і змесціва старонак у Google</translation>
 <translation id="7757787379047923882">Тэкст абагулены з прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7761849928583394409">Выберыце дату і час</translation>
 <translation id="7762668264895820836">SD-карта <ph name="SD_CARD_NUMBER" /></translation>

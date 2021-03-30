@@ -268,7 +268,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2856503607207334158">Błąd logowania</translation>
 <translation id="2860954141821109167">Sprawdź, czy na urządzeniu jest włączona aplikacja telefonu</translation>
 <translation id="2870560284913253234">Witryna</translation>
-<translation id="2876369937070532032">Gdy Twoje bezpieczeństwo jest zagrożone, wysyła do Google adresy URL odwiedzanych stron</translation>
 <translation id="2888126860611144412">Chrome – informacje</translation>
 <translation id="2891154217021530873">Zatrzymaj wczytywanie strony</translation>
 <translation id="2892647708214602204">Kiedy plik będzie gotowy, zobaczysz powiadomienie</translation>
@@ -311,7 +310,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3157842584138209013">Sprawdź ilość zaoszczędzonych danych, używając przycisku Więcej opcji</translation>
 <translation id="3166827708714933426">Skróty kart i okien</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Bezpieczne przeglądanie (chroni Ciebie i Twoje urządzenie przed niebezpiecznymi witrynami)</translation>
 <translation id="3205824638308738187">Prawie gotowe!</translation>
 <translation id="3207960819495026254">Dodano do zakładek</translation>
 <translation id="3208584281581115441">Sprawdź teraz</translation>
@@ -505,6 +503,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4561979708150884304">Brak połączenia</translation>
 <translation id="4565377596337484307">Ukryj hasło</translation>
 <translation id="4572422548854449519">Zaloguj się na konto zarządzane</translation>
+<translation id="4576892426230499203">Spróbuj innego sposobu potwierdzania tożsamości</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minutę temu}few{# minuty temu}many{# minut temu}other{# minuty temu}}</translation>
 <translation id="4587589328781138893">Witryny</translation>
 <translation id="4594952190837476234">Ta strona offline jest z <ph name="CREATION_TIME" /> i może różnić się od wersji online.</translation>
@@ -584,7 +583,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5011311129201317034"><ph name="SITE" /> chce się połączyć</translation>
 <translation id="5016205925109358554">Szeryfowa</translation>
 <translation id="5039804452771397117">Zezwalaj</translation>
-<translation id="5040262127954254034">Prywatność</translation>
 <translation id="5087580092889165836">Dodaj kartę</translation>
 <translation id="5091249083535528968">Rozszerzone dane o korzystaniu</translation>
 <translation id="509429900233858213">Wystąpił błąd.</translation>
@@ -637,6 +635,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5441522332038954058">Przejdź do paska adresu</translation>
 <translation id="544776284582297024">Aby otworzyć karty i jednocześnie wejść na kilka stron, kliknij przycisk otwierania kart</translation>
 <translation id="545042621069398927">Przyspieszam pobieranie.</translation>
+<translation id="5454166040603940656">za pomocą <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Pobierz stronę</translation>
 <translation id="548278423535722844">Otwórz w aplikacji z mapami</translation>
 <translation id="5483197086164197190">Poruszanie się w Chrome</translation>
@@ -777,6 +776,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6316139424528454185">Ta wersja Androida jest nieobsługiwana</translation>
 <translation id="6324034347079777476">Synchronizacja systemu Android jest wyłączona</translation>
 <translation id="6324977638108296054">Nie udało się utworzyć linku do podświetlenia</translation>
+<translation id="6324997754869598316">(Błąd <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Udostępnij przez: <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Szyfrowanie</translation>
 <translation id="6341580099087024258">Pytaj, gdzie zapisać pliki</translation>
@@ -793,6 +793,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6402652558933147609">Błąd <ph name="ERROR_CODE" /> adresu URL <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Edytuj zakładkę</translation>
 <translation id="6406506848690869874">Synchronizacja</translation>
+<translation id="6407224748847589805">Nie udało się połączyć z komputerem. Spróbuj innego sposobu potwierdzania tożsamości.</translation>
 <translation id="6410404864818553978">Podstawowe dane o korzystaniu</translation>
 <translation id="6410883413783534063">Otwórz karty, by odwiedzić jednocześnie wiele stron</translation>
 <translation id="6412673304250309937">Sprawdza, czy URL jest na liście potencjalnie niebezpiecznych stron zapisanej w Chrome. Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chrome może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
@@ -861,7 +862,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6813446258015311409">Logowanie się w Chrome, otwarte.</translation>
 <translation id="6820686453637990663">Kod CVC</translation>
 <translation id="6824899148643461612">Wybrano kartę <ph name="TAB_TITLE" /></translation>
-<translation id="6845325883481699275">Pomóż zwiększyć bezpieczeństwo Chrome</translation>
 <translation id="6846298663435243399">Wczytuję…</translation>
 <translation id="6850409657436465440">Pobieranie wciąż trwa</translation>
 <translation id="6850830437481525139">Zamknięte karty: <ph name="TAB_COUNT" /></translation>
@@ -989,7 +989,6 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="7704317875155739195">Autouzupełniaj wyszukiwania i adresy URL</translation>
 <translation id="7707922173985738739">Użycie mobilnej transmisji danych</translation>
 <translation id="7725024127233776428">Tutaj pojawią się strony, które dodasz do zakładek</translation>
-<translation id="7746457520633464754">Aby wykrywać niebezpieczne aplikacje i witryny, Chrome wysyła do Google adresy URL i część zawartości niektórych odwiedzanych przez Ciebie stron, a także niektóre informacje o systemie</translation>
 <translation id="7757787379047923882">Tekst udostępniony z urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Wybierz datę i godzinę</translation>
 <translation id="7762668264895820836">Karta SD <ph name="SD_CARD_NUMBER" /></translation>

@@ -1072,7 +1072,7 @@
 <translation id="5045550434625856497">Неправильный пароль</translation>
 <translation id="5056549851600133418">Статьи для вас</translation>
 <translation id="5061227663725596739">Вам нужен домен <ph name="LOOKALIKE_DOMAIN" />?</translation>
-<translation id="5066056036849835175">История печати.</translation>
+<translation id="5066056036849835175">Историю печати.</translation>
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(используется 1 файл cookie)}one{(используется # файл cookie)}few{(используется # файла cookie)}many{(используется # файлов cookie)}other{(используется # файла cookie)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Проверьте адрес прокси-сервера<ph name="END_LINK" />.</translation>

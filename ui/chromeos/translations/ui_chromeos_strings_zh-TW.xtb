@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />請先不要移除你的裝置！<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    你的裝置仍在運作中，如果立即移除裝置，你的資料很可能會遺失。請耐心等候作業結束，再使用「檔案」應用程式退出裝置。</translation>
+<translation id="5159560892333415631">清空垃圾桶</translation>
 <translation id="5163869187418756376">共用失敗。請檢查連線狀態，然後再試一次。</translation>
 <translation id="516592729076796170">Programmer Dvorak 美式配置</translation>
 <translation id="5170477580121653719">Google 雲端硬碟剩餘空間：<ph name="SPACE_AVAILABLE" />。</translation>
@@ -419,6 +420,7 @@
 <translation id="5275973617553375938">從 Google 雲端硬碟還原檔案</translation>
 <translation id="5288441970121584418">漢堡</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">確定要清空垃圾桶嗎？</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5318819489018851358">與 Linux 共用</translation>
 <translation id="5323213332664049067">拉丁美洲</translation>
@@ -783,6 +785,7 @@
 <translation id="9154418932169119429">這張圖片無法離線瀏覽。</translation>
 <translation id="9172592259078059678">古吉拉特文 (音譯)</translation>
 <translation id="9173120999827300720">英文 (美國) 搭配國際鍵盤</translation>
+<translation id="9174050671906956834">垃圾桶中的項目會在 30 天後永久刪除。</translation>
 <translation id="9189836632794948435">哈薩克文</translation>
 <translation id="9213073329713032541">已成功啟動安裝程序。</translation>
 <translation id="9219103736887031265">圖片</translation>

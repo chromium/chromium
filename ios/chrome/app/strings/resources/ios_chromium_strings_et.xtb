@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Chromium ei saa praegu kaamerat kasutada</translation>
 <translation id="2195025571279539885">Kas soovite, et Chromium pakuks järgmisel korral sellel saidil <ph name="LANGUAGE_NAME" /> keeles olevate lehtede tõlkimise võimalust?</translation>
 <translation id="2590893390871230428">Chromiumi andmete sünkroonimine</translation>
-<translation id="259614951763923692">Kui lubate Chromiumil teada teie asukohateavet, saadab Chromium selle teie vaikeotsingumootorile ja saitidele, mille jaoks loa annate. Saidid võivad teilt küsida asukohateavet, kui neil on teile näidata kohalikku teavet, näiteks lähedalasuvaid poode või uudiseid.</translation>
 <translation id="2650312721222849884">Selleks et näha vahelehti kõikjalt, kus Chromiumi kasutate, lülitage sisse sünkroonimine</translation>
 <translation id="2730884209570016437">Chromium ei saa kaamerat kasutada, kuna seda kasutab muu rakendus</translation>
 <translation id="2915596697727466327">Chromium kasutab paroolide volitatud juurdepääsu kontrollimiseks Face ID-d.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Kas logida Chromiumist välja?</translation>
 <translation id="6424492062988593837">Chromium muutus just veelgi paremaks! Saadaval on uus versioon.</translation>
 <translation id="6820823224820483452">Chromiumil ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti.</translation>
+<translation id="6827294685447036764">Kui lubate Chromiumil teada teie asukohateavet, saadab Chromium selle saitidele, mille jaoks loa annate. Saidid võivad teilt küsida asukohateavet, kui neil on teile näidata kohalikku teavet, näiteks lähedalasuvaid poode või uudiseid.</translation>
 <translation id="7018284295775193585">Chromiumit ei saa värskendada</translation>
 <translation id="7099326575020694068">Chromium ei saa poolitatud vaate režiimis kaamerat kasutada</translation>
 <translation id="7118091470949186573">Nüüd saate kasutada Chromiumi iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>

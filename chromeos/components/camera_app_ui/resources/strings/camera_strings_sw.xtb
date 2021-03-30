@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Haijarekodi chochote</translation>
+<translation id="1838104802459806957">Inamisha juu</translation>
 <translation id="1851616744363735765">IMESITISHWA</translation>
 <translation id="1862930711583847113">Imeshindwa kutuma <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Ubora wa picha</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> inatumika</translation>
 <translation id="2144806332417375165">Vigezo maalum vya video</translation>
 <translation id="229579744168541441">Tuma kwenye diski</translation>
+<translation id="2320741269052147773">Geuza kushoto</translation>
 <translation id="2501278716633472235">Rudi nyuma</translation>
 <translation id="2501853267655415902">Imeacha kurekodi</translation>
 <translation id="2501953888035679275">Piga picha na urekodi video ukitumia kamera yako.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Itahamishia picha na video ulizopigwa kwa kamera kwenye folda ya Vipakuliwa. Unaweza kuzifikia kwenye Faili.
 
         Programu zilizo na ruhusa za hifadhi zitaweza kufikia picha na video zako.</translation>
+<translation id="3067436040345934772">Geuza kulia</translation>
 <translation id="3081586908890909590">Rekodi video</translation>
 <translation id="313467653172006084">FPS 30</translation>
 <translation id="3183731565330012717">Aina ya gridi</translation>
@@ -56,6 +59,7 @@
 <translation id="5671277269877808209">Mraba</translation>
 <translation id="5775960006311140197">Hali ya wataalamu</translation>
 <translation id="5869546221129391014">Gridi</translation>
+<translation id="5975083100439434680">Fifiza</translation>
 <translation id="6040143037577758943">Funga</translation>
 <translation id="6073451960410192870">Acha kurekodi</translation>
 <translation id="6197807149213783179">Hifadhi metadata</translation>
@@ -81,19 +85,21 @@ Iwapo maoni yako yanahusu ubora wa picha au video, tafadhali ambatisha mfano wa 
 <translation id="7649070708921625228">Usaidizi</translation>
 <translation id="7658239707568436148">Ghairi</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7974782136796202581">Onyesha chaguo za kugeuza upande, kuinamisha na kukuza</translation>
 <translation id="7983668134180549431">Maandishi yametambuliwa.</translation>
 <translation id="8067883171444229417">Cheza video</translation>
+<translation id="8120146556401698679">Kugeuza upande, kuinamisha na kukuza</translation>
 <translation id="8131740175452115882">Thibitisha</translation>
 <translation id="8145038249676204903">Piga picha</translation>
 <translation id="8239780215768881278">Rekodi muhtasari wa video</translation>
 <translation id="8261506727792406068">Futa</translation>
+<translation id="8425673304802773841">Inamisha chini</translation>
 <translation id="8428213095426709021">Mipangilio</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Kagua kwanza metadata</translation>
 <translation id="8815966864175525708">Badili ili upige picha ya wima</translation>
 <translation id="8828441885228359828">Endelea kurekodi</translation>
 <translation id="8870695351537079478">Imeshindwa kuanza kurekodi</translation>
+<translation id="8903921497873541725">Kuza karibu</translation>
 <translation id="9045155556724273246">Sekunde 10</translation>
 <translation id="945522503751344254">Tuma maoni</translation>
 </translationbundle>

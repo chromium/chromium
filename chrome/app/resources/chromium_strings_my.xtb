@@ -12,7 +12,6 @@
 <translation id="1315551408014407711">သင်၏ Chromium ပရိုဖိုင်အသစ်ကို စနစ်ထည့်သွင်းပါ</translation>
 <translation id="1396446129537741364">Chromium က စကားဝှက်များကို ပြရန် ကြိုးစားနေသည်။</translation>
 <translation id="1414495520565016063">သင်သည် Chromium သို့ဝင်ရောက်ပြီးဖြစ်သည်!</translation>
-<translation id="1414973082589232775">ကာကွယ်ထားသောမီဒီယာ ဖွင့်ရန်အတွက် Rosetta အသုံးပြုရန် Chromium ကို ပြန်စရမည်။</translation>
 <translation id="151962892725702025">သင့် ဒိုမိန်း အတွက် စင့်က် မရရှိနိုင်သောကြောင့် Chromium OS သည် သင်၏ ဒေတာကို စင့်က် မလုပ်နိုင်ခဲ့ပါ။</translation>
 <translation id="1524282610922162960">Chromium တဘ် မျှဝေခြင်း</translation>
 <translation id="1553461853655228091">သင့်ပတ်ဝန်းကျင်၏ 3D မြေပုံ ပြုလုပ်ရန် Chromium က သင့်ကင်မရာကို အသုံးပြုခွင့် လိုအပ်သည်</translation>
@@ -139,11 +138,11 @@
 <translation id="5480860683791598150">သင်၏တည်နေရာကို ဤဝဘ်ဆိုက်နှင့် မျှဝေနိုင်ရန် Chromium သည် သင့်တည်နေရာကို အသုံးပြုခွင့်ရရန် လိုအပ်ပါသည်</translation>
 <translation id="549669000822060376">​​ကျေးဇူးပြုပြီး Chromium က စနစ်၏ နောက်ဆုံး မွမ်းမံမှုများကို တပ်ဆင်ပေးနေတာကို စောင့်ပါ။</translation>
 <translation id="5496810170689441661">Chromium သည် စကားဝှက်များ တည်းဖြတ်ရန် ကြိုးပမ်းနေသည်။ ၎င်းကို ခွင့်ပြုရန် သင်၏ Windows စကားဝှက်ကို ထည့်ပါ။</translation>
+<translation id="5527463683072221100">Chromium တွင် PDF များ ဖွင့်ရန်</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium အပ်ဒိတ်တစ်ခု ရနိုင်ပါသည်}=1{Chromium အပ်ဒိတ်တစ်ခု ရနိုင်ပါသည်}other{Chromium အပ်ဒိတ်တစ်ခု ရနိုင်သည်မှာ # ရက် ရှိပါပြီ}}</translation>
 <translation id="5634636535844844681">Chromium ကိုထည့်သွင်းရန် Windows 7 နှင့်အထက်လိုအပ်ပါသည်။</translation>
 <translation id="5653831366781983928">Chromium ကို ယခု ပြန်စပါ</translation>
 <translation id="5698481217667032250">Chromium ကို ဤဘာသာစကားဖြင့် ပြသပါ</translation>
-<translation id="5736967399513123100">ကာကွယ်ထားသောမီဒီယာကို Chromium က ဖွင့်ရန်အတွက် Rosetta ထည့်သွင်းရပါမည်။ ၎င်းကို ယခုထည့်သွင်းလိုသလား။</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Chromium မှ ကြိုဆိုပါ၏</translation>
 <translation id="5895138241574237353">ပြန်စတင်မည</translation>
@@ -194,7 +193,6 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium သို့ မိတ္တူကူးထားသည်)</translation>
 <translation id="6893813176749746474">Chromium ကို မွမ်းမံပြီးသွားပြီ၊ သို့သော် သင်သည် ၎င်းကို အနည်းဆုံးအားဖြင့် ရက် ၃၀ အတွင်းမှာ မသုံးခဲ့ပါ။</translation>
-<translation id="6897548120660295439">Rosetta သည် Chromium အား ဤစာမျက်နှာရှိ ကာကွယ်ထားသောမီဒီယာကို ဖွင့်ခွင့်ပေးသည်။</translation>
 <translation id="691026815377248078">Chromium သည် ဆက်လက်တွဲချိတ်ရန် ဘလူးတုသ်သုံးခွင့် 
  လိုပါသည်။ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Chromium ရုပ်ဖျက်ဝင်းဒိုးတွင် လင့်ခ်ကို ဖွင့်ရန်</translation>

@@ -396,6 +396,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Bạn đã nhấn phím tắt của chế độ tương phản cao. Bạn có muốn bật chế độ này không?</translation>
 <translation id="4331809312908958774">Hệ điều hành Chrome</translation>
+<translation id="4333628967105022692">Trình duyệt Lacros chưa hỗ trợ chế độ đăng nhập nhiều người dùng.</translation>
 <translation id="4338109981321384717">Kính lúp</translation>
 <translation id="4351433414020964307">Trợ lý đang tải...</translation>
 <translation id="4356930093361201197">chế độ tương phản cao</translation>
@@ -811,7 +812,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="788781083998633524">Gửi email</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Bạn đã nhấn phím tắt để xoay màn hình. Bạn có muốn xoay màn hình không?</translation>
-<translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901405293566323524">Trung tâm điều khiển điện thoại</translation>
 <translation id="7902625623987030061">Chạm vào cảm biến vân tay</translation>
 <translation id="7904094684485781019">Quản trị viên của tài khoản này đã không cho phép đăng nhập nhiều tài khoản.</translation>
 <translation id="7933084174919150729">Bạn chỉ có thể sử dụng Trợ lý Google cho hồ sơ chính.</translation>
@@ -968,6 +969,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="9091626656156419976">Đã xóa màn hình <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Tắt tiếng điện thoại</translation>
 <translation id="9099154003160514616">Đã có bản cập nhật dành cho trình duyệt Lacros</translation>
+<translation id="9105450214093926548">Không đăng nhập được người dùng thứ hai khi trình duyệt Lacros đang chạy. Vui lòng dùng một hồ sơ trình duyệt thứ hai trong Lacros hoặc đóng Lacros rồi thử lại.</translation>
 <translation id="9133335900048457298">Không thể ghi nội dung được bảo vệ</translation>
 <translation id="9151726767154816831">Khởi động lại và powerwash để cập nhật</translation>
 <translation id="9166331175924255663">Bật/tắt chế độ hiển thị ở mức cao cho tính năng Chia sẻ lân cận.</translation>

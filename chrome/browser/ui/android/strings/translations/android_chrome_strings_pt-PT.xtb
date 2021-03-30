@@ -268,7 +268,6 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="2856503607207334158">Falha ao iniciar sessão</translation>
 <translation id="2860954141821109167">Certifique-se de que uma aplicação de telefone está ativada neste dispositivo.</translation>
 <translation id="2870560284913253234">Site</translation>
-<translation id="2876369937070532032">Quando a sua segurança está em risco, envia para a Google URLs de algumas páginas que visita.</translation>
 <translation id="2888126860611144412">Acerca do Chrome</translation>
 <translation id="2891154217021530873">Parar carregamento da página</translation>
 <translation id="2892647708214602204">Será apresentada uma notificação quando este ficheiro estiver pronto.</translation>
@@ -311,7 +310,6 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="3157842584138209013">Veja a quantidade de dados que poupou através do botão Mais opções.</translation>
 <translation id="3166827708714933426">Atalhos de separadores e de janelas</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Navegação segura (protege o utilizador e o seu dispositivo contra sites perigosos)</translation>
 <translation id="3205824638308738187">Quase concluído!</translation>
 <translation id="3207960819495026254">Adicionado aos marcadores</translation>
 <translation id="3208584281581115441">Verificar agora</translation>
@@ -505,6 +503,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4561979708150884304">Sem ligação</translation>
 <translation id="4565377596337484307">Ocultar palavra-passe</translation>
 <translation id="4572422548854449519">Iniciar sessão na conta gerida</translation>
+<translation id="4576892426230499203">Experimente outra opção de validação</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Há # minuto}other{Há # minutos}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Esta página foi criada a <ph name="CREATION_TIME" /> e pode ser diferente da versão online.</translation>
@@ -584,7 +583,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5011311129201317034"><ph name="SITE" /> pretende estabelecer ligação</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Permitir</translation>
-<translation id="5040262127954254034">Privacidade</translation>
 <translation id="5087580092889165836">Adicionar cartão</translation>
 <translation id="5091249083535528968">Dados de utilização alargados</translation>
 <translation id="509429900233858213">Ocorreu um erro.</translation>
@@ -637,6 +635,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5441522332038954058">Ir para a barra de endereço</translation>
 <translation id="544776284582297024">Para abrir separadores e visitar várias páginas em simultâneo, toque no botão Abrir separadores.</translation>
 <translation id="545042621069398927">A acelerar a transferência…</translation>
+<translation id="5454166040603940656">com <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Transferir página</translation>
 <translation id="548278423535722844">Abrir na aplicação de mapas</translation>
 <translation id="5483197086164197190">Navegue no Chrome</translation>
@@ -777,6 +776,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6316139424528454185">Versão Android não suportada.</translation>
 <translation id="6324034347079777476">Sincronização do sistema Android desativada</translation>
 <translation id="6324977638108296054">Não é possível criar o link para realçar.</translation>
+<translation id="6324997754869598316">(Erro <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Partilhar através de <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Encriptação</translation>
 <translation id="6341580099087024258">Perguntar onde guardar os ficheiros</translation>
@@ -793,6 +793,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> em <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Editar marcador</translation>
 <translation id="6406506848690869874">Sincronização</translation>
+<translation id="6407224748847589805">Não é possível estabelecer ligação ao seu computador. Experimente outra opção de validação.</translation>
 <translation id="6410404864818553978">Dados de utilização básicos</translation>
 <translation id="6410883413783534063">Abra separadores para visitar várias páginas em simultâneo.</translation>
 <translation id="6412673304250309937">Verifica os URLs com listas de sites inseguros armazenados no Chrome. Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chrome também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura.</translation>
@@ -861,7 +862,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6813446258015311409">Iniciar sessão no Chrome, aberto.</translation>
 <translation id="6820686453637990663">Código de segurança</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, separador, selecionado</translation>
-<translation id="6845325883481699275">Ajudar a melhorar a segurança do Chrome</translation>
 <translation id="6846298663435243399">A carregar...</translation>
 <translation id="6850409657436465440">A transferência ainda está em curso.</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> separadores fechados</translation>
@@ -989,7 +989,6 @@ Os dados da sua sessão de Navegação anónima apenas serão limpos do Chrome q
 <translation id="7704317875155739195">Pesquisas de preenchimento automático e URLs</translation>
 <translation id="7707922173985738739">Utilizar dados móveis</translation>
 <translation id="7725024127233776428">As páginas que adiciona aos marcadores aparecem aqui.</translation>
-<translation id="7746457520633464754">Para detetar aplicações e sites perigosos, o Chrome envia para a Google URLs de algumas páginas que visita, informações limitadas do sistema e algum conteúdo das páginas.</translation>
 <translation id="7757787379047923882">Texto partilhado a partir do dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Escolher data e hora</translation>
 <translation id="7762668264895820836">Cartão SD <ph name="SD_CARD_NUMBER" /></translation>

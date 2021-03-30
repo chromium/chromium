@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">„Chromium“ šiuo metu negali naudoti fotoaparato</translation>
 <translation id="2195025571279539885">Ar norėtumėte, kad kitą kartą „Chromium“ būtų siūloma išversti šios svetainės puslapius <ph name="LANGUAGE_NAME" /> k.?</translation>
 <translation id="2590893390871230428">Sinchronizuoti „Chromium“ duomenis</translation>
-<translation id="259614951763923692">Jei leidžiate „Chromium“ nustatyti jūsų vietovę, „Chromium“ siunčia ją numatytajam paieškos varikliui ir svetainėms, kurioms suteikėte leidimą. Svetainės gali prašyti jūsų vietovės, kai jose yra jums rodytinos vietinės informacijos, pvz., parduotuvių netoliese ar naujienų.</translation>
 <translation id="2650312721222849884">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chromium“, įjunkite sinchronizavimą</translation>
 <translation id="2730884209570016437">„Chromium“ negali naudoti fotoaparato, nes jį naudoja kita programa</translation>
 <translation id="2915596697727466327">„Chromium“ naudoja „Face ID“, kad užtikrintų teisėtą prieigą prie slaptažodžių.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Atsijungti nuo „Chromium“?</translation>
 <translation id="6424492062988593837">„Chromium“ patobulėjo! Galima nauja versija.</translation>
 <translation id="6820823224820483452">„Chromium“ nepavyko patikrinti visų slaptažodžių. Rytoj bandykite dar kartą.</translation>
+<translation id="6827294685447036764">Jei leidžiate „Chromium“ nustatyti jūsų vietovę, „Chromium“ siunčia ją bet kurioms svetainėms, kurioms suteikiate leidimą. Svetainės gali prašyti jūsų vietovės, kai jose yra jums rodytinos vietinės informacijos, pvz., netoliese esančių parduotuvių ar naujienų.</translation>
 <translation id="7018284295775193585">Nepavyko atnaujinti „Chromium“</translation>
 <translation id="7099326575020694068">„Chromium“ negali naudoti fotoaparato padalyto rodinio režimu</translation>
 <translation id="7118091470949186573">Dabar galite naudoti „Chromium“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>

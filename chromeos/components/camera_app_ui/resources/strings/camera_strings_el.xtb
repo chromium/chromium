@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">Τετράγωνο</translation>
 <translation id="5775960006311140197">Λειτουργία Expert</translation>
 <translation id="5869546221129391014">Πλέγμα</translation>
+<translation id="5975083100439434680">Σμίκρυνση</translation>
 <translation id="6040143037577758943">Κλείσιμο</translation>
 <translation id="6073451960410192870">Διακοπή εγγραφής</translation>
 <translation id="6197807149213783179">Αποθήκευση μεταδεδομένων</translation>
@@ -81,9 +82,9 @@
 <translation id="7649070708921625228">Βοήθεια</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7670511624014457267">60 καρέ ανά δευτερόλεπτο</translation>
-<translation id="7974782136796202581">Εμφάνιση επιλογών μετακίνησης, κλίσης, εστίασης</translation>
 <translation id="7983668134180549431">Εντοπίστηκε κείμενο.</translation>
 <translation id="8067883171444229417">Αναπαραγωγή βίντεο</translation>
+<translation id="8120146556401698679">Μετακίνηση, κλίση και εστίαση</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>
 <translation id="8145038249676204903">Μετάβαση στη λειτουργία λήψης φωτογραφίας</translation>
 <translation id="8239780215768881278">Λήψη στιγμιότυπου βίντεο</translation>
@@ -94,6 +95,7 @@
 <translation id="8815966864175525708">Μετάβαση στη λειτουργία λήψης φωτογραφίας πορτραίτου</translation>
 <translation id="8828441885228359828">Συνέχιση εγγραφής</translation>
 <translation id="8870695351537079478">Δεν είναι δυνατή η έναρξη της εγγραφής</translation>
+<translation id="8903921497873541725">Μεγέθυνση</translation>
 <translation id="9045155556724273246">10 δευτερόλεπτα</translation>
 <translation id="945522503751344254">Αποστολή σχολίων</translation>
 </translationbundle>

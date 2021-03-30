@@ -409,11 +409,6 @@
 <translation id="1553532014072799546">アプリごとの時間制限のホワイトリスト</translation>
 <translation id="1553956579506604198">外部拡張機能のインストールをブロックする</translation>
 <translation id="1555248923316727072">SAML ユーザー ID 管理の設定</translation>
-<translation id="1560205870554624777">Kerberos 機能が有効かどうかを制御します。Kerberos は、ウェブアプリやファイル共有の認証に使用できる認証プロトコルです。
-
-          このポリシーが有効に設定されている場合、Kerberos 機能は有効になります。このとき、Kerberos アカウントは「Kerberos アカウントを設定する」ポリシーまたは [人物の設定] ページの Kerberos アカウント設定から追加できます。
-
-          このポリシーが無効に設定されているか未設定の場合、Kerberos アカウント設定は無効になります。このとき、Kerberos アカウントは追加できず、Kerberos 認証は使用できません。既存の Kerberos アカウントと保存したパスワードもすべて削除されます。</translation>
 <translation id="1561424797596341174">リモート アクセス ホストの Debug ビルドでのポリシー オーバーライド</translation>
 <translation id="1561967320164410511">U2F と個人認証用拡張機能</translation>
 <translation id="1567718448549957373">このポリシーを有効に設定するか未設定のままにした場合、保護されていない HTTP 経由で受信した <ph name="BASIC_AUTH" /> 認証チャレンジが許可されます。
@@ -1109,6 +1104,7 @@
       このポリシーを設定しない場合、Click-to-Call 機能はデフォルトで有効になります。</translation>
 <translation id="2482676533225429905">ネイティブ メッセージング</translation>
 <translation id="2483146640187052324">ネットワーク接続でネットワーク動作を予測する</translation>
+<translation id="2483335232019796218">カメラ、ブラウザ設定、OS 設定、スキャン、ウェブストア、キャンバス、Google ニュースの機能を無効に設定します</translation>
 <translation id="2496180316473517155">閲覧履歴</translation>
 <translation id="2498238926436517902">常にシェルフを自動的に非表示にする</translation>
 <translation id="250022556568924228">このポリシーを設定した場合、デバイスのローカル アカウントのセッションが開始されると、<ph name="PRODUCT_OS_NAME" /> は利用規約をダウンロードしてユーザーに表示します。利用規約に同意した場合のみ、ユーザーはセッションにログインできます。このポリシーを未設定のままにした場合、利用規約は表示されません。このポリシーは、<ph name="PRODUCT_OS_NAME" /> による利用規約のダウンロードが可能な URL に設定する必要があります。利用規約は書式なしテキストで、MIME タイプの text/plain として配信してください。マークアップ形式は使用できません。</translation>
@@ -1482,6 +1478,7 @@
 
       <ph name="PRODUCT_OS_NAME" /> シェルフへのアプリの固定については、<ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> ポリシーをご覧ください。</translation>
 <translation id="2976429807269247880">Cookie に関する以前の <ph name="ATTRIBUTE_SAMESITE_NAME" /> 動作の設定</translation>
+<translation id="2985097017239074272">Google ニュース（バージョン 91 以降でサポート）</translation>
 <translation id="2985927503455169394">アシスタントのオンボーディング エクスペリエンスでデフォルトのモードを使用する</translation>
 <translation id="2987155890997901449">ARC を有効にする</translation>
 <translation id="2987227569419001736">Web Bluetooth API の使用を管理する</translation>
@@ -2923,7 +2920,6 @@
       このポリシーを未設定のままにした場合、<ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。
 
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
-<translation id="5090209345759901501">Flash コンテンツ設定をすべてのコンテンツに拡張する</translation>
 <translation id="5090791951240382356">ソースの異なる辞書ポリシーの統合を許可する</translation>
 <translation id="5091315650312105069">HTTP で <ph name="BASIC_AUTH" /> 認証を許可する</translation>
 <translation id="5103112931744164177">このポリシーでは、DNS サーバーとの通信にオペレーティング システムの DNS クライアントと <ph name="PRODUCT_NAME" /> の組み込みの DNS クライアントのどちらのソフトウェア スタックを使用するかを管理できます。このポリシーは、使用する DNS サーバーの選択には影響しません。たとえば、オペレーティング システムで企業の DNS サーバーを使用するよう設定されている場合、組み込みの DNS クライアントでも同じサーバーが使用されます。また、DNS-over-HTTPS が使用されている場合は、このポリシーの対象となりません。<ph name="PRODUCT_NAME" /> では DNS-over-HTTPS リクエストに対して、常に組み込みのリゾルバを使用します。DNS-over-HTTPS の管理については、<ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> ポリシーをご覧ください。
@@ -3873,6 +3869,11 @@
 <translation id="647698599569353771">ニアバイシェアを有効にできるようにします。</translation>
 <translation id="6478258366184919502">ログインと画面のオリジン</translation>
 <translation id="6478261301433199402">このポリシーでは、ユーザーの <ph name="PLUGIN_VM_NAME" /> 画像を指定できます。画像のダウンロード場所を示す <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> と、ダウンロードの整合性の確認に使用する SHA-256 ハッシュとして <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> を JSON 形式の文字列として指定します。</translation>
+<translation id="6489084406497912050">ユーザーが Kerberos アカウントを追加できるかどうかを制御します。
+
+          このポリシーを有効に設定するか未設定のままにした場合、ユーザーは Kerberos 設定ページの Kerberos アカウント設定で Kerberos アカウントを追加できます。ユーザーは追加したアカウントを完全に管理でき、変更や削除も行えます。
+
+          このポリシーを無効に設定した場合、ユーザーは Kerberos アカウントを追加できません。アカウントは「Kerberos アカウントを設定する」ポリシーからのみ追加できます。アカウントをロックするにはこの方法が便利です。</translation>
 <translation id="6491139795995924304">デバイスで Bluetooth を許可する</translation>
 <translation id="6491872498385040936">このポリシーはサポートを終了しました。このポリシーより優先され、より詳細な設定を行える <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> の使用をご検討ください。
 
@@ -4184,6 +4185,7 @@
 <translation id="685769593149966548">YouTube で制限付きモード「強」を強制する</translation>
 <translation id="686079137349561371">Microsoft Windows 7 以降</translation>
 <translation id="68818134518270542">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> のロック画面でメモアプリとして有効にできるアプリを指定できます。任意のメモアプリをロック画面に設定すると、そのアプリを起動するための UI 要素が画面に表示されます。アプリを起動すると、ロック画面の上部にウィンドウが表示され、このコンテキストにメモを作成できます。アプリを使用して、作成したメモをメインのユーザー セッションに読み込むことができます（セッションがロックされていない場合）。ロック画面でサポートされているのは <ph name="PRODUCT_NAME" /> のメモアプリのみです。このポリシーを設定すると、アプリの拡張機能 ID がポリシーのリスト値に含まれている場合に、ユーザーはロック画面でアプリを有効にできます。このため、このポリシーを空のリストに設定すると、メモアプリはロック画面で無効になります。ポリシーでアプリ ID を指定しても、ユーザーがロック画面でそのアプリをメモアプリとして有効にできるとは限りません。たとえば、<ph name="PRODUCT_NAME" /> 61 では、使用できる一連のアプリに関して、さらにプラットフォームによる制限が適用されます。このポリシーを未設定のままにした場合、ユーザーがロック画面で有効にできる一連のアプリに関して、ポリシーを通じて適用される制限はありません。</translation>
+<translation id="6882028194958060206">Flash コンテンツ設定をすべてのコンテンツに拡張する（サポート終了）</translation>
 <translation id="6889123056995503704">ユーザーがチャンネル ダウングレードの動作を決定する</translation>
 <translation id="6894178810167845842">新しいタブページ URL</translation>
 <translation id="6897730193187922386"><ph name="CLOUD_PRINT_NAME" /> のサポート終了メッセージの表示を管理する</translation>
@@ -4847,7 +4849,6 @@
       このポリシーを未設定のままにした場合、<ph name="BLOCK_POPUPS_POLICY_NAME" /> は適用されますが、ユーザーはこの設定を変更できます。</translation>
 <translation id="7731026922044991970">すべてのサイトの Cookie を以前の <ph name="ATTRIBUTE_SAMESITE_NAME" /> 動作に戻す</translation>
 <translation id="7732907212083471072">削除済みのポリシー</translation>
-<translation id="7737077721564799856">カメラ、ブラウザ設定、OS 設定、スキャン、ウェブストア、キャンバスの機能を無効に設定します</translation>
 <translation id="77379430721695807">このポリシーでは、リクエスト元 URL のセキュリティ オリジンと照合する URL パターン リストを指定できます。一致するものについては、動画キャプチャ デバイスへのアクセスが許可されます。その際、確認のメッセージは表示されません。
 
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。</translation>
@@ -4893,6 +4894,13 @@
       このポリシーを未設定のままにした場合、ユーザーはスリープ状態からデバイスのロックを解除する際にパスワードの入力を求めるかどうかを選択できます。</translation>
 <translation id="7784062550705119230"><ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_ALLOWLIST" /> が選択されている場合、<ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> でユーザーが使用できるプリンタを指定できます。ユーザーは、このポリシーで指定されている値に ID が一致するプリンタのみを使用できます。この ID は、<ph name="DEVICE_PRINTERS_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。</translation>
 <translation id="7788511847830146438">プロフィール単位</translation>
+<translation id="7798441698807517880"><ph name="FLASH_PLUGIN_NAME" /> のサポートが終了したため、このポリシーは <ph name="PRODUCT_NAME" /> バージョン 89 以降で削除されています。
+
+      このポリシーを True に設定した場合、<ph name="FLASH_PLUGIN_NAME" /> が許可されているウェブサイトで、埋め込まれているすべての <ph name="FLASH_PLUGIN_NAME" /> コンテンツ（他のソースからのコンテンツ、小さなコンテンツを含む）が実行されます。
+
+      このポリシーを False に設定するか未設定のままにした場合、他のソースからの <ph name="FLASH_PLUGIN_NAME" /> コンテンツや小さなコンテンツはブロックされる可能性があります。
+
+      注: <ph name="FLASH_PLUGIN_NAME" /> を実行できるウェブサイトを管理するには、<ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />、<ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" />、<ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" /> のポリシーをご覧ください。</translation>
 <translation id="780629758750905699">デバイスへのファミリー リンク アカウントの追加を許可する</translation>
 <translation id="7807139251387225825">同期から除外するデータタイプのリスト</translation>
 <translation id="781268256210530471">プラグイン設定</translation>
@@ -4919,6 +4927,11 @@
 <translation id="7850846808758624237">このポリシーを有効に設定した場合、初回実行時に以前の既定のブラウザからホームページが読み込まれます。このポリシーを無効に設定するか未設定のままにした場合、初回実行時にホームページは読み込まれません。
 
       ユーザーはインポート ダイアログを表示できます。このとき、ホームページのチェックボックスは、このポリシーの値に合わせてオンまたはオフになります。</translation>
+<translation id="7851772934080809511">Kerberos 機能が有効かどうかを制御します。Kerberos は、ウェブアプリやファイル共有の認証に使用できる認証プロトコルです。
+
+          このポリシーを有効に設定した場合、Kerberos 機能は有効になります。このとき、Kerberos アカウントは「Kerberos アカウントを設定する」ポリシーまたは Kerberos 設定ページの Kerberos アカウント設定から追加できます。
+
+          このポリシーを無効に設定するか未設定のままにした場合、Kerberos アカウント設定は無効になります。このとき、Kerberos アカウントは追加できず、Kerberos 認証は使用できません。既存の Kerberos アカウントと保存したパスワードもすべて削除されます。</translation>
 <translation id="7863947545897944083">ログイン画面でハイ コントラスト ユーザー補助機能を有効にします。
 
           このポリシーを true に設定した場合、ハイ コントラストはログイン画面で常に有効になります。
@@ -4947,11 +4960,6 @@
 
       特定のポリシーが優先されることはありませんが、<ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> と <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" /> を確認して、これらの 3 つのポリシー間で URL パターンに矛盾がないようにしてください。</translation>
 <translation id="7887379840451099426">バッテリーでの使用中にのみ適用する電源管理設定</translation>
-<translation id="7889788745439330797">ユーザーが Kerberos アカウントを追加できるかどうかを制御します。
-
-          このポリシーが有効に設定されているか未設定の場合、ユーザーは [人物の設定] ページの Kerberos アカウント設定で Kerberos アカウントを追加できます。ユーザーは追加したアカウントを完全に管理でき、変更や削除も行えます。
-
-          このポリシーが無効に設定されている場合、ユーザーは Kerberos アカウントを追加できません。アカウントは「Kerberos アカウントを設定する」ポリシーからのみ追加できます。アカウントをロックするにはこの方法が便利です。</translation>
 <translation id="7891884447851425349"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> がオンの場合に、<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> では、デフォルトの検索に使用する検索エンジンの URL を指定できます。この URL には <ph name="SEARCH_TERM_MARKER" /> という文字列を含めます。この文字列は、クエリの送信時にユーザーが指定した検索キーワードに置き換えられます。
 
       Google の検索 URL は次のように指定できます。<ph name="GOOGLE_SEARCH_URL" /></translation>
@@ -5202,11 +5210,6 @@
 <translation id="8238421250255592181">画面キーボードでオートコンプリートを有効にするかどうかを示すブール値のフラグです。</translation>
 <translation id="8244171102276095471">TLS の RC4 暗号スイートを有効にする</translation>
 <translation id="8244525275280476362">ポリシーの失効から取得までの最大時間</translation>
-<translation id="8251411417369363637">このポリシーを True に設定した場合、<ph name="FLASH_PLUGIN_NAME" /> が許可されているウェブサイトで、埋め込まれているすべての <ph name="FLASH_PLUGIN_NAME" /> コンテンツ（他のソースからのコンテンツ、小さなコンテンツを含む）が実行されます。
-
-      このポリシーを False に設定するか未設定のままにした場合、他のソースからの <ph name="FLASH_PLUGIN_NAME" /> コンテンツや小さなコンテンツはブロックされる可能性があります。
-
-      注: <ph name="FLASH_PLUGIN_NAME" /> を実行できるウェブサイトを管理するには、<ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />、<ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" />、<ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" /> のポリシーをご覧ください。</translation>
 <translation id="82530263956734297">拒否リストから除外する拡張機能 ID</translation>
 <translation id="8256688113167012935">対応するデバイスのローカル アカウントに対し、ログイン画面でアカウント名 <ph name="PRODUCT_OS_NAME" /> を表示するかどうかを指定します。
 

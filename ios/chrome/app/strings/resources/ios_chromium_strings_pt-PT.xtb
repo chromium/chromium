@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">O Chromium não pode utilizar a câmara neste momento</translation>
 <translation id="2195025571279539885">Pretende que o Chromium se ofereça para traduzir as páginas em <ph name="LANGUAGE_NAME" /> deste site da próxima vez?</translation>
 <translation id="2590893390871230428">Sincronizar os dados do Chromium</translation>
-<translation id="259614951763923692">Se permitir que o Chromium conheça a sua localização, este envia-a para o seu motor de pesquisa predefinido e quaisquer sites que permitir. Os sites podem solicitar a sua localização quando têm informações locais para lhe mostrar, como notícias ou lojas próximas.</translation>
 <translation id="2650312721222849884">Para ver os seus separadores onde quer que esteja a utilizar o Chromium, ative a sincronização.</translation>
 <translation id="2730884209570016437">O Chromium não pode utilizar a câmara porque está a ser utilizada por outra aplicação</translation>
 <translation id="2915596697727466327">O Chromium utiliza o Face ID para assegurar o acesso autorizado às suas palavras-passe.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Pretende terminar sessão no Chromium?</translation>
 <translation id="6424492062988593837">O Chromium ficou ainda melhor! Está disponível uma nova versão.</translation>
 <translation id="6820823224820483452">O Chromium não conseguiu verificar todas as palavras-passe. Tente novamente amanhã.</translation>
+<translation id="6827294685447036764">Se permitir que o Chromium conheça a sua localização, este envia-a para quaisquer sites que permitir. Os sites podem solicitar a sua localização quando têm informações locais para lhe mostrar, como notícias ou lojas próximas.</translation>
 <translation id="7018284295775193585">Não é possível atualizar o Chromium.</translation>
 <translation id="7099326575020694068">O Chromium não pode utilizar a câmara no modo Vista dividida</translation>
 <translation id="7118091470949186573">Agora, pode utilizar o Chromium sempre que tocar em links de mensagens, documentos e outras apps.</translation>

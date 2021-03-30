@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">პაროლი ძალაშია <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ბეჭდვის მიმდინარე დავალებები არ არის</translation>
 <translation id="4297501883039923494">გაჩერდა — უცნობი შეცდომა</translation>
+<translation id="4344214025510306853">APN-ის დართვა</translation>
 <translation id="4378373042927530923">არ არის გაშვებული</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">ჩემი Drive</translation>
@@ -278,6 +279,7 @@
 <translation id="7040230719604914234">ოპერატორი</translation>
 <translation id="7059230779847288458">იტენება, სრულ დატენამდე დარჩენილია <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">შეწყვეტილია</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">დაკავშირება</translation>
 <translation id="7144878232160441200">გაიმეორეთ</translation>
 <translation id="714876143603641390">LAN-ის კავშირი</translation>
@@ -363,6 +365,7 @@
 <translation id="8970109610781093811">ხელახლა გაშვება</translation>
 <translation id="9003704114456258138">სიხშირე</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9065203028668620118">რედაქტირება</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">ამჟამად გამოყენებული</translation>

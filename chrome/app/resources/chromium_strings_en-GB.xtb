@@ -12,7 +12,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1315551408014407711">Set up your new Chromium profile</translation>
 <translation id="1396446129537741364">Chromium is trying to show passwords.</translation>
 <translation id="1414495520565016063">You're signed in to Chromium!</translation>
-<translation id="1414973082589232775">To use Rosetta to play protected media, you must restart Chromium.</translation>
 <translation id="151962892725702025">Chromium OS could not sync your data because Sync is not available for your domain.</translation>
 <translation id="1524282610922162960">Share a Chromium tab</translation>
 <translation id="1553461853655228091">Chromium needs permission to access your camera to create a 3D map of your surroundings</translation>
@@ -27,6 +26,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1966382378801805537">Chromium cannot determine or set the default browser</translation>
 <translation id="2008474315282236005">This will delete 1 item from this device. To retrieve your data later, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">To check if your other passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chromium<ph name="END_LINK" />.</translation>
+<translation id="2174178932569897599">Customise Chromium</translation>
 <translation id="2185166961232948079">Chromium – Network sign-in – <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">If you share a computer, friends and family can browse separately and set up Chromium just the way they want.</translation>
 <translation id="2294245788148774212">Optional: Help improve Chromium OS features and performance by automatically sending diagnostic and usage data to Google.</translation>
@@ -142,7 +142,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5634636535844844681">Chromium requires Windows 7 or higher.</translation>
 <translation id="5653831366781983928">Please restart Chromium now</translation>
 <translation id="5698481217667032250">Display Chromium in this language</translation>
-<translation id="5736967399513123100">To enable Chromium to play protected media, you need to install Rosetta. Do you want to install it now?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Welcome to Chromium</translation>
 <translation id="5895138241574237353">Restart</translation>
@@ -193,7 +192,6 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copied to Chromium)</translation>
 <translation id="6893813176749746474">Chromium has been updated, but you haven't used it for 30 days or more.</translation>
-<translation id="6897548120660295439">Rosetta enables Chromium to play the protected media on this page.</translation>
 <translation id="691026815377248078">Chromium needs Bluetooth access to continue pairing. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Open link in Chromium inco&amp;gnito window</translation>
 <translation id="6978145336957848883">Weak passwords are easy to guess. Let Chromium <ph name="BEGIN_LINK" />create and remember strong passwords for you<ph name="END_LINK" />.</translation>

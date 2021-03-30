@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Hors ligne, Chrome ne peut pas vérifier s'il y a des mises à jour</translation>
 <translation id="5854621639439811139">Conseil pour Chrome. Certains boutons se trouvent désormais en bas de votre écran, tels que Précédent, Suivant et Rechercher.</translation>
+<translation id="5876773482963502140">Si vous l'autorisez à connaître votre position, Chrome la communique à tous les sites que vous autorisez. Les sites peuvent vous demander votre position lorsqu'ils ont de l'information locale à vous présenter, comme des magasins à proximité ou des actualités.</translation>
 <translation id="6036420186814142909">Google Chrome comprend des fonctionnalités qui vous aident à gérer vos données Internet et la vitesse de chargement des pages Web.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Passer à Chrome</translation>
@@ -90,5 +91,4 @@
   2. Touchez Navigateur par défaut.
   3. Sélectionnez Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Si vous autorisez l'utilisation de votre position, Chrome l'envoie à votre moteur de recherche par défaut et aux sites que vous autorisez. Les sites peuvent vous demander votre position lorsqu'ils ont de l'information locale à vous présenter, comme des magasins à proximité ou des actualités.</translation>
 </translationbundle>

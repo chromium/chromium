@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">Шаршы</translation>
 <translation id="5775960006311140197">Сарапшы режимі</translation>
 <translation id="5869546221129391014">Тор</translation>
+<translation id="5975083100439434680">Кішірейту</translation>
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="6073451960410192870">Бейнеге түсіруді тоқтату</translation>
 <translation id="6197807149213783179">Метадеректі сақтау</translation>
@@ -81,9 +82,9 @@
 <translation id="7649070708921625228">Анықтама</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
 <translation id="7670511624014457267">60 кадр/сек</translation>
-<translation id="7974782136796202581">Панорама/еңкейту/масштабтау опцияларын көрсету</translation>
 <translation id="7983668134180549431">Мәтін анықталды.</translation>
 <translation id="8067883171444229417">Бейнені ойнату</translation>
+<translation id="8120146556401698679">Панорама, қисайту, масштабтау</translation>
 <translation id="8131740175452115882">Растау</translation>
 <translation id="8145038249676204903">Суретке түсіруге ауысу</translation>
 <translation id="8239780215768881278">Бейненің снапшотын түсіру</translation>
@@ -94,6 +95,7 @@
 <translation id="8815966864175525708">Портреттік сурет түсіруге ауысу</translation>
 <translation id="8828441885228359828">Жазуды жалғастыру</translation>
 <translation id="8870695351537079478">Бейнеге түсіру мүмкін емес.</translation>
+<translation id="8903921497873541725">Үлкейту</translation>
 <translation id="9045155556724273246">10 секунд</translation>
 <translation id="945522503751344254">Пікір жіберу</translation>
 </translationbundle>

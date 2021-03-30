@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">Quadrat</translation>
 <translation id="5775960006311140197">Mode expert</translation>
 <translation id="5869546221129391014">Quadrícula</translation>
+<translation id="5975083100439434680">Redueix</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6073451960410192870">Atura la gravació</translation>
 <translation id="6197807149213783179">Desa les metadades</translation>
@@ -81,9 +82,9 @@ Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adj
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7974782136796202581">Mostra les opcions de panoràmica, inclinació i zoom</translation>
 <translation id="7983668134180549431">Text detectat.</translation>
 <translation id="8067883171444229417">Reprodueix el vídeo</translation>
+<translation id="8120146556401698679">Panoràmica, inclinació i zoom</translation>
 <translation id="8131740175452115882">Confirma</translation>
 <translation id="8145038249676204903">Canvia al mode per fer fotos</translation>
 <translation id="8239780215768881278">Fes una captura de vídeo</translation>
@@ -94,6 +95,7 @@ Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adj
 <translation id="8815966864175525708">Botó per fer una foto vertical</translation>
 <translation id="8828441885228359828">Reprèn la gravació</translation>
 <translation id="8870695351537079478">No es pot iniciar la gravació</translation>
+<translation id="8903921497873541725">Amplia</translation>
 <translation id="9045155556724273246">10 segons</translation>
 <translation id="945522503751344254">Envia suggeriments</translation>
 </translationbundle>

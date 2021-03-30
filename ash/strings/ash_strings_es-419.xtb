@@ -397,6 +397,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Presionaste la combinación de teclas para activar el modo de contraste alto. ¿Quieres activarlo?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4333628967105022692">Lacros no es compatible si acceden varios usuarios.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">El Asistente se está cargando…</translation>
 <translation id="4356930093361201197">modo de contraste alto</translation>
@@ -969,6 +970,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="9091626656156419976">Se quitó la pantalla <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silenciar teléfono</translation>
 <translation id="9099154003160514616">Actualización disponible para Lacros</translation>
+<translation id="9105450214093926548">No se admite el acceso a un segundo usuario mientras se ejecuta el navegador Lacros. En su lugar, usa un segundo perfil de navegador en Lacros, o cierra Lacros y vuelve a intentarlo.</translation>
 <translation id="9133335900048457298">No se puede grabar contenido protegido</translation>
 <translation id="9151726767154816831">Reiniciar y aplicar Powerwash para actualizar</translation>
 <translation id="9166331175924255663">Activar o desactivar la alta visibilidad para Compartir con Nearby</translation>

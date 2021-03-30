@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">Ilova versiyasi</translation>
 <translation id="1430915738399379752">Chop etish</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> yuborilmadi</translation>
+<translation id="147113415845704694">“Bugungi ob-havo qanday?” deb soʻrang</translation>
 <translation id="1477626028522505441">Serverdagi turli muammolar tufayli “<ph name="FILE_NAME" />” fayli yuklab olinmadi.</translation>
 <translation id="1492417797159476138">Bu sayt uchun login allaqachon saqlangan</translation>
 <translation id="1506061864768559482">Qidiruv tizimi</translation>
@@ -268,7 +269,6 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="2856503607207334158">Kirish amalga oshmadi</translation>
 <translation id="2860954141821109167">Bu qurilmada telefon ilovasi yoniqligini tekshiring</translation>
 <translation id="2870560284913253234">Sayt</translation>
-<translation id="2876369937070532032">Xavfli vaziyatlarda siz tashrif buyurgan ayrim URL manzillarni Google serverlariga yuboradi</translation>
 <translation id="2888126860611144412">Chrome haqida</translation>
 <translation id="2891154217021530873">Sahifa yuklanishini to‘xtatish</translation>
 <translation id="2892647708214602204">Fayl tayyor boʻlganda bildirishnoma chiqadi</translation>
@@ -311,7 +311,6 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="3157842584138209013">Tejalgan trafik miqdorini bilish uchun “Boshqa parametrlar” tugmasini bosing</translation>
 <translation id="3166827708714933426">Varaq va oynalar bilan ishlash</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Saytlarni xavfsiz kezish (sizni va qurilmangizni xavfli saytlardan himoya qiladi)</translation>
 <translation id="3205824638308738187">Deyarli tayyor!</translation>
 <translation id="3207960819495026254">Xatcho‘plarga qo‘shildi</translation>
 <translation id="3208584281581115441">Hozir tekshirish</translation>
@@ -505,6 +504,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4561979708150884304">Internetga ulanmagansiz</translation>
 <translation id="4565377596337484307">Parolni berkitish</translation>
 <translation id="4572422548854449519">Tobe hisobga kirish</translation>
+<translation id="4576892426230499203">Boshqa tasdiqlash usulidan foydalaning</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# daqiqa oldin}other{# daqiqa oldin}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Bu sahifa saytning <ph name="CREATION_TIME" /> kunidagi nusxasi va onlayn versiyasidan farq qilishi mumkin.</translation>
@@ -570,6 +570,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="49268022542405662">Parolingiz eksport qilinadi va matn fayli sifatida yuklab olinadi. Ularni hamma koʻra oladi va har qanday ilova u joylashgan jildga kira oladi.</translation>
 <translation id="4932247056774066048">Chunki siz <ph name="DOMAIN_NAME" /> tomonidan boshqariladigan hisobingizdan chiqish arafasidasiz. Barcha axborotlar Google Chrome brauzeridan tozalab tashlanadi, lekin Google hisobingizda saqlanib qoladi.</translation>
 <translation id="4936039914467572121">Bu saytni tezroq ochish uchun</translation>
+<translation id="4941179133499732445">Ovoz bilan qidirish uchun mikrofon belgisini bosing</translation>
 <translation id="4943703118917034429">Virtual reallik</translation>
 <translation id="4943872375798546930">Hech narsa topilmadi</translation>
 <translation id="4961107849584082341">Bu sahifani boshqa tilga tarjima qiling</translation>
@@ -584,7 +585,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5011311129201317034"><ph name="SITE" /> qurilmangiz bilan aloqa o‘rnatmoqchi</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Ruxsat berish</translation>
-<translation id="5040262127954254034">Shaxsiy ma’lumotlar</translation>
+<translation id="5061533557687621530">Ob-havoni bilish uchun mikrofon belgisini bosib, “Bugungi ob-havo qanday?” deb ayting</translation>
 <translation id="5087580092889165836">Yangi karta qo‘shish</translation>
 <translation id="5091249083535528968">Kengaytirilgan foydalanish statistikasi</translation>
 <translation id="509429900233858213">Xatolik yuz berdi.</translation>
@@ -599,6 +600,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 ta fayl yuklab olinmadi.}other{# ta fayl yuklab olinmadi.}}</translation>
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
 <translation id="5184329579814168207">Chrome brauzerida ochish</translation>
+<translation id="5188992787241350004">Ovoz bilan qidiring</translation>
 <translation id="5191251636205085390">Tashqi cookie fayllar oʻrniga ishlatiladigan yangi texnologiyalarni oʻrganing va boshqaring</translation>
 <translation id="5193988420012215838">Vaqtinchalik xotiraga nusxalandi</translation>
 <translation id="5199929503336119739">Ish profili</translation>
@@ -637,6 +639,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5441522332038954058">Manzil qatoriga o‘tish</translation>
 <translation id="544776284582297024">Bir vaqtda varaqlar ochish va turli sahifalarga tashrif buyurish uchun varaqlarni ochish tugmasini bosing</translation>
 <translation id="545042621069398927">Yuklab olish tezlashtirilmoqda.</translation>
+<translation id="5454166040603940656"><ph name="PROVIDER" /> yordamida</translation>
 <translation id="5456381639095306749">Sahifani yuklab olish</translation>
 <translation id="548278423535722844">Xaritalar ilovasida ochish</translation>
 <translation id="5483197086164197190">Chrome bilan tanishuv</translation>
@@ -777,6 +780,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6316139424528454185">Android versiyasi bilan mos emas</translation>
 <translation id="6324034347079777476">Android tizimini sinxronlash o‘chirib qo‘yilgan</translation>
 <translation id="6324977638108296054">Tanlangan matnga havola yaratish imkonsiz</translation>
+<translation id="6324997754869598316">(Xato: <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> orqali ulashish</translation>
 <translation id="6337234675334993532">Shifrlash</translation>
 <translation id="6341580099087024258">Fayllar qayerga saqlanishi so‘ralsin</translation>
@@ -793,6 +797,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6402652558933147609"><ph name="ERROR_CODE" />, <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Xatcho‘pni tahrirlash</translation>
 <translation id="6406506848690869874">Sinxronlash</translation>
+<translation id="6407224748847589805">Kompyuteringizga ulanmadi Boshqa tasdiqlash usulidan foydalaning.</translation>
 <translation id="6410404864818553978">Asosiy foydalanish statistikasi</translation>
 <translation id="6410883413783534063">Bir vaqtda turli sahifalarga tashrif buyurish uchun varaqlar ochish</translation>
 <translation id="6412673304250309937">URL manzillar Chrome bilgan zararli saytlar roʻyxati orqali tekshiriladi. Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chrome ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin.</translation>
@@ -861,7 +866,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6813446258015311409">Chrome hisobiga kirish, ochildi.</translation>
 <translation id="6820686453637990663">CVC kod</translation>
 <translation id="6824899148643461612">Varaq tanlandi: <ph name="TAB_TITLE" /></translation>
-<translation id="6845325883481699275">Chrome xavfsizligini yaxshilashga yordam bering</translation>
 <translation id="6846298663435243399">Yuklanmoqda…</translation>
 <translation id="6850409657436465440">Fayl hali ham yuklab olinmoqda</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ta varaq yopildi</translation>
@@ -989,7 +993,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7704317875155739195">Qidiruv va URL manzillarning avtomatik kiritilishi</translation>
 <translation id="7707922173985738739">Mobil internetdan foydalanish</translation>
 <translation id="7725024127233776428">Xatchoʻplarga saqlanadigan sahifalar shu yerda chiqadi</translation>
-<translation id="7746457520633464754">Xavfli ilova saytlarni aniqlashda Chrome siz tashrif buyuradigan saytlarning URL manzillari, tizim axboroti va ayrim sahifalardagi kontentlarni Google serverlariga yuboradi</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> qurilmasidan ulashilgan matn</translation>
 <translation id="7761849928583394409">Sana va vaqtni tanlang</translation>
 <translation id="7762668264895820836">SD karta <ph name="SD_CARD_NUMBER" /></translation>

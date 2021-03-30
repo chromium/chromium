@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Nu scoateți încă dispozitivul!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Dacă scoateți dispozitivul în timp ce este folosit, puteți pierde date. Așteptați finalizarea operației, apoi scoateți dispozitivul folosind aplicația Fișiere.</translation>
+<translation id="5159560892333415631">Golește coșul de gunoi</translation>
 <translation id="5163869187418756376">Trimiterea nu a reușit. Verificați conexiunea la internet și încercați din nou mai târziu.</translation>
 <translation id="516592729076796170">Programator S.U.A. Dvorak</translation>
 <translation id="5170477580121653719">Spațiu disponibil pe Disc Google: <ph name="SPACE_AVAILABLE" />.</translation>
@@ -419,6 +420,7 @@
 <translation id="5275973617553375938">Fișiere recuperate din Google Drive</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">Sigur vrei să golești coșul de gunoi?</translation>
 <translation id="5317780077021120954">Salvează</translation>
 <translation id="5318819489018851358">Trimite cu Linux</translation>
 <translation id="5323213332664049067">America Latină</translation>
@@ -783,6 +785,7 @@
 <translation id="9154418932169119429">Această imagine nu este disponibilă offline.</translation>
 <translation id="9172592259078059678">Gujarati, transliterație</translation>
 <translation id="9173120999827300720">Engleză (S.U.A.) cu tastatură internațională</translation>
+<translation id="9174050671906956834">Elementele din coșul de gunoi sunt șterse definitiv după 30 de zile.</translation>
 <translation id="9189836632794948435">Kazahă</translation>
 <translation id="9213073329713032541">Instalarea a început.</translation>
 <translation id="9219103736887031265">Imagini</translation>

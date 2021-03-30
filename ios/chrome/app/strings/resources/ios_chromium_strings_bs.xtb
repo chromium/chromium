@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Chromium trenutno ne može koristiti kameru</translation>
 <translation id="2195025571279539885">Želite li da vam Chromium sljedeći put ponudi prijevod stranica na <ph name="LANGUAGE_NAME" /> jeziku s ove web lokacije?</translation>
 <translation id="2590893390871230428">Sinhroniziraj Chromium podatke</translation>
-<translation id="259614951763923692">Ako dozvolite Chromiumu da zna vašu lokaciju, poslat će je vašem zadanom pretraživaču i svim web lokacijama koje dozvolite. Web lokacije mogu tražiti vašu lokaciju kada imaju lokalne informacije koje vam mogu prikazati, kao što su prodavnice u blizini ili vijesti.</translation>
 <translation id="2650312721222849884">Da vidite kartice s bilo kojeg uređaja na kojem koristite Chromium, uključite sinhronizaciju</translation>
 <translation id="2730884209570016437">Chromium ne može koristiti kameru jer je koristi druga aplikacija</translation>
 <translation id="2915596697727466327">Chromium koristi Face ID za odobravanje pristupa vašim lozinkama.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Odjaviti se iz Chromiuma?</translation>
 <translation id="6424492062988593837">Chromium je sada još bolji! Dostupna je nova verzija.</translation>
 <translation id="6820823224820483452">Chromium nije mogao provjeriti sve lozinke. Pokušajte ponovo sutra.</translation>
+<translation id="6827294685447036764">Ako dozvolite Chromiumu da zna vašu lokaciju, poslat će je svim web lokacijama koje dozvolite. Web lokacije mogu tražiti vašu lokaciju kada imaju lokalne informacije koje vam mogu prikazati, kao što su prodavnice u blizini ili vijesti.</translation>
 <translation id="7018284295775193585">Nije moguće ažurirati Chromium</translation>
 <translation id="7099326575020694068">Chromium ne može koristiti kameru u načinu rada podijeljenog prikaza</translation>
 <translation id="7118091470949186573">Sada možete koristiti Chromium svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>

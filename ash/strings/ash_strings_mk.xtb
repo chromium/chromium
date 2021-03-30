@@ -397,6 +397,7 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Ја притиснавте кратенката од тастатура за висок контраст. Дали сакате да ја вклучите?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4333628967105022692">Lacros не е поддржан кога се најавени повеќе корисници.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4351433414020964307">„Помошникот“ се вчитува…</translation>
 <translation id="4356930093361201197">режим на висок контраст</translation>
@@ -755,7 +756,7 @@
 <translation id="7434543979546293336">Означено како клучна идеја</translation>
 <translation id="7452560014878697800">Една апликација ја користи камерата</translation>
 <translation id="7456049842111127849">Режим на снимање. Стандардната поставка е „<ph name="TYPE" />“ (<ph name="SOURCE" />).</translation>
-<translation id="7461924472993315131">Прикачи</translation>
+<translation id="7461924472993315131">Закачи</translation>
 <translation id="746232733191930409">Режим на снимање на екранот</translation>
 <translation id="7466449121337984263">Допрете го сензорот</translation>
 <translation id="7477793887173910789">Контролирајте ја музиката, видеата и др.</translation>
@@ -969,6 +970,7 @@
 <translation id="9091626656156419976">Отстранет екран <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Исклучи го звукот на телефонот</translation>
 <translation id="9099154003160514616">Достапно е ажурирање за Lacros</translation>
+<translation id="9105450214093926548">Не е поддржано најавување втор корисник додека се извршува прелистувачот Lacros. Наместо тоа, користете втор профил за прелистувач во Lacros или затворете го Lacros и обидете се повторно.</translation>
 <translation id="9133335900048457298">Не може да се снимаат заштитени содржини</translation>
 <translation id="9151726767154816831">Престартувајте и фабрички ресетирајте за ажурирање</translation>
 <translation id="9166331175924255663">Вклучете/исклучете голема видливост за „Споделување во близина“.</translation>

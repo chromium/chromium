@@ -268,7 +268,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2856503607207334158">Login mislykkedes</translation>
 <translation id="2860954141821109167">Sørg for, at opkaldsappen er aktiveret på denne enhed</translation>
 <translation id="2870560284913253234">Website</translation>
-<translation id="2876369937070532032">Sender webadresser på nogle sider, som du besøger, til Google, når din sikkerhed er truet</translation>
 <translation id="2888126860611144412">Om Chrome</translation>
 <translation id="2891154217021530873">Stop sideindlæsning</translation>
 <translation id="2892647708214602204">Der vises en notifikation, når denne fil er klar</translation>
@@ -311,7 +310,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3157842584138209013">Se, hvor meget data du har sparet via knappen Flere valgmuligheder</translation>
 <translation id="3166827708714933426">Genveje på faner og i vinduer</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Beskyttet browsing (beskytter dig og din enhed mod farlige websites)</translation>
 <translation id="3205824638308738187">Du er næsten færdig.</translation>
 <translation id="3207960819495026254">Gemt som bogmærke</translation>
 <translation id="3208584281581115441">Tjek nu</translation>
@@ -505,6 +503,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4561979708150884304">Der er ingen forbindelse</translation>
 <translation id="4565377596337484307">Skjul adgangskode</translation>
 <translation id="4572422548854449519">Log ind på managerstyret konto</translation>
+<translation id="4576892426230499203">Prøv en anden bekræftelsesmulighed</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{For # minut siden}one{For # minut siden}other{For # minutter siden}}</translation>
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4594952190837476234">Denne offlineside er fra <ph name="CREATION_TIME" /> og kan afvige fra onlineversionen.</translation>
@@ -584,7 +583,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5011311129201317034"><ph name="SITE" /> vil gerne oprette forbindelse</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Tillad</translation>
-<translation id="5040262127954254034">Privatliv</translation>
 <translation id="5087580092889165836">Tilføj kort</translation>
 <translation id="5091249083535528968">Udvidede brugsdata</translation>
 <translation id="509429900233858213">Der opstod en fejl.</translation>
@@ -637,6 +635,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5441522332038954058">Gå til adresselinjen</translation>
 <translation id="544776284582297024">Hvis du vil åbne faner og besøge forskellige sider på samme tid, skal du trykke på faneknappen</translation>
 <translation id="545042621069398927">Øger hastigheden på din download.</translation>
+<translation id="5454166040603940656">med <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Download siden</translation>
 <translation id="548278423535722844">Åbn i kortapp</translation>
 <translation id="5483197086164197190">Find rundt i Chrome</translation>
@@ -777,6 +776,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6316139424528454185">Android-versionen understøttes ikke</translation>
 <translation id="6324034347079777476">Synkronisering af Android-systemet blev deaktiveret</translation>
 <translation id="6324977638108296054">Der kan ikke oprettes et link til fremhævning</translation>
+<translation id="6324997754869598316">(fejl <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Del via <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Kryptering</translation>
 <translation id="6341580099087024258">Spørg, hvor filer skal gemmes</translation>
@@ -793,6 +793,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> på <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Rediger bogmærke</translation>
 <translation id="6406506848690869874">Synkronisering</translation>
+<translation id="6407224748847589805">Der kan ikke oprettes forbindelse til din computer. Prøv en anden bekræftelsesmetode.</translation>
 <translation id="6410404864818553978">Grundlæggende brugsdata</translation>
 <translation id="6410883413783534063">Åbn faner for at besøge forskellige sider på samme tid</translation>
 <translation id="6412673304250309937">Tjekker webadresser ift. en liste over usikre websites, der er gemt i Chrome. Hvis et website forsøger at stjæle din adgangskode, eller når du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Beskyttet browsing.</translation>
@@ -861,7 +862,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6813446258015311409">Log ind i Chrome, åben.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, fane, valgt</translation>
-<translation id="6845325883481699275">Hjælp med at forbedre sikkerheden i Chrome</translation>
 <translation id="6846298663435243399">Indlæser…</translation>
 <translation id="6850409657436465440">Der downloades stadig</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> faner blev lukket</translation>
@@ -989,7 +989,6 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="7704317875155739195">Autofuldfør søgninger og webadresser</translation>
 <translation id="7707922173985738739">Brug mobildata</translation>
 <translation id="7725024127233776428">De sider, du føjer et bogmærke til, vises her</translation>
-<translation id="7746457520633464754">Chrome sender webadresser på nogle sider, du besøger, begrænsede systemoplysninger og noget sideindhold til Google med henblik på at registrere farlige apps og websites.</translation>
 <translation id="7757787379047923882">Tekst, der deles fra <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Vælg dato og tidspunkt</translation>
 <translation id="7762668264895820836">SD-kort <ph name="SD_CARD_NUMBER" /></translation>

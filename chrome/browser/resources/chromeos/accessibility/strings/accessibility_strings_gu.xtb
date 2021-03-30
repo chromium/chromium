@@ -22,6 +22,8 @@
 <translation id="1120938014254001895">બે આંગળી ઉપરની બાજુ સ્વાઇપ કરો</translation>
 <translation id="1126928665165112660">ઇટાલિક નથી</translation>
 <translation id="113582498867142724"><ph name="NUM" /> આઇટમ્સ સાથેનો <ph name="TAG" /> સંગ્રહ</translation>
+<translation id="1146441463334103638">સ્ક્રીનને ચાલુ કે બંધ એમ ટૉગલ કરો</translation>
+<translation id="1156488781945104845">હાલનો સમય</translation>
 <translation id="1161762950103988776">Jump</translation>
 <translation id="1164857107703583584">જમ્પ આદેશોનો ઉપયોગ વેેબ પેજ પર વધુ કાર્યક્ષમતાથી નૅવિગેટ કરવા માટે થઈ શકે છે.</translation>
 <translation id="1175914831232945926">અંકો</translation>
@@ -71,6 +73,7 @@
 <translation id="1405567553485452995">આછો લીલો</translation>
 <translation id="1411043317877497323">અભ્યાસ ક્ષેત્ર</translation>
 <translation id="141454040365657399">પેજ હેડર</translation>
+<translation id="1417092723421264764">વર્તમાન પેજ</translation>
 <translation id="1417889266572670458">ઘેરો વાદળી</translation>
 <translation id="1431911867058218151">પ્લમ</translation>
 <translation id="1439316808600711881">rgn</translation>
@@ -199,6 +202,7 @@
 <translation id="242998846562331953">ઉપશીર્ષક</translation>
 <translation id="2435422727584637732">ચળકતો ભૂરો</translation>
 <translation id="2450814015951372393">ચેક બૉક્સ</translation>
+<translation id="2461822463642141190">વર્તમાન</translation>
 <translation id="2462626033734746142">રેડિઓ બટન જૂથ</translation>
 <translation id="2471138580042810658">મથાળું 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{તારક ચિહ્ન}one{# તારક ચિહ્ન}other{# તારક ચિહ્ન}}</translation>
@@ -244,7 +248,6 @@
 <translation id="2766299274563946262">ડાબી બાજુએ કોઈ સેલ નથી</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="280499067616661124">ChromeVox પૃષ્ઠમાં શોધો</translation>
-<translation id="2808001342598757276">ડાર્ક ન કરેલી સ્ક્રીન</translation>
 <translation id="2811019999044652585">ટુલબાર અથવા સિસ્ટમ ટ્રે જેવા સ્ક્રીનના બીજા ભાગ પર જવા માટે, Control+ફોરવર્ડ દબાવો. Chromebook પર, ફોરવર્ડ કી એ નંબર 2 કીની એકદમ ઉપરની કી છે.</translation>
 <translation id="2811204574343810641">પંક્તિ</translation>
 <translation id="2816868829355607410">અભ્યાસ ક્ષેત્ર: જમ્પ આદેશો</translation>
@@ -299,6 +302,7 @@
 <translation id="3109724472072898302">સંકુચિત</translation>
 <translation id="311015743332597320">ચાર આંગળીઓ વડે જમણે સ્વાઇપ કરો</translation>
 <translation id="3112457281078985179">ChromeVox ને ચાલુ કે બંધ કરવા માટે, Control+Alt+Z નો ઉપયોગ કરો.</translation>
+<translation id="3115800313647508384">સ્ક્રીન બંધ કરીએ?</translation>
 <translation id="3131002934070407451">નંબરને આ તરીકે વાંચો:</translation>
 <translation id="3134461040845705080">ફક્ત વાંચવા માટે</translation>
 <translation id="3137663468179739624">ઓલિવ</translation>
@@ -642,6 +646,7 @@
 <translation id="5655682562155942719">જંપ આદેશો</translation>
 <translation id="56637627897541303">ટેક્સ્ટ ક્ષેત્ર</translation>
 <translation id="5669637233317991674">આ પાઠ પર નૅવિગેટ કરવા માટે, શોધ + જમણો એરો અથવા શોધ + ડાબો એરો દબાવો</translation>
+<translation id="5677240841070992068">હાલનું સ્થાન</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
 <translation id="5682113568322255809">સ્થળનિશાની</translation>
@@ -677,6 +682,7 @@
 <translation id="5901630391730855834">પીળો</translation>
 <translation id="5906974869830879618">કૃપા કરીને પિન દાખલ કરો</translation>
 <translation id="5921587111466148855">પ્રકરણ</translation>
+<translation id="5923780477617566089">વર્તમાન તારીખ</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{બરાબર}one{# બરાબરની નિશાની}other{# બરાબરની નિશાની}}</translation>
 <translation id="5948123859135882163">સંરચનાગત અને સિમેન્ટિક વચ્ચે ગણિત પદાવલિઓની સમજૂતિને ટોગલ કરો</translation>
 <translation id="5955304353782037793">app</translation>
@@ -696,9 +702,9 @@
 <translation id="6034000775414344507">આછો ગ્રે</translation>
 <translation id="6036135911048686884">ટચ વિશે વધુ જાણો</translation>
 <translation id="6037602951055904232">આગળની તરફ પેન કરો</translation>
-<translation id="6044160928851315051">ડાર્ક કરેલી સ્ક્રીન</translation>
 <translation id="6082768461603900813">મૂળભૂત નૅવિગેશન</translation>
 <translation id="609281021724813947">કોઈ પાછલું સ્લાઇડર નથી</translation>
+<translation id="6096942799340613495">આને કારણે સ્ક્રીન બંધ થઈ જશે. તમે શોધ + બ્રાઇટનેસ વધારવાની કી દબાવીને હંમેશાં સ્ક્રીન ફરી ચાલુ કરો શકો છો.</translation>
 <translation id="6100239002225743044">એક લાઇન ઉપર ખસેડો</translation>
 <translation id="6118126368611144850">Chrome માટેની Android ઍપ. જો તમારા ડિવાઇસમાં Play સ્ટોર હોય, તો Android ઍપ ધરાવતા ChromeVoxની ઝલક મેળવો. Play સ્ટોર પરથી Google Chrome Canary ડાઉનલોડ કરીને પ્રયોગાત્મક સહાયનો અનુભવ મેળવો.</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -766,6 +772,7 @@
 <translation id="6696967141280706829">પ્રસ્તાવના</translation>
 <translation id="6697092096875747123">પાછલું કોમ્બો બૉક્સ</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ઉદ્ગારવાચક ચિહ્ન}one{# ઉદ્ગારવાચક ચિહ્ન}other{# ઉદ્ગારવાચક ચિહ્ન}}</translation>
+<translation id="670717715607710284">સ્ક્રીન બંધ કરો</translation>
 <translation id="6710213216561001401">પાછલી</translation>
 <translation id="6714813999819678458">પાછલું લેવલ 2 શીર્ષક</translation>
 <translation id="6730312624811567147">Home કે End કી માટે શોધ અને જમણી કે ડાબી ઍરો કી, Control Home કે End માટે કંટ્રોલ અને ડાબી કે જમણી ઍરો કી, પેજ ઉપર કે નીચે કરવા શોધ અને ઉપર કે નીચેની ઍરો કીનો ઉપયોગ કરો</translation>
@@ -945,6 +952,7 @@
 <translation id="8037651341025652929">સારાંશ</translation>
 <translation id="8042761080832772327">ટેક્સ્ટ, શોધ એન્ટ્રીમાં ફેરફાર કરો</translation>
 <translation id="8049189770492311300">ટાઇમર</translation>
+<translation id="8057472523431225012">હાલનું પગલું</translation>
 <translation id="8058636807889143711">કોઈ આગલું ગાણિતિક પદ નથી</translation>
 <translation id="8066678206530322333">બેનર</translation>
 <translation id="8076492880354921740">ટૅબ્સ</translation>
@@ -962,6 +970,7 @@
 <translation id="816818801578874684">આ પહેલું મથાળું છે. આગલા મથાળા પર જવા માટે શોધ + H દબાવો.</translation>
 <translation id="8173092779156526980">ચાર આંગળીઓ વડે ડાબે સ્વાઇપ કરો</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{અંડરસ્કોર}one{# અંડરસ્કોર}other{# અંડરસ્કોર}}</translation>
+<translation id="817529114347680055">સ્ક્રીન ચાલુ કરો</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">પંક્તિ</translation>
 <translation id="8186185314313222077">પૂર્ણ સ્ક્રીન ટોગલ કરો</translation>
@@ -984,7 +993,6 @@
 <translation id="8316881042119029234">જૂની લેસ</translation>
 <translation id="8324974933005349667">'ટેક્સ્ટ-ટૂ-સ્પીચ' સેટિંગને વ્યક્તિગત કરો</translation>
 <translation id="8326783648485765113">ઘેરો લીલો</translation>
-<translation id="8328063869313048659">ઘેરી સ્ક્રીનને ટૉગલ કરો</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{પાઉન્ડ}one{# પાઉન્ડની નિશાની}other{# પાઉન્ડની નિશાની}}</translation>
 <translation id="8378855320830505539">પ્રદેશ</translation>
 <translation id="8382679411218029383">સ્વતઃપૂર્ણ ઇનલાઇન અને સૂચિ</translation>

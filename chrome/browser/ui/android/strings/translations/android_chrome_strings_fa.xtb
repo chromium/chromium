@@ -25,7 +25,7 @@
 <translation id="1145536944570833626">حذف داده‌های موجود.</translation>
 <translation id="1146678959555564648">‏VR را وارد کنید</translation>
 <translation id="1154704303112745282">صفحه <ph name="VIOLATED_URL" /> به‌صورت آفلاین دردسترس نیست</translation>
-<translation id="116280672541001035">مصرف‌شده</translation>
+<translation id="116280672541001035">استفاده‌شده</translation>
 <translation id="1171770572613082465">با ضربه زدن روی دکمه «سایت‌های برتر»، وب‌سایت‌های پرطرفدار را ببینید</translation>
 <translation id="1173894706177603556">تغییر نام</translation>
 <translation id="1177863135347784049">سفارشی</translation>
@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">ورود به سیستم ناموفق بود</translation>
 <translation id="2860954141821109167">مطمئن شوید برنامه تلفن در این دستگاه فعال باشد</translation>
 <translation id="2870560284913253234">سایت</translation>
-<translation id="2876369937070532032">‏اگر امنیتتان درخطر باشد، نشانی وب برخی از صفحه‌هایی را که بازدید می‌کنید به Google می‌فرستد</translation>
 <translation id="2888126860611144412">‏درباره Chrome</translation>
 <translation id="2891154217021530873">توقف بارگیری صفحه</translation>
 <translation id="2892647708214602204">هنگامی که این فایل آماده باشد اعلانی را می‌بینید</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">با استفاده از دکمه «گزینه‌های بیشتر»، ببینید چه مقدار داده صرفه‌جویی کرده‌اید</translation>
 <translation id="3166827708714933426">میان‌برهای پنجره و برگه</translation>
 <translation id="3169472444629675720">کشف کردن</translation>
-<translation id="3181954750937456830">مرور ایمن (از شما و دستگاهتان درمقابل سایت‌های خطرناک محافظت می‌کند)</translation>
 <translation id="3205824638308738187">تقریباً پایان یافته است!</translation>
 <translation id="3207960819495026254">نشانک‌گذاری شده</translation>
 <translation id="3208584281581115441">اکنون بررسی شود</translation>
@@ -505,6 +503,7 @@
 <translation id="4561979708150884304">اتصال برقرار نیست</translation>
 <translation id="4565377596337484307">عدم نمایش گذرواژه</translation>
 <translation id="4572422548854449519">به حساب مدیریت‌شده وارد شوید</translation>
+<translation id="4576892426230499203">امتحان کردن گزینه تأیید دیگر</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# دقیقه قبل}one{# دقیقه قبل}other{# دقیقه قبل}}</translation>
 <translation id="4587589328781138893">سایت‌ها</translation>
 <translation id="4594952190837476234">این صفحه آفلاین مربوط به تاریخ <ph name="CREATION_TIME" /> است و ممکن است با نسخه آنلاین متفاوت باشد.</translation>
@@ -584,7 +583,6 @@
 <translation id="5011311129201317034"><ph name="SITE" /> می‌خواهد مرتبط شود</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">اجازه دادن</translation>
-<translation id="5040262127954254034">حریم‌خصوصی</translation>
 <translation id="5087580092889165836">افزودن کارت</translation>
 <translation id="5091249083535528968">داده‌های استفاده گسترده</translation>
 <translation id="509429900233858213">خطایی روی داد.</translation>
@@ -637,6 +635,7 @@
 <translation id="5441522332038954058">رفتن به نوار نشانی</translation>
 <translation id="544776284582297024">برای باز کردن برگه‌ها و بازدید هم‌زمان از صفحه‌های مختلف، روی دکمه «بازکردن برگه‌ها» ضربه بزنید</translation>
 <translation id="545042621069398927">درحال سرعت بخشیدن به بارگیری.</translation>
+<translation id="5454166040603940656">با <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">بارگیری صفحه</translation>
 <translation id="548278423535722844">‏باز کردن در برنامه Maps</translation>
 <translation id="5483197086164197190">‏پیمایش در Chrome</translation>
@@ -777,6 +776,7 @@
 <translation id="6316139424528454185">‏نسخه Android پشتیبانی نمی‌شود</translation>
 <translation id="6324034347079777476">‏همگام‌سازی سیستم Android غیرفعال شد</translation>
 <translation id="6324977638108296054">نمی‌توان پیوند به مورد برجسته ایجاد کرد</translation>
+<translation id="6324997754869598316">(خطای <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">اشتراک‌گذاری از طریق <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">رمزگذاری</translation>
 <translation id="6341580099087024258">مکان ذخیره شدن فایل‌ها پرسیده شود</translation>
@@ -793,6 +793,7 @@
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> در <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">ویرایش نشانک</translation>
 <translation id="6406506848690869874">همگام‌سازی</translation>
+<translation id="6407224748847589805">اتصال به رایانه ممکن نیست. گزینه تأیید دیگری را امتحان کنید.</translation>
 <translation id="6410404864818553978">داده‌های استفاده اصلی</translation>
 <translation id="6410883413783534063">برای بازدید هم‌زمان از صفحه‌های مختلف، چند برگه باز کنید</translation>
 <translation id="6412673304250309937">‏نشانی‌های وب را با فهرست سایت‌های ناامنی که در Chrome ذخیره شده است مقایسه می‌کند. اگر سایتی تلاش کند گذرواژه شما را به‌سرقت ببرد، یا وقتی فایل مخربی بارگیری می‌کنید، Chrome ممکن است نشانی‌های وب را نیز به همراه بخش‌های کوچکی از محتوای صفحه، به «مرور ایمن» ارسال کند.</translation>
@@ -861,7 +862,6 @@
 <translation id="6813446258015311409">‏ورود به سیستم Chrome، باز شد.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />، برگه، انتخاب‌شده</translation>
-<translation id="6845325883481699275">‏کمک به بهبود امنیت Chrome</translation>
 <translation id="6846298663435243399">درحال بارگیری…</translation>
 <translation id="6850409657436465440">بارگیری هنوز درحال انجام است</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> برگه بسته شد</translation>
@@ -989,7 +989,6 @@
 <translation id="7704317875155739195">تکمیل خودکار جستجوها و نشانی‌های وب</translation>
 <translation id="7707922173985738739">استفاده از داده تلفن همراه</translation>
 <translation id="7725024127233776428">صفحاتی را که نشانک‌گذاری می‌کنید، در اینجا نشان داده می‌شوند</translation>
-<translation id="7746457520633464754">‏برای حذف برنامه‌ها و سایت‌های خطرناک، Chrome نشانی‌های وب برخی از صفحه‌هایی را که بازدید می‌کنید، اطلاعات سیستم محدود و برخی از محتوای صفحه را به Google می‌فرستد.</translation>
 <translation id="7757787379047923882">نوشتار هم‌رسانی‌شده از <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">انتخاب تاریخ و زمان</translation>
 <translation id="7762668264895820836">‏کارت SD <ph name="SD_CARD_NUMBER" /></translation>

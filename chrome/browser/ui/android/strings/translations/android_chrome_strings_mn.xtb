@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">Нэвтрэлт амжилтгүй</translation>
 <translation id="2860954141821109167">Гар утасны аппыг энэ төхөөрөмж дээр идэвхжүүлсэн эсэхийг шалгана уу</translation>
 <translation id="2870560284913253234">Ажлын талбар</translation>
-<translation id="2876369937070532032">Таны аюулгүй байдал эрсдэлд орох үед таны зочилдог зарим хуудсын URL-г Google-д илгээдэг</translation>
 <translation id="2888126860611144412">Chrome-н тухай</translation>
 <translation id="2891154217021530873">Хуудас ачаалахыг зогсоох</translation>
 <translation id="2892647708214602204">Та энэ файлыг бэлэн болоход мэдэгдэл харна</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">Бусад сонголт товчлуураас ямар хэмжээний дата хэмнэснээ харах</translation>
 <translation id="3166827708714933426">Таб, цонхны товчлол</translation>
 <translation id="3169472444629675720">Олох</translation>
-<translation id="3181954750937456830">Аюулгүй хөтөч (таныг болон таны төхөөрөмжийг аюултай сайтаас хамгаалдаг)</translation>
 <translation id="3205824638308738187">Бараг дууслаа!</translation>
 <translation id="3207960819495026254">Хавчуурга хадгалагдсан</translation>
 <translation id="3208584281581115441">Одоо шалгах</translation>
@@ -505,6 +503,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4561979708150884304">Холболт алга</translation>
 <translation id="4565377596337484307">Нууц үгийг нуух</translation>
 <translation id="4572422548854449519">Удирдсан бүртгэл рүү нэвтэрнэ үү</translation>
+<translation id="4576892426230499203">Баталгаажуулалтын өөр сонголтыг туршиж үзнэ үү</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# минутын өмнө}other{# минутын өмнө}}</translation>
 <translation id="4587589328781138893">Сайт</translation>
 <translation id="4594952190837476234">Энэ офлайн хуудсыг <ph name="CREATION_TIME" />-с харуулж байгаа бөгөөд онлайн хувилбараас өөр байж болзошгүй.</translation>
@@ -583,7 +582,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5011311129201317034"><ph name="SITE" /> холбогдох хүсэлтэй байна</translation>
 <translation id="5016205925109358554">Сериф</translation>
 <translation id="5039804452771397117">Зөвшөөрөх</translation>
-<translation id="5040262127954254034">Нууцлал</translation>
 <translation id="5087580092889165836">Карт нэмэх</translation>
 <translation id="5091249083535528968">Өргөтгөсөн ашиглалтын өгөгдөл</translation>
 <translation id="509429900233858213">Алдаа гарлаа.</translation>
@@ -636,6 +634,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5441522332038954058">Хаяг оруулах хэсэгт очих</translation>
 <translation id="544776284582297024">Табуудыг нээн, өөр хуудаснуудад нэгэн зэрэг зочлохын тулд табуудыг нээх товчлуурыг товшино уу</translation>
 <translation id="545042621069398927">Таны таталтыг хурдасгаж байна.</translation>
+<translation id="5454166040603940656"><ph name="PROVIDER" />-тэй</translation>
 <translation id="5456381639095306749">Хуудсыг татах</translation>
 <translation id="548278423535722844">Газрын зургийн апп-д нээх</translation>
 <translation id="5483197086164197190">Navigate Chrome</translation>
@@ -776,6 +775,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6316139424528454185">Android-н хувилбарыг дэмжээгүй байна</translation>
 <translation id="6324034347079777476">Андройд системийн синкийг идэвхгүй болгосон</translation>
 <translation id="6324977638108296054">Тодруулсан текстийн холбоосыг үүсгэх боломжгүй</translation>
+<translation id="6324997754869598316">(Алдаа <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" />-аар дамжуулан хуваалцах</translation>
 <translation id="6337234675334993532">Шифрлэх</translation>
 <translation id="6341580099087024258">Файлыг хаана хадгалахыг асуух</translation>
@@ -792,6 +792,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> дээрх <ph name="ERROR_CODE" /></translation>
 <translation id="6404511346730675251">Хадгалагдсан хуудсыг засах</translation>
 <translation id="6406506848690869874">Sync</translation>
+<translation id="6407224748847589805">Таны компьютертой холбогдож чадсангүй. Баталгаажуулалтын өөр сонголтыг туршиж үзнэ үү.</translation>
 <translation id="6410404864818553978">Үндсэн ашиглалтын өгөгдөл</translation>
 <translation id="6410883413783534063">Өөр хуудаснуудад нэгэн зэрэг зочлохын тулд табуудыг нээнэ үү</translation>
 <translation id="6412673304250309937">URL-г Chrome-д хадгалсан аюултай сайтын жагсаалттай харьцуулж шалгадаг. Хэрэв сайт таны нууц үгийг хулгайлах гэж оролдвол эсвэл таныг аюултай файл татах үед Chrome нь хуудасны бага зэрэг контентын хамт URL-г Аюулгүй хайлт руу мөн илгээж болзошгүй.</translation>
@@ -860,7 +861,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6813446258015311409">Chrome-д нэвтэрнэ үү, нээсэн.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, таб, сонгосон</translation>
-<translation id="6845325883481699275">Chrome-н аюулгүй байдлыг сайжруулахад туслах</translation>
 <translation id="6846298663435243399">Ачаалж байна...</translation>
 <translation id="6850409657436465440">Таны таталт үргэлжилж байна</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> табыг хаасан</translation>
@@ -988,7 +988,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7704317875155739195">Хайлт болон URL-г автоматаар гүйцээх</translation>
 <translation id="7707922173985738739">Мобайл дата ашиглах</translation>
 <translation id="7725024127233776428">Таны хавчуурга хийсэн хуудас энд харагдана</translation>
-<translation id="7746457520633464754">Chrome аюултай апп болон сайт илрүүлэхийн тулд таны зочилдог зарим хуудасны URL, хязгаарлагдмал системийн мэдээлэл болон зарим хуудасны контентыг Google-д илгээдэг</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />-с текстийг хуваалцсан</translation>
 <translation id="7761849928583394409">Огноо болон цаг сонгох</translation>
 <translation id="7762668264895820836">SD Карт <ph name="SD_CARD_NUMBER" /></translation>

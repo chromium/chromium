@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">سائن ان کرنا ناکام ہو گیا</translation>
 <translation id="2860954141821109167">یہ یقینی بنائیں کہ اس آلے پر کوئی فون ایپ فعال ہے</translation>
 <translation id="2870560284913253234">سائٹ</translation>
-<translation id="2876369937070532032">‏آپ کو سیکیورٹی کا خطرہ لاحق ہونے پر، Google کو آپ کے ملاحظہ کئے جانے والے چند صفحات کے URLs بھیجتا ہے</translation>
 <translation id="2888126860611144412">‏Chrome کے بارے میں</translation>
 <translation id="2891154217021530873">صفحہ لوڈ کرنا بند کریں</translation>
 <translation id="2892647708214602204">فائل تیار ہونے پر آپ کو اطلاع دکھائی دے گی</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">مزید اختیارات بٹن سے اپنا محفوظ کردہ ڈیٹا دیکھیں</translation>
 <translation id="3166827708714933426">ٹیب اور ونڈو شارٹ کٹس</translation>
 <translation id="3169472444629675720">دریافت کریں</translation>
-<translation id="3181954750937456830">محفوظ براؤزنگ (آپ اور آپ کے آلہ کی خطرناک سائٹس سے حفاظت کرتی ہے)</translation>
 <translation id="3205824638308738187">تقریباً مکمل!</translation>
 <translation id="3207960819495026254">بُک مارک بنایا ہوا</translation>
 <translation id="3208584281581115441">ابھی چیک کریں</translation>
@@ -505,6 +503,7 @@
 <translation id="4561979708150884304">کوئی کنکشن نہیں</translation>
 <translation id="4565377596337484307">پاس ورڈ چھپائیں</translation>
 <translation id="4572422548854449519">نظم کردہ اکاؤنٹ میں سائن ان کریں</translation>
+<translation id="4576892426230499203">توثیق کا دوسرا اختیار آزمائیں</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# منٹ پہلے}other{# منٹ پہلے}}</translation>
 <translation id="4587589328781138893">سائٹیں</translation>
 <translation id="4594952190837476234">یہ آف لائن صفحہ <ph name="CREATION_TIME" /> کا ہے اور آن لائن ورژن سے مختلف ہو سکتا ہے۔</translation>
@@ -584,7 +583,6 @@
 <translation id="5011311129201317034"><ph name="SITE" /> منسلک ہونا چاہتی ہے</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">اجازت دیں</translation>
-<translation id="5040262127954254034">رازداری</translation>
 <translation id="5087580092889165836">کارڈ شامل کریں</translation>
 <translation id="5091249083535528968">توسیع کردہ استعمال کا ڈیٹا</translation>
 <translation id="509429900233858213">ایک خرابی پیش آگئی۔</translation>
@@ -637,6 +635,7 @@
 <translation id="5441522332038954058">پتہ بار پر جائیں</translation>
 <translation id="544776284582297024">ٹیبز کو کھولنے اور ایک ہی وقت میں مختلف صفحات ملاحظہ کرنے کے لئے، ٹیبز بٹن کھولیں پر تھپتھپائیں</translation>
 <translation id="545042621069398927">آپ کے ڈاؤن لوڈ کی رفتار بڑھائی جا رہی ہے۔</translation>
+<translation id="5454166040603940656"><ph name="PROVIDER" /> کے ساتھ</translation>
 <translation id="5456381639095306749">صفحہ ڈاؤن لوڈ کریں</translation>
 <translation id="548278423535722844">نقشہ کی ایپ میں کھولیں</translation>
 <translation id="5483197086164197190">‏Chrome پر نیویگیٹ کریں</translation>
@@ -777,6 +776,7 @@
 <translation id="6316139424528454185">‏Android ورژن تعاون یافتہ نہیں</translation>
 <translation id="6324034347079777476">‏Android سسٹم کی مطابقت پذیری کو غیر فعال کر دیا گیا</translation>
 <translation id="6324977638108296054">نمایاں کرنے کا لنک تخلیق نہیں کیا جا سکا</translation>
+<translation id="6324997754869598316">(خرابی <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> کے ذریعے اشتراک کریں</translation>
 <translation id="6337234675334993532">مرموزکاری</translation>
 <translation id="6341580099087024258">پوچھیں کہ فائلیں کہاں محفوظ کرنی ہیں</translation>
@@ -793,6 +793,7 @@
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> پر <ph name="ERROR_CODE" /></translation>
 <translation id="6404511346730675251">بک مارک میں ترمیم کریں</translation>
 <translation id="6406506848690869874">مطابقت پذیر بنائیں</translation>
+<translation id="6407224748847589805">آپ کے کمپیوٹر سے منسلک نہیں ہو سکا۔ توثیق کا دوسرا اختیار آزمائیں۔</translation>
 <translation id="6410404864818553978">بنیادی ڈیٹا کا استعمال</translation>
 <translation id="6410883413783534063">ایک ہی وقت میں مختلف صفحات دیکھنے کیلئے ٹیبز کھولیں</translation>
 <translation id="6412673304250309937">‏Chrome میں اسٹور کردہ غیر محفوظ سائٹس کی فہرست کے URLs چیک کرتا ہے۔ اگر کوئی سائٹ آپ کا پاس ورڈ چرانے کی کوشش کرتی ہے یا جب آپ نقصان دہ فائل ڈاؤن لوڈ کرتے ہیں تو Chrome محفوظ براؤزنگ پر صفحہ کے مواد کے بائٹس سمیت URLs بھیجتا ہے۔</translation>
@@ -861,7 +862,6 @@
 <translation id="6813446258015311409">‏کھولے گئے Chrome میں سائن ان کریں۔</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />، ٹیب منتخب ہو گیا</translation>
-<translation id="6845325883481699275">‏Chrome کی سیکیورٹی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="6846298663435243399">لوڈ ہو رہا ہے…</translation>
 <translation id="6850409657436465440">آپ کا ڈاؤن لوڈ ابھی بھی پیشرفت میں ہے</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ٹیبز بند کر دیے گئے</translation>
@@ -989,7 +989,6 @@
 <translation id="7704317875155739195">‏تلاشوں اور URLs کی خودکار تکمیل کریں</translation>
 <translation id="7707922173985738739">موبائل ڈیٹا استعمال کریں</translation>
 <translation id="7725024127233776428">آپ کے بُک مارک کیے ہوئے صفحات یہاں دکھائی دیتے ہیں</translation>
-<translation id="7746457520633464754">‏خطرناک ایپس اور سائٹس کا پتہ لگانے کیلئے، Chrome آپ کے ملاحظہ کئے جانے والے چند صفحات کے URLs، سسٹم کی محدود معلومات اور صفحے کا کچھ مواد Google کو بھیجتا ہے</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> سے ٹیکسٹ کا اشتراک کیا گیا ہے</translation>
 <translation id="7761849928583394409">تاریخ اور وقت منتخب کریں</translation>
 <translation id="7762668264895820836">‏SD کارڈ <ph name="SD_CARD_NUMBER" /></translation>

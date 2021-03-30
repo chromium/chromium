@@ -10,7 +10,6 @@
 <translation id="1315551408014407711">Jaunā Chromium profila iestatīšana</translation>
 <translation id="1396446129537741364">Chromium mēģina rādīt paroles.</translation>
 <translation id="1414495520565016063">Esat pierakstījies operētājsistēmā Chromium!</translation>
-<translation id="1414973082589232775">Lai aizsargāta multivides satura atskaņošanai izmantotu Rosetta, jums jārestartē pārlūks Chromium.</translation>
 <translation id="151962892725702025">Chromium OS nevarēja sinhronizēt jūsu datus, jo jūsu domēnā nav pieejama sinhronizācija.</translation>
 <translation id="1524282610922162960">Chromium cilnes kopīgošana</translation>
 <translation id="1553461853655228091">Pārlūkam Chromium ir nepieciešama atļauja piekļūt jūsu kamerai, lai varētu izveidot jūsu apkārtnes 3D karti</translation>
@@ -135,11 +134,11 @@
 <translation id="5480860683791598150">Pārlūkam Chromium ir nepieciešama piekļuve jūsu atrašanās vietas datiem, lai varētu tos kopīgot ar šo vietni.</translation>
 <translation id="549669000822060376">Lūdzu, uzgaidiet, kamēr Chromium instalē jaunākos sistēmas atjauninājumus.</translation>
 <translation id="5496810170689441661">Chromium mēģina rediģēt paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
+<translation id="5527463683072221100">Atvērt PDF failus pārlūkā Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ir pieejams Chromium atjauninājums}=1{Ir pieejams Chromium atjauninājums}zero{Chromium atjauninājums ir pieejams jau # dienu}one{Chromium atjauninājums ir pieejams jau # dienu}other{Chromium atjauninājums ir pieejams jau # dienas}}</translation>
 <translation id="5634636535844844681">Pārlūka Chromium izmantošanai nepieciešama operētājsistēma Windows 7 vai jaunāka versija.</translation>
 <translation id="5653831366781983928">Lūdzu, nekavējoties restartējiet pārlūku Chromium</translation>
 <translation id="5698481217667032250">Rādīt Chromium šajā valodā</translation>
-<translation id="5736967399513123100">Lai pārlūkā Chromium iespējotu aizsargāta multivides satura atskaņošanu, jums jāinstalē Rosetta. Vai vēlaties to instalēt tūlīt?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Laipni lūdzam pārlūkā Chromium!</translation>
 <translation id="5895138241574237353">Restartēt</translation>
@@ -190,7 +189,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="6857782730669500492">Chromium — <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopēts pārlūkā Chromium)</translation>
 <translation id="6893813176749746474">Pārlūks Chromium ir atjaunināts, bet jūs neesat to izmantojis vismaz 30 dienas.</translation>
-<translation id="6897548120660295439">Izmantojot Rosetta, pārlūkā Chromium var atskaņot aizsargātu multivides saturu šajā lapā.</translation>
 <translation id="691026815377248078">Pārlūkam Chromium ir nepieciešama Bluetooth piekļuve, lai turpinātu savienošanu pārī. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Atvērt saiti inko&amp;gnito režīma logā</translation>
 <translation id="6978145336957848883">Nedrošas paroles ir viegli uzminēt. Pārlūkā Chromium <ph name="BEGIN_LINK" />var automātiski veidot un iegaumēt drošas paroles jūsu kontiem<ph name="END_LINK" />.</translation>

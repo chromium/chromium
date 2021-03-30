@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">Քառակուսի</translation>
 <translation id="5775960006311140197">Փորձագետի ռեժիմ</translation>
 <translation id="5869546221129391014">Ցանց</translation>
+<translation id="5975083100439434680">Փոքրացնել</translation>
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6073451960410192870">Դադարեցնել տեսագրումը</translation>
 <translation id="6197807149213783179">Պահել մետատվյալները</translation>
@@ -81,9 +82,9 @@
 <translation id="7649070708921625228">Օգնություն</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7670511624014457267">60 կադր/վ</translation>
-<translation id="7974782136796202581">Ցուց տալ տեղաշարժման, թեքման և մասշտաբի փոփոխման ընտրանքները</translation>
 <translation id="7983668134180549431">Հայտնաբերվել է տեքստ։</translation>
 <translation id="8067883171444229417">Նվագարկել տեսանյութը</translation>
+<translation id="8120146556401698679">Տեղաշարժում/թեքում/մասշտաբավորում</translation>
 <translation id="8131740175452115882">Հաստատել</translation>
 <translation id="8145038249676204903">Լուսանկարել</translation>
 <translation id="8239780215768881278">Լուսանկարել տեսանյութի կադր</translation>
@@ -94,6 +95,7 @@
 <translation id="8815966864175525708">Անցնել ուղղաձիգ լուսանկարների ռեժիմին</translation>
 <translation id="8828441885228359828">Շարունակել տեսագրումը</translation>
 <translation id="8870695351537079478">Չհաջողվեց սկսել տեսագրումը</translation>
+<translation id="8903921497873541725">Խոշորացնել</translation>
 <translation id="9045155556724273246">10 վայրկյան</translation>
 <translation id="945522503751344254">Կարծիք հայտնել</translation>
 </translationbundle>

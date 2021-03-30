@@ -396,6 +396,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4321179778687042513">Strg</translation>
 <translation id="4321776623976362024">Sie haben die Tastenkombination für den Modus "Hoher Kontrast" gedrückt. Möchten Sie ihn aktivieren?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4333628967105022692">Lacros wird nicht unterstützt, wenn viele Nutzer angemeldet sind.</translation>
 <translation id="4338109981321384717">Lupe</translation>
 <translation id="4351433414020964307">Assistant wird geladen…</translation>
 <translation id="4356930093361201197">Modus mit hohem Kontrast</translation>
@@ -968,6 +969,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="9091626656156419976">Bildschirm <ph name="DISPLAY_NAME" /> wurde entfernt</translation>
 <translation id="9098969848082897657">Smartphone stummschalten</translation>
 <translation id="9099154003160514616">Lacros-Update verfügbar</translation>
+<translation id="9105450214093926548">Während der Lacros-Browser läuft, kann kein zweiter Nutzer angemeldet werden. Verwenden Sie stattdessen ein zweites Browserprofil in Lacros oder schließen Sie den Browser und versuchen es noch einmal.</translation>
 <translation id="9133335900048457298">Geschützte Inhalte können nicht aufgezeichnet werden</translation>
 <translation id="9151726767154816831">Zum Aktualisieren Neustart und Powerwash durchführen</translation>
 <translation id="9166331175924255663">Ein-/Aus-Schaltfläche für hohe Sichtbarkeit bei Nearby Share.</translation>

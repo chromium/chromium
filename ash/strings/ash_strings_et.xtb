@@ -397,6 +397,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Vajutasite suure kontrastsusega režiimi otseteed. Kas soovite režiimi sisse lülitada?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4333628967105022692">Lacros ei ole toetatud, kui sisse on logitud mitu kasutajat.</translation>
 <translation id="4338109981321384717">Suurendusklaas</translation>
 <translation id="4351433414020964307">Assistenti laaditakse …</translation>
 <translation id="4356930093361201197">suure kontrastsusega režiim</translation>
@@ -969,6 +970,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="9091626656156419976">Ekraan <ph name="DISPLAY_NAME" /> eemaldati</translation>
 <translation id="9098969848082897657">Telefoni vaigistamine</translation>
 <translation id="9099154003160514616">Lacrosi värskendus on saadaval</translation>
+<translation id="9105450214093926548">Teise kasutaja sisselogimist ei toetata, kui brauser Lacros töötab. Kasutage selle asemel brauseris Lacros teist brauseriprofiili või sulgege Lacros ja proovige uuesti.</translation>
 <translation id="9133335900048457298">Kaitstud sisu ei saa salvestada</translation>
 <translation id="9151726767154816831">Värskendamiseks tuleb arvuti taaskäivitada ja teha Powerwash</translation>
 <translation id="9166331175924255663">Läheduses jagamise hea nähtavuse muutmine.</translation>

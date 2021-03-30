@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Chromium nuk mund të përdorë kamerën tënde për momentin</translation>
 <translation id="2195025571279539885">Dëshiron që Chromium të ofrojë përkthimin e faqeve në <ph name="LANGUAGE_NAME" /> nga ky sajt herën tjetër?</translation>
 <translation id="2590893390871230428">Sinkronizo të dhënat e Chromium</translation>
-<translation id="259614951763923692">Nëse lejon që Chromium të dijë vendndodhjen tënde, Chromium e dërgon atë te motori i parazgjedhur i kërkimit dhe çdo sajt që ti lejon. Sajtet mund të kërkojnë për vendndodhjen tënde kur ato kanë informacione lokale për të të shfaqur, si dyqanet në afërsi ose lajme.</translation>
 <translation id="2650312721222849884">Për të parë skedat e tua nga çdo vend ku përdor Chromium, aktivizo sinkronizimin</translation>
 <translation id="2730884209570016437">Chromium nuk mund të përdorë kamerën tënde sepse ajo është në përdorim nga një aplikacion tjetër</translation>
 <translation id="2915596697727466327">Chromium përdor Face ID për të siguruar qasjen e autorizuar te fjalëkalimet e tua.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Dëshiron të dalësh nga Chromium?</translation>
 <translation id="6424492062988593837">Chromium sapo është përmirësuar! Ofrohet një version i ri.</translation>
 <translation id="6820823224820483452">Chromium nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo sërish nesër.</translation>
+<translation id="6827294685447036764">Nëse lejon që Chromium të dijë vendndodhjen tënde, Chromium e dërgon atë te çdo sajt që ti lejon. Sajtet mund të kërkojnë për vendndodhjen tënde kur ato kanë informacione lokale për të të shfaqur, si dyqanet në afërsi ose lajme.</translation>
 <translation id="7018284295775193585">Chromium nuk mund të përditësohet</translation>
 <translation id="7099326575020694068">Chromium nuk mund ta përdorë kamerën tënde në modalitetin e "Pamjes së ndarë"</translation>
 <translation id="7118091470949186573">Tani mund të përdorësh Chromium sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>

@@ -282,6 +282,7 @@
 <translation id="3928666092801078803">Комбинирај ги моите податоци</translation>
 <translation id="3929457972718048006">Адреси</translation>
 <translation id="3943492037546055397">Лозинки</translation>
+<translation id="3967266340354872733">За повеќе поставки што се однесуваат на приватноста, безбедноста и прибирањето податоци, одете на <ph name="BEGIN_LINK" />Синхронизација<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Преземањето е завршено</translation>
 <translation id="3968505803272650567">Управувајте со интересите</translation>
 <translation id="3989635538409502728">Одјави се</translation>
@@ -556,6 +557,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6713747756340119864">Апликации на Google</translation>
 <translation id="6730682669179532099">Не може да се извезат лозинките</translation>
 <translation id="6748108480210050150">Од</translation>
+<translation id="6760509555861141183">Вратете се на картичката „Неодамнешни“</translation>
 <translation id="6780034285637185932">Поштенски број</translation>
 <translation id="6785453220513215166">Извештајот за пад се испраќа...</translation>
 <translation id="679325081238418596">Добијте ги обележувачите, историјата, лозинките и другите поставки на сите ваши уреди</translation>
@@ -607,7 +609,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7272437679830969316">Не може да се потврди вашиот идентитет. Лозинката не е копирана.</translation>
 <translation id="7291368939935408496">Се подготвуваат лозинките…</translation>
 <translation id="7293171162284876153">За да започне синхронизацијата, вклучете „Синхронизирајте ги податоците од Chrome“.</translation>
-<translation id="7299000566397147023">Отвори ја последно затворената картичка</translation>
 <translation id="7313347584264171202">Вашите картички „Инкогнито“ ќе ги најдете тука</translation>
 <translation id="7336264872878993241">Преземено <ph name="PERCENT" /> проценти</translation>
 <translation id="7340958967809483333">Опции за Discover</translation>

@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">Quadrat</translation>
 <translation id="5775960006311140197">Einstellungen für Fortgeschrittene</translation>
 <translation id="5869546221129391014">Raster</translation>
+<translation id="5975083100439434680">Verkleinern</translation>
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6073451960410192870">Aufnahme beenden</translation>
 <translation id="6197807149213783179">Metadaten speichern</translation>
@@ -81,9 +82,9 @@ Falls sich Ihr Feedback auf die Bild- oder Videoqualität bezieht, hängen Sie b
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7974782136796202581">Optionen zum Schwenken, Neigen und Zoomen anzeigen</translation>
 <translation id="7983668134180549431">Text erkannt.</translation>
 <translation id="8067883171444229417">Video ansehen</translation>
+<translation id="8120146556401698679">Schwenken Neigen Zoomen</translation>
 <translation id="8131740175452115882">Bestätigen</translation>
 <translation id="8145038249676204903">Zu Fotomodus wechseln</translation>
 <translation id="8239780215768881278">Video-Momentaufnahme erstellen</translation>
@@ -94,6 +95,7 @@ Falls sich Ihr Feedback auf die Bild- oder Videoqualität bezieht, hängen Sie b
 <translation id="8815966864175525708">Zum Modus für Hochformat-Fotos wechseln</translation>
 <translation id="8828441885228359828">Aufnahme fortsetzen</translation>
 <translation id="8870695351537079478">Videoaufnahme konnte nicht gestartet werden</translation>
+<translation id="8903921497873541725">Vergrößern</translation>
 <translation id="9045155556724273246">10 Sekunden</translation>
 <translation id="945522503751344254">Feedback geben</translation>
 </translationbundle>

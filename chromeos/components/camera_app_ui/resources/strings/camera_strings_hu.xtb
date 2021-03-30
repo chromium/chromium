@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">Négyzet</translation>
 <translation id="5775960006311140197">Szakértői mód</translation>
 <translation id="5869546221129391014">Rács</translation>
+<translation id="5975083100439434680">Kicsinyítés</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6073451960410192870">Felvétel leállítása</translation>
 <translation id="6197807149213783179">Metaadatok mentése</translation>
@@ -81,9 +82,9 @@ Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mel
 <translation id="7649070708921625228">Súgó</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7974782136796202581">Pásztázás-billentés-nagyítás beállításainak megjelenítése</translation>
 <translation id="7983668134180549431">Szöveg észlelve.</translation>
 <translation id="8067883171444229417">Videó lejátszása</translation>
+<translation id="8120146556401698679">Pásztázás, döntés, nagyítás/kicsinyítés</translation>
 <translation id="8131740175452115882">Megerősítés</translation>
 <translation id="8145038249676204903">Váltás fotókészítésre</translation>
 <translation id="8239780215768881278">Pillanatkép készítése a videóból</translation>
@@ -94,6 +95,7 @@ Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mel
 <translation id="8815966864175525708">Váltás álló fotó készítésére</translation>
 <translation id="8828441885228359828">Felvétel folytatása</translation>
 <translation id="8870695351537079478">Nem sikerült elindítani a felvételt.</translation>
+<translation id="8903921497873541725">Nagyítás</translation>
 <translation id="9045155556724273246">10 másodperc</translation>
 <translation id="945522503751344254">Visszajelzés küldése</translation>
 </translationbundle>

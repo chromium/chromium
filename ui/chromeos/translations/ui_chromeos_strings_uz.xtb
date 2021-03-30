@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Qurilmani o‘chirmang!<ph name="END_BOLD" />
 <ph name="LINE_BREAKS" />
 Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. Aks holda ba’zi ma’lumotlar o‘chib ketishi mumkin.</translation>
+<translation id="5159560892333415631">Chiqitdonni boʻshatish</translation>
 <translation id="5163869187418756376">Ulashish amalga oshmadi. Ulanishni tekshirib ko‘rib, qayta urining.</translation>
 <translation id="516592729076796170">Dasturchilar uchun Dvorak klaviaturasi</translation>
 <translation id="5170477580121653719">Google Diskdagi bo‘sh joy hajmi: <ph name="SPACE_AVAILABLE" />.</translation>
@@ -418,6 +419,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
     bir joyda joylashgan fayllaringiz ustida hamkorlikda ishlang. <ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Disk‘dan tiklangan fayllar</translation>
 <translation id="5288441970121584418">Burger</translation>
+<translation id="5299998344490869684">Chiqitdonni boʻshatishni istaysizmi?</translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5318819489018851358">Linux bilan ulashish</translation>
 <translation id="5323213332664049067">Lotin Amerikasi klaviaturasi</translation>
@@ -749,6 +751,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="872537912056138402">Xorvat</translation>
 <translation id="8750438273876807512">Faylni tanlab, <ph name="ICON" /> ustiga bosing va javon ichidagi fayllarga tezkor kirish uchun “Javonga mahkamlash” bandini tanlang.</translation>
 <translation id="8775404590947523323">Siz kiritgan tahrirlar avtomatik ravishda saqlandi.<ph name="BREAKS" />Original tasvirning nusxasini saqlab qolish uchun "Originalning ustidan yozilsin" parametridan belgini olib tashlang</translation>
+<translation id="8802459921616481935">Chiqitdonga tashlash</translation>
 <translation id="8808686172382650546">Mushuk</translation>
 <translation id="8810671769985673465">Arxivlanmadi, bunday element allaqachon arxivlangan: “<ph name="FILE_NAME" />”</translation>
 <translation id="8813284582615685103">Ispan (Ispaniya)</translation>
@@ -782,6 +785,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="9154418932169119429">Bu tasvirni internetsiz ochib bo‘lmaydi.</translation>
 <translation id="9172592259078059678">Gujarot tili transliteratsiyasi</translation>
 <translation id="9173120999827300720">Ingliz (AQSH) va xalqaro klaviatura</translation>
+<translation id="9174050671906956834">Chiqitdondagi fayllar 30 kundan keyin butunlay tozalab tashlanadi.</translation>
 <translation id="9189836632794948435">Qozoq</translation>
 <translation id="9213073329713032541">O‘rnatish muvaffaqiyatli boshlandi.</translation>
 <translation id="9219103736887031265">Rasmlar</translation>

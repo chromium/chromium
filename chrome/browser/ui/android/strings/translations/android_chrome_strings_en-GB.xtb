@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">Application version</translation>
 <translation id="1430915738399379752">Print</translation>
 <translation id="1450753235335490080">Can't share <ph name="CONTENT_TYPE" /></translation>
+<translation id="147113415845704694">Try 'What’s the weather today?'</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> download failed due to server issues.</translation>
 <translation id="1492417797159476138">You already saved this username for this site</translation>
 <translation id="1506061864768559482">Search engine</translation>
@@ -268,7 +269,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2856503607207334158">Sign-in failed</translation>
 <translation id="2860954141821109167">Make sure that a phone app is enabled on this device</translation>
 <translation id="2870560284913253234">Site</translation>
-<translation id="2876369937070532032">Sends URLs of some pages that you visit to Google, when your security is at risk</translation>
 <translation id="2888126860611144412">About Chrome</translation>
 <translation id="2891154217021530873">Stop page loading</translation>
 <translation id="2892647708214602204">You'll see a notification when this file is ready</translation>
@@ -311,7 +311,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3157842584138209013">See how much data you've saved from the More Options button</translation>
 <translation id="3166827708714933426">Tab and window shortcuts</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Safe Browsing (protects you and your device from dangerous sites)</translation>
 <translation id="3205824638308738187">Almost finished!</translation>
 <translation id="3207960819495026254">Bookmarked</translation>
 <translation id="3208584281581115441">Check now</translation>
@@ -571,6 +570,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="49268022542405662">Your passwords will be exported and downloaded as a text file. They will be visible to anyone and any app with access to the destination folder.</translation>
 <translation id="4932247056774066048">Because you're signing out of an account managed by <ph name="DOMAIN_NAME" />, your Chrome data will be deleted from this device. It will remain in your Google account.</translation>
 <translation id="4936039914467572121">Get to this site quicker</translation>
+<translation id="4941179133499732445">Tap the mic to search with your voice</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">No results</translation>
 <translation id="4961107849584082341">Translate this page to any language</translation>
@@ -585,7 +585,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5011311129201317034"><ph name="SITE" /> wants to connect</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Allow</translation>
-<translation id="5040262127954254034">Privacy</translation>
+<translation id="5061533557687621530">To check the weather, tap the mic and say 'What’s the weather today?'</translation>
 <translation id="5087580092889165836">Add card</translation>
 <translation id="5091249083535528968">Extended usage data</translation>
 <translation id="509429900233858213">An error occurred.</translation>
@@ -600,6 +600,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 download failed.}other{# downloads failed.}}</translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5184329579814168207">Open in Chrome</translation>
+<translation id="5188992787241350004">Search with your voice</translation>
 <translation id="5191251636205085390">Learn about and control new technologies that aim to replace third-party cookies</translation>
 <translation id="5193988420012215838">Copied to your clipboard</translation>
 <translation id="5199929503336119739">Work profile</translation>
@@ -638,6 +639,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5441522332038954058">Jump to the address bar</translation>
 <translation id="544776284582297024">To open tabs and visit different pages at the same time, tap the open tabs button</translation>
 <translation id="545042621069398927">Speeding up your download.</translation>
+<translation id="5454166040603940656">with <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Download page</translation>
 <translation id="548278423535722844">Open in maps app</translation>
 <translation id="5483197086164197190">Navigate Chrome</translation>
@@ -864,7 +866,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6813446258015311409">Sign in to Chrome, opened.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> tab, selected</translation>
-<translation id="6845325883481699275">Help improve Chrome security</translation>
 <translation id="6846298663435243399">Loading…</translation>
 <translation id="6850409657436465440">Your download is still in progress</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> tabs closed</translation>
@@ -992,7 +993,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7704317875155739195">Auto-complete searches and URLs</translation>
 <translation id="7707922173985738739">Use mobile data</translation>
 <translation id="7725024127233776428">Pages that you bookmark appear here</translation>
-<translation id="7746457520633464754">To detect dangerous apps and sites, Chrome sends URLs of some pages that you visit, limited system information and some page content to Google</translation>
 <translation id="7757787379047923882">Text shared from <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Select date and time</translation>
 <translation id="7762668264895820836">SD Card <ph name="SD_CARD_NUMBER" /></translation>

@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Chromium can't use your camera at the moment</translation>
 <translation id="2195025571279539885">Would you like Chromium to offer to translate <ph name="LANGUAGE_NAME" /> pages from this site next time?</translation>
 <translation id="2590893390871230428">Sync your Chromium data</translation>
-<translation id="259614951763923692">If you allow Chromium to know your location, Chromium sends it to your default search engine and any sites that you allow. Sites may ask for your location when they have local info to show you, like nearby shops or news.</translation>
 <translation id="2650312721222849884">To see your tabs from wherever you use Chromium, turn on sync</translation>
 <translation id="2730884209570016437">Chromium can't use your camera because it's in use by another application</translation>
 <translation id="2915596697727466327">Chromium uses Face ID to ensure authorised access to your passwords.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Sign out of Chromium?</translation>
 <translation id="6424492062988593837">Chromium just got better! A new version is available.</translation>
 <translation id="6820823224820483452">Chromium couldn't check all passwords. Try again tomorrow.</translation>
+<translation id="6827294685447036764">If you allow Chromium to know your location, Chromium sends it to any sites that you allow. Sites may ask for your location when they have local info to show you, like nearby shops or news.</translation>
 <translation id="7018284295775193585">Chromium can't update</translation>
 <translation id="7099326575020694068">Chromium can't use your camera in Split View mode</translation>
 <translation id="7118091470949186573">You can now use Chromium any time that you tap links in messages, documents and other apps.</translation>

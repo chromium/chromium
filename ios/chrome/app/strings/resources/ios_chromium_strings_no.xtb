@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Chromium kan ikke bruke kameraet akkurat nå</translation>
 <translation id="2195025571279539885">Vil du at Chromium skal tilby å oversette sider på <ph name="LANGUAGE_NAME" /> på dette nettstedet neste gang?</translation>
 <translation id="2590893390871230428">Synkroniser Chromium-dataene dine</translation>
-<translation id="259614951763923692">Hvis du lar Chromium få vite posisjonen din, sender Chromium den til standardsøkemotoren din og eventuelle nettsteder hvor du gir tillatelse til dette. Nettsteder kan be om posisjonen din når de har lokal informasjon å vise deg, for eksempel butikker i nærheten eller lokalnyheter.</translation>
 <translation id="2650312721222849884">For å se fanene dine overalt hvor du bruker Chromium, slå på synkronisering</translation>
 <translation id="2730884209570016437">Chromium kan ikke bruke kameraet fordi det brukes av en annen app</translation>
 <translation id="2915596697727466327">Chromium bruker Face ID til å sikre at bare godkjente personer får tilgang til passordene dine.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Vil du logge av Chromium?</translation>
 <translation id="6424492062988593837">Chromium har blitt enda bedre. En ny versjon er nå tilgjengelig.</translation>
 <translation id="6820823224820483452">Chromium kunne ikke sjekke alle passordene. Prøv på nytt i morgen.</translation>
+<translation id="6827294685447036764">Hvis du lar Chromium få vite posisjonen din, sender Chromium den til eventuelle nettsteder hvor du gir tillatelse til dette. Nettsteder kan be om posisjonen din når de har lokal informasjon å vise deg, for eksempel butikker i nærheten eller lokalnyheter.</translation>
 <translation id="7018284295775193585">Kan ikke oppdatere Chromium</translation>
 <translation id="7099326575020694068">Chromium kan ikke bruke kameraet i modus for delt visning</translation>
 <translation id="7118091470949186573">Nå kan du bruke Chromium hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>

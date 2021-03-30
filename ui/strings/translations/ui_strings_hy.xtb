@@ -4,7 +4,7 @@
 <translation id="1028699632127661925">Ուղարկվում է <ph name="DEVICE_NAME" /> սարքին...</translation>
 <translation id="111910763555783249">Ծանուցման կարգավորումներ</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{1 օր առաջ}one{# օր առաջ}other{# օր առաջ}}</translation>
-<translation id="1156623771253174079">{SECONDS,plural, =1{1 րոպե առաջ}one{# minutes ago}other{# րոպե առաջ}}</translation>
+<translation id="1156623771253174079">{SECONDS,plural, =1{1 րոպե առաջ}one{# րոպե առաջ}other{# րոպե առաջ}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 ր}one{# ր}other{# ր}}</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
 <translation id="1201402288615127009">Հաջորդը</translation>
@@ -31,7 +31,7 @@
 <translation id="1752946267035950200">{MINUTES,plural, =1{1 րոպե}one{# րոպե}other{# րոպե}}</translation>
 <translation id="1761785978543082658"><ph name="QUANTITY" /> Բ</translation>
 <translation id="1801827354178857021">Վերջակետ</translation>
-<translation id="1803208670097017349">{MONTHS,plural, =1{1 ամիս}one{# months}other{# ամիս}}</translation>
+<translation id="1803208670097017349">{MONTHS,plural, =1{1 ամիս}one{# ամիս}other{# ամիս}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> ՄԲ/վ</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{1 ժամ }one{# ժամ }other{# ժամ }}</translation>
 <translation id="1830308660060964064">«<ph name="ITEM_TITLE" />» տարրն ապամրացվեց</translation>
@@ -76,7 +76,7 @@
 <translation id="2743387203779672305">Պատճենել սեղմատախտակին</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2803313416453193357">Բացել պանակը</translation>
-<translation id="2824719307700604149">{YEARS,plural, =1{1 տարի առաջ}one{# years ago}other{# տարի առաջ}}</translation>
+<translation id="2824719307700604149">{YEARS,plural, =1{1 տարի առաջ}one{# տարի առաջ}other{# տարի առաջ}}</translation>
 <translation id="2878511608894704031">Ջնջել բոլորը</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 օրից}one{# օրից}other{# օրից}}</translation>
 <translation id="2931838996092594335">սեղմել</translation>
@@ -117,7 +117,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 չկարդացված ծանուցում}one{# չկարդացված ծանուցում}other{# չկարդացված ծանուցում}}</translation>
 <translation id="4202807286478387388">անցնել</translation>
 <translation id="4250229828105606438">Սքրինշոթ</translation>
-<translation id="4266252015790371705">{MONTHS,plural, =1{1 ամիս առաջ}one{# months ago}other{# ամիս առաջ}}</translation>
+<translation id="4266252015790371705">{MONTHS,plural, =1{1 ամիս առաջ}one{# ամիս առաջ}other{# ամիս առաջ}}</translation>
 <translation id="4289300219472526559">Start Speaking</translation>
 <translation id="430191667033048642">«<ph name="MOVED_APP_NAME" />» հավելվածը տեղափոխվեց «<ph name="FOLDER_NAME" />» պանակ։</translation>
 <translation id="4306392492252714209">Հեռացնել սեղմատախտակից։</translation>
@@ -129,7 +129,7 @@
 <translation id="4690510401873698237">Դարակը ներքևում է</translation>
 <translation id="4724120544754982507">Ծանուցումների կենտրոն, <ph name="UNREAD_NOTIFICATION_COUNT" /> չկարդացված ծանուցում</translation>
 <translation id="4730374152663651037">ՀԱՃԱԽ ՕԳՏԱԳՈՐԾՎՈՂ</translation>
-<translation id="4788285488841504513">{MONTHS,plural, =1{Մնացել է 1 ամիս}one{# months left}other{Մնացել է # ամիս}}</translation>
+<translation id="4788285488841504513">{MONTHS,plural, =1{Մնացել է 1 ամիս}one{Մնացել է # ամիս}other{Մնացել է # ամիս}}</translation>
 <translation id="4888938634149558681">Զանգել</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 վայրկյան}one{# վայրկյան}other{# վայրկյան}}</translation>
 <translation id="4971687151119236543">Նախորդ կատարումը</translation>
@@ -181,7 +181,7 @@
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 վրկ առաջ}one{# վրկ առաջ}other{# վրկ առաջ}}</translation>
 <translation id="6417265370957905582">Google Օգնական</translation>
 <translation id="6430678249303439055">Արգելափակել այս հավելվածի բոլոր ծանուցումները</translation>
-<translation id="6483402905448010557">{SECONDS,plural, =1{1 վայրկյան առաջ}one{# seconds ago}other{# վայրկյան առաջ}}</translation>
+<translation id="6483402905448010557">{SECONDS,plural, =1{1 վայրկյան առաջ}one{# վայրկյան առաջ}other{# վայրկյան առաջ}}</translation>
 <translation id="6503257047630241175">RTF ձևաչափով բովանդակություն</translation>
 <translation id="6539092367496845964">Սխալ առաջացավ: Փորձեք ավելի ուշ:</translation>
 <translation id="654149438358937226">Արգելափակել բոլոր ծանուցումները</translation>
@@ -199,7 +199,7 @@
 <translation id="688711909580084195">Անվերնագիր վեբէջ</translation>
 <translation id="6902419395050653510">HTML բովանդակություն։</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> ՊԲ/վ</translation>
-<translation id="6917971086528278418">{YEARS,plural, =1{Մնացել է 1 տարի}one{# years left}other{Մնացել է # տարի}}</translation>
+<translation id="6917971086528278418">{YEARS,plural, =1{Մնացել է 1 տարի}one{Մնացել է # տարի}other{Մնացել է # տարի}}</translation>
 <translation id="6945221475159498467">Ընտրել</translation>
 <translation id="6965382102122355670">Եղավ</translation>
 <translation id="6974053822202609517">Աջից ձախ</translation>
@@ -241,7 +241,7 @@
 <translation id="8259556432390118667">Գույնի տասնվեցական կոդը</translation>
 <translation id="8328145009876646418">Ձախ եզր</translation>
 <translation id="8331626408530291785">Ոլորել վեր</translation>
-<translation id="8352146631962686268">{YEARS,plural, =1{1 տարի}one{# years}other{# տարի}}</translation>
+<translation id="8352146631962686268">{YEARS,plural, =1{1 տարի}one{# տարի}other{# տարի}}</translation>
 <translation id="838869780401515933">նշել</translation>
 <translation id="8393700583063109961">Ուղարկել հաղորդագրություն</translation>
 <translation id="8394908167088220973">Մեդիայի նվագարկում/դադար</translation>

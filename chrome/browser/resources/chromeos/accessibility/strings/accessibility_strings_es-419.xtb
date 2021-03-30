@@ -22,6 +22,8 @@
 <translation id="1120938014254001895">Deslizar dos dedos hacia arriba</translation>
 <translation id="1126928665165112660">Sin cursiva</translation>
 <translation id="113582498867142724">Colección de <ph name="TAG" /> con <ph name="NUM" /> elementos</translation>
+<translation id="1146441463334103638">Activa o desactiva la pantalla</translation>
+<translation id="1156488781945104845">Hora actual</translation>
 <translation id="1161762950103988776">Saltar</translation>
 <translation id="1164857107703583584">Los comandos de salto pueden usarse para navegar con eficiencia por páginas web.</translation>
 <translation id="1175914831232945926">Dígitos</translation>
@@ -71,6 +73,7 @@
 <translation id="1405567553485452995">Verde claro</translation>
 <translation id="1411043317877497323">Área de práctica</translation>
 <translation id="141454040365657399">Encabezado</translation>
+<translation id="1417092723421264764">Página actual</translation>
 <translation id="1417889266572670458">Azul marino</translation>
 <translation id="1431911867058218151">Ciruela</translation>
 <translation id="1439316808600711881">rgn</translation>
@@ -199,6 +202,7 @@
 <translation id="242998846562331953">Subtítulo</translation>
 <translation id="2435422727584637732">Azul dodger</translation>
 <translation id="2450814015951372393">Casilla de verificación</translation>
+<translation id="2461822463642141190">Actual</translation>
 <translation id="2462626033734746142">Grupo de botones de selección</translation>
 <translation id="2471138580042810658">Encabezado 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{asterisco}other{# asteriscos}}</translation>
@@ -244,7 +248,6 @@
 <translation id="2766299274563946262">No hay celdas a la izquierda</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{# más}other{# más}}</translation>
 <translation id="280499067616661124">ChromeVox se encuentra en la página</translation>
-<translation id="2808001342598757276">Cancela el oscurecimiento de la pantalla</translation>
 <translation id="2811019999044652585">Para pasar a otras partes de la pantalla, como barras de tareas o la bandeja del sistema, presiona Ctrl + flecha hacia adelante. En una Chromebook, la tecla de la flecha hacia adelante está arriba de la del número 2.</translation>
 <translation id="2811204574343810641">Fila</translation>
 <translation id="2816868829355607410">Área de práctica: Comandos de salto</translation>
@@ -299,6 +302,7 @@
 <translation id="3109724472072898302">Contraído</translation>
 <translation id="311015743332597320">Deslizar cuatro dedos hacia la derecha</translation>
 <translation id="3112457281078985179">Para activar o desactivar ChromeVox, usa Ctrl + Alt + Z.</translation>
+<translation id="3115800313647508384">¿Quieres apagar la pantalla?</translation>
 <translation id="3131002934070407451">Leer números como:</translation>
 <translation id="3134461040845705080">sololctr</translation>
 <translation id="3137663468179739624">Verde oliva</translation>
@@ -642,6 +646,7 @@
 <translation id="5655682562155942719">Comandos de salto</translation>
 <translation id="56637627897541303">Área de texto</translation>
 <translation id="5669637233317991674">Presiona Búsqueda + flecha hacia la derecha o Búsqueda + flecha hacia la izquierda para navegar por esta lección</translation>
+<translation id="5677240841070992068">Ubicación actual</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
 <translation id="5682113568322255809">Punto de referencia</translation>
@@ -677,6 +682,7 @@
 <translation id="5901630391730855834">Amarillo</translation>
 <translation id="5906974869830879618">Ingresa un PIN</translation>
 <translation id="5921587111466148855">Capítulo</translation>
+<translation id="5923780477617566089">Fecha actual</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{igual}other{# signos igual}}</translation>
 <translation id="5948123859135882163">Alternar interpretación de expresiones matemáticas entre estructural y semántica</translation>
 <translation id="5955304353782037793">apl</translation>
@@ -696,9 +702,9 @@
 <translation id="6034000775414344507">Gris claro</translation>
 <translation id="6036135911048686884">Toca para explorar</translation>
 <translation id="6037602951055904232">Desplazar hacia delante</translation>
-<translation id="6044160928851315051">Oscurece la pantalla</translation>
 <translation id="6082768461603900813">Navegación básica</translation>
 <translation id="609281021724813947">No hay controles deslizantes anteriores</translation>
+<translation id="6096942799340613495">Esta acción apagará la pantalla. Si quieres volver a prenderla en cualquier momento, presiona Búsqueda + Aumentar brillo.</translation>
 <translation id="6100239002225743044">Subir una línea</translation>
 <translation id="6118126368611144850">Apps de Android para Chrome. Si tienes Play Store en tu dispositivo, conoce ChromeVox con las apps de Android. Descarga Google Chrome Canary desde Play Store.</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -766,6 +772,7 @@
 <translation id="6696967141280706829">Prefacio</translation>
 <translation id="6697092096875747123">Cuadro combinado anterior</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{exclamación}other{# exclamaciones}}</translation>
+<translation id="670717715607710284">Apagar la pantalla</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6714813999819678458">Encabezado anterior de nivel 2</translation>
 <translation id="6730312624811567147">Usa búsqueda izquierda o derecha para ir al inicio o fin de línea, búsqueda ctrl izquierda o derecha para ir al inicio o fin de párrafo, y búsqueda arriba o abajo para ir a la página anterior o siguiente</translation>
@@ -945,6 +952,7 @@
 <translation id="8037651341025652929">Conclusión</translation>
 <translation id="8042761080832772327">Editar texto, entrada de búsqueda</translation>
 <translation id="8049189770492311300">Temporizador</translation>
+<translation id="8057472523431225012">Paso actual</translation>
 <translation id="8058636807889143711">No hay expresiones matemáticas siguientes</translation>
 <translation id="8066678206530322333">Banner</translation>
 <translation id="8076492880354921740">Pestañas</translation>
@@ -962,6 +970,7 @@
 <translation id="816818801578874684">Este es el primer encabezado. Presiona Búsqueda + H para ir al siguiente encabezado.</translation>
 <translation id="8173092779156526980">Deslizar cuatro dedos hacia la izquierda</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{guion bajo}other{# guiones bajos}}</translation>
+<translation id="817529114347680055">Pantalla encendida</translation>
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8184828902145951186">fila</translation>
 <translation id="8186185314313222077">activar o desactivar pantalla completa</translation>
@@ -984,7 +993,6 @@
 <translation id="8316881042119029234">Crema</translation>
 <translation id="8324974933005349667">Personalizar la configuración de texto a voz</translation>
 <translation id="8326783648485765113">Verde césped</translation>
-<translation id="8328063869313048659">Activa o desactiva la pantalla oscura.</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{signo numeral}other{# signos numerales}}</translation>
 <translation id="8378855320830505539">Región</translation>
 <translation id="8382679411218029383">Autocompletados integrados y lista de autocompletados</translation>

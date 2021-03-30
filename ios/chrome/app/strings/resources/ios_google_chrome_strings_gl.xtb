@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Non tes conexión. Chrome non puido buscar actualizacións</translation>
 <translation id="5854621639439811139">Consello sobre Chrome: Agora algúns botóns, como Atrás, Adiante e Buscar, están na parte inferior da pantalla.</translation>
+<translation id="5876773482963502140">Se permites que Chrome saiba cal é a túa localización, este enviaralla aos sitios aos que lles concedas a autorización pertinente. Os sitios poderán preguntarche pola túa localización se teñen información local que mostrarche (por exemplo, noticias ou tendas próximas).</translation>
 <translation id="6036420186814142909">Google Chrome inclúe funcións que che axudan a xestionar os teus datos de Internet e a rapidez coa que podes cargar páxinas web.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Pásate a Chrome</translation>
@@ -90,5 +91,4 @@
   2. Toca Aplicación de navegador predeterminada
   3. Selecciona Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Se permites que Chrome saiba cal é a túa localización, este enviaralla ao teu motor de busca predeterminado e aos sitios aos que lles concedas a autorización pertinente. Os sitios poderán preguntarche pola túa localización se teñen información local que mostrarche (por exemplo, noticias ou tendas próximas).</translation>
 </translationbundle>

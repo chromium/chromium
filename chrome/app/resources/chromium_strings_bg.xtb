@@ -10,7 +10,6 @@
 <translation id="1315551408014407711">Настройване на новия ви потребителски профил в Chromium</translation>
 <translation id="1396446129537741364">Chromium опитва да покаже паролите.</translation>
 <translation id="1414495520565016063">Влязохте в Chromium!</translation>
-<translation id="1414973082589232775">Трябва да рестартирате Chromium, за да използвате Rosetta за възпроизвеждане на защитено мултимедийно съдържание.</translation>
 <translation id="151962892725702025">Chromium OS не можа да синхронизира данните ви, защото тази функция не е налице за домейна ви.</translation>
 <translation id="1524282610922162960">Споделяне на раздел в Chromium</translation>
 <translation id="1553461853655228091">Chromium се нуждае от разрешение за достъп до камерата ви, за да създаде триизмерна карта на заобикалящата ви среда</translation>
@@ -133,11 +132,11 @@
 <translation id="5480860683791598150">Chromium се нуждае от достъп до данните за местоположението ви, за да ги сподели с този сайт</translation>
 <translation id="549669000822060376">Моля, изчакайте, докато Chromium инсталира най-новите системни актуализации.</translation>
 <translation id="5496810170689441661">Chromium опитва да редактира паролите. За да разрешите това, въведете паролата си за Windows.</translation>
+<translation id="5527463683072221100">Отваряне на PDF файловете в Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Налице е актуализация за Chromium}=1{Налице е актуализация за Chromium}other{Налице е актуализация за Chromium от # дни}}</translation>
 <translation id="5634636535844844681">За Chromium се изисква Windows 7 или по-нова версия.</translation>
 <translation id="5653831366781983928">Моля, рестартирайте Chromium сега</translation>
 <translation id="5698481217667032250">Показване на Chromium на този език</translation>
-<translation id="5736967399513123100">Трябва да инсталирате Rosetta, за да може Chromium да възпроизвежда защитено мултимедийно съдържание. Искате ли да го направите сега?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Добре дошли в Chromium</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
@@ -186,7 +185,6 @@
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (копирано в Chromium)</translation>
 <translation id="6893813176749746474">Chromium е актуализиран, но не сте го използвали от поне 30 дни.</translation>
-<translation id="6897548120660295439">Rosetta дава възможност на Chromium да възпроизвежда защитеното мултимедийно съдържание на тази страница.</translation>
 <translation id="691026815377248078">Chromium се нуждае от достъп до Bluetooth, за да продължи
 сдвояването. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Отваряне на връзката в прозорец в режим „инко&amp;гнито“ на Chromium</translation>

@@ -12,7 +12,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1315551408014407711">Konfiguratu Chromium-eko profil berria</translation>
 <translation id="1396446129537741364">Chromium pasahitzak erakusten saiatzen ari da.</translation>
 <translation id="1414495520565016063">Chromium-en saioa hasi duzu.</translation>
-<translation id="1414973082589232775">Rosetta erabili nahi baduzu babestutako multimedia edukia erreproduzitzeko, Chromium berrabiarazi behar duzu.</translation>
 <translation id="151962892725702025">Chromium OS sistema eragileak ezin izan ditu sinkronizatu zure datuak sinkronizazioa ez dagoelako erabilgarri zure domeinuan.</translation>
 <translation id="1524282610922162960">Partekatu Chromium-eko fitxa bat</translation>
 <translation id="1553461853655228091">Chromium-ek kamera atzitzeko baimena behar du, ingurunearen hiru dimentsioko mapa bat sortzeko</translation>
@@ -137,11 +136,11 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="5480860683791598150">Chromium-ek zure kokapena webgune honekin partekatzeko baimena behar du</translation>
 <translation id="549669000822060376">Itxaron Chromium-ek sistemaren azken eguneratzeak instalatu arte.</translation>
 <translation id="5496810170689441661">Pasahitzak editatzen saiatzen ari da Chromium. Hori baimentzeko, idatzi Windows-eko pasahitza.</translation>
+<translation id="5527463683072221100">Ireki PDFak Chromium-en</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium arakatzailearen eguneratze bat dago erabilgarri}=1{Chromium arakatzailearen eguneratze bat dago erabilgarri}other{Chromium arakatzailearen eguneratze batek # egun daramatza erabilgarri}}</translation>
 <translation id="5634636535844844681">Windows 7 edo sistema berriagoa behar da Chromium erabiltzeko.</translation>
 <translation id="5653831366781983928">Berrabiarazi Chromium</translation>
 <translation id="5698481217667032250">Bistaratu Chromium hizkuntza honetan</translation>
-<translation id="5736967399513123100">Babestutako multimedia-edukia Chromium-en erreproduzitzeko, Rosetta instalatu behar duzu. Orain instalatu nahi duzu?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Ongi etorri Chromium-era</translation>
 <translation id="5895138241574237353">Berrabiarazi</translation>
@@ -192,7 +191,6 @@ Baliteke eginbide batzuk erabilgarri ez egotea. Adierazi beste profil-direktorio
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium-en kopiatu da)</translation>
 <translation id="6893813176749746474">Chromium eguneratu da baina ez duzu erabili 30 egunetan gutxienez.</translation>
-<translation id="6897548120660295439">Rosetta-rekin, Chromium-ek orri honetako babestutako multimedia-edukia erreproduzi dezake.</translation>
 <translation id="691026815377248078">Chromium-ek Bluetooth-a erabiltzeko baimena behar du parekatzen jarraitzeko. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Ireki esteka Chromium-eko &amp;ezkutuko moduko leiho batean</translation>
 <translation id="6978145336957848883">Seguruak ez diren pasahitzak erraz asmatzen dira. Utzi Chromium-i <ph name="BEGIN_LINK" />pasahitz seguruak sortzen eta gogoratzen<ph name="END_LINK" />.</translation>

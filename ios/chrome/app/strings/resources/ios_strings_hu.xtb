@@ -282,6 +282,7 @@ Hajtsa végre az alábbi lépéseket:</translation>
 <translation id="3928666092801078803">Adataim egyesítése</translation>
 <translation id="3929457972718048006">Címek</translation>
 <translation id="3943492037546055397">Jelszavak</translation>
+<translation id="3967266340354872733">A <ph name="BEGIN_LINK" />Szinkronizálás<ph name="END_LINK" /> és a <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> részben további beállításokat talál az adatvédelemre, biztonságra és adatgyűjtésre vonatkozóan.</translation>
 <translation id="3967822245660637423">A letöltés sikeres</translation>
 <translation id="3968505803272650567">Érdeklődési körök kezelése</translation>
 <translation id="3989635538409502728">Kijelentkezés</translation>
@@ -556,6 +557,7 @@ Próbáljon minden webhelyen egyedi jelszót használni.</translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Nem sikerült a jelszavak exportálása</translation>
 <translation id="6748108480210050150">Feladó</translation>
+<translation id="6760509555861141183">Vissza a legutóbbi lapra</translation>
 <translation id="6780034285637185932">Irányítószám</translation>
 <translation id="6785453220513215166">Hibajelentés küldése…</translation>
 <translation id="679325081238418596">Bármely eszközéről hozzáférhet könyvjelzőihez, előzményeihez, jelszavaihoz és egyéb beállításaihoz.</translation>
@@ -607,7 +609,6 @@ Próbáljon minden webhelyen egyedi jelszót használni.</translation>
 <translation id="7272437679830969316">Nem sikerült ellenőrizni a személyazonosságát. A jelszó nem lett másolva.</translation>
 <translation id="7291368939935408496">Jelszavak előkészítése…</translation>
 <translation id="7293171162284876153">A szinkronizálás megkezdéséhez kapcsolja be a „Chrome-adatok szinkronizálása” beállítást.</translation>
-<translation id="7299000566397147023">Legutóbbi lap megnyitása</translation>
 <translation id="7313347584264171202">Itt láthatja majd az inkognitó lapjait</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> százalék letöltve</translation>
 <translation id="7340958967809483333">A Discover beállításai</translation>

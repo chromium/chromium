@@ -268,7 +268,6 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2856503607207334158">Anmeldefehler</translation>
 <translation id="2860954141821109167">Prüfen Sie, ob auf diesem Gerät eine Telefon-App aktiviert ist</translation>
 <translation id="2870560284913253234">Website</translation>
-<translation id="2876369937070532032">URLs einiger von mir besuchter Seiten an Google senden, wenn meine Sicherheit gefährdet ist</translation>
 <translation id="2888126860611144412">Über Google Chrome</translation>
 <translation id="2891154217021530873">Laden der Seite anhalten</translation>
 <translation id="2892647708214602204">Sie erhalten eine Bestätigung, wenn die Datei bereit ist</translation>
@@ -311,7 +310,6 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3157842584138209013">Über die Schaltfläche "Weitere Optionen" können Sie sich ansehen, wie viel Datenvolumen Sie einsparen</translation>
 <translation id="3166827708714933426">Tastenkombinationen für Tabs und Fenster</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Safe Browsing (mich und mein Gerät vor schädlichen Websites schützen)</translation>
 <translation id="3205824638308738187">Fast fertig.</translation>
 <translation id="3207960819495026254">Mit einem Lesezeichen versehen</translation>
 <translation id="3208584281581115441">Jetzt prüfen</translation>
@@ -505,6 +503,7 @@ Eventuell finden Sie unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4561979708150884304">Keine Verbindung</translation>
 <translation id="4565377596337484307">Passwort ausblenden</translation>
 <translation id="4572422548854449519">In verwaltetem Konto anmelden</translation>
+<translation id="4576892426230499203">Versuchen Sie es mit einer anderen Bestätigungsoption</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{vor # Minute}other{vor # Minuten}}</translation>
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4594952190837476234">Diese Offlineseite ist vom <ph name="CREATION_TIME" /> und unterscheidet sich gegebenenfalls von der Onlineversion.</translation>
@@ -584,7 +583,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5011311129201317034"><ph name="SITE" /> möchte eine Verbindung herstellen</translation>
 <translation id="5016205925109358554">Serifenschrift</translation>
 <translation id="5039804452771397117">Zulassen</translation>
-<translation id="5040262127954254034">Datenschutz</translation>
 <translation id="5087580092889165836">Karte hinzufügen</translation>
 <translation id="5091249083535528968">Erweiterte Nutzungsdaten</translation>
 <translation id="509429900233858213">Ein Fehler ist aufgetreten.</translation>
@@ -637,6 +635,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5441522332038954058">Zur Adressleiste wechseln</translation>
 <translation id="544776284582297024">Auf die Schaltfläche "Tabs öffnen" tippen, um Tabs zu öffnen und mehrere Seiten gleichzeitig zu besuchen</translation>
 <translation id="545042621069398927">Download wird beschleunigt.</translation>
+<translation id="5454166040603940656">mit <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Seite herunterladen</translation>
 <translation id="548278423535722844">In einer Karten-App öffnen</translation>
 <translation id="5483197086164197190">Chrome verwenden</translation>
@@ -777,6 +776,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6316139424528454185">Android-Version nicht unterstützt</translation>
 <translation id="6324034347079777476">Android-Systemsynchronisierung deaktiviert</translation>
 <translation id="6324977638108296054">Link zum markierten Text kann nicht erstellt werden</translation>
+<translation id="6324997754869598316">(Fehler <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Über <ph name="APPLICATION" /> teilen</translation>
 <translation id="6337234675334993532">Verschlüsselung</translation>
 <translation id="6341580099087024258">Fragen, wo Dateien gespeichert werden sollen</translation>
@@ -793,6 +793,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> auf <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Lesezeichen bearbeiten</translation>
 <translation id="6406506848690869874">Synchronisierung</translation>
+<translation id="6407224748847589805">Verbindung zum Computer nicht möglich. Versuchen Sie es mit einer anderen Bestätigungsoption.</translation>
 <translation id="6410404864818553978">Grundlegende Nutzungsdaten</translation>
 <translation id="6410883413783534063">Öffnen Sie Tabs, um mehrere Seiten gleichzeitig zu besuchen</translation>
 <translation id="6412673304250309937">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert wird. Wenn eine Website versucht, Ihr Passwort zu stehlen, oder wenn Sie eine schädliche Datei herunterladen, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
@@ -861,7 +862,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6813446258015311409">In Chrome anmelden, geöffnet.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">Tab „<ph name="TAB_TITLE" />“ ausgewählt</translation>
-<translation id="6845325883481699275">Zur Verbesserung der Sicherheit von Chrome beitragen</translation>
 <translation id="6846298663435243399">Wird geladen…</translation>
 <translation id="6850409657436465440">Download noch in Bearbeitung</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> Tabs geschlossen</translation>
@@ -989,7 +989,6 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="7704317875155739195">Suchanfragen und URLs automatisch vervollständigen</translation>
 <translation id="7707922173985738739">Mobile Daten verwenden</translation>
 <translation id="7725024127233776428">Seiten, die Sie als Lesezeichen speichern, werden hier angezeigt.</translation>
-<translation id="7746457520633464754">Chrome sendet die URLs einiger von Ihnen besuchter Seiten, bestimmte Systeminformationen und einige Seiteninhalte an Google, um gefährliche Apps und Websites zu erkennen</translation>
 <translation id="7757787379047923882">Text geteilt von <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Datum &amp; Zeit auswählen</translation>
 <translation id="7762668264895820836">SD-Karte <ph name="SD_CARD_NUMBER" /></translation>

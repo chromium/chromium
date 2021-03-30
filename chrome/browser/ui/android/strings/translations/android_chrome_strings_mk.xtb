@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">Неуспешно најавување</translation>
 <translation id="2860954141821109167">Проверете дали е овозможена апликација за телефон на уредов</translation>
 <translation id="2870560284913253234">Локација</translation>
-<translation id="2876369937070532032">Испраќа URL-адреси од некои страници што ги посетувате до Google, во случаите кога ви е загрозена безбедноста</translation>
 <translation id="2888126860611144412">За Chrome</translation>
 <translation id="2891154217021530873">Сопри го вчитувањето на страницата</translation>
 <translation id="2892647708214602204">Ќе видите известување кога датотекава ќе биде подготвена</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">Видете колку мобилен интернет сте заштедиле преку копчето „Повеќе опции“</translation>
 <translation id="3166827708714933426">Кратенки за картичката и прозорецот</translation>
 <translation id="3169472444629675720">Откриј</translation>
-<translation id="3181954750937456830">Безбедно прелистување (ве заштитува вас и вашиот уред од опасни сајтови)</translation>
 <translation id="3205824638308738187">Речиси готово!</translation>
 <translation id="3207960819495026254">Обележано</translation>
 <translation id="3208584281581115441">Провери сега</translation>
@@ -505,6 +503,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4561979708150884304">Нема интернет-врска</translation>
 <translation id="4565377596337484307">Сокриј ја лозинката</translation>
 <translation id="4572422548854449519">Најавете се на управувана сметка</translation>
+<translation id="4576892426230499203">Обидете се со друга опција за потврда</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Пред # минута}one{Пред # минута}other{Пред # минути}}</translation>
 <translation id="4587589328781138893">Сајтови</translation>
 <translation id="4594952190837476234">Офлајн страницава е од <ph name="CREATION_TIME" /> и може да се разликува од онлајн верзијата.</translation>
@@ -584,7 +583,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5011311129201317034"><ph name="SITE" /> сака да се поврзе</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Дозволи</translation>
-<translation id="5040262127954254034">Приватност</translation>
 <translation id="5087580092889165836">Додај картичка</translation>
 <translation id="5091249083535528968">Проширени податоци за користењето</translation>
 <translation id="509429900233858213">Настана грешка.</translation>
@@ -637,6 +635,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5441522332038954058">Скокнете на лентата за адреса</translation>
 <translation id="544776284582297024">За да отворате картички и да посетувате различни страници во исто време, допрете го копчето за отворање картички</translation>
 <translation id="545042621069398927">Го забрзуваме вашето преземање.</translation>
+<translation id="5454166040603940656">со <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Преземете ја страницата</translation>
 <translation id="548278423535722844">Отвори во апликацијата „Карти“</translation>
 <translation id="5483197086164197190">Навигација во Chrome</translation>
@@ -777,6 +776,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6316139424528454185">Верзијата на Android не е поддржана</translation>
 <translation id="6324034347079777476">Синхронизацијата на системот Android е оневозможена</translation>
 <translation id="6324977638108296054">Не може да се создаде линк до нагласената ставка</translation>
+<translation id="6324997754869598316">(Грешка <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Сподели преку <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Шифрирање</translation>
 <translation id="6341580099087024258">Прашај каде да зачувуваш датотеки</translation>
@@ -793,6 +793,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> на <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Измени обележувач</translation>
 <translation id="6406506848690869874">Синхронизација</translation>
+<translation id="6407224748847589805">Не може да се поврзе со вашиот компјутер. Обидете се со друга опција за потврда.</translation>
 <translation id="6410404864818553978">Основни податоци за користењето</translation>
 <translation id="6410883413783534063">Отворете картички за да посетувате различни страници во исто време</translation>
 <translation id="6412673304250309937">Ги проверува URL-адресите во список со небезбедни сајтови меморирани во Chrome. Ако некој сајт се обиде да ви ја украде лозинката или кога ќе преземете штетна датотека, Chrome може да испрати и URL-адреси, вклучувајќи и делови од содржините на страницата, во „Безбедно прелистување“.</translation>
@@ -861,7 +862,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6813446258015311409">Најавете се на Chrome, отворено.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">Избрана е картичката <ph name="TAB_TITLE" /></translation>
-<translation id="6845325883481699275">Помогнете да се подобри безбедноста на Chrome</translation>
 <translation id="6846298663435243399">Се вчитува…</translation>
 <translation id="6850409657436465440">Вашето преземање е сѐ уште е во тек</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> затворени картички</translation>
@@ -989,7 +989,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="7704317875155739195">Автоматски довршувај ги пребарувањата и URL-адресите</translation>
 <translation id="7707922173985738739">Ќе користи мобилен интернет</translation>
 <translation id="7725024127233776428">Страниците што ќе ги обележите се појавуваат тука</translation>
-<translation id="7746457520633464754">За да открие опасни апликации и сајтови, Chrome испраќа URL-адреси од некои страници што ги посетувате, ограничени информации за системот и некои содржини од страниците до Google</translation>
 <translation id="7757787379047923882">Текстот е споделен од <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Изберете датум и време</translation>
 <translation id="7762668264895820836">SD-картичка <ph name="SD_CARD_NUMBER" /></translation>

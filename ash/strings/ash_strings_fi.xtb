@@ -396,6 +396,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Painoit suuren kontrastin pikanäppäintä. Haluatko ottaa sen käyttöön?</translation>
 <translation id="4331809312908958774">Chrome-käyttöjärjestelmä</translation>
+<translation id="4333628967105022692">Lacrosia ei tueta, kun useita käyttäjiä on sisään kirjautuneena.</translation>
 <translation id="4338109981321384717">Suurennuslasi</translation>
 <translation id="4351433414020964307">Assistantia ladataan…</translation>
 <translation id="4356930093361201197">suurikontrastinen tila</translation>
@@ -968,6 +969,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="9091626656156419976">Näyttö <ph name="DISPLAY_NAME" /> poistettu</translation>
 <translation id="9098969848082897657">Mykistä puhelin</translation>
 <translation id="9099154003160514616">Lacros-päivitys saatavilla</translation>
+<translation id="9105450214093926548">Toisen käyttäjän sisäänkirjaamista ei tueta, kun Lacros-selain on käynnissä. Käytä toista selainprofiilia Lacrosissa tai sulje Lacros ja yritä uudelleen.</translation>
 <translation id="9133335900048457298">Suojattua sisältöä ei voi kuvata</translation>
 <translation id="9151726767154816831">Käynnistä laite uudelleen ja suorita powerwash asentaaksesi päivitykset</translation>
 <translation id="9166331175924255663">Laita lähijakamisen näkyvyys päälle/pois.</translation>

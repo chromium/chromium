@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />อย่าเพิ่งนำอุปกรณ์ออก!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    การนำอุปกรณ์ออกขณะใช้งานอยู่อาจทำให้ข้อมูลสูญหาย โปรดรอจนกว่าการทำงานจะเสร็จสิ้น จากนั้นนำอุปกรณ์ออกโดยใช้แอป "Files"</translation>
+<translation id="5159560892333415631">ล้างถังขยะ</translation>
 <translation id="5163869187418756376">การแชร์ล้มเหลว ตรวจสอบการเชื่อมต่อของคุณและพยายามอีกครั้งในภายหลัง</translation>
 <translation id="516592729076796170">ดีโวรักโปรแกรมเมอร์สหรัฐอเมริกา</translation>
 <translation id="5170477580121653719">พื้นที่ของ Google ไดรฟ์ที่ยังเหลือ: <ph name="SPACE_AVAILABLE" /></translation>
@@ -419,6 +420,7 @@
 <translation id="5275973617553375938">ไฟล์ที่กู้คืนจาก Google ไดรฟ์</translation>
 <translation id="5288441970121584418">เบอร์เกอร์</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">คุณแน่ใจไหมว่าต้องการล้างถังขยะ</translation>
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5318819489018851358">แชร์กับ Linux</translation>
 <translation id="5323213332664049067">ละตินอเมริกา</translation>
@@ -783,6 +785,7 @@
 <translation id="9154418932169119429">ภาพนี้ไม่สามารถใช้งานแบบออฟไลน์ได้</translation>
 <translation id="9172592259078059678">คุชราต (การทับศัพท์)</translation>
 <translation id="9173120999827300720">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์สากล</translation>
+<translation id="9174050671906956834">รายการในถังขยะจะถูกลบทิ้งถาวรหลังจาก 30 วัน</translation>
 <translation id="9189836632794948435">คาซัค</translation>
 <translation id="9213073329713032541">เริ่มการติดตั้งสำเร็จแล้ว</translation>
 <translation id="9219103736887031265">ภาพ</translation>

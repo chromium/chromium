@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Chromium trenutno ne može da koristi kameru</translation>
 <translation id="2195025571279539885">Želite li da Chromium sledeći put ponudi da prevede stranice sa ovog sajta čiji je jezik <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="2590893390871230428">Sinhronizujte Chromium podatke</translation>
-<translation id="259614951763923692">Ako dozvolite da Chromium sazna lokaciju, Chromium je šalje podrazumevanom pretraživaču i svim sajtovima za koje date dozvolu. Sajtovi mogu da zatraže lokaciju kada imaju da vam prikažu lokalne informacije, poput radnji ili vesti u blizini.</translation>
 <translation id="2650312721222849884">Da biste videli kartice na bilo kojem uređaju na kom koristite Chromium, uključite sinhronizaciju</translation>
 <translation id="2730884209570016437">Chromium ne može da koristi kameru zato što je već koristi druga aplikacija</translation>
 <translation id="2915596697727466327">Chromium koristi Face ID da bi lozinkama mogle da pristupaju samo ovlašćene osobe.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Želite li da se odjavite iz Chromium-a?</translation>
 <translation id="6424492062988593837">Chromium je upravo postao bolji! Dostupna je nova verzija.</translation>
 <translation id="6820823224820483452">Chromium nije uspeo da proveri sve lozinke. Probajte ponovo sutra.</translation>
+<translation id="6827294685447036764">Ako dozvolite da Chromium sazna lokaciju, Chromium je šalje podrazumevanom pretraživaču i svim sajtovima za koje dozvolite. Sajtovi mogu da zatraže lokaciju kada imaju da vam prikažu lokalne informacije, poput radnji ili vesti u blizini.</translation>
 <translation id="7018284295775193585">Chromium ne može da se ažurira</translation>
 <translation id="7099326575020694068">Chromium ne može da koristi kameru u režimu podeljenog prikaza</translation>
 <translation id="7118091470949186573">Sada možete da koristite Chromium svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>

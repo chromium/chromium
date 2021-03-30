@@ -195,6 +195,7 @@
 <translation id="6070348360322141662">Для дадатковай бяспекі Google Chrome будзе шыфраваць вашы даныя</translation>
 <translation id="608006075545470555">Дадаванне працоўнага профілю ў гэты браўзер</translation>
 <translation id="6113794647360055231">Chrome стаў яшчэ лепшым</translation>
+<translation id="6145313976051292476">Адкрываць PDF-файлы ў Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome (бэта-версія)</translation>
 <translation id="61852838583753520">Абнавіць &amp;Chrome OS</translation>
@@ -207,7 +208,6 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" />: Google Chrome для распрацоўшчыкаў</translation>
 <translation id="6566149418543181476">Google Chrome абнаўляецца (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Сістэма Chrome OS</translation>
-<translation id="6650333065969705433">Каб прайграваць абароненае мультымедыйнае змесціва пры дапамозе праграмы Rosetta, трэба перазапусціць Chrome.</translation>
 <translation id="6676384891291319759">Доступ у інтэрнэт</translation>
 <translation id="6679975945624592337">Дазволіць браўзеру Google Chrome працаваць у фонавым рэжыме</translation>
 <translation id="6739177684496155661">Працягнуць працу ў новым профілі Chrome?</translation>
@@ -271,7 +271,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Гэты працоўны профіль і ваш асабісты профіль з'яўляюцца поўнасцю асобнымі профілямі.</translation>
 <translation id="8556340503434111824">Даступная новая версія Google Chrome. Яшчэ хутчэйшая.</translation>
-<translation id="861359755029082151">Дзякуючы праграме Rosetta браўзер Chrome зможа прайграваць абароненае мультымедыйнае змесціва на гэтай старонцы.</translation>
 <translation id="8614913330719544658">Google Chrome не адказвае. Перазапусціць?</translation>
 <translation id="861702415419836452">Chrome запытвае дазвол на доступ да камеры, каб стварыць 3D-карту асяроддзя</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome будзе перазапушчаны праз 1 хвіліну}one{Chrome будзе перазапушчаны праз # хвіліну}few{Chrome будзе перазапушчаны праз # хвіліны}many{Chrome будзе перазапушчаны праз # хвілін}other{Chrome будзе перазапушчаны праз # хвіліны}}</translation>
@@ -285,7 +284,6 @@
 <translation id="8834965163890861871">Google Chrome спрабуе змяніць паролі. Каб дазволіць гэта, увядзіце пароль Windows.</translation>
 <translation id="884296878221830158">Таксама вызначае, якая старонка паказваецца пры запуску браўзера Chrome або націсканні кнопкі галоўнай старонкі.</translation>
 <translation id="8862326446509486874">Для ўсталявання на сістэмным узроўні ў вас няма неабходных правоў. Паспрабуйце запусціць усталёўшчык ад імені адміністратара.</translation>
-<translation id="8907709077090383765">Каб прайграваць у браўзеры Chome абароненае мультымедыйнае змесціва, трэба ўсталяваць праграму Rosetta. Зрабіць гэта зараз?</translation>
 <translation id="8914504000324227558">Перазапусціць Chrome</translation>
 <translation id="8922193594870374009">Каб адпраўляць нумары з <ph name="ORIGIN" /> на свой тэлефон Android, увайдзіце ў Chrome на абедзвюх прыладах.</translation>
 <translation id="8986207147630327271">Вы дадаяце працоўны профіль у гэты браўзер і даяце адміністратару кантроль толькі над працоўным профілем.</translation>

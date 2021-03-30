@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">ക്യാമറ</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">ഒന്നും റെക്കോർഡ് ചെയ്‌തില്ല</translation>
+<translation id="1838104802459806957">മുകളിലേക്ക് ടിൽറ്റ് ചെയ്യുക</translation>
 <translation id="1851616744363735765">താൽക്കാലികമായി നിർത്തി</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> എക്‌സ്‌പോർട്ട് ചെയ്യാനായില്ല</translation>
 <translation id="1899697626337024495">ഫോട്ടോ റെസല്യൂഷൻ</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> സജീവമാണ്</translation>
 <translation id="2144806332417375165">ഇഷ്‌ടാനുസൃത വീഡിയോ പാരാമീറ്ററുകൾ</translation>
 <translation id="229579744168541441">ഡിസ്‌ക്കിലേക്ക് എക്‌സ്‌പോർട്ട് ചെയ്യുക</translation>
+<translation id="2320741269052147773">ഇടത്തേക്ക് പാൻ ചെയ്യുക</translation>
 <translation id="2501278716633472235">പിന്നോട്ട് പോകുക</translation>
 <translation id="2501853267655415902">റെക്കോർഡ് ചെയ്യൽ നിർത്തി</translation>
 <translation id="2501953888035679275">നിങ്ങളുടെ ക്യാമറ ഉപയോഗിച്ച് ചിത്രങ്ങൾ എടുക്കുക, വീഡിയോകൾ റെക്കോർഡ് ചെയ്യുക.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">ക്യാമറ ഉപയോഗിച്ച് എടുത്ത ഫോട്ടോകളും വീഡിയോകളും 'ഡൗൺലോഡുകൾ' ഫോൾഡറിലേക്ക് നീക്കും. നിങ്ങൾക്ക് അവ Files-ൽ ആക്‌സസ് ചെയ്യാനാവും.
 
 സ്‌റ്റോറേജ് അനുമതികളുള്ള ആപ്പുകൾക്ക് നിങ്ങളുടെ ഫോട്ടോകളിലേക്കും വീഡിയോകളിലേക്കും ആക്‌സസ് ഉണ്ടായിരിക്കും.</translation>
+<translation id="3067436040345934772">വലത്തേക്ക് പാൻ ചെയ്യുക</translation>
 <translation id="3081586908890909590">വീഡിയോ റെക്കോർഡ് ചെയ്യുന്നതിലേക്ക് മാറുക</translation>
 <translation id="313467653172006084">30 FPS</translation>
 <translation id="3183731565330012717">ഗ്രിഡ് തരം</translation>
@@ -56,6 +59,7 @@
 <translation id="5671277269877808209">ചതുരം</translation>
 <translation id="5775960006311140197">വിദഗ്‌ദ്ധ മോഡ്</translation>
 <translation id="5869546221129391014">ഗ്രിഡ്</translation>
+<translation id="5975083100439434680">സൂം ഔട്ട് ചെയ്യുക</translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
 <translation id="6073451960410192870">റെക്കോർഡിംഗ് നിർത്തുക</translation>
 <translation id="6197807149213783179">മെറ്റാഡാറ്റ സംരക്ഷിക്കുക</translation>
@@ -81,19 +85,21 @@
 <translation id="7649070708921625228">സഹായം</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7974782136796202581">പാൻ/ടിൽറ്റ്/സൂം ഓപ്ഷനുകൾ കാണിക്കുക</translation>
 <translation id="7983668134180549431">ടെക്‌സ്റ്റ് തിരിച്ചറിഞ്ഞു.</translation>
 <translation id="8067883171444229417">വീഡിയോ പ്ലേ ചെയ്യുക</translation>
+<translation id="8120146556401698679">പാൻ ടിൽറ്റ് സൂം</translation>
 <translation id="8131740175452115882">സ്ഥിരീകരിക്കുക</translation>
 <translation id="8145038249676204903">ഫോട്ടോ എടുക്കുന്നതിലേക്ക് മാറുക</translation>
 <translation id="8239780215768881278">വീഡിയോ സ്‌നാപ്പ്‌ഷോട്ട് എടുക്കുക</translation>
 <translation id="8261506727792406068">ഇല്ലാതാക്കുക</translation>
+<translation id="8425673304802773841">താഴേക്ക് ടിൽറ്റ് ചെയ്യുക</translation>
 <translation id="8428213095426709021">ക്രമീകരണങ്ങള്‍</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">മെറ്റാഡാറ്റ പ്രിവ്യൂ ചെയ്യൂ</translation>
 <translation id="8815966864175525708">പോർട്രെയ്റ്റ് ഫോട്ടോയെടുക്കൽ മോഡിലേക്ക് മാറുക</translation>
 <translation id="8828441885228359828">റെക്കോർഡ് ചെയ്യൽ പുനരാരംഭിക്കുക</translation>
 <translation id="8870695351537079478">റെക്കോർഡിംഗ് ആരംഭിക്കാനായില്ല</translation>
+<translation id="8903921497873541725">സൂം ഇന്‍ ചെയ്യുക</translation>
 <translation id="9045155556724273246">10 സെക്കൻഡ്</translation>
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
 </translationbundle>

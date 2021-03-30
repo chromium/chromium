@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">ছাইন ইন কৰিব পৰা নগ’ল</translation>
 <translation id="2860954141821109167">নিশ্চিত হৈ লওক যে এই ডিভাইচটোত এটা ফ’ন এপ্‌ সক্ৰিয় কৰা আছে</translation>
 <translation id="2870560284913253234">ছাইট</translation>
-<translation id="2876369937070532032">আপোনাৰ সুৰক্ষা বিপদাপন্ন হ'লে আপুনি চোৱা কিছুমান পৃষ্ঠাৰ URLসমূহ Googleলৈ পঠিয়ায়</translation>
 <translation id="2888126860611144412">Chromeৰ বিষয়ে</translation>
 <translation id="2891154217021530873">পৃষ্ঠা ল’ড হোৱা কার্যটো বন্ধ কৰক</translation>
 <translation id="2892647708214602204">এই ফাইলটো সাজু হ’লে আপুনি এটা জাননী দেখিবলৈ পাব</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">অধিক বিকল্প বুটামটোলৈ গৈ আপুনি কিমান ডেটা ৰাহি কৰিলে সেয়া চাওক</translation>
 <translation id="3166827708714933426">টেব আৰু ৱিণ্ড’ৰ শ্বৰ্টকাট</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">সুৰক্ষিত ব্ৰাউজিং (আপোনাৰ ডিভাইচটোক বিপজ্জনক ছাইটৰ পৰা সুৰক্ষা প্ৰদান কৰে)</translation>
 <translation id="3205824638308738187">প্ৰায় সম্পূর্ণ হৈছে!</translation>
 <translation id="3207960819495026254">বুকমার্ক কৰা হৈছে</translation>
 <translation id="3208584281581115441">এতিয়াই পৰীক্ষা কৰক</translation>
@@ -505,6 +503,7 @@
 <translation id="4561979708150884304">ইণ্টাৰনেট নাই</translation>
 <translation id="4565377596337484307">পাছৱৰ্ড লুকুৱাওক</translation>
 <translation id="4572422548854449519">পৰিচালিত একাউণ্টত ছাইন ইন কৰক</translation>
+<translation id="4576892426230499203">সত্যাপনৰ অন্য এটা বিকল্প ব্যৱহাৰ কৰি চাওক</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# মিনিট পূর্বে}one{# মিনিট পূর্বে}other{# মিনিট পূর্বে}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">এই অফলাইন পৃষ্ঠাটো <ph name="CREATION_TIME" />ৰ আৰু এই পৃষ্ঠাটো অনলাইন সংস্কৰণতকৈ বেলেগ হ’ব পাৰে।</translation>
@@ -584,7 +583,6 @@
 <translation id="5011311129201317034"><ph name="SITE" />এ সংযোগ কৰিব বিচাৰিছে</translation>
 <translation id="5016205925109358554">ছেৰিফ</translation>
 <translation id="5039804452771397117">অনুমতি দিয়ক</translation>
-<translation id="5040262127954254034">গোপনীয়তা</translation>
 <translation id="5087580092889165836">কাৰ্ড যোগ কৰক</translation>
 <translation id="5091249083535528968">বিস্তাৰিত ব্যৱহাৰৰ ডেটা</translation>
 <translation id="509429900233858213">কোনো আসোঁৱাহ হৈছে।</translation>
@@ -637,6 +635,7 @@
 <translation id="5441522332038954058">পোনপটীয়াকৈ ঠিকনা বাৰলৈ যাওক</translation>
 <translation id="544776284582297024">একে সময়তে টেবসমূহ খুলিবলৈ আৰু বেলেগ বেলেগ পৃষ্ঠাসমূহলৈ যাবলৈ, টেবসমূহ খোলক বুটামটো টিপক</translation>
 <translation id="545042621069398927">আপোনাৰ ডাউনল’ড আৰু খৰতকীয়া কৰি থকা হৈছে।</translation>
+<translation id="5454166040603940656"><ph name="PROVIDER" />ৰ সৈতে</translation>
 <translation id="5456381639095306749">পৃষ্ঠাটো ডাউনল'ড কৰক</translation>
 <translation id="548278423535722844">maps এপত খোলক</translation>
 <translation id="5483197086164197190">Chromeত নেভিগে’ট কৰা</translation>
@@ -777,6 +776,7 @@
 <translation id="6316139424528454185">Android সংস্কৰণটো নচলে</translation>
 <translation id="6324034347079777476">Android ছিষ্টেম ছিংক কৰাটো অক্ষম কৰা হ’ল</translation>
 <translation id="6324977638108296054">হাইলাইটৰ লিংক সৃষ্টি কৰিব নোৱাৰি</translation>
+<translation id="6324997754869598316">(আসোঁৱাহ <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" />ৰ জৰিয়তে শ্বেয়াৰ কৰক</translation>
 <translation id="6337234675334993532">এনক্ৰিপশ্বন</translation>
 <translation id="6341580099087024258">ফাইল ক’ত ছেভ কৰিব লাগে সোধক</translation>
@@ -793,6 +793,7 @@
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" />ত <ph name="ERROR_CODE" /></translation>
 <translation id="6404511346730675251">বুকমার্ক সম্পাদনা কৰক</translation>
 <translation id="6406506848690869874">ছিংক কৰক</translation>
+<translation id="6407224748847589805">আপোনাৰ কম্পিউটাৰৰ সৈতে সংযোগ কৰিব নোৱাৰি। সত্যাপনৰ অন্য এটা বিকল্প ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="6410404864818553978">প্ৰাথমিক ব্যৱহাৰৰ ডেটা</translation>
 <translation id="6410883413783534063">একে সময়তে বেলেগ বেলেগ পৃষ্ঠালৈ যাবলৈ টেবসমূহ খোলক</translation>
 <translation id="6412673304250309937">Chromeত ষ্ট'ৰ কৰি ৰখা অসুৰক্ষিত ছাইটসমূহৰ এখন সূচীৰ সৈতে URLসমূহ পৰীক্ষা কৰে। যদি কোনোবা ছাইটে আপোনাৰ পাছৱর্ড চুৰি কৰিবলৈ চেষ্টা কৰে অথবা আপুনি কোনো ক্ষতিকাৰক ফাইল ডাউনল'ড কৰাৰ সময়ত Chromeএ পৃষ্ঠাৰ সমলৰ বিটসমূহকে ধৰি URLসমূহ সুৰক্ষিত ব্ৰাউজিঙলৈ পঠিয়াব পাৰে।</translation>
@@ -860,7 +861,6 @@
 <translation id="6813446258015311409">Chromeত ছাইন ইন কৰা হ’ল, খোলা আছে।</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> টেবটো বাছনি কৰা হৈছে</translation>
-<translation id="6845325883481699275">Chromeৰ সুৰক্ষা উন্নত কৰাত সহায় কৰক</translation>
 <translation id="6846298663435243399">ল’ড কৰি থকা হৈছে…</translation>
 <translation id="6850409657436465440">আপোনাৰ ডাউনল’ড প্ৰক্ৰিয়া চলি আছে</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" />টা টেব বন্ধ কৰা হ’ল</translation>
@@ -988,7 +988,6 @@
 <translation id="7704317875155739195">স্বয়ংক্রিয়ভাৱে সম্পূৰ্ণ হোৱা সন্ধান আৰু URL</translation>
 <translation id="7707922173985738739">ম’বাইল ডেটা ব্যৱহাৰ কৰক</translation>
 <translation id="7725024127233776428">আপুনি বুকমাৰ্ক কৰি ৰখা পৃষ্ঠাবোৰ ইয়াত দেখা যাব</translation>
-<translation id="7746457520633464754">বিপজ্জনক এপ্‌ আৰু ছাইটসমূহ চিনাক্ত কৰিবলৈ Chromeএ আপুনি চোৱা পৃষ্ঠাৰ URLসমূহ, ছিষ্টেমৰ সীমিত তথ্য আৰু পৃষ্ঠাৰ কিছু সমল Googleলৈ পঠিয়ায়</translation>
 <translation id="7757787379047923882">পাঠ <ph name="DEVICE_NAME" />ৰ পৰা শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="7761849928583394409">তাৰিখ আৰু সময় বাছক</translation>
 <translation id="7762668264895820836">এছডি কাৰ্ড <ph name="SD_CARD_NUMBER" /></translation>

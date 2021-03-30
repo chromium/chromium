@@ -11,7 +11,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1315551408014407711">Configurer votre nouveau profil Chromium</translation>
 <translation id="1396446129537741364">Tentative d'affichage des mots de passe dans Chromium</translation>
 <translation id="1414495520565016063">Vous êtes connecté à Chromium.</translation>
-<translation id="1414973082589232775">Pour utiliser Rosetta pour lire des contenus multimédias protégés, vous devez redémarrer Chromium.</translation>
 <translation id="151962892725702025">Impossible de synchroniser vos données dans Chromium OS, car la synchronisation n'est pas disponible pour votre domaine.</translation>
 <translation id="1524282610922162960">Partager un onglet Chromium</translation>
 <translation id="1553461853655228091">Chromium a besoin de votre autorisation pour accéder à votre appareil photo et créer un plan 3D de votre environnement</translation>
@@ -136,11 +135,11 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="5480860683791598150">Chromium a besoin d'accéder à votre position pour la partager avec ce site</translation>
 <translation id="549669000822060376">Veuillez patienter pendant que Chromium installe les dernières mises à jour du système.</translation>
 <translation id="5496810170689441661">Chromium tente de modifier les mots de passe. Saisissez votre mot de passe Windows pour autoriser cette opération.</translation>
+<translation id="5527463683072221100">Ouvrir les PDF dans Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Une mise à jour de Chromium est disponible}=1{Une mise à jour de Chromium est disponible}one{Une mise à jour de Chromium est disponible depuis # jour}other{Une mise à jour de Chromium est disponible depuis # jours}}</translation>
 <translation id="5634636535844844681">Vous devez disposer de Windows 7 ou version ultérieure pour utiliser Chromium.</translation>
 <translation id="5653831366781983928">Veuillez redémarrer Chromium maintenant</translation>
 <translation id="5698481217667032250">Afficher Chromium dans cette langue</translation>
-<translation id="5736967399513123100">Pour autoriser Chromium à lire des contenus multimédias protégés, vous devez installer Rosetta. Voulez-vous l'installer maintenant ?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Bienvenue dans Chromium</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
@@ -191,7 +190,6 @@ Certaines fonctionnalités seront peut-être indisponibles. Veuillez spécifier 
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiée dans Chromium)</translation>
 <translation id="6893813176749746474">Chromium a été mis à jour, mais vous ne l'avez pas utilisé pendant au moins 30 jours.</translation>
-<translation id="6897548120660295439">Rosetta permet à Chromium de lire les contenus multimédias protégés sur cette page.</translation>
 <translation id="691026815377248078">Chromium a besoin d'accéder au Bluetooth pour continuer 
  l'association. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Ouvrir le lien dans la fenêtre de navi&amp;gation privée Chromium</translation>

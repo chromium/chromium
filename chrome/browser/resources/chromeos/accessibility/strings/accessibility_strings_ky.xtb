@@ -22,6 +22,8 @@
 <translation id="1120938014254001895">Эки манжаңыз менен экранды өйдө сүрүңүз</translation>
 <translation id="1126928665165112660">Жантык тамгалар эмес</translation>
 <translation id="113582498867142724"><ph name="NUM" /> нерсени камтыган <ph name="TAG" /> жыйнагы</translation>
+<translation id="1146441463334103638">Экранды күйгүзүү же өчүрүү</translation>
+<translation id="1156488781945104845">Азыркы убакыт</translation>
 <translation id="1161762950103988776">Секирүү</translation>
 <translation id="1164857107703583584">Секирүү буйруктары менен веб баракчадагы объекттерге тез өтүүгө болот.</translation>
 <translation id="1175914831232945926">Сандар</translation>
@@ -71,6 +73,7 @@
 <translation id="1405567553485452995">Мала жашыл</translation>
 <translation id="1411043317877497323">Көнүгүү аймагы</translation>
 <translation id="141454040365657399">Беттин аталышы</translation>
+<translation id="1417092723421264764">Учурдагы бет</translation>
 <translation id="1417889266572670458">Кочкул көк</translation>
 <translation id="1431911867058218151">Кара өрүк</translation>
 <translation id="1439316808600711881">rgn</translation>
@@ -199,6 +202,7 @@
 <translation id="242998846562331953">Коштомо жазуу</translation>
 <translation id="2435422727584637732">Ачык көк</translation>
 <translation id="2450814015951372393">Белги кутусу</translation>
+<translation id="2461822463642141190">Учурда</translation>
 <translation id="2462626033734746142">Радио баскыч тобу</translation>
 <translation id="2471138580042810658">6-баш ат</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{жылдызча}other{# жылдызча}}</translation>
@@ -244,7 +248,6 @@
 <translation id="2766299274563946262">Уяча калган жок</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="280499067616661124">Барактан ChromeVox'ту табуу</translation>
-<translation id="2808001342598757276">Экранды жарык кылуу</translation>
 <translation id="2811019999044652585">Куралдар тилкеси же маселелер тактасы сыяктуу экрандын башка бөлүктөрүнө өтүү үчүн Control+Forward баскычтарын басыңыз. Chromebook'та Forward баскычы 2 санынын үстүндө жайгашкан.</translation>
 <translation id="2811204574343810641">Сап</translation>
 <translation id="2816868829355607410">Көнүгүү аймагы: Секирүү буйруктары</translation>
@@ -299,10 +302,11 @@
 <translation id="3109724472072898302">Жыйналды</translation>
 <translation id="311015743332597320">Төрт манжаңыз менен экранды оңго сүрүңүз</translation>
 <translation id="3112457281078985179">ChromeVox'ту күйгүзүп же өчүрүү үчүн, Control+Alt+Z баскычтарын басыңыз.</translation>
+<translation id="3115800313647508384">Экран өчүрүлсүнбү?</translation>
 <translation id="3131002934070407451">Сандарды төмөнкүдөй окуу:</translation>
 <translation id="3134461040845705080">окуу үчүн гана</translation>
 <translation id="3137663468179739624">Күңүрт саргылтым жашыл</translation>
-<translation id="3138767756593758860">Белгиленген жерлердин тизмеси көрсөтүлсүн</translation>
+<translation id="3138767756593758860">Белгиленген жерлердин тизмеси көрүнсүн</translation>
 <translation id="3143851963874289911">cll</translation>
 <translation id="3149472044574196936">Кийинки сап</translation>
 <translation id="3153024374267644603">Кеп күйүк</translation>
@@ -642,6 +646,7 @@
 <translation id="5655682562155942719">Секирүү буйруктары</translation>
 <translation id="56637627897541303">Текст аймагы</translation>
 <translation id="5669637233317991674">Бул сабактагы нерселерге өтүү үчүн Издөө + Оңго жебе же Издөө + Солго жебени басыңыз</translation>
+<translation id="5677240841070992068">Учурдагы жайгашкан жер</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
 <translation id="5682113568322255809">Белгиленген жерлер</translation>
@@ -677,6 +682,7 @@
 <translation id="5901630391730855834">Сары</translation>
 <translation id="5906974869830879618">PIN кодду киргизиңиз</translation>
 <translation id="5921587111466148855">Бөлүм</translation>
+<translation id="5923780477617566089">Учурдагы дата</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{барабар}other{# барабар белгиси}}</translation>
 <translation id="5948123859135882163">Математикалык туюнтмаларды структуралык жактан же семантикалык жактан чечмелөө жолдорун которуштуруу</translation>
 <translation id="5955304353782037793">app</translation>
@@ -696,9 +702,9 @@
 <translation id="6034000775414344507">Ачык боз</translation>
 <translation id="6036135911048686884">Тийип изилдөө</translation>
 <translation id="6037602951055904232">Алга панорамалоо</translation>
-<translation id="6044160928851315051">Экранды күңүртөө</translation>
 <translation id="6082768461603900813">Чабыттоонун негиздери</translation>
 <translation id="609281021724813947">Мурунку сыдырма жок</translation>
+<translation id="6096942799340613495">Ушуну менен экран өчүрүлөт. Экранды кайра күйгүзүү үчүн Издөө + Жарыктыгын көбөйтүүнү басыңыз.</translation>
 <translation id="6100239002225743044">Бир сап өйдө жылдыруу</translation>
 <translation id="6118126368611144850">Chrome'го арналган Android колдонмолору. Эгер түзмөгүңүздө Play Store орнотулган болсо, ChromeVox'ту Android колдонмолору менен пайдаланып көрүңүз. Play Storeдөн Google Chrome Canary'ни жүктөп алып, тажрыйбалуу колдоону байкап көрүңүз.</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -766,6 +772,7 @@
 <translation id="6696967141280706829">Кириш сөз</translation>
 <translation id="6697092096875747123">Мурунку айкалыштырылган кутуча</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{илеп белгиси}other{# илеп белгиси}}</translation>
+<translation id="670717715607710284">Экран өчүк</translation>
 <translation id="6710213216561001401">Мурунку</translation>
 <translation id="6714813999819678458">Мурунку 2-деңгээлдеги баш аты.</translation>
 <translation id="6730312624811567147">Барактын башына же аягына өтүү үчүн издөө баскычы менен "сол" же "оң" жебени басыңыз. Саптын башына же аягына өтүү үчүн издөө баскычын, Control жана "сол" же "оң" жебени басыңыз. Барактоо үчүн издөө баскычы менен "өйдө" же "төмөн" жебени басыңыз</translation>
@@ -945,6 +952,7 @@
 <translation id="8037651341025652929">Корутунду</translation>
 <translation id="8042761080832772327">Текстти, издөө жазуусун түзөтүү</translation>
 <translation id="8049189770492311300">Таймер</translation>
+<translation id="8057472523431225012">Учурдагы кадам</translation>
 <translation id="8058636807889143711">Кийинки математикалык туюнтма жок</translation>
 <translation id="8066678206530322333">Баннер</translation>
 <translation id="8076492880354921740">Өтмөктөр</translation>
@@ -962,6 +970,7 @@
 <translation id="816818801578874684">Бул биринчи аталыш. Кийинки аталышка өтүү үчүн Издөө + Н баскычтарын басыңыз.</translation>
 <translation id="8173092779156526980">Төрт манжаңыз менен экранды солго сүрүңүз</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{төмөнкү сызык}other{# төмөнкү сызык}}</translation>
+<translation id="817529114347680055">Экран күйүк</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">сап</translation>
 <translation id="8186185314313222077">толук экранга которуу</translation>
@@ -984,7 +993,6 @@
 <translation id="8316881042119029234">Ач саргыл кызгылтым түс</translation>
 <translation id="8324974933005349667">Кеп синтезаторунун жөндөөлөрүн жекечелештирүү</translation>
 <translation id="8326783648485765113">Ач жашыл</translation>
-<translation id="8328063869313048659">Караңгы экранды өчүрүү/күйгүзүү</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{фунт}other{# фунт белгилери}}</translation>
 <translation id="8378855320830505539">Аймак</translation>
 <translation id="8382679411218029383">Автотолуктоо кыналмасы жана тизме</translation>
@@ -1022,7 +1030,7 @@
 <translation id="8638532244051952400">Учурдагы уячанын дайындарын жарыялоо</translation>
 <translation id="8640369214276455272">Түтүн түстүү ак</translation>
 <translation id="8651481478098336970">үнүн басуу</translation>
-<translation id="8653646212587894517">Шилтемелер тизмеси көрсөтүлсүн</translation>
+<translation id="8653646212587894517">Шилтемелер тизмеси көрүнсүн</translation>
 <translation id="8656888282555543604">Брайль алфавитинин журналын иштетүү</translation>
 <translation id="8659501358298941449">Ылдый түшүүчү тизмелер</translation>
 <translation id="867187640362843212">Башкы аталыш 5</translation>

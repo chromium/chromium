@@ -277,6 +277,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> sonradan yenə daxil ola biləcək.</translation>
 <translation id="3321628682574733415">Yanlış valideyn kodu</translation>
 <translation id="332587331255250389">Batareyanı dəyişin</translation>
+<translation id="3333741161915951567">Modem yenidən yüklənib. Yenidən cəhd etməzdən əvvəl 30 san gözləyin.</translation>
 <translation id="3341303451326249809">Skrinşot çəkildi</translation>
 <translation id="334252345105450327">Skrinşot çəkin</translation>
 <translation id="3351879221545518001">Hazırda ekranı paylaşırsınız.</translation>
@@ -777,7 +778,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7607002721634913082">Durduruldu</translation>
 <translation id="7618774594543487847">Neytral</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Yaxınlıqda Paylaşım ayarlarını göstərin.</translation>
+<translation id="7633755430369750696">Yaxındakılarla Paylaşma ayarlarını göstərin.</translation>
 <translation id="7641938616688887143">Çəkin</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> ayarlarını açın</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (sahib)</translation>
@@ -969,9 +970,10 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> silindi</translation>
 <translation id="9098969848082897657">Telefonu səssiz edin</translation>
 <translation id="9099154003160514616">Lacros güncəlləməsi əlçatandır</translation>
+<translation id="9105450214093926548">Lacros brauzeri işləyərkən ikinci bir istifadəçinin daxil olması dəstəklənmir. Bunun əvəzinə Lacros'da ikinci bir brauzer profili istifadə edin və ya Lacros'u bağlayıb yenidən cəhd edin.</translation>
 <translation id="9133335900048457298">Qorunan məzmunu yazmaq olmur</translation>
 <translation id="9151726767154816831">Güncəlləşdirmək üçün yenidən başladaraq silin</translation>
-<translation id="9166331175924255663">Yaxınlıqda Paylaşım yüksək görünmə dərəcəsini dəyişdirin.</translation>
+<translation id="9166331175924255663">Yaxındakılarla Paylaşmanın yüksək görünmə dərəcəsini dəyişdirin.</translation>
 <translation id="9168436347345867845">Daha sonra edin</translation>
 <translation id="9179259655489829027">Bu funksiya parol tələb etmədən hesaba daxil olmuş istənilən istifadəçiyə sürətli girişə imkan verir. Bu funksiyanı yalnız güvəndiyiniz hesablarla işlədin.</translation>
 <translation id="9183456764293710005">Tam Ekran Böyüdücüsü</translation>

@@ -268,7 +268,6 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="2856503607207334158">Sisselogimine ebaõnnestus</translation>
 <translation id="2860954141821109167">Veenduge, et telefonirakendus oleks selles seadmes lubatud</translation>
 <translation id="2870560284913253234">Sait</translation>
-<translation id="2876369937070532032">Saadab mõnede teie külastatud lehtede URL-id Google'ile, kui teie turvalisus ohtu satub</translation>
 <translation id="2888126860611144412">Teave Chrome'i kohta</translation>
 <translation id="2891154217021530873">Peata lehe laadimine</translation>
 <translation id="2892647708214602204">Kui see fail on valmis, kuvatakse märguanne</translation>
@@ -311,7 +310,6 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3157842584138209013">Nupu Rohkem valikuid abil saate vaadata, kui palju andmemahtu olete säästnud</translation>
 <translation id="3166827708714933426">Vahelehe ja akna otseteed</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Ohutu sirvimine (kaitseb teid ja teie seadet ohtlike saitide eest)</translation>
 <translation id="3205824638308738187">Peaaegu valmis.</translation>
 <translation id="3207960819495026254">Järjehoidjatesse lisatud</translation>
 <translation id="3208584281581115441">Kontrolli kohe</translation>
@@ -505,6 +503,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4561979708150884304">Ühendus puudub</translation>
 <translation id="4565377596337484307">Peida parool</translation>
 <translation id="4572422548854449519">Logige hallatud kontole sisse</translation>
+<translation id="4576892426230499203">Proovige mõnda teist kinnitusvõimalust</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minut tagasi}other{# minutit tagasi}}</translation>
 <translation id="4587589328781138893">Saidid</translation>
 <translation id="4594952190837476234">Võrguühenduseta leht loodi <ph name="CREATION_TIME" /> ja see võib veebiversioonist erineda.</translation>
@@ -584,7 +583,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5011311129201317034"><ph name="SITE" /> soovib ühenduse luua</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Luba</translation>
-<translation id="5040262127954254034">Privaatsus</translation>
 <translation id="5087580092889165836">Lisa kaart</translation>
 <translation id="5091249083535528968">Laiendatud kasutusandmed</translation>
 <translation id="509429900233858213">Tekkis viga.</translation>
@@ -637,6 +635,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5441522332038954058">Aadressiribale liikumine</translation>
 <translation id="544776284582297024">Vahelehtede avamiseks ja eri lehtede samal ajal külastamiseks puudutage avatud vahelehtede nuppu</translation>
 <translation id="545042621069398927">Allalaadimise kiirendamine.</translation>
+<translation id="5454166040603940656">teenusepakkujaga <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Laadi leht alla</translation>
 <translation id="548278423535722844">Avage kaardirakenduses</translation>
 <translation id="5483197086164197190">Chrome'is navigeerimine</translation>
@@ -777,6 +776,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6316139424528454185">Seda Androidi versiooni ei toetata</translation>
 <translation id="6324034347079777476">Androidi süsteemi sünkroonimine on keelatud</translation>
 <translation id="6324977638108296054">Esiletõstu linki ei õnnestu luua</translation>
+<translation id="6324997754869598316">(Viga <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Jagamine rakenduse <ph name="APPLICATION" /> kaudu</translation>
 <translation id="6337234675334993532">Krüpteerimine</translation>
 <translation id="6341580099087024258">Küsi, kuhu failid salvestada</translation>
@@ -793,6 +793,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> saidil <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Muuda järjehoidjat</translation>
 <translation id="6406506848690869874">Sünkroonimine</translation>
+<translation id="6407224748847589805">Ei saanud teie arvutiga ühendust luua. Proovige mõnda teist kinnitusvõimalust.</translation>
 <translation id="6410404864818553978">Peamised kasutusandmed</translation>
 <translation id="6410883413783534063">Avage vahelehti, et samal ajal eri lehti külastada</translation>
 <translation id="6412673304250309937">Kontrollib URL-e Chrome'i talletatud ohtlike saitide loendi alusel. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chrome saata URL-id ja lehe sisu osad teenusesse Google'i ohutu sirvimine.</translation>
@@ -861,7 +862,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6813446258015311409">Chrome'i sisselogimine, avatud.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, vaheleht, valitud</translation>
-<translation id="6845325883481699275">Aidake Chrome'i turvalisust täiustada</translation>
 <translation id="6846298663435243399">Laadimine…</translation>
 <translation id="6850409657436465440">Allalaadimine on endiselt pooleli</translation>
 <translation id="6850830437481525139">Suleti <ph name="TAB_COUNT" /> vahelehte</translation>
@@ -989,7 +989,6 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="7704317875155739195">Otsingute ja URL-ide automaatne täitmine</translation>
 <translation id="7707922173985738739">Kasuta mobiilset andmesidet</translation>
 <translation id="7725024127233776428">Järjehoidjatesse lisatud lehed kuvatakse siin</translation>
-<translation id="7746457520633464754">Ohtlike rakenduste ja saitide tuvastamiseks saadab Chrome mõnede teie külastatud lehtede URL-id, piiratud süsteemiteabe ja mõne lehe sisu Google'ile</translation>
 <translation id="7757787379047923882">Teksti jagati seadmest <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Kuupäeva ja kellaaja valimine</translation>
 <translation id="7762668264895820836">SD-kaart <ph name="SD_CARD_NUMBER" /></translation>

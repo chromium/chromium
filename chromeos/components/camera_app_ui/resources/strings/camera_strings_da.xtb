@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">Kvadrat</translation>
 <translation id="5775960006311140197">Eksperttilstand</translation>
 <translation id="5869546221129391014">Gitter</translation>
+<translation id="5975083100439434680">Zoom ud</translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6073451960410192870">Stop optagelse</translation>
 <translation id="6197807149213783179">Gem metadata</translation>
@@ -82,9 +83,9 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7974782136796202581">Vis muligheder for panorering, tilpasning af horisont og zoom</translation>
 <translation id="7983668134180549431">Tekst er registreret.</translation>
 <translation id="8067883171444229417">Afspil video</translation>
+<translation id="8120146556401698679">Panorer drej zoom</translation>
 <translation id="8131740175452115882">Bekræft</translation>
 <translation id="8145038249676204903">Skift for at tage et billede</translation>
 <translation id="8239780215768881278">Tag et videoøjebliksbillede</translation>
@@ -95,6 +96,7 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="8815966864175525708">Skift for at tage et billede i stående format</translation>
 <translation id="8828441885228359828">Genoptag optagelse</translation>
 <translation id="8870695351537079478">Det er ikke muligt at starte en optagelse</translation>
+<translation id="8903921497873541725">Zoom ind</translation>
 <translation id="9045155556724273246">10 sekunder</translation>
 <translation id="945522503751344254">Send feedback</translation>
 </translationbundle>

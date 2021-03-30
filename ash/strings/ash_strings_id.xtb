@@ -396,6 +396,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Anda menekan pintasan keyboard untuk kontras tinggi. Ingin mengaktifkannya?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4333628967105022692">Lacros tidak didukung saat beberapa pengguna login.</translation>
 <translation id="4338109981321384717">Kaca pembesar</translation>
 <translation id="4351433414020964307">Asisten sedang dimuat...</translation>
 <translation id="4356930093361201197">mode kontras tinggi</translation>
@@ -968,6 +969,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="9091626656156419976">Tampilan <ph name="DISPLAY_NAME" /> dihapus</translation>
 <translation id="9098969848082897657">Senyapkan suara ponsel</translation>
 <translation id="9099154003160514616">Update Lacros tersedia</translation>
+<translation id="9105450214093926548">Login pengguna kedua tidak didukung saat browser Lacros sedang berjalan. Gunakan profil browser kedua di Lacros atau tutup Lacros lalu coba lagi.</translation>
 <translation id="9133335900048457298">Tidak dapat merekam konten yang dilindungi</translation>
 <translation id="9151726767154816831">Mulai ulang dan powerwash untuk memperbarui</translation>
 <translation id="9166331175924255663">Tombol visibilitas tinggi Berbagi Langsung.</translation>

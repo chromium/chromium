@@ -282,6 +282,7 @@
 <translation id="3928666092801078803">मेरो डेटालाई संयोजन गर्नुहोस्</translation>
 <translation id="3929457972718048006">ठेगानाहरू</translation>
 <translation id="3943492037546055397">पासवर्डहरू</translation>
+<translation id="3967266340354872733">गोपनीयता, सुरक्षा र डेटाको सङ्कलनसँग सम्बन्धित थप सेटिङका लागि <ph name="BEGIN_LINK" />सिंक<ph name="END_LINK" /> तथा <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> नामक खण्ड हेर्नुहोस्।</translation>
 <translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
 <translation id="3968505803272650567">रुचिहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3989635538409502728">साइन आउट गर्नुहोस्</translation>
@@ -556,6 +557,7 @@
 <translation id="6713747756340119864">Google एपहरू</translation>
 <translation id="6730682669179532099">पासवर्डहरू निर्यात गर्न सकिएन</translation>
 <translation id="6748108480210050150">बाट</translation>
+<translation id="6760509555861141183">भर्खरै खोलिएको ट्याबमा जानुहोस्</translation>
 <translation id="6780034285637185932">जिप कोड</translation>
 <translation id="6785453220513215166">क्रयास रिपोर्ट पठाउँदै ...</translation>
 <translation id="679325081238418596">आफ्नो सम्पूर्ण यन्त्रहरूमा आफ्नो बुकमार्क, इतिहास, पासवर्ड र अन्य सेटिङहरू प्राप्त गर्नुहोस्</translation>
@@ -607,7 +609,6 @@
 <translation id="7272437679830969316">तपाईंको पहिचान पुष्टि गर्न सकिएन। पासवर्डको प्रतिलिपि गरिएको छैन।</translation>
 <translation id="7291368939935408496">पासवर्डहरू निर्यात गर्ने तयारी गरिँदै…</translation>
 <translation id="7293171162284876153">सिंक गर्ने कार्य सुरु गर्न "Chrome को आफ्नो डेटा सिंक गर्नुहोस्"।</translation>
-<translation id="7299000566397147023">तपाईंले हेर्नुभएको पछिल्लो ट्याब खोल्नुहोस्</translation>
 <translation id="7313347584264171202">तपाईंका इन्कोग्निटो ट्याबहरू यहाँ देखिने छन्</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> प्रतिशत डाउनलोड भयो</translation>
 <translation id="7340958967809483333">Discover का विकल्पहरू</translation>

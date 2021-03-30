@@ -268,7 +268,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2856503607207334158">Produciuse un erro ao iniciar sesión</translation>
 <translation id="2860954141821109167">Asegúrate de que haxa unha aplicación de teléfono activada neste dispositivo</translation>
 <translation id="2870560284913253234">Sitio</translation>
-<translation id="2876369937070532032">Enviar a Google os URL das páxinas que visitas cando a túa seguranza corra perigo</translation>
 <translation id="2888126860611144412">Acerca de Chrome</translation>
 <translation id="2891154217021530873">Detén a carga da páxina</translation>
 <translation id="2892647708214602204">Cando este ficheiro estea listo, verás unha notificación</translation>
@@ -311,7 +310,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3157842584138209013">Comproba a cantidade de datos que aforraches a través do botón Máis opcións</translation>
 <translation id="3166827708714933426">Atallos da ventá e da pestana</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Navegación segura (protección para ti e o teu dispositivo contra os sitios perigosos)</translation>
 <translation id="3205824638308738187">Xa case está!</translation>
 <translation id="3207960819495026254">Engadida a marcadores</translation>
 <translation id="3208584281581115441">Comprobar agora</translation>
@@ -505,6 +503,7 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="4561979708150884304">Sen conexión</translation>
 <translation id="4565377596337484307">Ocultar contrasinal</translation>
 <translation id="4572422548854449519">Inicia sesión nunha conta xestionada</translation>
+<translation id="4576892426230499203">Proba con outra opción de verificación</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Hai # minuto}other{Hai # minutos}}</translation>
 <translation id="4587589328781138893">Sitios</translation>
 <translation id="4594952190837476234">Esta páxina sen conexión creouse o <ph name="CREATION_TIME" /> e pode ser diferente da versión en liña.</translation>
@@ -584,7 +583,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5011311129201317034"><ph name="SITE" /> quere conectarse</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Permitir</translation>
-<translation id="5040262127954254034">Privacidade</translation>
 <translation id="5087580092889165836">Engadir tarxeta</translation>
 <translation id="5091249083535528968">Datos de uso ampliados</translation>
 <translation id="509429900233858213">Produciuse un erro.</translation>
@@ -637,6 +635,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5441522332038954058">Saltar á barra de enderezos</translation>
 <translation id="544776284582297024">Para abrir pestanas e visitar distintas páxinas ao mesmo tempo, toca o botón de pestanas abertas</translation>
 <translation id="545042621069398927">Estase acelerando a descarga.</translation>
+<translation id="5454166040603940656">con <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Descargar páxina</translation>
 <translation id="548278423535722844">Abrir na aplicación de mapas</translation>
 <translation id="5483197086164197190">Navega por Chrome</translation>
@@ -777,6 +776,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6316139424528454185">Versión Android non compatible</translation>
 <translation id="6324034347079777476">A sincronización do sistema Android está desactivada</translation>
 <translation id="6324977638108296054">Non se puido crear unha ligazón ao texto destacado</translation>
+<translation id="6324997754869598316">(Erro <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Comparte a través de <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Encriptado</translation>
 <translation id="6341580099087024258">Preguntar onde gardar os ficheiros</translation>
@@ -793,6 +793,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> o <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Editar marcador</translation>
 <translation id="6406506848690869874">Sincronización</translation>
+<translation id="6407224748847589805">Non se puido establecer conexión co teu ordenador. Proba con outra opción de verificación.</translation>
 <translation id="6410404864818553978">Datos de uso básicos</translation>
 <translation id="6410883413783534063">Abre pestanas para visitar páxinas diferentes ao mesmo tempo</translation>
 <translation id="6412673304250309937">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chrome. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome tamén pode comprobar os enderezos URL, entre os que se inclúen fragmentos de contido das páxinas, a través da función Navegación segura.</translation>
@@ -861,7 +862,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6813446258015311409">Panel Iniciar sesión en Chrome (aberto).</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, pestana, seleccionada</translation>
-<translation id="6845325883481699275">Axudar a mellorar a seguranza de Chrome</translation>
 <translation id="6846298663435243399">Cargando…</translation>
 <translation id="6850409657436465440">A descarga aínda está en curso</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> pestanas pechadas</translation>
@@ -989,7 +989,6 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="7704317875155739195">Completar buscas e URL automaticamente</translation>
 <translation id="7707922173985738739">Utilizaranse datos móbiles</translation>
 <translation id="7725024127233776428">As páxinas que engadas aos marcadores aparecerán aquí</translation>
-<translation id="7746457520633464754">Para detectar aplicacións e sitios perigosos, Chrome envíalle a Google os URL dalgunhas das páxinas que visitas, parte da información do sistema e parte do contido das páxinas</translation>
 <translation id="7757787379047923882">O texto compartiuse desde <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Seleccionar data e hora</translation>
 <translation id="7762668264895820836">Tarxeta SD <ph name="SD_CARD_NUMBER" /></translation>

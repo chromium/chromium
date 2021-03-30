@@ -282,6 +282,7 @@
 <translation id="3928666092801078803">내 데이터 결합하기</translation>
 <translation id="3929457972718048006">주소</translation>
 <translation id="3943492037546055397">비밀번호</translation>
+<translation id="3967266340354872733">개인정보 보호, 보안, 데이터 수집에 관한 추가 설정을 보려면 <ph name="BEGIN_LINK" />동기화<ph name="END_LINK" /> 및 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />를 참고하세요.</translation>
 <translation id="3967822245660637423">다운로드 완료</translation>
 <translation id="3968505803272650567">관심분야 관리</translation>
 <translation id="3989635538409502728">로그아웃</translation>
@@ -556,6 +557,7 @@
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">비밀번호를 내보낼 수 없음</translation>
 <translation id="6748108480210050150">올린이</translation>
+<translation id="6760509555861141183">최근 탭으로 돌아가기</translation>
 <translation id="6780034285637185932">우편번호</translation>
 <translation id="6785453220513215166">비정상 종료 보고서 보내는 중...</translation>
 <translation id="679325081238418596">모든 기기에서 북마크, 방문 기록, 비밀번호, 기타 설정을 동기화합니다.</translation>
@@ -607,7 +609,6 @@
 <translation id="7272437679830969316">신원을 인증할 수 없습니다. 비밀번호가 복사되지 않았습니다.</translation>
 <translation id="7291368939935408496">비밀번호 준비 중...</translation>
 <translation id="7293171162284876153">동기화를 시작하려면 'Chrome 데이터 동기화'를 사용 설정하세요.</translation>
-<translation id="7299000566397147023">가장 최근에 사용한 탭 열기</translation>
 <translation id="7313347584264171202">여기에서 시크릿 탭을 확인할 수 있습니다</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% 다운로드됨</translation>
 <translation id="7340958967809483333">디스커버용 옵션</translation>

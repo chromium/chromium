@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Sin conexión, Chrome no puede buscar actualizaciones.</translation>
 <translation id="5854621639439811139">Sugerencia de Chrome: Algunos botones ahora están en la parte inferior de la pantalla, como Retroceder, Avanzar y Buscar.</translation>
+<translation id="5876773482963502140">Si permites que Chrome conozca tu ubicación, la enviará a los sitios que permitas. Es posible que los sitios soliciten tu ubicación cuando tienen información local para mostrarte, como noticias o tiendas cercanas.</translation>
 <translation id="6036420186814142909">Google Chrome tiene funciones que te ayudan a administrar tus datos de Internet y la rapidez con la que puedes cargar páginas web.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Cambia a Chrome</translation>
@@ -90,5 +91,4 @@
   2. Presiona App de navegador predeterminada.
   3. Selecciona Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Si permites que Chrome conozca tu ubicación, la enviará a tu motor de búsqueda predeterminado y a los sitios que permitas. Es posible que los sitios soliciten tu ubicación cuando tienen información local para mostrarte, como noticias o tiendas cercanas.</translation>
 </translationbundle>

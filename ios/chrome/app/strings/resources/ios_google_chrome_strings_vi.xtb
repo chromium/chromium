@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Không có kết nối mạng, Chrome không thể kiểm tra xem có bản cập nhật mới nào không</translation>
 <translation id="5854621639439811139">Mẹo dành cho Chrome. Một số nút hiện nằm ở cuối màn hình, chẳng hạn như Quay lại, Tiến lên và Tìm kiếm.</translation>
+<translation id="5876773482963502140">Nếu bạn cho Chrome biết vị trí của bạn, thì Chrome sẽ gửi thông tin này đến mọi trang web mà bạn cho phép. Các trang web có thể yêu cầu thông tin vị trí khi có thông tin địa phương để hiển thị cho bạn, chẳng hạn như tin tức hoặc cửa hàng ở gần.</translation>
 <translation id="6036420186814142909">Google Chrome có tính năng giúp bạn quản lý dữ liệu Internet của mình và tốc độ mà bạn có thể tải trang web.
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Chuyển sang Chrome</translation>
@@ -90,5 +91,4 @@
   2. Nhấn vào Ứng dụng trình duyệt mặc định
   3. Chọn Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Nếu bạn để cho Chrome biết thông tin vị trí của mình, thì Chrome sẽ gửi thông tin đó đến công cụ tìm kiếm mặc định và mọi trang web mà bạn cho phép. Khi có thông tin địa phương để hiển thị cho bạn, các trang web có thể yêu cầu thông tin vị trí, chẳng hạn như tin tức hoặc cửa hàng ở gần.</translation>
 </translationbundle>

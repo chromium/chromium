@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">පිරීම අසාර්ථක විය</translation>
 <translation id="2860954141821109167">මෙම උපාංගය මත දුරකථන යෙදුමක් සබල කර තිබීම තහවුරු කර ගන්න</translation>
 <translation id="2870560284913253234">අඩවිය</translation>
-<translation id="2876369937070532032">ඔබේ ආරක්‍ෂාව අවදානමේ තිබෙන විට, Google වෙත ඔබ පැමිණෙන සමහර පිටුවල URL යවන්න</translation>
 <translation id="2888126860611144412">Chrome ගැන</translation>
 <translation id="2891154217021530873">පිටුව පූරණය නවත්වන්න</translation>
 <translation id="2892647708214602204">මෙම ගොනුව සූදානම් වූ විට ඔබ දැනුම්දීමක් දකියි</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">තවත් විකල්ප බොත්තමෙන් ඔබ කොපමණ දත්ත සුරැක ඇතිදැයි බලන්න</translation>
 <translation id="3166827708714933426">ටැබ සහ කවුළු කෙටි මං</translation>
 <translation id="3169472444629675720">අනාවරණය</translation>
-<translation id="3181954750937456830">සුරක්ෂිත බ්‍රවුස් කිරීම (අනතුරුදායක අඩවිවලින් ඔබව සහ ඔබේ උපාංගය ආරක්ෂා කරයි)</translation>
 <translation id="3205824638308738187">බොහෝ දුරට අවසානයි!</translation>
 <translation id="3207960819495026254">පිටුසලකුණු කළ</translation>
 <translation id="3208584281581115441">දැන් පරීක්‍ෂා කරන්න</translation>
@@ -585,7 +583,6 @@
 <translation id="5011311129201317034"><ph name="SITE" /> හට සම්බන්ධ වීමට අවශ්‍යයි</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">ඉඩදෙන්න</translation>
-<translation id="5040262127954254034">රහස්‍යතාවය</translation>
 <translation id="5087580092889165836">කාඩ්පත එක් කරන්න</translation>
 <translation id="5091249083535528968">දීර්ඝ කළ භාවිත දත්ත</translation>
 <translation id="509429900233858213">දෝශයක් ඇතිවිය.</translation>
@@ -638,6 +635,7 @@
 <translation id="5441522332038954058">ලිපින තීරුව වෙත පනින්න</translation>
 <translation id="544776284582297024">ටැබ් විවෘත කිරීමට සහ විවිධ පිටු එකවර බැලීමට, ටැබ් විවෘත කරන්න බොත්තම තට්ටු කරන්න</translation>
 <translation id="545042621069398927">ඔබේ බාගැනීම වේගවත් කරමින්.</translation>
+<translation id="5454166040603940656"><ph name="PROVIDER" /> සමඟ</translation>
 <translation id="5456381639095306749">පිටුව බාගන්න</translation>
 <translation id="548278423535722844">සිතියම් යෙදුම තුළ විවෘත කරන්න</translation>
 <translation id="5483197086164197190">Chrome සංචාලනය කරන්න</translation>
@@ -864,7 +862,6 @@
 <translation id="6813446258015311409">Chrome වෙත පුරන්න, විවෘතයි.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, ටැබය, තෝරන ලදි</translation>
-<translation id="6845325883481699275">Chrome ආරක්ෂාව වැඩි දියුණුවට උදවු කරන්න</translation>
 <translation id="6846298663435243399">පූර්ණය වෙමින්...</translation>
 <translation id="6850409657436465440">ඔබේ බාගැනීම තවමත් සිදු වෙමින් පවතී</translation>
 <translation id="6850830437481525139">පටිති <ph name="TAB_COUNT" /> ක් වසන ලදී</translation>
@@ -992,7 +989,6 @@
 <translation id="7704317875155739195">සෙවීම් සහ URL ලිපින ස්වයංව සම්පූර්ණ කරන්න</translation>
 <translation id="7707922173985738739">ජංගම දත්ත භාවිත කරන්න</translation>
 <translation id="7725024127233776428">ඔබ පිටුසන් කරන පිටු මෙහි දිස් වෙති</translation>
-<translation id="7746457520633464754">අනතුරුදායක යෙදුම් සහ වෙබ් අඩවි අනාවරණ කිරීමට, Chrome විසින් ඔබ පැමිණෙන සමහර පිටුවල URL, සීමිත පද්ධති තොරතුරු, සහ සමහර පිටු අන්තර්ගතය Google වෙත යවනු ලැබේ</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> වෙතින් බෙදා ගත් පාඨය</translation>
 <translation id="7761849928583394409">දිනය සහ වේලාව තෝරන්න</translation>
 <translation id="7762668264895820836">SD පත <ph name="SD_CARD_NUMBER" /></translation>

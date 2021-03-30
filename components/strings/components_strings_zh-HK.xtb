@@ -147,7 +147,7 @@
 <translation id="1462951478840426066">使用電腦上的字型，以便製作高傳真度內容</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">向左</translation>
-<translation id="1468653229182955856">您的驗證碼是 <ph name="ONE_TIME_CODE" />；如要以 <ph name="EMBEDDED_ORIGIN" /> 的身分繼續使用 <ph name="TOP_ORIGIN" />，就必須輸入此驗證碼</translation>
+<translation id="1468653229182955856">您的 <ph name="EMBEDDED_ORIGIN" /> 驗證碼是 <ph name="ONE_TIME_CODE" />。您需要輸入此驗證碼，才能繼續瀏覽 <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">顯示更多</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>

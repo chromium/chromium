@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">ॲप्लिकेशन आवृत्ती</translation>
 <translation id="1430915738399379752">प्रिंट</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> शेअर करू शकत नाही</translation>
+<translation id="147113415845704694">“आजचे हवामान कसे आहे?” असे म्हणून पाहा</translation>
 <translation id="1477626028522505441">सर्व्हर समस्यांमुळे <ph name="FILE_NAME" /> डाउनलोड अयशस्वी झाले.</translation>
 <translation id="1492417797159476138">तुम्ही या साइटसाठी आधीच वापरकर्ता नाव सेव्ह केले आहे</translation>
 <translation id="1506061864768559482">शोध इंजीन</translation>
@@ -268,7 +269,6 @@
 <translation id="2856503607207334158">साइन इन करता आले नाही</translation>
 <translation id="2860954141821109167">या डिव्हाइसवर फोन अ‍ॅप सुरू केले असल्याची खात्री करा</translation>
 <translation id="2870560284913253234">साइट</translation>
-<translation id="2876369937070532032">तुमची सुरक्षा धोक्यात असते तेव्हा, तुम्ही भेट दिलेल्या काही पेजचे URL Google ला पाठवते</translation>
 <translation id="2888126860611144412">Chrome बद्दल</translation>
 <translation id="2891154217021530873">पृष्ठ लोड करणे थांबवा</translation>
 <translation id="2892647708214602204">ही फाइल तयार होईल तेव्हा तुम्हाला सूचना दिसेल</translation>
@@ -311,7 +311,6 @@
 <translation id="3157842584138209013">आणिखी पर्याय बटणावरून तुम्ही किती डेटा सेव्ह केला आहे ते पहा</translation>
 <translation id="3166827708714933426">टॅब आणि विंडो शॉर्टकट</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">सुरक्षित ब्राउझिंग (तुम्हाला आणि तुमच्या डिव्हाइसना धोकादायक साइटपासून सुरक्षित ठेवते)</translation>
 <translation id="3205824638308738187">जवळजवळ पूर्ण झाले!</translation>
 <translation id="3207960819495026254">बुकमार्क केलेली</translation>
 <translation id="3208584281581115441">आता तपासा</translation>
@@ -505,6 +504,7 @@
 <translation id="4561979708150884304">कनेक्शन नाही</translation>
 <translation id="4565377596337484307">पासवर्ड लपवा</translation>
 <translation id="4572422548854449519">व्यवस्थापित केलेल्या खात्यामध्ये साइन इन करा</translation>
+<translation id="4576892426230499203">पडताळणी करण्याचा दुसरा पर्याय वापरून पाहा</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# मिनिटापूर्वी}other{# मिनिटांपूर्वी}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">हे <ph name="CREATION_TIME" /> पासूनचे ऑफलाइन पेज आहे आणि ऑनलाइन आवृत्तीपेक्षा वेगळे असू शकते.</translation>
@@ -570,6 +570,7 @@
 <translation id="49268022542405662">तुमचे पासवर्ड एखादी मजकूर फाइल म्हणून एक्सपोर्ट आणि डाउनलोड केले जातील. गंतव्य फोल्डरचा अ‍ॅक्सेस असलेल्या कोणालाही आणि कोणत्याही अ‍ॅपसाठी ते दृश्यमान असतील.</translation>
 <translation id="4932247056774066048"><ph name="DOMAIN_NAME" /> द्वारे व्यवस्थापित केलेल्या खात्यामधून तुम्ही साइन आउट करत असल्यामुळे, या डिव्हाइसवरून Chrome डेटा हटवला जाईल. तो तुमच्या Google खात्यामध्ये तसाच राहिल.</translation>
 <translation id="4936039914467572121">या साइटवर झटपट जा</translation>
+<translation id="4941179133499732445">तुमचा आवाज वापरून शोधण्यासाठी माइकवर टॅप करा</translation>
 <translation id="4943703118917034429">आभासी वास्तविकता</translation>
 <translation id="4943872375798546930">परिणाम नाहीत</translation>
 <translation id="4961107849584082341">या पेजचे कोणत्याही भाषेत भाषांतर करा</translation>
@@ -584,7 +585,7 @@
 <translation id="5011311129201317034"><ph name="SITE" /> कनेक्ट करू इच्छिते</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">परवानगी द्या</translation>
-<translation id="5040262127954254034">गोपनीयता</translation>
+<translation id="5061533557687621530">हवामान पाहण्यासाठी, माइकवर टॅप करा आणि “आजचे हवामान कसे आहे?” असे म्हणा</translation>
 <translation id="5087580092889165836">कार्ड जोडा</translation>
 <translation id="5091249083535528968">वाढलेला वापर डेटा</translation>
 <translation id="509429900233858213">एक एरर आली आहे.</translation>
@@ -599,6 +600,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{एक डाउनलोड होऊ शकला नाही.}other{# डाउनलोड होऊ शकले नाहीत.}}</translation>
 <translation id="5170568018924773124">फोल्डरमध्ये दर्शवा</translation>
 <translation id="5184329579814168207">Chrome मध्ये उघडा</translation>
+<translation id="5188992787241350004">तुमचा आवाज वापरून शोधा</translation>
 <translation id="5191251636205085390">तृतीय पक्षाच्या कुकी बदलण्याचा उद्देश असलेल्या नवीन तंत्रज्ञान आणि ते कसे नियंत्रित करायचे याविषयी जाणून घ्या</translation>
 <translation id="5193988420012215838">तुमच्या क्लिपबोर्डवर कॉपी केले</translation>
 <translation id="5199929503336119739">कार्य प्रोफाइल</translation>
@@ -637,6 +639,7 @@
 <translation id="5441522332038954058">अ‍ॅड्रेस बारवर जा</translation>
 <translation id="544776284582297024">टॅब उघडण्यासाठी आणि एकाच वेळी वेगवेगळ्या पेजना भेट देण्यासाठी, टॅब उघडा बटणावर टॅप करा</translation>
 <translation id="545042621069398927">तुमच्या डाउनलोडचा वेग वाढवत आहे.</translation>
+<translation id="5454166040603940656"><ph name="PROVIDER" /> सह</translation>
 <translation id="5456381639095306749">पेज डाउनलोड करा</translation>
 <translation id="548278423535722844">नकाशे ॲपमध्ये उघडा</translation>
 <translation id="5483197086164197190">Chrome नेव्हिगेट करा</translation>
@@ -777,6 +780,7 @@
 <translation id="6316139424528454185">Android आवृत्तीला सपोर्ट नाही</translation>
 <translation id="6324034347079777476">Android सिस्‍टीम सिंक अक्षम केले</translation>
 <translation id="6324977638108296054">हायलाइट करण्यासाठी लिंक तयार करू शकत नाही</translation>
+<translation id="6324997754869598316">(एरर <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> द्वारे शेअर करा</translation>
 <translation id="6337234675334993532">एंक्रिप्शन</translation>
 <translation id="6341580099087024258">फाइल कुठे सेव्ह करायच्या ते विचारा</translation>
@@ -793,6 +797,7 @@
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> वरील <ph name="ERROR_CODE" /></translation>
 <translation id="6404511346730675251">बुकमार्क संपादित करा</translation>
 <translation id="6406506848690869874">Sync</translation>
+<translation id="6407224748847589805">तुमच्या कॉंप्युटरशी कनेक्ट करू शकत नाही. पडताळणी करण्याचा दुसरा पर्याय वापरून पाहा</translation>
 <translation id="6410404864818553978">साधारण वापर डेटा</translation>
 <translation id="6410883413783534063">एकाच वेळी वेगवेगळ्या पेजना भेट देण्यासाठी टॅब उघडा</translation>
 <translation id="6412673304250309937">Chrome मध्ये स्टोअर केलेल्या असुरक्षित साइटच्या सूचीमध्ये URL तपासतो. साइटने तुमचा पासवर्ड चोरण्याचा प्रयत्न केल्यास किंवा तुम्ही हानीकारक फाइल डाउनलोड केल्यावर, Chrome, पेज आशयाच्या भागांसह, URL सुरक्षित ब्राउझिंग कडे पाठवू शकतो.</translation>
@@ -861,7 +866,6 @@
 <translation id="6813446258015311409">Chrome मध्ये साइन इन करा, उघडले.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> हा टॅब निवडला</translation>
-<translation id="6845325883481699275">Chrome सुरक्षेमध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="6846298663435243399">लोड करत आहे...</translation>
 <translation id="6850409657436465440">तुमचे डाउनलोड अजून प्रगतीपथावर आहे</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> टॅब बंद केले</translation>
@@ -989,7 +993,6 @@
 <translation id="7704317875155739195">ऑटोकंप्लीट शोध आणि URL</translation>
 <translation id="7707922173985738739">मोबाइल डेटा वापरा</translation>
 <translation id="7725024127233776428">तुम्ही बुकमार्क केलेली पेज येथे दिसतील</translation>
-<translation id="7746457520633464754">धोकादायक ॲप्स आणि साइट शोधण्यासाठी, Chrome तुम्ही भेट दिलेल्या काही पेजचे URL, मर्यादित सिस्टमची माहिती आणि काही पेजचा आशय Google कडे पाठवतो</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> वरून शेअर केलेला मजकूर</translation>
 <translation id="7761849928583394409">तारीख आणि वेळ निवडा</translation>
 <translation id="7762668264895820836">SD कार्ड <ph name="SD_CARD_NUMBER" /></translation>

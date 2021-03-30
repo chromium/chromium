@@ -396,6 +396,7 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">तपाईंले उच्च कन्ट्रास्ट मोडको किबोर्ड सर्टकट थिच्नुभयो। तपाईं यसलाई सक्रिय गर्न चाहनुहुन्छ?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4333628967105022692">एकभन्दा बढी प्रयोगकर्ताहरू साइन इन अवस्थामा हुँदा Lacros ले काम गर्दैन।</translation>
 <translation id="4338109981321384717">म्याग्निफाइङ्ग ग्लास</translation>
 <translation id="4351433414020964307">सहायक लोड हुँदैछ...</translation>
 <translation id="4356930093361201197">उच्च कन्ट्रास्ट मोड</translation>
@@ -968,6 +969,7 @@
 <translation id="9091626656156419976">हटाइएको प्रदर्शन <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">फोन मौन राख्नुहोस्</translation>
 <translation id="9099154003160514616">Lacros को अपडेट उपलब्ध छ</translation>
+<translation id="9105450214093926548">Lacros ब्राउजर चलिरहेका बेला अर्का प्रयोगकर्ताले साइन इन गर्न मिल्दैन। कृपया Lacros मा अर्को ब्राउजर प्रोफाइल प्रयोग गर्नुहोस् वा Lacros बन्द गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="9133335900048457298">संरक्षित सामग्री रेकर्ड गर्न मिल्दैन</translation>
 <translation id="9151726767154816831">अद्यावधिक गर्न रिस्टार्ट गरी powerwash गर्नुहोस्</translation>
 <translation id="9166331175924255663">नजिकैका यन्त्रसँग सेयर गर्ने सुविधाको उच्च भिजिबिलिटी टगल गर्नुहोस्।</translation>

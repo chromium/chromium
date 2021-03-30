@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Zobraziť podrobnosti</translation>
 <translation id="1030706264415084469"><ph name="URL" /> chce natrvalo ukladať veľké množstvo dát vo vašom zariadení</translation>
 <translation id="1032854598605920125">Otočiť v smere hodinových ručičiek</translation>
+<translation id="1036224116832931580">Hra s dinosaurom: klepnutím skočte a hrajte</translation>
 <translation id="1036348656032585052">Vypnúť</translation>
 <translation id="1038106730571050514">Zobraziť návrhy</translation>
 <translation id="1038842779957582377">neznámy názov</translation>
@@ -275,6 +276,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="192020519938775529">{COUNT,plural, =0{Žiadne}=1{1 web}few{# weby}many{# webu}other{# webov}}</translation>
 <translation id="1945968466830820669">Môžete stratiť prístup do účtu svojej organizácie alebo vám niekto môže ukradnúť totožnosť. Chromium odporúča, aby ste si ihneď zmenili heslo.</translation>
 <translation id="1947454675006758438">Zošiť spinkou vpravo hore</translation>
+<translation id="1958218078413065209">Vaše najvyššie skóre je <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Pomôžte zlepšovať bezpečnosť na internete pre všetkých odosielaním <ph name="BEGIN_WHITEPAPER_LINK" />webových adries a obsahu niektorých stránok, ktoré navštevujete, ako aj obmedzených informácií o systéme<ph name="END_WHITEPAPER_LINK" /> Googlu. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Pravidlá ochrany súkromia<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Záložky (<ph name="DOMAIN" />)</translation>
 <translation id="1973335181906896915">Chyba serializácie</translation>
@@ -541,6 +543,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ak chcete spustiť kontrolu bezpečnosti v nastaveniach Chromu, stlačte Tab a potom Enter</translation>
 <translation id="3061707000357573562">Služba opráv</translation>
 <translation id="3064966200440839136">Ak zaplatíte pomocou externej aplikácie, opustíte režim inkognito. Chcete pokračovať?</translation>
+<translation id="306573536155379004">Hra bola spustená.</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3086579638707268289">Vaša aktivita na internete je sledovaná</translation>
 <translation id="3087734570205094154">Spodok</translation>
@@ -1527,6 +1530,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6934672428414710184">Meno pochádza z vášho účtu Google</translation>
 <translation id="6944692733090228304">Zadali ste heslo na webe, ktorý nie je spravovaný organizáciou <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Ak chcete, aby bol váš účet chránený, nepoužívajte jeho heslo pre iné aplikácie a weby.</translation>
 <translation id="6945221475159498467">Vybrať</translation>
+<translation id="6948051842255602737">Hra sa skončila, vaše skóre je <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Ak chcete zobraziť spôsoby a požiadavky vyzdvihnutia, vyberte adresu</translation>
 <translation id="6949872517221025916">Obnovenie hesla</translation>
 <translation id="6950684638814147129">Chyba pri analyzovaní hodnoty JSON: <ph name="ERROR" /></translation>
@@ -1809,6 +1813,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7956713633345437162">Mobilné záložky</translation>
 <translation id="7961015016161918242">Nikdy</translation>
 <translation id="7966803981046576691">Typ účtu úlohy</translation>
+<translation id="79682505114836835">Hodnota <ph name="VALUE" /> nie je platný hex kód farby.</translation>
 <translation id="7976214039405368314">Príliš veľa žiadostí</translation>
 <translation id="7977538094055660992">Zariadenie výstupu</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1936,6 +1941,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8446884382197647889">Ďalšie informácie</translation>
 <translation id="8457125768502047971">Bez časového obmedzenia</translation>
 <translation id="8461694314515752532">Šifrovať synchronizované údaje pomocou vlastnej prístupovej frázy synchronizácie</translation>
+<translation id="8463101686637053101">Hra s dinosaurom: stlačením medzerníka skočte a hrajte</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kreditná karta}few{# kreditné karty}many{# kreditnej karty}other{# kreditných kariet}}</translation>
 <translation id="8473863474539038330">Adresy a ďalšie údaje</translation>
 <translation id="8474910779563686872">Zobraziť podrobnosti o vývojárovi</translation>
@@ -2072,6 +2078,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8996941253935762404">Webové stránky, ktoré sa chystáte navštíviť, obsahujú škodlivé programy</translation>
 <translation id="8997023839087525404">Server prezentoval certifikát, ktorý nebol zverejnený pomocou pravidla transparentnosti certifikátov. V prípade niektorých certifikátov sa táto podmienka vyžaduje s cieľom zaistiť ich dôveryhodnosť a ochranu proti útočníkom.</translation>
 <translation id="9001074447101275817">Proxy server <ph name="DOMAIN" /> vyžaduje používateľské meno a heslo.</translation>
+<translation id="9001963517402879850">Skočte!</translation>
 <translation id="9004367719664099443">Prebieha relácia VR</translation>
 <translation id="9005998258318286617">Dokument PDF sa nepodarilo načítať.</translation>
 <translation id="9008201768610948239">Ignorovať</translation>

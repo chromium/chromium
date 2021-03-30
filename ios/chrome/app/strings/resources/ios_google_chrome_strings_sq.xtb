@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Jashtë linje. Chrome nuk mund të kontrollojë për përditësime</translation>
 <translation id="5854621639439811139">Këshillë për Chrome. Disa butona ndodhen tani në fund të ekranit tënd, si p.sh. "Prapa", "Përpara" dhe "Kërko".</translation>
+<translation id="5876773482963502140">Nëse lejon që Chrome të dijë vendndodhjen tënde, Chrome e dërgon atë te çdo sajt që ti lejon. Sajtet mund të kërkojnë për vendndodhjen tënde kur ato kanë informacione lokale për të të shfaqur, si dyqanet në afërsi ose lajme.</translation>
 <translation id="6036420186814142909">Google Chrome ka funksione që të ndihmojnë të menaxhosh të dhënat e internetit dhe sa shpejt mund të ngarkosh faqet e uebit. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Kalo te Chrome</translation>
 <translation id="6238746320622508509">Lejo që Chrome t'i kyçë skedat "e fshehta".</translation>
@@ -89,5 +90,4 @@
   2. Trokit tek "Aplikacioni i parazgjedhur i shfletuesit"
   3. Zgjidh Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Nëse lejon që Chrome të dijë vendndodhjen tënde, Chrome e dërgon atë te motori i parazgjedhur i kërkimit dhe çdo sajt që ti lejon. Sajtet mund të kërkojnë për vendndodhjen tënde kur ato kanë informacione lokale për të të shfaqur, si dyqanet në afërsi ose lajme.</translation>
 </translationbundle>

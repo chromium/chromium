@@ -282,6 +282,7 @@ Gehen Sie so vor:</translation>
 <translation id="3928666092801078803">Daten zusammenführen</translation>
 <translation id="3929457972718048006">Adressen</translation>
 <translation id="3943492037546055397">Passwörter</translation>
+<translation id="3967266340354872733">Weitere Einstellungen in Verbindung mit Datenschutz, Sicherheit und der Erhebung von Daten finden Sie unter <ph name="BEGIN_LINK" />Synchronisierung<ph name="END_LINK" /> und <ph name="BEGIN_LINK" />Google-Dienste<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
 <translation id="3968505803272650567">Interessen verwalten</translation>
 <translation id="3989635538409502728">Abmelden</translation>
@@ -556,6 +557,7 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Passwörter können nicht exportiert werden</translation>
 <translation id="6748108480210050150">Von</translation>
+<translation id="6760509555861141183">Zurück zum Tab „Zuletzt geöffnet“</translation>
 <translation id="6780034285637185932">Postleitzahl</translation>
 <translation id="6785453220513215166">Absturzbericht wird gesendet…</translation>
 <translation id="679325081238418596">Rufen Sie Ihre Lesezeichen, Ihren Verlauf, Ihre Passwörter und andere Einstellungen auf allen Ihren Geräten ab</translation>
@@ -607,7 +609,6 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="7272437679830969316">Ihre Identität konnte nicht bestätigt werden. Das Passwort wurde nicht kopiert.</translation>
 <translation id="7291368939935408496">Passwörter werden zum Exportieren vorbereitet…</translation>
 <translation id="7293171162284876153">Aktivieren Sie "Chrome-Daten synchronisieren", um die Synchronisierung zu starten.</translation>
-<translation id="7299000566397147023">Zuletzt verwendeten Tab öffnen</translation>
 <translation id="7313347584264171202">Hier werden Ihre Inkognitotabs angezeigt</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> % heruntergeladen</translation>
 <translation id="7340958967809483333">Optionen für Discover</translation>

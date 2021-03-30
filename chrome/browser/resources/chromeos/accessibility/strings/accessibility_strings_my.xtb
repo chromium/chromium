@@ -22,6 +22,8 @@
 <translation id="1120938014254001895">အပေါ်သို့ လက်နှစ်ချောင်းဖြင့် ပွတ်ဆွဲပါ</translation>
 <translation id="1126928665165112660">စာလုံးစောင်း မဟုတ်ပါ</translation>
 <translation id="113582498867142724"><ph name="NUM" /> အမယ်များ နှင့် <ph name="TAG" /> စုဆောင်းမှု</translation>
+<translation id="1146441463334103638">ဖန်သားပြင် ဖွင့်ရန် (သို့) ပိတ်ရန် ခလုတ်</translation>
+<translation id="1156488781945104845">လက်ရှိအချိန်</translation>
 <translation id="1161762950103988776">ခုန်ရန်</translation>
 <translation id="1164857107703583584">အင်တာနက်စာမျက်နှာတွင် ထိရောက်စွာ ရွှေ့ကြည့်ရန်အတွက် တိုက်ရိုက်သွားကွန်မန်းများကို အသုံးပြုနိုင်သည်။</translation>
 <translation id="1175914831232945926">ဂဏန်းများ</translation>
@@ -71,6 +73,7 @@
 <translation id="1405567553485452995">အစိမ်းဖျော့</translation>
 <translation id="1411043317877497323">လေ့ကျင့်မှုနေရာ</translation>
 <translation id="141454040365657399">စာမျက်နှာ ခေါင်းစီး</translation>
+<translation id="1417092723421264764">လက်ရှိ စာမျက်နှာ</translation>
 <translation id="1417889266572670458">ရေတပ်ပြာ</translation>
 <translation id="1431911867058218151">မက်မန်း</translation>
 <translation id="1439316808600711881">rgn</translation>
@@ -199,6 +202,7 @@
 <translation id="242998846562331953">စာတန်းထိုး</translation>
 <translation id="2435422727584637732">အပြာတောက်တောက်</translation>
 <translation id="2450814015951372393">ခြစ်ရန် အကွက်</translation>
+<translation id="2461822463642141190">လက်ရှိ</translation>
 <translation id="2462626033734746142">ရေဒီယို ခဘုတ် အုပ်စု</translation>
 <translation id="2471138580042810658">ခေါင်းစီး ၆</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{ခရေပွင့်}other{# ခရေပွင့်များ}}</translation>
@@ -244,7 +248,6 @@
 <translation id="2766299274563946262">မည်သည့် ဆဲလ်မျှ မရှိတော့ပါ</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="280499067616661124">ChromeVox က စာမျက်နှာတွင် ရှာသည်</translation>
-<translation id="2808001342598757276">ဖန်သားပြင်ကို လင်းအောင်ပြုလုပ်ရန်</translation>
 <translation id="2811019999044652585">ကိရိယာဘားတန်းနှင့် ညာဘက်အောက်ထောင့်ရှိစနစ်ဗန်းကဲ့သို့ မျက်နှာပြင်ပေါ်ရှိ အခြားအစိတ်ပိုင်းသို့သွားရန် Control+Forward ကို နှိပ်ပါ။ Chromebook ပေါ်တွင် Forward ခလုတ်သည် နံပါတ် ၂ ခလုတ်၏ အပေါ်ကပ်ရပ်တွင်ရှိသည်။</translation>
 <translation id="2811204574343810641">အတန်း</translation>
 <translation id="2816868829355607410">လေ့ကျင့်မှုနေရာ- တိုက်ရိုက်သွားကွန်မန်းများ</translation>
@@ -299,6 +302,7 @@
 <translation id="3109724472072898302">ခေါက်ထား</translation>
 <translation id="311015743332597320">ညာဘက်သို့ လက်လေးချောင်းဖြင့် ပွတ်ဆွဲပါ</translation>
 <translation id="3112457281078985179">ChromeVox ကို အဖွင့်အပိတ်ပြုလုပ်ရန် Control+Alt+Z ကို အသုံးပြုပါ။</translation>
+<translation id="3115800313647508384">ဖန်သားပြင် ပိတ်မလား။</translation>
 <translation id="3131002934070407451">အောက်ပါအဖြစ် နံပါတ်များကို ဖတ်ရန်-</translation>
 <translation id="3134461040845705080">ဖတ်ရန်သာ</translation>
 <translation id="3137663468179739624">သံလွင်သီး</translation>
@@ -642,6 +646,7 @@
 <translation id="5655682562155942719">Commands များကိုကျော်</translation>
 <translation id="56637627897541303">စာသား နေရာ</translation>
 <translation id="5669637233317991674">ဤသင်ခန်းစာသို့ရွှေ့ကြည့်ရန် 'ရှာဖွေရေး + ညာညွှန်မြား' သို့မဟုတ် 'ရှာဖွေရေး + ဘယ်ညွှန်မြား' ကို နှိပ်ပါ</translation>
+<translation id="5677240841070992068">လက်ရှိတည်နေရာ</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
 <translation id="5682113568322255809">အဓိကရ</translation>
@@ -677,6 +682,7 @@
 <translation id="5901630391730855834">အၐါရောင်</translation>
 <translation id="5906974869830879618">ပင်နံပါတ် ထည့်ပါ</translation>
 <translation id="5921587111466148855">အခန်း</translation>
+<translation id="5923780477617566089">ယနေ့နေ့စွဲ</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{ညီမျှခြင်း}other{# ညီမျှခြင်း သင်္ကေတများ}}</translation>
 <translation id="5948123859135882163">ဖွဲ့စည်းမှု နှင့် ရင်းမြစ် ဆိုင်ရာ သင်္ချာ ညီမျှခြင်းများအား အဓိပ္ပါယ်ဖွင့်မှု ကစားကြည့်ရန်</translation>
 <translation id="5955304353782037793">အက်ပ်</translation>
@@ -696,9 +702,9 @@
 <translation id="6034000775414344507">မီးခိုးဖျော့</translation>
 <translation id="6036135911048686884">စူးစမ်းလေ့လာရန်ကို တို့ပါ</translation>
 <translation id="6037602951055904232">ရှေ့သို့ ရွေ့ပြောင်း</translation>
-<translation id="6044160928851315051">ဖန်သားပြင်ကို မှောင်အောင်ပြုလုပ်ရန်</translation>
 <translation id="6082768461603900813">အခြေခံလမ်းညွှန်မှု</translation>
 <translation id="609281021724813947">ယခင် ရွှေ့တုံး မရှိပါ</translation>
+<translation id="6096942799340613495">၎င်းက ဖန်သားပြင်ကို ပိတ်လိုက်သည်။ Search + ‘အလင်းတင်ခြင်း’ နှိပ်ခြင်းဖြင့် ဖန်သားပြင်ကို အချိန်မရွေး ပြန်ဖွင့်နိုင်သည်။</translation>
 <translation id="6100239002225743044">အပေါ်သို့ တစ်ကြောင်းတက်ရန်</translation>
 <translation id="6118126368611144850">Chrome အတွက် Android အက်ပ်များ။ သင့်စက်ပစ္စည်းပေါ်တွင် Play စတိုးရှိလျှင် Android အက်ပ်များဖြင့် ChromeVox ကို စမ်းကြည့်နိုင်ပါသည်။ Play စတိုးမှနေ၍ Google Chrome Canary ကို ဒေါင်းလုဒ်လုပ်၍ စမ်းသပ်ထောက်ပံ့မှုကို စမ်းကြည့်ပါ။</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -766,6 +772,7 @@
 <translation id="6696967141280706829">အမှာစကား</translation>
 <translation id="6697092096875747123">ယခင် ကွမ်ဘို အကွက်</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{အာမေဍိတ်သင်္ကေတ}other{အာမေဍိတ်သင်္ကေတ # ခု}}</translation>
+<translation id="670717715607710284">ဖန်သားပြင် ပိတ်ရန်</translation>
 <translation id="6710213216561001401">အရင်</translation>
 <translation id="6714813999819678458">ယခင် အဆင့် ၂ ခေါင်းစီး</translation>
 <translation id="6730312624811567147">'ပင်မစာမျက်နှာ သို့မဟုတ် အဆုံး' အတွက် 'ဘယ် သို့မဟုတ် ညာ ရှာဖွေမှု'၊ 'ပင်မစာမျက်နှာ သို့မဟုတ် အဆုံးကို ထိန်းချုပ်မှု' အတွက် 'ဘယ် သို့မဟုတ် ညာ ရှာဖွေမှု ထိန်းချုပ်စနစ်'၊ 'စာမျက်နှာ အပေါ် သို့မဟုတ် အောက်' အတွက် 'အပေါ် သို့မဟုတ် အောက် ရှာဖွေမှု' ကို အသုံးပြုပါ</translation>
@@ -945,6 +952,7 @@
 <translation id="8037651341025652929">နိဂုံး</translation>
 <translation id="8042761080832772327">စာသား တည်းဖြတ်ရန်၊ ထည့်သွင်းမှု ရှာဖွေရန်</translation>
 <translation id="8049189770492311300">တိုင်မား</translation>
+<translation id="8057472523431225012">လက်ရှိ အဆင့်</translation>
 <translation id="8058636807889143711">နောက်ထပ် သင်္ချာညီမျှချင်း မရှိပါ</translation>
 <translation id="8066678206530322333">နဖူးစီးစာတန်း</translation>
 <translation id="8076492880354921740">တဘ်များ</translation>
@@ -962,6 +970,7 @@
 <translation id="816818801578874684">၎င်းသည် ပထမခေါင်းစဉ် ဖြစ်သည်။ နောက်ခေါင်းစဉ်သို့ သွားရန် 'ရှာဖွေရေး + H' နှိပ်ပါ။</translation>
 <translation id="8173092779156526980">ဘယ်ဘက်သို့ လက်လေးချောင်းဖြင့် ပွတ်ဆွဲပါ</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{မျဉ်းသားမှု}other{# မျဉ်းသားမှုများ}}</translation>
+<translation id="817529114347680055">ဖန်သားပြင် ဖွင့်ရန်</translation>
 <translation id="8179976553408161302">အင်တာ</translation>
 <translation id="8184828902145951186">လိုင်း</translation>
 <translation id="8186185314313222077">မျက်နှာပြင်အပြည့် ကစားကြည့်ပါ</translation>
@@ -984,7 +993,6 @@
 <translation id="8316881042119029234">ဇာအဟောင်း</translation>
 <translation id="8324974933005349667">'စာသားမှ စကားပြောသို့ ပြောင်းခြင်း' ဆက်တင်များကို ပုဂ္ဂိုလ်ရေးသီးသန့် ပြုလုပ်ရန်</translation>
 <translation id="8326783648485765113">မြက်ခင်းစိမ်း</translation>
-<translation id="8328063869313048659">မှောင်သည့်မျက်နှာပြင်ကို အဖွင့်အပိတ်လုပ်ရန်</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{ပေါင်}other{# ပေါင် သင်္ကေတ}}</translation>
 <translation id="8378855320830505539">ဒေသ</translation>
 <translation id="8382679411218029383">လိုင်းအတွင်းနှင့် စာရင်းတွင် အလိုအလျောက်ဖြည့်စွက်ခြင်း</translation>

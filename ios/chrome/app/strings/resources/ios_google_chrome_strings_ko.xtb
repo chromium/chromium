@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">오프라인 상태이므로 Chrome에서 업데이트를 확인할 수 없습니다.</translation>
 <translation id="5854621639439811139">Chrome 도움말. 뒤로, 앞으로, 검색과 같은 일부 버튼이 화면 하단으로 이동했습니다.</translation>
+<translation id="5876773482963502140">위치 정보 사용을 허용하면 Chrome이 권한이 부여된 사이트에 위치 정보를 전송합니다. 근처 상점 또는 뉴스와 같이 표시할 지역 정보가 있는 경우 사이트에서 위치를 요청할 수 있습니다.</translation>
 <translation id="6036420186814142909">Chrome에는 사용자가 간편하게 인터넷 데이터 및 웹페이지 로드 시간을 관리할 수 있는 기능이 있습니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Chrome으로 전환</translation>
@@ -90,5 +91,4 @@
   2. 기본 브라우저 앱을 탭합니다.
   3. Chrome을 선택합니다.</translation>
 <translation id="8540666473246803645">Chrome</translation>
-<translation id="9135668017386497357">위치 정보 사용을 허용하면 Chrome이 기본 검색엔진 및 권한이 부여된 사이트에 위치 정보를 전송합니다. 근처 상점 또는 뉴스와 같이 표시할 지역 정보가 있는 경우 사이트에서 위치를 요청할 수 있습니다.</translation>
 </translationbundle>

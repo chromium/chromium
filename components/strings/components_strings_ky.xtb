@@ -832,7 +832,7 @@
 <translation id="4165986682804962316">Сайт жөндөөлөрү</translation>
 <translation id="4171400957073367226">Текшерүү колтамгасы начар</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="4172051516777682613">Ар дайым көрсөтүлсүн</translation>
+<translation id="4172051516777682613">Ар дайым көрүнсүн</translation>
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Дагы <ph name="ITEM_COUNT" /> нерсе}other{Дагы <ph name="ITEM_COUNT" /> нерсе}}</translation>
 <translation id="4176463684765177261">Өчүк</translation>
@@ -968,7 +968,7 @@
 <translation id="4636930964841734540">Маалымат</translation>
 <translation id="464342062220857295">Функцияларды издөө</translation>
 <translation id="4644670975240021822">Тескери иретте алдыңкы бетин ылдый каратып</translation>
-<translation id="4646534391647090355">Азыр көрсөтүлсүн</translation>
+<translation id="4646534391647090355">Азыр көрүнсүн</translation>
 <translation id="4658638640878098064">Жогорку сол жагын илмек менен бекитүү</translation>
 <translation id="4660119392514473465">Жашыруун режимдеги аракеттериңиз ушул түзмөктүн башка колдонуучуларына көрүнбөйт. Бирок жүктөп алынган файлдар жана кыстармалар сакталып кала берет.</translation>
 <translation id="4668929960204016307">,</translation>
@@ -2063,7 +2063,7 @@
 <translation id="8912362522468806198">Google аккаунту</translation>
 <translation id="8913778647360618320">Төлөм ыкмаларын башкаруу баскычы. Chrome'дун жөндөөлөрүнө өтүп, төлөмдөрүңүздү жана насыя карточкасынын маалыматын башкаруу үчүн, Enter баскычын басыңыз</translation>
 <translation id="8918231688545606538">Бул шектүү баракча</translation>
-<translation id="8922013791253848639">Бул сайттагы жарнамалар дайыма көрсөтүлсүн</translation>
+<translation id="8922013791253848639">Бул сайттагы жарнамалар дайыма көрүнсүн</translation>
 <translation id="892588693504540538">Жогорку оң жагын тешүү</translation>
 <translation id="8931333241327730545">Бул карточканы Google аккаунтуңузга сактап коесузбу?</translation>
 <translation id="8932102934695377596">Саатыңыз артта</translation>
@@ -2156,7 +2156,7 @@
 <translation id="945855313015696284">Төмөнкү маалыматты текшерип, жараксыз карталарды өчүрүңүз</translation>
 <translation id="950736567201356821">Жогорку жагын үч жолу тешүү</translation>
 <translation id="961663415146723894">Төмөн жагын байлоо</translation>
-<translation id="962484866189421427">Бул мазмун башка колдонмолорго окшош жасалма колдонмолорду орнотуп коюшу же сизге көз салуу үчүн дайындарды чогултуп алышы мүмкүн. <ph name="BEGIN_LINK" />Баары бир көрсөтүлсүн<ph name="END_LINK" /></translation>
+<translation id="962484866189421427">Бул мазмун башка колдонмолорго окшош жасалма колдонмолорду орнотуп коюшу же сизге көз салуу үчүн дайындарды чогултуп алышы мүмкүн. <ph name="BEGIN_LINK" />Баары бир көрүнсүн<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Расмий курама</translation>
 <translation id="973773823069644502">Жеткирүү дарегин кошуу</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Бирөө жа жок}=1{1 нерсе}other{# нерсе}}</translation>

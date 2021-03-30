@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Tafsilotlar</translation>
 <translation id="1030706264415084469"><ph name="URL" /> saytidan katta hajmdagi ma’lumotlarni mobil qurilmangizda saqlashga ruxsat so‘rovi keldi</translation>
 <translation id="1032854598605920125">Soat mili yo‘nalishida burish</translation>
+<translation id="1036224116832931580">Dino oʻyini, boshlash va sakrash ustiga bosib, oʻyinni boshlang</translation>
 <translation id="1036348656032585052">O‘chirib qo‘yish</translation>
 <translation id="1038106730571050514">Variantlar taklif qilish</translation>
 <translation id="1038842779957582377">noma’lum ism</translation>
@@ -278,6 +279,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="192020519938775529">{COUNT,plural, =0{Yo‘q}=1{1 ta sayt}other{# ta sayt}}</translation>
 <translation id="1945968466830820669">Tashkilot hisobingiz xavf ostida va o‘g‘irlanishi mumkin. Chromium parolingizni hoziroq o‘zgartirishni tavsiya etadi.</translation>
 <translation id="1947454675006758438">Yuqori oʻngdan steplerlash</translation>
+<translation id="1958218078413065209">Eng yuqori ballingiz: <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />Ochilgan sahifalar manzillari, tizim va sahifalar<ph name="END_WHITEPAPER_LINK" /> haqidagi ayrim maʼlumotlarni Google serverlariga yuborish orqali internetdagi xavfsizlik tizimini hamma uchun yaxshilashga yordam berasiz. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Maxfiylik siyosati<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> xatcho‘plari</translation>
 <translation id="1973335181906896915">Seriyalashtirish amali bajarilmadi</translation>
@@ -546,6 +548,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome sozlamalari orqali Xavfsizlik tekshiruvini bajarish uchun avval Tab, keyin Enter tugmalarini bosing</translation>
 <translation id="3061707000357573562">Xizmatni tuzatish</translation>
 <translation id="3064966200440839136">Tashqi ilova orqali to‘lash uchun inkognito rejimidan chiqib ketasiz. Davom ettirilsinmi?</translation>
+<translation id="306573536155379004">Oʻyin boshlandi.</translation>
 <translation id="3080254622891793721">Tasvirlar</translation>
 <translation id="3086579638707268289">Internetdagi faoliyatingiz kuzatuv ostida</translation>
 <translation id="3087734570205094154">Pastga</translation>
@@ -1537,6 +1540,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6934672428414710184">Bu nom Google hisobingizga biriktirilgan</translation>
 <translation id="6944692733090228304">Siz parol kiritgan sayt <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> tomonidan boshqarilmaydi. Hisobingizni himoya qilish uchun boshqa ilova va saytlarda bu paroldan foydalanmang.</translation>
 <translation id="6945221475159498467">Tanlash</translation>
+<translation id="6948051842255602737">Oʻyin tugadi, jamlagan ballingiz: <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Olib ketish usuli va talablari bilan tanishish uchun manzilni tanlang</translation>
 <translation id="6949872517221025916">Parolni almashtirish</translation>
 <translation id="6950684638814147129">JSON qiymatini ajratishda xato yuz berdi: <ph name="ERROR" /></translation>
@@ -1819,6 +1823,7 @@ Batafsil axborot:
 <translation id="7956713633345437162">Mobil xatcho‘plar</translation>
 <translation id="7961015016161918242">Hech qachon</translation>
 <translation id="7966803981046576691">Vazifa bajarilayotgan hisob turi</translation>
+<translation id="79682505114836835">“<ph name="VALUE" />” qiymati hex formati uchun yaroqsiz.</translation>
 <translation id="7976214039405368314">Limitdan oshib ketdi</translation>
 <translation id="7977538094055660992">Chiqarish qurilmasi</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1946,6 +1951,7 @@ Batafsil axborot:
 <translation id="8446884382197647889">Batafsil</translation>
 <translation id="8457125768502047971">Noaniq</translation>
 <translation id="8461694314515752532">Sinxronlangan ma’lumotlarni kodli ibora bilan shifrlash</translation>
+<translation id="8463101686637053101">Dino oʻyini, boshlash va sakrash uchun boʻsh joy tugmasini bosing</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 ta kredit karta}other{# ta kredit karta}}</translation>
 <translation id="8473863474539038330">Mazillar va boshqa ma’lumotlar</translation>
 <translation id="8474910779563686872">Dasturchilar uchun tafsilotlarni chiqarish</translation>
@@ -2081,6 +2087,7 @@ Batafsil axborot:
 <translation id="8996941253935762404">Ehtiyot bo‘ling! Zararli DT.</translation>
 <translation id="8997023839087525404">Sertifikatning ishonchlilik belgilari haqidagi ma’lumot server tomonidan taqdim etildi lekin rasmiy qoida asosida tekshirilmadi. Bu ba’zi sertifikatlar uchun ularning ishonchliligini tasdiqlash va hujumlardan himoyalash maqsadlarida talab qilinadi.</translation>
 <translation id="9001074447101275817"><ph name="DOMAIN" /> proksi-serveri foydalanuvchi nomi va parolni talab qiladi.</translation>
+<translation id="9001963517402879850">Sakrang!</translation>
 <translation id="9004367719664099443">VR seansi faol</translation>
 <translation id="9005998258318286617">PDF hujjat yuklanmadi.</translation>
 <translation id="9008201768610948239">Tashlab ketish</translation>

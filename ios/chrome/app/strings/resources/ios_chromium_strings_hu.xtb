@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">A Chromium jelenleg nem tudja használni a kamerát</translation>
 <translation id="2195025571279539885">Szeretné, hogy a Chromium a jövőben felajánlja e webhely <ph name="LANGUAGE_NAME" /> nyelvű oldalainak fordítását?</translation>
 <translation id="2590893390871230428">Chromium-adatok szinkronizálása</translation>
-<translation id="259614951763923692">Ha engedélyezi a Chromium számára a helyadatok használatát, akkor a böngésző továbbítja az adatokat az alapértelmezett keresőmotornak, valamint azoknak a webhelyeknek is, amelyeket Ön engedélyez. A webhelyek akkor kérhetnek hozzáférést a helyadatokhoz, ha helyi információkat jelenítenek meg (pl. közeli boltok vagy helyi hírek esetén).</translation>
 <translation id="2650312721222849884">Kapcsolja be a szinkronizálást, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chromiumot használja.</translation>
 <translation id="2730884209570016437">A Chromium nem tudja használni a kamerát, mivel egy másik alkalmazás használja</translation>
 <translation id="2915596697727466327">A Chromium a Face ID segítségével ellenőrzi a jogosultságot a jelszavakhoz való hozzáféréshez.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Kijelentkezik a Chromiumból?</translation>
 <translation id="6424492062988593837">A Chromium most még jobb lett! Új verzió áll rendelkezésre.</translation>
 <translation id="6820823224820483452">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálkozzon újra holnap.</translation>
+<translation id="6827294685447036764">Ha engedélyezi a Chromium számára a helyadatok használatát, akkor a böngésző továbbítja a helyadatokat az Ön által engedélyezett webhelyeknek. A webhelyek akkor kérhetnek hozzáférést a helyadatokhoz, ha helyi információkat jelenítenek meg (pl. közeli boltok vagy helyi hírek esetén).</translation>
 <translation id="7018284295775193585">Nem lehet frissíteni a Chromiumot</translation>
 <translation id="7099326575020694068">A Chromium Osztott nézet módban nem tudja használni a kamerát</translation>
 <translation id="7118091470949186573">Mostantól bármikor használhatja a Chromiumot, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint.</translation>

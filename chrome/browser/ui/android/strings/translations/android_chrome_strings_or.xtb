@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">ସାଇନ୍-ଇନ୍ କରିବା ବିଫଳ ହୋଇଛି</translation>
 <translation id="2860954141821109167">ଏହି ଡିଭାଇସ୍‍‍ରେ ଫୋନ୍ ଆପ୍ ସକ୍ଷମ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="2870560284913253234">ସାଇଟ୍</translation>
-<translation id="2876369937070532032">ଆପଣଙ୍କର ସୁରକ୍ଷା ବିପଦରେ ଥିବା ବେଳେ, Googleକୁ ଆପଣ ଯାଇଥିବା କିଛି ପୃଷ୍ଠାର URL ପଠାଏ</translation>
 <translation id="2888126860611144412">Chrome ବିଷୟରେ</translation>
 <translation id="2891154217021530873">ପୃଷ୍ଠା ଲୋଡ୍ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2892647708214602204">ଯେତେବେଳେ ଏହି ଫାଇଲ୍ ପ୍ରସ୍ତୁତ ହୋଇଯାଏ ଆପଣ ଏକ ବିଜ୍ଞପ୍ତି ଦେଖିବେ</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">ଅଧିକ ବିକଳ୍ପ ବଟନ୍‌ରୁ ଆପଣ କେତେ ଡାଟା ସେଭ୍ କରିଛନ୍ତି ଦେଖନ୍ତୁ</translation>
 <translation id="3166827708714933426">ଟାବ୍‌ ଏବଂ ୱିଣ୍ଡୋ ସର୍ଟକଟ୍‌</translation>
 <translation id="3169472444629675720">ଖୋଜି ପାଆନ୍ତୁ</translation>
-<translation id="3181954750937456830">ସେଫ୍ ବ୍ରାଉଜିଂ (ଆପଣଙ୍କୁ ଏବଂ ଆପଣଙ୍କର ଡିଭାଇସ୍‍କୁ ବିପଜ୍ଜନକ ସାଇଟ୍‍ଗୁଡ଼ିକରୁ ରକ୍ଷା କରେ)</translation>
 <translation id="3205824638308738187">ପ୍ରାୟ ହୋଇଗଲାଣି!</translation>
 <translation id="3207960819495026254">ବୁକ୍‍ମାର୍କ କରାଯାଇଛି</translation>
 <translation id="3208584281581115441">ଏବେ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
@@ -505,6 +503,7 @@
 <translation id="4561979708150884304">କୌଣସି ସଂଯୋଗ ନାହିଁ</translation>
 <translation id="4565377596337484307">ପାସୱାର୍ଡ୍ ଲୁଚାନ୍ତୁ</translation>
 <translation id="4572422548854449519">ପରିଚାଳିତ ଆକାଉଣ୍ଟରେ ସାଇନ୍‌ ଇନ୍‌ କରନ୍ତୁ</translation>
+<translation id="4576892426230499203">ଅନ୍ୟ ଏକ ଯାଞ୍ଚକରଣ ବିକଳ୍ପ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# ମିନିଟ୍‌ ପୂର୍ବେ}other{#ମିନିଟ୍ ପୂର୍ବେ}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">ଏହି ପୃଷ୍ଠା <ph name="CREATION_TIME" />ର ଅଟେ ଏବଂ ଅନ୍‌ଲାଇନ୍ ସଂସ୍କରଣ ଠାରୁ ଅଲଗା ହୋଇପାରେ।</translation>
@@ -584,7 +583,6 @@
 <translation id="5011311129201317034"><ph name="SITE" /> ସଂଯୋଗ ହେବାକୁ ଚାହୁଁଛି</translation>
 <translation id="5016205925109358554">ସେରିଫ୍‌</translation>
 <translation id="5039804452771397117">ଅନୁମତି</translation>
-<translation id="5040262127954254034">ଗୋପନୀୟତା</translation>
 <translation id="5087580092889165836">କାର୍ଡ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5091249083535528968">ବିସ୍ତାରିତ ବ୍ୟବହାର ଡାଟା</translation>
 <translation id="509429900233858213">ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା।</translation>
@@ -637,6 +635,7 @@
 <translation id="5441522332038954058">ଆଡ୍ରେସ୍ ବାର୍‌କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="544776284582297024">ଟାବଗୁଡ଼ିକୁ ଖୋଲିବାକୁ ଏବଂ ଏକା ସମୟରେ ବିଭିନ୍ନ ପୃଷ୍ଠାକୁ ଭିଜିଟ୍ କରିବାକୁ, "ଟାବଗୁଡ଼ିକ ଖୋଲନ୍ତୁ" ବଟନରେ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="545042621069398927">ଆପଣଙ୍କ ଡାଇନ୍‌ଲୋଡ୍‌ର ଗତି ବଢ଼ାଯାଉଛି।</translation>
+<translation id="5454166040603940656"><ph name="PROVIDER" />ଙ୍କ ସହିତ</translation>
 <translation id="5456381639095306749">ପୃଷ୍ଠା ଡାଉନ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="548278423535722844">ମ୍ୟାପ୍ସ ଆପ୍‌ରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="5483197086164197190">Chrome ନାଭିଗେଟ୍ କରନ୍ତୁ</translation>
@@ -777,6 +776,7 @@
 <translation id="6316139424528454185">Android ସଂସ୍କରଣ ଅସମର୍ଥିତ ଅଟେ</translation>
 <translation id="6324034347079777476">Android ସିଷ୍ଟମ୍‌ର ସିଙ୍କ ଅକ୍ଷମ କରାଗଲା</translation>
 <translation id="6324977638108296054">ହାଇଲାଇଟ୍ କରାଯାଇଥିବା ଟେକ୍ସଟର ଲିଙ୍କକୁ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
+<translation id="6324997754869598316">(ତ୍ରୁଟି <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> ମାଧ୍ୟମରେ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="6337234675334993532">ଏନକ୍ରିପ୍ସନ୍</translation>
 <translation id="6341580099087024258">କେଉଁଠି ଫାଇଲ୍‍ଗୁଡ଼ିକୁ ସେଭ୍ କରିବେ, ପଚାରନ୍ତୁ</translation>
@@ -793,6 +793,7 @@
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" />ରେ <ph name="ERROR_CODE" /></translation>
 <translation id="6404511346730675251">ବୁକ୍‍ମାର୍କ ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="6406506848690869874">ସିଙ୍କ୍‌ କରନ୍ତୁ</translation>
+<translation id="6407224748847589805">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରରେ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ। ଅନ୍ୟ ଏକ ଯାଞ୍ଚକରଣ ବିକଳ୍ପ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="6410404864818553978">ବେସିକ୍ ବ୍ୟବହାର ଡାଟା</translation>
 <translation id="6410883413783534063">ଏକା ସମୟରେ ବିଭିନ୍ନ ପୃଷ୍ଠାକୁ ଭିଜିଟ୍‍ କରିବା ପାଇଁ ଟାବଗୁଡ଼ିକ ଖୋଲନ୍ତୁ</translation>
 <translation id="6412673304250309937">Chromeରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ଅସୁରକ୍ଷିତ ସାଇଟଗୁଡ଼ିକର ଏକ ତାଲିକା ସହିତ URLଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରେ। ଯଦି କୌଣସି ସାଇଟ୍ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଚୋରି କରିବାକୁ ଚେଷ୍ଟା କରେ କିମ୍ବା ଆପଣ ଏକ କ୍ଷତିକାରକ ଫାଇଲ୍ ଡାଉନଲୋଡ୍ କଲେ, ପୃଷ୍ଠାର କିଛି ବିଷୟବସ୍ତୁ ସହିତ URLଗୁଡ଼ିକୁ ମଧ୍ୟ Chrome ସେଫ୍ ବ୍ରାଉଜିଂକୁ ପଠାଇପାରେ।</translation>
@@ -861,7 +862,6 @@
 <translation id="6813446258015311409">Chromeରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ, ଖୋଲା ଅଛି।</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> ଟାବ୍ ଚୟନ କରାଯାଇଛି</translation>
-<translation id="6845325883481699275">Chromeର ସୁରକ୍ଷା ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
 <translation id="6846298663435243399">ଲୋଡ୍ ହେଉଛି…</translation>
 <translation id="6850409657436465440">ଆପଣଙ୍କ ଡାଉନ୍‌‌ଲୋଡ୍ ଏବେ ମଧ୍ୟ ଜାରି ଅଛି</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" />ଟି ଟାବ୍ ବନ୍ଦ କରାଯାଇଛି</translation>
@@ -989,7 +989,6 @@
 <translation id="7704317875155739195">ସନ୍ଧାନ ଓ URLଗୁଡ଼ିକୁ ସ୍ୱଚାଳିତ ଭାବେ ସମ୍ପୂର୍ଣ୍ଣ ହେବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="7707922173985738739">ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="7725024127233776428">ଏଠାରେ ଆପଣ ବୁକ୍‌ମାର୍କ କରୁଥିବା ପୃଷ୍ଠା ଦେଖାଯାଏ</translation>
-<translation id="7746457520633464754">ବିପଜ୍ଜନକ ଆପ୍ସ ଏବଂ ସାଇଟ୍‍ଗୁଡ଼ିକ ବିଷୟରେ ଜାଣିବା ପାଇଁ, Chrome ଏପରି କିଛି ପୃଷ୍ଠାର URLଗୁଡ଼ିକ ଯେଉଁଠାକୁ ଆପଣ ଯାଆନ୍ତି, ସୀମିତ ସିଷ୍ଟମ୍ ସୂଚନା ଏବଂ କିଛି ପୃଷ୍ଠାର ବିଷୟବସ୍ତୁ Googleକୁ ପଠାଇଥାଏ।</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />ରୁ ଟେକ୍ସଟ୍ ସେୟାର୍ କରାଯାଇଛି</translation>
 <translation id="7761849928583394409">ତାରିଖ ଓ ସମୟ ବାଛନ୍ତୁ</translation>
 <translation id="7762668264895820836">SD କାର୍ଡ <ph name="SD_CARD_NUMBER" /></translation>

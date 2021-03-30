@@ -53,6 +53,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Van mreže, Chrome ne može provjeravati ima li ažuriranja</translation>
 <translation id="5854621639439811139">Chrome savjet. Neka dugmad se sada nalaze na dnu ekrana, kao što su dugmad za nazad, naprijed i pretraživanje.</translation>
+<translation id="5876773482963502140">Ako dozvolite Chromeu da zna vašu lokaciju, poslat će je svim web lokacijama koje dozvolite. Web lokacije mogu tražiti vašu lokaciju kada imaju lokalne informacije koje vam mogu prikazati, kao što su prodavnice u blizini ili vijesti.</translation>
 <translation id="6036420186814142909">Google Chrome ima značajke koje vam mogu pomoći u upravljanju internetskim podacima i brzinom kojom se učitavaju web-stranice.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="6181930887571472871">Pređite na Chrome</translation>
@@ -90,5 +91,4 @@
   2. Dodirnite Zadana aplikacija preglednika
   3. Odaberite Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Ako dozvolite Chromeu da zna vašu lokaciju, poslat će je vašem zadanom pretraživaču i svim web lokacijama koje dozvolite. Web lokacije mogu tražiti vašu lokaciju kada imaju lokalne informacije koje vam mogu prikazati, kao što su prodavnice u blizini ili vijesti.</translation>
 </translationbundle>

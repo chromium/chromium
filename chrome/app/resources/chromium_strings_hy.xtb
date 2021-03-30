@@ -12,7 +12,6 @@
 <translation id="1315551408014407711">Կարգավորեք Chromium-ի ձեր նոր պրոֆիլը</translation>
 <translation id="1396446129537741364">Chromium-ը փորձում է ցուցադրել գաղտնաբառերը:</translation>
 <translation id="1414495520565016063">Դուք մուտք եք գործել Chromium:</translation>
-<translation id="1414973082589232775">Rosetta հավելվածի միջոցով պաշտպանված բովանդակություն նվագարկելու համար անհրաժեշտ է վերագործարկել Chromium-ը։</translation>
 <translation id="151962892725702025">Chromium OS-ը չկարողացավ համաժամացնել ձեր տվյալները, քանի որ Sync-ը մատչելի չէ ձեր տիրույթի համար:</translation>
 <translation id="1524282610922162960">Կիսվեք Chromium-ի ներդիրով</translation>
 <translation id="1553461853655228091">Chromium-ին անհրաժեշտ է տեսախցիկն օգտագործելու թույլտվություն՝ ձեր շրջակայքի եռաչափ քարտեզը ստեղծելու համար։</translation>
@@ -137,11 +136,11 @@
 <translation id="5480860683791598150">Chromium-ին այս կայքի համար անհրաժեշտ է ձեզ տեղորոշելու թույլտվություն</translation>
 <translation id="549669000822060376">Սպասեք` մինչ Chromium-ը տեղադրում է համակարգի նորագույն թարմացումները:</translation>
 <translation id="5496810170689441661">Chromium-ը փորձում է փոխել գաղտնաբառերը: Թույլատրելու համար մուտքագրեք Windows-ի ձեր գաղտնաբառը:</translation>
+<translation id="5527463683072221100">Բացել PDF ֆայլեր Chromium-ում</translation>
 <translation id="5623402015214259806">{0,plural, =0{Հասանելի է Chromium-ի նոր տարբերակը}=1{Հասանելի է Chromium-ի նոր տարբերակը}one{Chromium-ի նոր տարբերակը # օր է հասանելի է}other{Chromium-ի նոր տարբերակը # օր է հասանելի է}}</translation>
 <translation id="5634636535844844681">Chromium-ի համար հարկավոր է Windows 7 կամ ավելի նոր տարբերակ:</translation>
 <translation id="5653831366781983928">Վերագործարկեք Chromium-ը</translation>
 <translation id="5698481217667032250">Chromium-ը ցուցադրել այս լեզվով</translation>
-<translation id="5736967399513123100">Chromium դիտարկիչում պաշտպանված բովանդակություն նվագարկելու համար տեղադրեք Rosetta հավելվածը։ Տեղադրե՞լ հիմա։</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Բարի գալուստ Chromium</translation>
 <translation id="5895138241574237353">Վերագործարկել</translation>
@@ -192,7 +191,6 @@
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (պատճենվել է Chromium-ում)</translation>
 <translation id="6893813176749746474">Chromium-ը թարմացվել է, սակայն դուք չեք օգտագործել այն առնվազն 30 օր:</translation>
-<translation id="6897548120660295439">Rosetta հավելվածի շնորհիվ Chromium դիտարկիչը կկարողանա պաշտպանված բովանդակություն նվագարկել այս էջում։</translation>
 <translation id="691026815377248078">Զուգակցումը շարունակելու համար Chromium-ին հասանելի դարձրեք Bluetooth-ը։ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Բացել հղումը Chromium-ի ինկ&amp;ոգնիտո պատուհանում</translation>
 <translation id="6978145336957848883">Թույլ գաղտնաբառերը հեշտ է գուշակել։ Թույլատրեք Chromium-ին <ph name="BEGIN_LINK" />գաղտնաբառեր ստեղծել և պահել ձեզ համար<ph name="END_LINK" />։</translation>

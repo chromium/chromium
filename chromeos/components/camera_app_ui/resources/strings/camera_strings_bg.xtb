@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">Квадрат</translation>
 <translation id="5775960006311140197">Експертен режим</translation>
 <translation id="5869546221129391014">Таблица</translation>
+<translation id="5975083100439434680">Намаляване на мащаба</translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6073451960410192870">Спиране на записа</translation>
 <translation id="6197807149213783179">Запазване на метаданните</translation>
@@ -81,9 +82,9 @@
 <translation id="7649070708921625228">Помощ</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7670511624014457267">60 кдр/сек</translation>
-<translation id="7974782136796202581">Показване на опциите за панорамно придвижване, наклон и промяна на мащаба</translation>
 <translation id="7983668134180549431">Разпознат е текст.</translation>
 <translation id="8067883171444229417">Възпроизвеждане на видеоклипа</translation>
+<translation id="8120146556401698679">Панорамно придвижване, накланяне и промяна на мащаба</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8145038249676204903">Превключване към режима за правене на снимки</translation>
 <translation id="8239780215768881278">Моментна снимка от видеоклипа</translation>
@@ -94,6 +95,7 @@
 <translation id="8815966864175525708">Превключвател за правене на вертикална снимка</translation>
 <translation id="8828441885228359828">Възобновяване на записа</translation>
 <translation id="8870695351537079478">Записването не може да се стартира</translation>
+<translation id="8903921497873541725">Увеличаване на мащаба</translation>
 <translation id="9045155556724273246">10 секунди</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
 </translationbundle>

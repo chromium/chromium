@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">مربع</translation>
 <translation id="5775960006311140197">حالت کارشناس</translation>
 <translation id="5869546221129391014">جدولی</translation>
+<translation id="5975083100439434680">دورنمایی کردن</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="6073451960410192870">توقف ضبط</translation>
 <translation id="6197807149213783179">ذخیره فراداده</translation>
@@ -81,9 +82,9 @@
 <translation id="7649070708921625228">راهنما</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7974782136796202581">نمایش گزینه‌های حرکت دادن، کج کردن، بزرگ‌نمایی</translation>
 <translation id="7983668134180549431">نوشتار شناسایی شد.</translation>
 <translation id="8067883171444229417">پخش ویدیو</translation>
+<translation id="8120146556401698679">حرکت دادن، کج کردن، بزرگ‌نمایی</translation>
 <translation id="8131740175452115882">تأیید</translation>
 <translation id="8145038249676204903">رفتن به حالت عکس‌برداری</translation>
 <translation id="8239780215768881278">گرفتن عکس آنی از ویدیو</translation>
@@ -94,6 +95,7 @@
 <translation id="8815966864175525708">تغییر به گرفتن عکس عمودی</translation>
 <translation id="8828441885228359828">ازسرگیری ضبط</translation>
 <translation id="8870695351537079478">شروع ضبط انجام نشد</translation>
+<translation id="8903921497873541725">بزرگ‌نمایی</translation>
 <translation id="9045155556724273246">۱۰ ثانیه</translation>
 <translation id="945522503751344254">ارسال بازخورد</translation>
 </translationbundle>

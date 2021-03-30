@@ -12,7 +12,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1315551408014407711">Postavite novi Chromium profil</translation>
 <translation id="1396446129537741364">Chromium pokušava prikazati lozinke.</translation>
 <translation id="1414495520565016063">Prijavili ste se u Chromium!</translation>
-<translation id="1414973082589232775">Da koristite Rosettu za reproduciranje zaštićenih medijskih fajlova, morate ponovo pokrenuti Chromium.</translation>
 <translation id="151962892725702025">Chromium OS nije mogao sinhronizirati podatke zato što sinhronizacija nije dostupna u vašoj domeni.</translation>
 <translation id="1524282610922162960">Dijelite Chromium karticu</translation>
 <translation id="1553461853655228091">Chromiumu je potrebno odobrenje da pristupi kameri radi kreiranja 3D mape vašeg okruženja</translation>
@@ -137,11 +136,11 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="5480860683791598150">Chromiumu treba pristup vašoj lokaciji da bi je dijelio s ovom web lokacijom</translation>
 <translation id="549669000822060376">Sačekajte dok Chromium instalira najnovija ažuriranja sistema.</translation>
 <translation id="5496810170689441661">Chromium pokušava urediti lozinke. Unesite Windows lozinku da ovo omogućite.</translation>
+<translation id="5527463683072221100">Otvaraj PDF-ove u Chromiumu</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ažuriranje za Chromium je dostupno}=1{Ažuriranje za Chromium je dostupno}one{Ažuriranje za Chromium je dostupno # dan}few{Ažuriranje za Chromium je dostupno # dana}other{Ažuriranje za Chromium je dostupno # dana}}</translation>
 <translation id="5634636535844844681">Za Chromium je potreban Windows 7 ili noviji operativni sistem.</translation>
 <translation id="5653831366781983928">Ponovo pokrenite Chromium sada</translation>
 <translation id="5698481217667032250">Prikaži Chromium na ovom jeziku.</translation>
-<translation id="5736967399513123100">Da omogućite Chromiumu da reproducira zaštićene medijske fajlove, morate instalirati Rosettu. Želite li je instalirati sada?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Dobro došli u Chromium</translation>
 <translation id="5895138241574237353">Ponovo pokreni</translation>
@@ -192,7 +191,6 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopirano u Chromium)</translation>
 <translation id="6893813176749746474">Chromium je ažuriran, ali ga niste koristili najmanje 30 dana.</translation>
-<translation id="6897548120660295439">Rosetta omogućava Chromiumu da reproducira zaštićene medijske fajlove na ovoj stranici.</translation>
 <translation id="691026815377248078">Chromiumu je potreban pristup Bluetoothu da nastavi s
 uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Otvori link u anonim&amp;nom prozoru Chromiuma</translation>

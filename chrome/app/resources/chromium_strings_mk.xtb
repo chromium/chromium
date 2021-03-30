@@ -12,7 +12,6 @@
 <translation id="1315551408014407711">Поставете нов профил на Chromium</translation>
 <translation id="1396446129537741364">Chromium се обидува да покаже лозинки.</translation>
 <translation id="1414495520565016063">Најавени сте на Chromium!</translation>
-<translation id="1414973082589232775">За да користите Rosetta за пуштање заштитени аудиовизуелни содржини, треба да го рестартирате Chromium.</translation>
 <translation id="151962892725702025">Chromium ОС не може да ги синхронизира вашите податоци бидејќи синхронизацијата не е достапна за вашиот домен.</translation>
 <translation id="1524282610922162960">Споделете картичка на Chromium</translation>
 <translation id="1553461853655228091">На Chromium му треба дозвола за да пристапи до камерата и да создаде 3D-карта од вашето опкружување</translation>
@@ -137,11 +136,11 @@
 <translation id="5480860683791598150">На Chromium му треба пристап до вашата локација за да ја сподели со сајтов</translation>
 <translation id="549669000822060376">Почекајте додека Chromium ги инсталира последните системски ажурирања.</translation>
 <translation id="5496810170689441661">Chromium се обидува да измени лозинки. Внесете ја својата лозинка за Windows за да го дозволите ова.</translation>
+<translation id="5527463683072221100">Отворај PDF-формат во Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Достапно е ажурирање за Chromium}=1{Достапно е ажурирање за Chromium}one{Достапно е ажурирање за Chromium веќе # ден}other{Достапно е ажурирање за Chromium веќе # дена}}</translation>
 <translation id="5634636535844844681">Chromium бара Windows 7 или понова верзија.</translation>
 <translation id="5653831366781983928">Рестартирајте го Chromium сега</translation>
 <translation id="5698481217667032250">Прикажи го Chromium на овој јазик</translation>
-<translation id="5736967399513123100">За да му овозможите на Chromium да пушта заштитени аудиовизуелни содржини, треба да инсталирате Rosetta. Дали сакате да се инсталира сега?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Добре дојдовте во Chromium</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
@@ -192,7 +191,6 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (копирана во Chromium)</translation>
 <translation id="6893813176749746474">Chromium се ажурираше, но не сте го употребиле најмалку 30 дена.</translation>
-<translation id="6897548120660295439">Rosetta му овозможува на Chromium да пушта заштитени аудиовизуелни содржини на страницава.</translation>
 <translation id="691026815377248078">Chromium бара пристап до Bluetooth за да продолжи со 
  спарувањето. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Отвори го линкот во инко&amp;гнито прозорец на Chromium</translation>

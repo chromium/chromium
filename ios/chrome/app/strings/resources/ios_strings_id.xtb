@@ -282,6 +282,7 @@ Ikuti langkah di bawah:</translation>
 <translation id="3928666092801078803">Gabungkan data saya</translation>
 <translation id="3929457972718048006">Alamat</translation>
 <translation id="3943492037546055397">Sandi</translation>
+<translation id="3967266340354872733">Untuk setelan lainnya yang berkaitan dengan privasi, keamanan, dan pengumpulan data, lihat <ph name="BEGIN_LINK" />Sinkronisasi<ph name="END_LINK" /> dan <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Download selesai</translation>
 <translation id="3968505803272650567">Kelola Minat</translation>
 <translation id="3989635538409502728">Keluar</translation>
@@ -556,6 +557,7 @@ Coba gunakan sandi yang unik untuk setiap situs.</translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Tidak Dapat Mengekspor Sandi</translation>
 <translation id="6748108480210050150">Dari</translation>
+<translation id="6760509555861141183">Kembali ke Tab Terbaru</translation>
 <translation id="6780034285637185932">Kode Pos</translation>
 <translation id="6785453220513215166">Mengirim laporan kerusakan...</translation>
 <translation id="679325081238418596">Dapatkan bookmark, histori, sandi, dan setelan lainnya di semua perangkat Anda</translation>
@@ -607,7 +609,6 @@ Coba gunakan sandi yang unik untuk setiap situs.</translation>
 <translation id="7272437679830969316">Tidak dapat memverifikasi identitas. Sandi tidak disalin.</translation>
 <translation id="7291368939935408496">Mempersiapkan Sandi…</translation>
 <translation id="7293171162284876153">Untuk memulai sinkronisasi, aktifkan "Sinkronkan data Chrome Anda".</translation>
-<translation id="7299000566397147023">Buka Tab Terbaru</translation>
 <translation id="7313347584264171202">Tab Samaran Anda akan ditampilkan di sini</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> persen berhasil didownload</translation>
 <translation id="7340958967809483333">Opsi untuk Discover</translation>

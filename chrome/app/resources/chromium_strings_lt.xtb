@@ -12,7 +12,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1315551408014407711">Nustatykite naują „Chromium“ profilį</translation>
 <translation id="1396446129537741364">„Chromium“ bando parodyti slaptažodžius.</translation>
 <translation id="1414495520565016063">Esate prisijungę prie „Chromium“.</translation>
-<translation id="1414973082589232775">Jei norite leisti apsaugotą mediją naudodami „Rosetta“, turite iš naujo paleisti „Chromium“.</translation>
 <translation id="151962892725702025">„Chromium“ OS negali sinchronizuoti duomenų, nes jūsų domene sinchronizavimas nepasiekiamas.</translation>
 <translation id="1524282610922162960">„Chromium“ skirtuko bendrinimas</translation>
 <translation id="1553461853655228091">„Chromium“ reikia leidimo naudoti fotoaparatą jūsų aplinkos 3D žemėlapiui kurti</translation>
@@ -137,11 +136,11 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="5480860683791598150">„Chromium“ reikia leidimo, kad galėtų naudoti jūsų vietovės informaciją ir bendrinti ją su šia svetaine</translation>
 <translation id="549669000822060376">Palaukite, kol „Chromium“ įdiegs naujausius sistemos naujinius.</translation>
 <translation id="5496810170689441661">„Chromium“ bando redaguoti slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
+<translation id="5527463683072221100">Atidaryti PDF failus naudojant „Chromium“</translation>
 <translation id="5623402015214259806">{0,plural, =0{Pasiekiamas „Chromium“ naujinys}=1{Pasiekiamas „Chromium“ naujinys}one{„Chromium“ naujinys pasiekiamas # dieną}few{„Chromium“ naujinys pasiekiamas # dienas}many{„Chromium“ naujinys pasiekiamas # dienos}other{„Chromium“ naujinys pasiekiamas # dienų}}</translation>
 <translation id="5634636535844844681">Kad būtų galima naudoti „Chromium“, reikalinga 7 ar naujesnės versijos „Windows“.</translation>
 <translation id="5653831366781983928">Dabar iš naujo paleiskite „Chromium“</translation>
 <translation id="5698481217667032250">Pateikti „Chromium“ šia kalba</translation>
-<translation id="5736967399513123100">Jei norite įgalinti „Chromium“ leisti apsaugotą mediją, turite įdiegti „Rosetta“. Ar norite ją dabar įdiegti?</translation>
 <translation id="5820394555380036790">„Chromium“ OS</translation>
 <translation id="5862307444128926510">Sveiki, tai „Chromium“</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
@@ -192,7 +191,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6857782730669500492">„Chromium“ – „<ph name="PAGE_TITLE" />“</translation>
 <translation id="6863361426438995919">„Google Pay“ (nukopijuota į „Chromium“)</translation>
 <translation id="6893813176749746474">„Chromium“ atnaujinta, bet jos nenaudojote mažiausiai 30 dienų.</translation>
-<translation id="6897548120660295439">Naudojant „Rosetta“ sistemoje „Chromium“ galima leisti apsaugotą mediją šiame puslapyje.</translation>
 <translation id="691026815377248078">„Chromium“ reikia pasiekti „Bluetooth“, kad galėtų sieti 
  toliau. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Atidaryti nuorodą „Chromium“ inko&amp;gnito lange</translation>

@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Chromium-ek ezin du erabili kamera une honetan</translation>
 <translation id="2195025571279539885">Webgune honetara zatozen hurrengo aldian Chromium-ek <ph name="LANGUAGE_NAME" /> hizkuntzan dauden orriak itzultzea eskaintzea nahi duzu?</translation>
 <translation id="2590893390871230428">Sinkronizatu Chromium-eko datuak</translation>
-<translation id="259614951763923692">Zure kokapena jakiteko baimena ematen badiozu Chromium-i, hark zure bilatzaile lehenetsiari eta baimena duten webguneei bidaliko die kokapen hori. Baliteke webguneek kokapena eskatzea tokiko informazioa (adibidez, inguruko dendak edo albisteak) erakusteko.</translation>
 <translation id="2650312721222849884">Chromium erabiltzen duzun gailu guztietan zure fitxak eskura izateko, aktibatu sinkronizazioa</translation>
 <translation id="2730884209570016437">Chromium-ek ezin du erabili kamera, beste aplikazio bat ari delako hura erabiltzen</translation>
 <translation id="2915596697727466327">Chromium-ek aurpegi bidezko identifikazioa erabiltzen du pasahitzak baimena dutenek bakarrik atzitzen dituztela ziurtatzeko.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Chromium-eko saioa amaitu?</translation>
 <translation id="6424492062988593837">Chromium hobetu egin dugu! Bertsio berria duzu erabilgarri.</translation>
 <translation id="6820823224820483452">Chromium-ek ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro bihar.</translation>
+<translation id="6827294685447036764">Zure kokapena jakiteko baimena ematen badiozu Chromium-i, baimena duten webguneei bidaliko die kokapena. Baliteke webguneek kokapena eskatzea tokiko informazioa (adibidez, inguruko dendak edo albisteak) erakusteko.</translation>
 <translation id="7018284295775193585">Ezin da eguneratu Chromium</translation>
 <translation id="7099326575020694068">Chromium-ek ezin du erabili kamera Ikuspegi zatitua moduan</translation>
 <translation id="7118091470949186573">Orain, Chromium erabili ahalko duzu mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean.</translation>

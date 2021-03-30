@@ -282,6 +282,7 @@
 <translation id="3928666092801078803">నా డేటాను కలపండి</translation>
 <translation id="3929457972718048006">చిరునామాలు</translation>
 <translation id="3943492037546055397">పాస్‌వర్డ్‌లు</translation>
+<translation id="3967266340354872733">గోప్యత, భద్రత అలాగే డేటా సేకరణకు సంబంధించిన మరిన్ని సెట్టింగ్‌ల కోసం, <ph name="BEGIN_LINK" />సింక్<ph name="END_LINK" />, అలాగే <ph name="BEGIN_LINK" />Google సర్వీస్‌ల<ph name="END_LINK" />ను చూడండి.</translation>
 <translation id="3967822245660637423">డౌన్‌లోడ్ పూర్తయింది</translation>
 <translation id="3968505803272650567">ఆసక్తులను మేనేజ్ చేయండి</translation>
 <translation id="3989635538409502728">సైన్ అవుట్</translation>
@@ -556,6 +557,7 @@
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">పాస్‌వర్డ్‌లను ఎగుమతి చేయడం సాధ్యం కాదు</translation>
 <translation id="6748108480210050150">నుండి</translation>
+<translation id="6760509555861141183">ఇటీవలి ట్యాబ్‌కు తిరిగి వెళ్ళండి</translation>
 <translation id="6780034285637185932">జిప్ కోడ్</translation>
 <translation id="6785453220513215166">క్రాష్ నివేదికను పంపుతోంది...</translation>
 <translation id="679325081238418596">మీ బుక్‌మార్క్‌లు, చరిత్ర, పాస్‌వర్డ్‌లు మరియు ఇతర సెట్టింగ్‌లను మీ అన్ని పరికరాల్లో పొందండి</translation>
@@ -607,7 +609,6 @@
 <translation id="7272437679830969316">మీ గుర్తింపును ధృవీకరించడం సాధ్యపడలేదు. పాస్‌వర్డ్ కాపీ చేయబడలేదు.</translation>
 <translation id="7291368939935408496">పాస్‌వర్డ్‌లను సిద్ధం చేస్తోంది...</translation>
 <translation id="7293171162284876153">సింక్‌ను మొదలుపెట్టడానికి, "మీ Chrome డేటాను సింక్ చేయడం" ఆన్ చేయండి</translation>
-<translation id="7299000566397147023">అత్యంత ఇటీవలి ట్యాబ్‌ను తెరవండి</translation>
 <translation id="7313347584264171202">మీ అజ్ఞాత ట్యాబ్‌లను ఇక్కడ చూడగలరు</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> శాతం డౌన్‌లోడ్ అయ్యింది</translation>
 <translation id="7340958967809483333">Discover కోసం ఆప్షన్‌లు</translation>

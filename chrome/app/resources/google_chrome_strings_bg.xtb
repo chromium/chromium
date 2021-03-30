@@ -189,6 +189,7 @@
 <translation id="6070348360322141662">За повишаване на сигурността Google Chrome ще шифрова данните ви</translation>
 <translation id="608006075545470555">Добавяне на служебен потребителски профил към този браузър</translation>
 <translation id="6113794647360055231">Chrome се подобри</translation>
+<translation id="6145313976051292476">Отваряне на PDF файловете в Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome бета</translation>
 <translation id="61852838583753520">Актуализиране на &amp;Chrome OS</translation>
@@ -201,7 +202,6 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome се актуализира (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Система Chrome OS</translation>
-<translation id="6650333065969705433">Трябва да рестартирате Chrome, за да използвате Rosetta за възпроизвеждане на защитено мултимедийно съдържание.</translation>
 <translation id="6676384891291319759">Достъп до интернет</translation>
 <translation id="6679975945624592337">Разрешаване на Google Chrome да се изпълнява на заден план</translation>
 <translation id="6739177684496155661">Искате ли да продължите с нов потребителски профил в Chrome?</translation>
@@ -265,7 +265,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Този служебен потребителски профил е изцяло отделен от личния ви.</translation>
 <translation id="8556340503434111824">Налице е нова версия на Google Chrome, която е по-бърза от всякога.</translation>
-<translation id="861359755029082151">Rosetta дава възможност на Chrome да възпроизвежда защитеното мултимедийно съдържание на тази страница.</translation>
 <translation id="8614913330719544658">Google Chrome блокира. Да се стартира ли отново сега?</translation>
 <translation id="861702415419836452">Chrome се нуждае от разрешение за достъп до камерата ви, за да създаде триизмерна карта на заобикалящата ви среда</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome ще се стартира отново след 1 минута}other{Chrome ще се стартира отново след # минути}}</translation>
@@ -279,7 +278,6 @@
 <translation id="8834965163890861871">Google Chrome опитва да редактира паролите. За да разрешите това, въведете паролата си за Windows.</translation>
 <translation id="884296878221830158">То също контролира коя страница се показва при стартиране на Chrome или при кликване върху бутона „Начална страница“.</translation>
 <translation id="8862326446509486874">Нямате подходящи права за инсталация на ниво система. Опитайте да стартирате отново инсталационната програма като администратор.</translation>
-<translation id="8907709077090383765">Трябва да инсталирате Rosetta, за да може Chrome да възпроизвежда защитено мултимедийно съдържание. Искате ли да го направите сега?</translation>
 <translation id="8914504000324227558">Повторно стартиране на Chrome</translation>
 <translation id="8922193594870374009">За да изпратите номер от <ph name="ORIGIN" /> до телефона си с Android, влезте в Chrome и на двете устройства.</translation>
 <translation id="8986207147630327271">Добавяте служебен потребителски профил към този браузър и предоставяте на администратора си контрол само над него.</translation>

@@ -22,6 +22,8 @@
 <translation id="1120938014254001895">向上滑动两根手指</translation>
 <translation id="1126928665165112660">非斜体</translation>
 <translation id="113582498867142724">包含<ph name="NUM" />个项的“<ph name="TAG" />”集</translation>
+<translation id="1146441463334103638">开启或关闭屏幕</translation>
+<translation id="1156488781945104845">当前时间</translation>
 <translation id="1161762950103988776">跳转</translation>
 <translation id="1164857107703583584">跳转命令可用于在网页中高效导航。</translation>
 <translation id="1175914831232945926">数字</translation>
@@ -71,6 +73,7 @@
 <translation id="1405567553485452995">浅绿色</translation>
 <translation id="1411043317877497323">练习区</translation>
 <translation id="141454040365657399">页首</translation>
+<translation id="1417092723421264764">当前页面</translation>
 <translation id="1417889266572670458">海军蓝</translation>
 <translation id="1431911867058218151">梅红色</translation>
 <translation id="1439316808600711881">区域</translation>
@@ -199,6 +202,7 @@
 <translation id="242998846562331953">副标题</translation>
 <translation id="2435422727584637732">道奇蓝色</translation>
 <translation id="2450814015951372393">复选框</translation>
+<translation id="2461822463642141190">电流</translation>
 <translation id="2462626033734746142">单选按钮组</translation>
 <translation id="2471138580042810658">6级标题标记</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{1个星号}other{#个星号}}</translation>
@@ -244,7 +248,6 @@
 <translation id="2766299274563946262">左侧没有单元格</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="280499067616661124">ChromeVox 在网页中查找</translation>
-<translation id="2808001342598757276">取消调暗屏幕</translation>
 <translation id="2811019999044652585">要跳转到屏幕上的其他部分（例如工具栏或系统任务栏），请按 Ctrl + 前进键。在 Chromebook 上，前进键位于数字键 2 的正上方。</translation>
 <translation id="2811204574343810641">行</translation>
 <translation id="2816868829355607410">练习区：跳转命令</translation>
@@ -299,6 +302,7 @@
 <translation id="3109724472072898302">已收起</translation>
 <translation id="311015743332597320">四根手指向右滑动</translation>
 <translation id="3112457281078985179">要开启或关闭 ChromeVox，请按 Ctrl+Alt+Z。</translation>
+<translation id="3115800313647508384">关闭屏幕？</translation>
 <translation id="3131002934070407451">将数值读为：</translation>
 <translation id="3134461040845705080">只读</translation>
 <translation id="3137663468179739624">橄榄色</translation>
@@ -642,6 +646,7 @@
 <translation id="5655682562155942719">跳转命令</translation>
 <translation id="56637627897541303">文本区域</translation>
 <translation id="5669637233317991674">按搜索键 + 向右键或搜索键 + 向左键即可浏览本课程中的各项内容</translation>
+<translation id="5677240841070992068">当前位置</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">定义</translation>
 <translation id="5682113568322255809">地标</translation>
@@ -677,6 +682,7 @@
 <translation id="5901630391730855834">黄色</translation>
 <translation id="5906974869830879618">请输入 PIN 码</translation>
 <translation id="5921587111466148855">章节</translation>
+<translation id="5923780477617566089">当前日期</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{1个等号}other{#个等号}}</translation>
 <translation id="5948123859135882163">在数学表达式的结构化解释和语义解释之间来回切换</translation>
 <translation id="5955304353782037793">应用</translation>
@@ -696,9 +702,9 @@
 <translation id="6034000775414344507">浅灰色</translation>
 <translation id="6036135911048686884">触摸浏览</translation>
 <translation id="6037602951055904232">向前平移</translation>
-<translation id="6044160928851315051">调暗屏幕</translation>
 <translation id="6082768461603900813">基本导航操作</translation>
 <translation id="609281021724813947">没有上一个滑块</translation>
+<translation id="6096942799340613495">这样做会关闭屏幕。您可以随时按搜索键 +“调高亮度”键重新开启屏幕。</translation>
 <translation id="6100239002225743044">上移 1 行</translation>
 <translation id="6118126368611144850">适合在 Chrome 中使用的 Android 应用。如果您的设备上安装了 Play 商店，则可以通过 Android 应用抢先体验 ChromeVox。只需从 Play 商店下载 Google Chrome Canary，即可体验实验功能。</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -766,6 +772,7 @@
 <translation id="6696967141280706829">序言</translation>
 <translation id="6697092096875747123">上一个组合框</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{1 个感叹号}other{# 个感叹号}}</translation>
+<translation id="670717715607710284">关闭屏幕</translation>
 <translation id="6710213216561001401">上一项</translation>
 <translation id="6714813999819678458">上一个2级标题</translation>
 <translation id="6730312624811567147">使用搜索键+向左箭头键或搜索键+向右箭头键代替 Home 键或 End 键，使用搜索键+Ctrl+向左箭头键或搜索键+Ctrl+向右箭头键代替 Ctrl+Home 或 Ctrl+End，使用搜索键+向上箭头键或搜索键+向下箭头键代替 PageUp 键或 PageDown 键</translation>
@@ -945,6 +952,7 @@
 <translation id="8037651341025652929">总结</translation>
 <translation id="8042761080832772327">编辑文本，搜索条目</translation>
 <translation id="8049189770492311300">定时器</translation>
+<translation id="8057472523431225012">当前步骤</translation>
 <translation id="8058636807889143711">没有下一个数学表达式</translation>
 <translation id="8066678206530322333">横幅</translation>
 <translation id="8076492880354921740">标签页</translation>
@@ -962,6 +970,7 @@
 <translation id="816818801578874684">这是第一个标题。按搜索键 + H 键即可转到下一个标题。</translation>
 <translation id="8173092779156526980">四根手指向左滑动</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{1个下划线}other{#个下划线}}</translation>
+<translation id="817529114347680055">开启屏幕</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">行</translation>
 <translation id="8186185314313222077">切换全屏模式</translation>
@@ -984,7 +993,6 @@
 <translation id="8316881042119029234">旧蕾丝色</translation>
 <translation id="8324974933005349667">个性化文字转语音设置</translation>
 <translation id="8326783648485765113">草绿色</translation>
-<translation id="8328063869313048659">开启/关闭暗屏幕</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{1个井号}other{#个井号}}</translation>
 <translation id="8378855320830505539">区域</translation>
 <translation id="8382679411218029383">自动填充内嵌和列表</translation>

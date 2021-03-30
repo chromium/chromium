@@ -268,7 +268,6 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="2856503607207334158">Oturum açılamadı</translation>
 <translation id="2860954141821109167">Bu cihazda bir telefon uygulamasının etkinleştirildiğinden emin olun</translation>
 <translation id="2870560284913253234">Site</translation>
-<translation id="2876369937070532032">Güvenliğiniz risk altında olduğunda ziyaret ettiğiniz bazı sayfaların URL'lerini Google'a gönderir</translation>
 <translation id="2888126860611144412">Chrome hakkında</translation>
 <translation id="2891154217021530873">Sayfa yüklemeyi durdur</translation>
 <translation id="2892647708214602204">Bu dosya hazır olduğunda bir bildirim göreceksiniz</translation>
@@ -311,7 +310,6 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="3157842584138209013">Diğer Seçenekler düğmesini kullanarak ne kadar veri tasarrufu sağladığınıza bakın</translation>
 <translation id="3166827708714933426">Sekme ve pencere kısayolları</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">Gizli Göz Atma (sizi ve cihazınızı tehlikelerden korur)</translation>
 <translation id="3205824638308738187">Çok az kaldı!</translation>
 <translation id="3207960819495026254">Yer işareti koyuldu</translation>
 <translation id="3208584281581115441">Şimdi denetle</translation>
@@ -505,6 +503,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4561979708150884304">Bağlantı yok</translation>
 <translation id="4565377596337484307">Şifreyi gizle</translation>
 <translation id="4572422548854449519">Yönetilen hesapta oturum açın</translation>
+<translation id="4576892426230499203">Başka bir doğrulama seçeneğini deneyin</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# dakika önce}other{# dakika önce}}</translation>
 <translation id="4587589328781138893">Siteler</translation>
 <translation id="4594952190837476234">Bu çevrimdışı sayfa <ph name="CREATION_TIME" /> tarihli olup web'deki sürümden farklı olabilir.</translation>
@@ -584,7 +583,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5011311129201317034"><ph name="SITE" /> bağlanmak istiyor</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">İzin ver</translation>
-<translation id="5040262127954254034">Gizlilik</translation>
 <translation id="5087580092889165836">Kart ekle</translation>
 <translation id="5091249083535528968">Genişletilmiş kullanım verileri</translation>
 <translation id="509429900233858213">Bir hata oluştu.</translation>
@@ -637,6 +635,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5441522332038954058">Adres çubuğuna gider</translation>
 <translation id="544776284582297024">Aynı anda birden fazla sekme açıp farklı sayfaları ziyaret etmek için açık sekme düğmesine dokunun</translation>
 <translation id="545042621069398927">İndirme işleminiz hızlandırılıyor.</translation>
+<translation id="5454166040603940656"><ph name="PROVIDER" /> ile</translation>
 <translation id="5456381639095306749">Sayfayı indir</translation>
 <translation id="548278423535722844">Haritalar uygulamasında aç</translation>
 <translation id="5483197086164197190">Chrome'da gezinme</translation>
@@ -777,6 +776,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="6316139424528454185">Android sürümü desteklenmiyor</translation>
 <translation id="6324034347079777476">Android sistem senkronizasyonu devre dışı</translation>
 <translation id="6324977638108296054">Seçili metne bağlantı oluşturulamıyor</translation>
+<translation id="6324997754869598316">(Hata <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Paylaşım yöntemi: <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Şifreleme</translation>
 <translation id="6341580099087024258">Dosyaların kaydedileceği yeri sor</translation>
@@ -793,6 +793,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> adresinde <ph name="ERROR_CODE" /></translation>
 <translation id="6404511346730675251">Yer işaretini düzenle</translation>
 <translation id="6406506848690869874">Senkronizasyon</translation>
+<translation id="6407224748847589805">Bilgisayarınıza bağlanılamıyor. Başka bir doğrulama seçeneğini deneyin.</translation>
 <translation id="6410404864818553978">Temel kullanım verileri</translation>
 <translation id="6410883413783534063">Aynı anda birden fazla sayfayı ziyaret etmek için yeni sekme açın</translation>
 <translation id="6412673304250309937">URL'leri, Chrome'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder. Chrome, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
@@ -861,7 +862,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="6813446258015311409">Chrome'da oturum açma sayfası açıldı.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> sekmesi seçildi</translation>
-<translation id="6845325883481699275">Chrome güvenliğini iyileştirmeye yardımcı olun</translation>
 <translation id="6846298663435243399">Yükleniyor...</translation>
 <translation id="6850409657436465440">İndirme işleminiz hâlâ devam ediyor</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> sekme kapatıldı</translation>
@@ -989,7 +989,6 @@ Gizli oturumunuzdaki veriler yalnızca <ph name="BEGIN_BOLD2" />tüm Gizli sekme
 <translation id="7704317875155739195">Aramaları ve URL'leri otomatik tamamla</translation>
 <translation id="7707922173985738739">Mobil veri kullanın</translation>
 <translation id="7725024127233776428">Yer işareti koyduğunuz sayfalar burada görünür</translation>
-<translation id="7746457520633464754">Chrome, tehlikeli uygulamaları ve siteleri algılamak için Google'a ziyaret ettiğiniz bazı sitelerin URL'lerini, sınırlı sistem bilgisini ve bazı sayfa içeriklerini gönderir.</translation>
 <translation id="7757787379047923882">Metin, <ph name="DEVICE_NAME" /> cihazından paylaşıldı</translation>
 <translation id="7761849928583394409">Tarih ve saat seçin</translation>
 <translation id="7762668264895820836">SD Kart <ph name="SD_CARD_NUMBER" /></translation>

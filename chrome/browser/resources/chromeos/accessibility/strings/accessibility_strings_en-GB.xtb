@@ -22,6 +22,8 @@
 <translation id="1120938014254001895">Swipe two fingers up</translation>
 <translation id="1126928665165112660">Not italic</translation>
 <translation id="113582498867142724"><ph name="TAG" /> collection with <ph name="NUM" /> items</translation>
+<translation id="1146441463334103638">Toggle screen on or off</translation>
+<translation id="1156488781945104845">Current time</translation>
 <translation id="1161762950103988776">Jump</translation>
 <translation id="1164857107703583584">Jump commands can be used to efficiently navigate through a web page.</translation>
 <translation id="1175914831232945926">Digits</translation>
@@ -50,6 +52,7 @@
 <translation id="1268366246392928616">No previous maths expression</translation>
 <translation id="1273314450961659276">Text-to-Speech settings</translation>
 <translation id="1275718070701477396">Selected</translation>
+<translation id="1284576163386164372">You can always view tutorials by opening the menus with a four-finger tap. Then activate the tutorial under the 'ChromeVox' section.</translation>
 <translation id="1291286136605998134">Toggle button</translation>
 <translation id="1299774449519412690">Light Sky Blue</translation>
 <translation id="1303806948938513162">Tap with 4 fingers to enter the ChromeVox menus</translation>
@@ -71,6 +74,7 @@
 <translation id="1405567553485452995">Light green</translation>
 <translation id="1411043317877497323">Practice area</translation>
 <translation id="141454040365657399">Page header</translation>
+<translation id="1417092723421264764">Current page</translation>
 <translation id="1417889266572670458">Navy</translation>
 <translation id="1431911867058218151">Plum</translation>
 <translation id="1439316808600711881">rgn</translation>
@@ -112,6 +116,7 @@
 <translation id="1690731385917361335">No items</translation>
 <translation id="1700517974991662022">Visited</translation>
 <translation id="1714116687360794776">Meter</translation>
+<translation id="1717267964664691695">Touch tutorial complete</translation>
 <translation id="1722567105086139392">Link</translation>
 <translation id="1727806147743597030">ftr</translation>
 <translation id="1730447754326314349">Welcome to the ChromeVox tutorial. To exit this tutorial at any time, press the escape key on the top-left corner of the keyboard. To turn off ChromeVox, hold Control &amp; Alt, and press Z. When you're ready, use the spacebar to move to the next lesson.</translation>
@@ -128,6 +133,7 @@
 <translation id="1834891354138622109">Column</translation>
 <translation id="1845944666972354496">Double tap to activate</translation>
 <translation id="1846771122725914429">Bluetooth Braille Display</translation>
+<translation id="1852018405765032699">Tapping the screen with four fingers will open and close the ChromeVox menus. These menus contain helpful information about commands and shortcuts. Once the menus are open, you can swipe with one finger to navigate through items, and double-tap to activate items. To continue, tap the screen with four fingers.</translation>
 <translation id="1865601187525349519">End of text</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">Cell</translation>
@@ -178,6 +184,7 @@
 <translation id="2267538686624070261">Leaving misspelled</translation>
 <translation id="2267945578749931355">Next Character</translation>
 <translation id="2278490101488436824">Swipe three fingers left</translation>
+<translation id="2303873575703885770">Activate an item</translation>
 <translation id="2305942658236913680">No next heading</translation>
 <translation id="2311237334957139798">Move to previous at granularity</translation>
 <translation id="2314393392395134769">Not subscript</translation>
@@ -199,6 +206,7 @@
 <translation id="242998846562331953">Subtitle</translation>
 <translation id="2435422727584637732">Dodger Blue</translation>
 <translation id="2450814015951372393">Tick box</translation>
+<translation id="2461822463642141190">Current</translation>
 <translation id="2462626033734746142">Radio button group</translation>
 <translation id="2471138580042810658">Heading 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{asterisk}other{# asterisks}}</translation>
@@ -215,6 +223,7 @@
 <translation id="2592212930811759050">Double-tap to start editing</translation>
 <translation id="2598495320872286378">Grammar error</translation>
 <translation id="2603828437139726540">Move forward one char</translation>
+<translation id="2619344480613750862">You can also move between sections of the screen. For example, you can move between the Launcher, the shelf and your Chrome tabs. To move to the next section, swipe from left to right with four fingers. Try it now to continue.</translation>
 <translation id="2624431853467395961">Open learn mode</translation>
 <translation id="2626530649491650971">clickable</translation>
 <translation id="2637227747952042642">Math</translation>
@@ -243,8 +252,8 @@
 <translation id="2756452585631602151">Enter a custom label</translation>
 <translation id="2766299274563946262">No cell left</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
+<translation id="2792200646155001340">You can also swipe one finger from right to left to move to the previous item. Try it now.</translation>
 <translation id="280499067616661124">ChromeVox find in page</translation>
-<translation id="2808001342598757276">Undarken screen</translation>
 <translation id="2811019999044652585">To jump to other parts of the screen, like toolbars or the system tray, press Control+Forward. On a Chromebook, the Forward key is immediately above the number 2 key.</translation>
 <translation id="2811204574343810641">Row</translation>
 <translation id="2816868829355607410">Practice area: jump commands</translation>
@@ -271,6 +280,7 @@
 <translation id="2968634799764242930">Sea Green</translation>
 <translation id="296951647852255825">{COUNT,plural, =1{tab}other{# tabs}}</translation>
 <translation id="2972205263822847197">Tool tip</translation>
+<translation id="2976476721782829799">You can also move around by dragging one finger around the screen. This is called exploring by touch. Try dragging your finger around to read the rest of this lesson.</translation>
 <translation id="297825089465017871">Swipe two fingers left</translation>
 <translation id="2998131015536248178">Previous Character</translation>
 <translation id="2999559350546931576">Decrease pitch</translation>
@@ -299,6 +309,7 @@
 <translation id="3109724472072898302">Collapsed</translation>
 <translation id="311015743332597320">Swipe four fingers right</translation>
 <translation id="3112457281078985179">To turn ChromeVox on or off, use Control+Alt+Z.</translation>
+<translation id="3115800313647508384">Turn off screen?</translation>
 <translation id="3131002934070407451">Read numbers as:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Olive</translation>
@@ -371,6 +382,7 @@
 <translation id="3587482841069643663">All</translation>
 <translation id="3589661172894441357">Glossary</translation>
 <translation id="3591784666823501596">Royal Blue</translation>
+<translation id="3592715211448024517">Access menus</translation>
 <translation id="3594207934078151302">Medium sea green</translation>
 <translation id="3599054940393788245">Not inside math</translation>
 <translation id="360241989769010433">Acknowledgements</translation>
@@ -397,6 +409,7 @@
 <translation id="3781428340399460090">Hot pink</translation>
 <translation id="3783725005098956899">Show log</translation>
 <translation id="3801735343383419236">Auto-completion list</translation>
+<translation id="3806327402890551732">Move to the next or previous item</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Light Coral</translation>
 <translation id="3816633764618089385">Next media</translation>
@@ -406,6 +419,7 @@
 <translation id="3870295413168340326">No previous level 3 heading</translation>
 <translation id="3887399638190992181">Essential keys</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3893063449310326280">Similarly, swiping with four fingers from right to left can be used to move to the previous major element. Try it now!</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">Previous level 6 heading</translation>
@@ -500,6 +514,7 @@
 <translation id="4615592953348396470">Ignoring next key press</translation>
 <translation id="4623097797855662355">Colophon</translation>
 <translation id="463135993322337640">Press ChromeVox o, n to find out what's new</translation>
+<translation id="4649220074413114917">Tapping the screen with two fingers can be used to stop any current speech. This is useful if you don’t want ChromeVox to read something. To continue, tap the screen with two fingers.</translation>
 <translation id="4660783501463101648">Classic removed. The keyboard toggle to switch back into ChromeVox Classic has been removed.</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
@@ -575,12 +590,14 @@
 <translation id="5140016802771803559">Rebecca Purple</translation>
 <translation id="5142101052131610456">All lessons</translation>
 <translation id="5158275234811857234">Cover</translation>
+<translation id="516076699907426116">To continue, explore by touch to find the Next lesson button. Then double-tap to continue.</translation>
 <translation id="5170206230005240598">Braille captions enabled</translation>
 <translation id="5183440668879371625">Braille previous Line</translation>
 <translation id="5189244881767082992">Line</translation>
 <translation id="5263034204789987535">Cornsilk</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">End</translation>
+<translation id="5290220123487191192">Let's start with a few gestures that you'll use regularly. If you reach an item that you want to activate, double-tap the screen with one finger. To continue, double-tap now.</translation>
 <translation id="5302089807023311274">Bibliography reference</translation>
 <translation id="530391007967514163">Try jumping by heading to navigate the text below.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, tab</translation>
@@ -642,6 +659,7 @@
 <translation id="5655682562155942719">Jump Commands</translation>
 <translation id="56637627897541303">Text area</translation>
 <translation id="5669637233317991674">Press Search + right arrow or Search + left arrow to navigate this lesson</translation>
+<translation id="5677240841070992068">Current location</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
 <translation id="5682113568322255809">Landmark</translation>
@@ -650,10 +668,12 @@
 <translation id="5703716265115423771">volume down</translation>
 <translation id="5704453877234251104">Press up or down arrow for auto completions</translation>
 <translation id="5712244464475377681">popbtn</translation>
+<translation id="5712889723513495267">Move to the next or previous section</translation>
 <translation id="5725079927589231571">Light Steel Blue</translation>
 <translation id="5732189279857692565">This is the second heading. Keep going; either press Search+H or Search+Shift+H</translation>
 <translation id="5748623122140342504">Previous level 5 heading</translation>
 <translation id="5760594853119905566">Appendix</translation>
+<translation id="5761219715606611783">Well done! You’ve learned the basics of ChromeVox touch. You can go through the tutorial again or exit this tutorial using the buttons below.</translation>
 <translation id="5805940204952508776">Tap with two fingers</translation>
 <translation id="5819072574982403430">Tree item</translation>
 <translation id="5822819874379903994">Dark Turquoise</translation>
@@ -677,6 +697,8 @@
 <translation id="5901630391730855834">Yellow</translation>
 <translation id="5906974869830879618">Please enter a pin</translation>
 <translation id="5921587111466148855">Chapter</translation>
+<translation id="5923780477617566089">Current date</translation>
+<translation id="5926889058434275234">For a full list of gestures, visit the Help Centre.</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{equal}other{# equal signs}}</translation>
 <translation id="5948123859135882163">Toggle interpretation of math expressions between structural and semantic</translation>
 <translation id="5955304353782037793">app</translation>
@@ -696,9 +718,9 @@
 <translation id="6034000775414344507">Light grey</translation>
 <translation id="6036135911048686884">Touch explore</translation>
 <translation id="6037602951055904232">Pan forward</translation>
-<translation id="6044160928851315051">Darken screen</translation>
 <translation id="6082768461603900813">Basic Navigation</translation>
 <translation id="609281021724813947">No previous slider</translation>
+<translation id="6096942799340613495">This turns off the screen. You can always turn the screen back on by pressing Search + Brightness up.</translation>
 <translation id="6100239002225743044">Move up one line</translation>
 <translation id="6118126368611144850">Android apps for Chrome. If you have Play Store on your device, get a sneak peek at ChromeVox with Android apps. Try the experimental support by downloading Google Chrome Canary from the Play Store.</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -754,6 +776,7 @@
 <translation id="6561818612645211875">Go to beginning of the current row</translation>
 <translation id="6579990219486187401">Light pink</translation>
 <translation id="6583174818554398774">Move to next at granularity</translation>
+<translation id="6584162722998608255">Next, you’ll learn how to move around the screen. You can swipe one finger from left to right to move to the next item. Try it now to move to the next step.</translation>
 <translation id="6609828810966525877">Explore more gestures in Learn Mode and the Chromebook Help Centre</translation>
 <translation id="6628427060004938651">Part</translation>
 <translation id="6637586476836377253">log</translation>
@@ -766,6 +789,7 @@
 <translation id="6696967141280706829">Preface</translation>
 <translation id="6697092096875747123">Previous combo box</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{exclamation}other{# exclamations}}</translation>
+<translation id="670717715607710284">Screen off</translation>
 <translation id="6710213216561001401">Previous</translation>
 <translation id="6714813999819678458">Previous level 2 heading</translation>
 <translation id="6730312624811567147">Use search left or right for home or end, search control left or right for control home or end, search up or down for page up or down</translation>
@@ -774,6 +798,7 @@
 <translation id="6759710362319508545">Resources</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786800275320335305">Article</translation>
+<translation id="6790781785997195160">Once you’ve had some practice, find the Next lesson button. Then double-tap to continue.</translation>
 <translation id="6793101435925451627">lstbx</translation>
 <translation id="6815255864998354418">Lemon Chiffon</translation>
 <translation id="6816066673340002913">Pale Goldenrod</translation>
@@ -782,7 +807,6 @@
 <translation id="6837853484260746864">Select a voice:</translation>
 <translation id="6858047746862060282">Prologue</translation>
 <translation id="6859876496651143278">Swipe one finger left</translation>
-<translation id="6861391673272648730">This turns off the screen. You can turn the screen back on with Search + Brightness up. Do you want to turn it off?</translation>
 <translation id="6865519907510167493">Misspelled</translation>
 <translation id="6873188295213080042">Hint: Hold Search and press the arrow keys to navigate.</translation>
 <translation id="6894148351896207544">Speak the current time and date</translation>
@@ -800,6 +824,7 @@
 <translation id="6994042831499278539">Glossary reference</translation>
 <translation id="6996566555547746822">Next combo box</translation>
 <translation id="6997224546856374593">When reading capitals:</translation>
+<translation id="6999752561504308105">Welcome to the ChromeVox tutorial. To exit this tutorial at any time, swipe from right to left with two fingers. To turn ChromeVox on or off at any time, press and hold both volume buttons for five seconds. When you’re ready, double-tap the screen with one finger to move to the next lesson.</translation>
 <translation id="700202842116345659">Bibliography entry</translation>
 <translation id="7005146664810010831">No URL found</translation>
 <translation id="7026338066939101231">Decrement</translation>
@@ -813,6 +838,7 @@
 <translation id="7086377898680121060">Brightness up</translation>
 <translation id="7088743565397416204">Double-tap to activate what is focused</translation>
 <translation id="7088960765736518739">Switch access</translation>
+<translation id="7090715360595433170">It can also be more efficient than swiping left and right with one finger.</translation>
 <translation id="7091296112653361280">Navajo White</translation>
 <translation id="7095834689119144465">Edit text numeric only</translation>
 <translation id="7096001299300236431">Previous media</translation>
@@ -850,6 +876,7 @@
 <translation id="7308519659008003150">No previous-form field</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7317017974771324508">partially selected</translation>
+<translation id="7322442671176251901">Explore by touch</translation>
 <translation id="7344012264516629579">Additional jump commands include jumping by link, button and tick box, to name a few. A full list of jump commands can be found in the ChromeVox menus, which can be opened by pressing Search + full-stop.</translation>
 <translation id="7356165926712028380">Switch to 8 dot braille</translation>
 <translation id="7356610683936413584">Description list detail</translation>
@@ -905,6 +932,7 @@
     If you've finished the tutorial, use ChromeVox to navigate to the Close button and click it.</translation>
 <translation id="7724603315864178912">Cut</translation>
 <translation id="7731785449856576010">No next media widget</translation>
+<translation id="7735498529470878067">Exploring by touch can help you quickly get a sense of what's on the screen.</translation>
 <translation id="773906353055481349">Press Search+Ctrl+Alt with arrows to navigate by cell</translation>
 <translation id="7763537600611320912">Download started <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">Select to Speak</translation>
@@ -946,6 +974,7 @@
 <translation id="8037651341025652929">Conclusion</translation>
 <translation id="8042761080832772327">Edit text, search entry</translation>
 <translation id="8049189770492311300">Timer</translation>
+<translation id="8057472523431225012">Current step</translation>
 <translation id="8058636807889143711">No next maths expression</translation>
 <translation id="8066678206530322333">Banner</translation>
 <translation id="8076492880354921740">Tabs</translation>
@@ -963,6 +992,7 @@
 <translation id="816818801578874684">This is the first heading. Press Search + H to go to the next heading.</translation>
 <translation id="8173092779156526980">Swipe four fingers left</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{underscore}other{# underscores}}</translation>
+<translation id="817529114347680055">Screen on</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">row</translation>
 <translation id="8186185314313222077">toggle full screen</translation>
@@ -985,7 +1015,6 @@
 <translation id="8316881042119029234">Old Lace</translation>
 <translation id="8324974933005349667">Personalise Text-to-Speech settings</translation>
 <translation id="8326783648485765113">Lawn green</translation>
-<translation id="8328063869313048659">Toggle dark screen</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{pound}other{# pound signs}}</translation>
 <translation id="8378855320830505539">Region</translation>
 <translation id="8382679411218029383">Auto-completion inline and list</translation>
@@ -1083,6 +1112,7 @@
 <translation id="9153606228985488238">Pitch <ph name="PERCENT" /> percent</translation>
 <translation id="9160096769946561184">Go to end of the current column</translation>
 <translation id="9173115498289768110">Volume <ph name="PERCENT" /> percent</translation>
+<translation id="9185200690645120087">ChromeVox touch tutorial</translation>
 <translation id="9192904702577636854">Marquee</translation>
 <translation id="9205282956404529648">Type to auto complete</translation>
 <translation id="9208241857935108694">Antique White</translation>

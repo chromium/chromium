@@ -10,7 +10,6 @@
 <translation id="1315551408014407711">Yangi Chromium profilini sozlang</translation>
 <translation id="1396446129537741364">Kirtilgan parollar Chromium brauzerida ko‘rsatiladi.</translation>
 <translation id="1414495520565016063">Chromium‘ga xush kelibsiz!</translation>
-<translation id="1414973082589232775">Himoyalangan mediani ijro etishda Rosetta dasturidan foydalanish uchun Chromium brauzerini qayta ishga tushiring.</translation>
 <translation id="151962892725702025">Ma’lumotlarni sinxronlab bo‘lmadi, chunki domeningizda Sync xizmati mavjud emas.</translation>
 <translation id="1524282610922162960">Chromium sahifasini namoyish qilish</translation>
 <translation id="1553461853655228091">Chromium atrofingiz 3D xaritasini yaratishi uchun unga kamera ruxsati zarur</translation>
@@ -25,6 +24,7 @@
 <translation id="1966382378801805537">Chromium asosiy brauzerni aniqlay olmadi yoki tayinlay olmadi.</translation>
 <translation id="2008474315282236005">Bu qurilmadagi 1 elementni tozalaydi. Ma’lumotlaringizni keyinroq olish uchun Chromium brauzeriga <ph name="USER_EMAIL" /> sifatida kiring.</translation>
 <translation id="2020032459870799438">Parollarni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalash uchun <ph name="BEGIN_LINK" />Chromium hisobingizga kiring<ph name="END_LINK" />.</translation>
+<translation id="2174178932569897599">Chromiumni moslash</translation>
 <translation id="2185166961232948079">Chromium - Tarmoqqa kirish - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Agar kompyuterdan yaqinlaringiz va do‘stlaringiz ham foydalansa, ular Chromium brauzerini o‘zlari xohlagancha sozlab olishlari mumkin.</translation>
 <translation id="2294245788148774212">Ixtiyoriy: Google serverlariga diagnostika va foydalanish statistikasi ma’lumotlarini yuborish orqali Chromium OS tizimini takomillashtirishga yordam bering.</translation>
@@ -133,11 +133,11 @@
 <translation id="5480860683791598150">Bu sayt manzilingizdan foydalanishi uchun Chromium brauzeriga ruxsat berishingiz lozim</translation>
 <translation id="549669000822060376">Chromium tizimning oxirgi yangilanishlarini o‘rnatib olgunicha kutib turing.</translation>
 <translation id="5496810170689441661">Chromium parollarni tahrirlashga urinmoqda. Ruxsat berish uchun Windows parolingizni kiriting.</translation>
+<translation id="5527463683072221100">PDF fayllarni Chromium bilan ochish</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium uchun yangilanish mavjud}=1{Chromium uchun yangilanish mavjud}other{Chromium uchun yangilanish mavjud (# kun)}}</translation>
 <translation id="5634636535844844681">Chromium brauzeri ishlashi uchun kompyuterda Windows 7 yoki undan yangiroq versiyadagi operatsion tizim o‘rnatilgan bo‘lishi lozim.</translation>
 <translation id="5653831366781983928">Chromiumni hozir qayta ishga tushiring</translation>
 <translation id="5698481217667032250">Chromium shu tilda ko‘rsatilsin</translation>
-<translation id="5736967399513123100">Chromium himoyalangan mediani ijro etishi uchun Rosetta oʻrnatilishi lozim. Uni hozir oʻrnatishni xohlaysizmi?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Chromium brauzeriga xush kelibsiz</translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>
@@ -188,7 +188,6 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tay
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium brauzeriga nusxalandi)</translation>
 <translation id="6893813176749746474">Chromium yangilandi, lekin siz undan 30 kun davomida foydalanmadingiz.</translation>
-<translation id="6897548120660295439">Rosetta Chromium brauzerida bu sahifada mediani ijro etish imkoniyatini yoqadi.</translation>
 <translation id="691026815377248078">Chromium ulanishi uchun Bluetooth orqali kirish ruxsati 
  kerak. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Havolani Chromium &amp;inkognito oynasida ochish</translation>

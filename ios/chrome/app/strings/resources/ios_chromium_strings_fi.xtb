@@ -21,7 +21,6 @@
 <translation id="2178608107313874732">Chromium ei voi käyttää kameraa tällä hetkellä.</translation>
 <translation id="2195025571279539885">Haluatko Chromiumin ehdottavan sivuston kielellä <ph name="LANGUAGE_NAME" /> kirjoitettujen sivujen kääntämistä seuraavalla kerralla?</translation>
 <translation id="2590893390871230428">Synkronoi Chromium-datasi</translation>
-<translation id="259614951763923692">Jos Chromium saa nähdä sijaintisi, sijainti lähetetään oletushakukoneellesi ja sivustoille, jotka sallit. Sivustot voivat kysyä sijaintiasi, jos niillä on sinulle paikallisia tietoja, esim. uutisia tai lähistöllä olevia kauppoja.</translation>
 <translation id="2650312721222849884">Laita synkronointi päälle, niin voit nähdä Chromium-välilehtesi missä tahansa</translation>
 <translation id="2730884209570016437">Chromium ei voi käyttää kameraa, koska se on toisen sovelluksen käytössä.</translation>
 <translation id="2915596697727466327">Chromium varmistaa Face ID:llä, että sinulla on lupa käyttää salasanoja.</translation>
@@ -59,6 +58,7 @@
 <translation id="6268381023930128611">Kirjaudutaanko ulos?</translation>
 <translation id="6424492062988593837">Chromiumista tuli juuri entistä parempi! Uusi versio on saatavilla.</translation>
 <translation id="6820823224820483452">Chromium ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna.</translation>
+<translation id="6827294685447036764">Jos Chromium saa nähdä sijaintisi, sijainti lähetetään sivustoille, jotka sallit. Sivustot voivat kysyä sijaintiasi, jos niillä on sinulle paikallisia tietoja, esim. uutisia tai lähistöllä olevia kauppoja.</translation>
 <translation id="7018284295775193585">Chromiumin päivitys ei onnistu</translation>
 <translation id="7099326575020694068">Chromium ei voi käyttää kameraa jaetussa näkymässä.</translation>
 <translation id="7118091470949186573">Voit nyt käyttää Chromiumia aina, kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa.</translation>

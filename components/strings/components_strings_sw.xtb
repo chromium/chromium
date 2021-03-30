@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Angalia maelezo</translation>
 <translation id="1030706264415084469"><ph name="URL" /> inataka kuhifadhi data nyingi kwenye kifaa chako kwa muda mrefu</translation>
 <translation id="1032854598605920125">Zungusha kwenye mwendo wa saa</translation>
+<translation id="1036224116832931580">Mchezo wa dinosau, gusa ili uruke na ucheze</translation>
 <translation id="1036348656032585052">Zima</translation>
 <translation id="1038106730571050514">Onyesha mapendekezo</translation>
 <translation id="1038842779957582377">jina lisilojulikana</translation>
@@ -278,6 +279,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="192020519938775529">{COUNT,plural, =0{Hamna}=1{Tovuti 1}other{Tovuti #}}</translation>
 <translation id="1945968466830820669">Unaweza kupoteza uwezo wa kufikia akaunti ya shirika lako au kuibiwa utambulisho. Chromium inapendekeza ubadilishe nenosiri lako sasa.</translation>
 <translation id="1947454675006758438">Bana juu kulia</translation>
+<translation id="1958218078413065209">Alama yako ya juu zaidi ni <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Tusaidie kuboresha usalama kwa kila mtu kwenye wavuti kwa kutuma <ph name="BEGIN_WHITEPAPER_LINK" />URL za baadhi ya kurasa unazotembelea, maelezo machache ya mfumo na baadhi ya maudhui ya ukurasa<ph name="END_WHITEPAPER_LINK" /> kwa Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Sera ya faragha<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Alamisho za <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Hitilafu ya namba tambulishi</translation>
@@ -546,6 +548,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza kichupo cha 'Tab' kisha 'Enter' ili ufanye Ukaguzi wa Usalama katika mipangilio ya Chrome</translation>
 <translation id="3061707000357573562">Huduma ya Kurekebisha</translation>
 <translation id="3064966200440839136">Inaacha hali fiche ili kulipa kupitia programu ya nje. Je, ungependa kuendelea?</translation>
+<translation id="306573536155379004">Mchezo umeanza.</translation>
 <translation id="3080254622891793721">Picha</translation>
 <translation id="3086579638707268289">Shughuli yako kwenye tovuti inafuatiliwa</translation>
 <translation id="3087734570205094154">Chini</translation>
@@ -1542,6 +1545,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6934672428414710184">Jina hili linatoka kwenye Akaunti yako ya Google</translation>
 <translation id="6944692733090228304">Uliweka nenosiri lako kwenye tovuti ambayo haisimamiwi na <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Ili kulinda akaunti yako, usitumie tena nenosiri lako kwenye programu na tovuti zingine.</translation>
 <translation id="6945221475159498467">Chagua</translation>
+<translation id="6948051842255602737">Mchezo umeisha, umepata alama ya <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Chagua anwani ili uone mbinu za kuchukua na mahitaji</translation>
 <translation id="6949872517221025916">Weka Nenosiri Jipya</translation>
 <translation id="6950684638814147129">Hitilafu fulani imetokea wakati wa kuchanganua thamani ya JSON: <ph name="ERROR" /></translation>
@@ -1822,6 +1826,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7956713633345437162">Alamisho kwenye simu</translation>
 <translation id="7961015016161918242">Katu</translation>
 <translation id="7966803981046576691">Aina ya akaunti ya kazi</translation>
+<translation id="79682505114836835">Thamani ya "<ph name="VALUE" />" ni rangi ya heksadesimali isiyo sahihi.</translation>
 <translation id="7976214039405368314">Maombi mengi mno</translation>
 <translation id="7977538094055660992">Kifaa cha kutoa maudhui</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1947,6 +1952,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8446884382197647889">Pata Maelezo Zaidi</translation>
 <translation id="8457125768502047971">Haijabainishwa</translation>
 <translation id="8461694314515752532">Simba data iliyosawazishwa kwa njia fiche ukitumia kauli yako ya siri ya usawazishaji</translation>
+<translation id="8463101686637053101">Mchezo wa dinosau, bonyeza kitufe cha nafasi ili uruke na ucheze</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{Kadi 1 ya mikopo}other{Kadi # za mikopo}}</translation>
 <translation id="8473863474539038330">Anwani na zaidi</translation>
 <translation id="8474910779563686872">Onyesha maelezo ya msanidi programu</translation>
@@ -2083,6 +2089,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8996941253935762404">Tovuti unayoelekea kufungua ina programu zinazodhuru</translation>
 <translation id="8997023839087525404">Seva imewasilisha cheti ambacho hakikufichuliwa hadharani kwa kutumia sera ya Uwazi wa Cheti. Hili ni hitaji kwa baadhi ya vyeti, ili kuhakikisha kwamba ni cha kuaminika na kulinda dhidi ya wavamizi.</translation>
 <translation id="9001074447101275817">Seva mbadala ya <ph name="DOMAIN" /> inahitaji jina la mtumiaji na nenosiri.</translation>
+<translation id="9001963517402879850">Ruka!</translation>
 <translation id="9004367719664099443">Kipindi cha VR kinaendelea</translation>
 <translation id="9005998258318286617">Imeshindwa kupakia hati ya PDF.</translation>
 <translation id="9008201768610948239">Puuza</translation>

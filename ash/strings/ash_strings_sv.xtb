@@ -396,6 +396,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Du tryckte på kortkommandot för högkontrastläge. Vill du aktivera funktionen?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4333628967105022692">Det finns inget stöd för Lacros när flera användare är inloggade.</translation>
 <translation id="4338109981321384717">Förstoringsglas</translation>
 <translation id="4351433414020964307">Assistenten läses in …</translation>
 <translation id="4356930093361201197">högkontrastläge</translation>
@@ -968,6 +969,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="9091626656156419976">Skärmen <ph name="DISPLAY_NAME" /> har tagits bort</translation>
 <translation id="9098969848082897657">Inga telefonljud</translation>
 <translation id="9099154003160514616">Det finns en uppdatering av Lacros</translation>
+<translation id="9105450214093926548">Det finns inte stöd för inloggning av en andra användare medan Lacros-webbläsaren körs. Använd i stället en annan webbläsarprofil i Lacros eller stäng Lacros och försök igen.</translation>
 <translation id="9133335900048457298">Det går inte att spela in skyddat innehåll</translation>
 <translation id="9151726767154816831">Starta om och utför en Powerwash-återställning för att uppdatera</translation>
 <translation id="9166331175924255663">Aktivera och inaktivera Närdelning med hög synlighet.</translation>

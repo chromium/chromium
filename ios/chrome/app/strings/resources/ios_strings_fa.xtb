@@ -282,6 +282,7 @@
 <translation id="3928666092801078803">ادغام کردن داده‌های من</translation>
 <translation id="3929457972718048006">نشانی‌ها</translation>
 <translation id="3943492037546055397">گذرواژه‌ها</translation>
+<translation id="3967266340354872733">‏برای تنظیمات بیشتر مربوط به حریم‌خصوصی، امنیت، و جمع‌آوری داده، <ph name="BEGIN_LINK" />همگام‌سازی<ph name="END_LINK" /> و <ph name="BEGIN_LINK" />سرویس‌های Google<ph name="END_LINK" /> را ببینید.</translation>
 <translation id="3967822245660637423">بارگیری کامل شد</translation>
 <translation id="3968505803272650567">مدیریت علایق</translation>
 <translation id="3989635538409502728">خروج از سیستم</translation>
@@ -556,6 +557,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">گذرواژه‌ها صادر نشدند</translation>
 <translation id="6748108480210050150">از</translation>
+<translation id="6760509555861141183">برگشتن به «برگه اخیر»</translation>
 <translation id="6780034285637185932">کد پستی</translation>
 <translation id="6785453220513215166">در حال ارسال گزارش خرابی...</translation>
 <translation id="679325081238418596">نشانک‌ها، سابقه، گذرواژه‌ها و سایر تنظیماتتان را در تمام دستگاه‌های خود دریافت کنید</translation>
@@ -607,7 +609,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7272437679830969316">نمی‌توانیم هویتتان را به تأیید برسانیم. گذرواژه کپی نشد.</translation>
 <translation id="7291368939935408496">درحال آماده‌سازی گذرواژه‌ها…</translation>
 <translation id="7293171162284876153">‏برای شروع همگام‌سازی، «همگام‌سازی داده‌های Chrome» را روشن کنید.</translation>
-<translation id="7299000566397147023">باز کردن جدیدترین برگه</translation>
 <translation id="7313347584264171202">برگه‌های ناشناس را اینجا خواهید دید</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> درصد بارگیری شد</translation>
 <translation id="7340958967809483333">گزینه‌های «یافته‌ها»</translation>

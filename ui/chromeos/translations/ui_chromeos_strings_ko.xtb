@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />아직 기기를 분리하지 마세요!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    사용 중인 기기를 분리하면 데이터가 삭제될 수 있습니다. 작업이 끝날 때까지 기다린 다음 파일 앱을 사용하여 기기를 꺼내세요.</translation>
+<translation id="5159560892333415631">휴지통 비우기</translation>
 <translation id="5163869187418756376">공유하지 못했습니다. 인터넷 연결을 확인하고 나중에 다시 시도해 주세요.</translation>
 <translation id="516592729076796170">미국 프로그래머 드보락</translation>
 <translation id="5170477580121653719">Google Drive에 남은 공간: <ph name="SPACE_AVAILABLE" />.</translation>
@@ -419,6 +420,7 @@
 <translation id="5275973617553375938">Google Drive에서 복구된 파일</translation>
 <translation id="5288441970121584418">햄버거</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">휴지통을 비우시겠습니까?</translation>
 <translation id="5317780077021120954">저장</translation>
 <translation id="5318819489018851358">Linux로 공유</translation>
 <translation id="5323213332664049067">남미 언어</translation>
@@ -783,6 +785,7 @@
 <translation id="9154418932169119429">이 이미지는 오프라인에서 사용할 수 없습니다.</translation>
 <translation id="9172592259078059678">구자라트어(음역)</translation>
 <translation id="9173120999827300720">영어(미국, 국제 키보드)</translation>
+<translation id="9174050671906956834">30일 후 휴지통에 있는 항목이 완전히 삭제됩니다.</translation>
 <translation id="9189836632794948435">카자흐어</translation>
 <translation id="9213073329713032541">설치가 시작되었습니다.</translation>
 <translation id="9219103736887031265">이미지</translation>

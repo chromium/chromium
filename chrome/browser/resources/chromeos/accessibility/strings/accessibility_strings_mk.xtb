@@ -22,6 +22,8 @@
 <translation id="1120938014254001895">Повлечете нагоре со два прста</translation>
 <translation id="1126928665165112660">Не е курзив</translation>
 <translation id="113582498867142724">Колекција <ph name="TAG" /> со ставки: <ph name="NUM" /></translation>
+<translation id="1146441463334103638">Вклучете или исклучете го екранот</translation>
+<translation id="1156488781945104845">Моментално време</translation>
 <translation id="1161762950103988776">Скокни</translation>
 <translation id="1164857107703583584">Наредбите за скокање може да се користат за ефикасна навигација низ веб-страница.</translation>
 <translation id="1175914831232945926">Цифри</translation>
@@ -71,6 +73,7 @@
 <translation id="1405567553485452995">Светлозелена</translation>
 <translation id="1411043317877497323">Област за вежбање</translation>
 <translation id="141454040365657399">Заглавие на страницата</translation>
+<translation id="1417092723421264764">Моментална страница</translation>
 <translation id="1417889266572670458">Темносина</translation>
 <translation id="1431911867058218151">Боја на слива</translation>
 <translation id="1439316808600711881">rgn</translation>
@@ -199,6 +202,7 @@
 <translation id="242998846562331953">Наслов</translation>
 <translation id="2435422727584637732">Сина како Доџерси</translation>
 <translation id="2450814015951372393">Поле за избор</translation>
+<translation id="2461822463642141190">Моментално</translation>
 <translation id="2462626033734746142">Група радио-копчиња</translation>
 <translation id="2471138580042810658">Заглавие 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{ѕвездичка}one{# ѕвездичка}other{# ѕвездички}}</translation>
@@ -244,7 +248,6 @@
 <translation id="2766299274563946262">Нема ќелија лево</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{Уште #}one{Уште #}other{Уште #}}</translation>
 <translation id="280499067616661124">ChromeVox најди на страницата</translation>
-<translation id="2808001342598757276">Осветли го екранот</translation>
 <translation id="2811019999044652585">За да скокнете до другите делови од екранот, како алатниците или системската фиока, притиснете Control+Напред. На Chromebook, копчето за напред е веднаш над копчето со бројот 2.</translation>
 <translation id="2811204574343810641">Ред</translation>
 <translation id="2816868829355607410">Област за вежбање: наредби за скокање</translation>
@@ -299,6 +302,7 @@
 <translation id="3109724472072898302">Собрано</translation>
 <translation id="311015743332597320">Повлечете надесно со четири прста</translation>
 <translation id="3112457281078985179">За вклучување или исклучување на ChromeVox, користете Control+Alt+Z.</translation>
+<translation id="3115800313647508384">Да се исклучи екранот?</translation>
 <translation id="3131002934070407451">Читај ги броевите како:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Маслинеста</translation>
@@ -643,6 +647,7 @@
 <translation id="5655682562155942719">Скокни наредби</translation>
 <translation id="56637627897541303">Место за текст</translation>
 <translation id="5669637233317991674">Притиснете Search + стрелка надесно или Search + стрелка налево за да се движите низ лекцијава</translation>
+<translation id="5677240841070992068">Моментална локација</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
 <translation id="5682113568322255809">Обележје</translation>
@@ -678,6 +683,7 @@
 <translation id="5901630391730855834">Жолта боја</translation>
 <translation id="5906974869830879618">Внесете PIN</translation>
 <translation id="5921587111466148855">Поглавје</translation>
+<translation id="5923780477617566089">Моментален датум</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{еднакво}one{# знак еднакво}other{# знаци еднакво}}</translation>
 <translation id="5948123859135882163">Префрли интерпретација на математички изрази помеѓу структурни и семантички</translation>
 <translation id="5955304353782037793">апликација</translation>
@@ -697,9 +703,9 @@
 <translation id="6034000775414344507">Светлосива</translation>
 <translation id="6036135911048686884">Истражувајте со допир</translation>
 <translation id="6037602951055904232">Повлечи напред</translation>
-<translation id="6044160928851315051">Затемни го екранот</translation>
 <translation id="6082768461603900813">Основна навигација</translation>
 <translation id="609281021724813947">Нема претходен лизгач</translation>
+<translation id="6096942799340613495">Ова го исклучува екранот. Може повторно да го вклучите во секое време така што ќе притиснете Search + Brightness up.</translation>
 <translation id="6100239002225743044">Преместете нагоре за еден ред</translation>
 <translation id="6118126368611144850">Апликации на Android за Chrome. Доколку имате Play Store на уредот, разгледајте ја ChromeVox со апликации на Android. Испробајте ја експерименталната поддршка, така што ќе је преземете Google Chrome Canary од Play Store.</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -767,6 +773,7 @@
 <translation id="6696967141280706829">Предговор</translation>
 <translation id="6697092096875747123">Претходно комбинирано поле</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{извичник}one{# извичник}other{# извичници}}</translation>
+<translation id="670717715607710284">Екранот е исклучен</translation>
 <translation id="6710213216561001401">Претходно</translation>
 <translation id="6714813999819678458">Претходно заглавие на ниво 2</translation>
 <translation id="6730312624811567147">Користете го Search и стрелка за налево или надесно наместо Home или End, Search и Control и стрелка за налево или надесно наместо Control и Home или End, Search и стрелка за нагоре или надолу наместо Page Up или Page Down</translation>
@@ -946,6 +953,7 @@
 <translation id="8037651341025652929">Заклучок</translation>
 <translation id="8042761080832772327">Измени текст, пребарај запис</translation>
 <translation id="8049189770492311300">Тајмер</translation>
+<translation id="8057472523431225012">Моментален чекор</translation>
 <translation id="8058636807889143711">Нема следен математички израз</translation>
 <translation id="8066678206530322333">Банер</translation>
 <translation id="8076492880354921740">Картички</translation>
@@ -963,6 +971,7 @@
 <translation id="816818801578874684">Ова е првиот наслов. Притиснете Search + H за да отидете на следниот.</translation>
 <translation id="8173092779156526980">Повлечете налево со четири прста</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{долна црта}one{# долна црта}other{# долни црти}}</translation>
+<translation id="817529114347680055">Екранот е вклучен</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">ред</translation>
 <translation id="8186185314313222077">префрли на цел екран</translation>
@@ -985,7 +994,6 @@
 <translation id="8316881042119029234">Боја на стара чипка</translation>
 <translation id="8324974933005349667">Персонализирани поставки за „Од текст во говор“</translation>
 <translation id="8326783648485765113">Зелена како трева</translation>
-<translation id="8328063869313048659">Вклучи/исклучи темен екран</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{тараба}one{# знак тараба}other{# знаци тараба}}</translation>
 <translation id="8378855320830505539">Регион</translation>
 <translation id="8382679411218029383">Линеарно автоматско комплетирање и набројување</translation>

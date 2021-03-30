@@ -396,6 +396,7 @@
 <translation id="4321179778687042513">Ctrl</translation>
 <translation id="4321776623976362024">Жогорку контрастты колдонуу үчүн тез баскычты бастыңыз. Ал күйгүзүлсүнбү?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4333628967105022692">Бир нече колдонуучу кирип турганда Lacros иштебей калат.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4351433414020964307">Жардамчы жүктөлүүдө...</translation>
 <translation id="4356930093361201197">жогорку контраст режими</translation>
@@ -663,7 +664,7 @@
 <translation id="6650933572246256093">"<ph name="DEVICE_NAME" />" Bluetooth түзмөгү жупташуу үчүн уруксат сурап жатат. Ал түзмөккө төмөнкү купуя сөз айкашын киргизиңиз: <ph name="PASSKEY" />.</translation>
 <translation id="6657585470893396449">Сырсөз</translation>
 <translation id="6665545700722362599">Вебсайттарга, колдонмолорго жана кеңейтүүлөргө жайгашкан жерди аныктоо кызматтарын, түзмөктүн микрофонун, камерасын же башка функцияларын колдонуу мүмкүнчүлүгүн берет</translation>
-<translation id="6667908387435388584">Телефонуңуздагы хотспотко туташтырып, үнүн басып, түзмөгүңүздү аныктаңыз да, андан соң телефонуңузда ачылган акыркы Chrome өтмөктөрүн көрүңүз</translation>
+<translation id="6667908387435388584">Телефонуңуздагы байланыш түйүнүнө туташтырып, үнүн басып, түзмөгүңүздү аныктаңыз да, андан соң телефонуңузда ачылган акыркы Chrome өтмөктөрүн көрүңүз</translation>
 <translation id="6670153871843998651">3-иш такта</translation>
 <translation id="6671495933530132209">Сүрөттү көчүрүү</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
@@ -776,7 +777,7 @@
 <translation id="7607002721634913082">Бир азга токтотулду</translation>
 <translation id="7618774594543487847">Нейтралдуу</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Nearby Share жөндөөлөрү көрсөтүлсүн.</translation>
+<translation id="7633755430369750696">Nearby Share жөндөөлөрү көрүнсүн.</translation>
 <translation id="7641938616688887143">Жаздыруу</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> тармагынын жөндөөлөрүн ачуу</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ээси)</translation>
@@ -968,6 +969,7 @@
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> дисплейи өчүрүлдү</translation>
 <translation id="9098969848082897657">Телефондун үнүн өчүрүү</translation>
 <translation id="9099154003160514616">Lacros жаңыртуусу жеткиликтүү</translation>
+<translation id="9105450214093926548">Lacros серепчиси иштеп жатканда экинчи колдонуучу кире албайт. Анын ордуна Lacros'то экинчи профилди колдонуңуз же Lacros'ту жаап, кайра аракет кылыңыз.</translation>
 <translation id="9133335900048457298">Корголгон мазмунду жаздырууга болбойт</translation>
 <translation id="9151726767154816831">Жаңыртуу үчүн өчүрүп күйгүзүп, "жууп салыңыз".</translation>
 <translation id="9166331175924255663">Жакын жердеги түзмөктөргө так көрүнүү үчүн Nearby Share режимин өчүрүп күйгүзүңүз.</translation>

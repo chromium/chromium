@@ -188,6 +188,7 @@
 <translation id="6070348360322141662">Google Chrome lisää suojausta salaamalla tietosi</translation>
 <translation id="608006075545470555">Lisää työprofiili tähän selaimeen</translation>
 <translation id="6113794647360055231">Chrome on nyt entistä parempi</translation>
+<translation id="6145313976051292476">Avaa PDF-tiedostot Chromessa</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="61852838583753520">Päivitä &amp;Chrome-käyttöjärjestelmä</translation>
@@ -200,7 +201,6 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6566149418543181476">Päivitetään Google Chromea (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome-käyttöjärjestelmä</translation>
-<translation id="6650333065969705433">Voidaksesi käyttää Rosettaa suojatun median toistamiseen, sinun täytyy uudelleenkäynnistää Chrome.</translation>
 <translation id="6676384891291319759">Käytä internetiä</translation>
 <translation id="6679975945624592337">Jätä Google Chrome käyntiin taustalle</translation>
 <translation id="6739177684496155661">Jatketaanko uudessa Chrome-profiilissa?</translation>
@@ -264,7 +264,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Tämä työprofiili on täysin erillinen henkilökohtaisesta profiilistasi.</translation>
 <translation id="8556340503434111824">Chromesta on saatavissa uusi versio, joka on entistäkin nopeampi.</translation>
-<translation id="861359755029082151">Chrome voi toistaa suojattua mediaa tällä sivulla käyttämällä Rosettaa.</translation>
 <translation id="8614913330719544658">Google Chrome ei vastaa. Käynnistetäänkö uudelleen?</translation>
 <translation id="861702415419836452">Chrome tarvitsee luvan käyttää kameraasi ympäristön 3D-kartoittamiseen</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome käynnistetään uudelleen 1 minuutin kuluttua}other{Chrome käynnistetään uudelleen # minuutin kuluttua.}}</translation>
@@ -278,7 +277,6 @@
 <translation id="8834965163890861871">Google Chrome yrittää muuttaa salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="884296878221830158">Määrittää myös Chromen aloitussivun ja Etusivu-painikkeella avattavan sivun.</translation>
 <translation id="8862326446509486874">Sinulla ei ole käyttöoikeuksia järjestelmätason asennukseen. Kokeile asennusohjelman suorittamista uudelleen järjestelmänvalvojana.</translation>
-<translation id="8907709077090383765">Sinun täytyy asentaa Rosetta, jotta Chrome voi toistaa suojattua mediaa. Haluatko asentaa sen nyt?</translation>
 <translation id="8914504000324227558">Käynnistä Chrome uudelleen</translation>
 <translation id="8922193594870374009">Jos haluat lähettää numeron osoitteesta <ph name="ORIGIN" /> Android-puhelimeesi, kirjaudu Chromeen molemmilla laitteilla.</translation>
 <translation id="8986207147630327271">Olet lisäämässä työprofiilia tähän selaimeen ja antamassa järjestelmänvalvojalle oikeuden hallita pelkkää työprofiilia.</translation>

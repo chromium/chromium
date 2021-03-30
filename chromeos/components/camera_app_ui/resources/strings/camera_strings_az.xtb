@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Heç nə çəkilməyib</translation>
+<translation id="1838104802459806957">Yuxarı əyin</translation>
 <translation id="1851616744363735765">DURDURULUB</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> faylını eksport etmək mümkün deyil</translation>
 <translation id="1899697626337024495">Fotonun ayırdetmə dəqiqliyi</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktivdir</translation>
 <translation id="2144806332417375165">Fərdi video parametrləri</translation>
 <translation id="229579744168541441">Diskə eksport edin</translation>
+<translation id="2320741269052147773">Solu görüntüləyin</translation>
 <translation id="2501278716633472235">Geri qayıdın</translation>
 <translation id="2501853267655415902">Çəkim dayandırılıb</translation>
 <translation id="2501953888035679275">Kameranız ilə foto və video çəkin.</translation>
@@ -24,6 +26,7 @@
 <translation id="2599796128805996109">Arxa kamera</translation>
 <translation id="2912439424121107408">Ekspert rejimi bu cihazda dəstəkləmir</translation>
 <translation id="2968794441791257519">Kamera ilə çəkilmiş foto və videolar Endirmələr qovluğuna köçürüləcək. Onlara Fayllardan daxil ola bilərsiniz. Yaddaş icazəsi olan tətbiqlər foto və videolara daxil ola biləcək.</translation>
+<translation id="3067436040345934772">Sağı görüntüləyin</translation>
 <translation id="3081586908890909590">"Video çəkin" rejiminə keçin</translation>
 <translation id="313467653172006084">30 FPS</translation>
 <translation id="3183731565330012717">Cədvəl növü</translation>
@@ -54,6 +57,7 @@
 <translation id="5671277269877808209">Kvadrat</translation>
 <translation id="5775960006311140197">Ekspert rejimi</translation>
 <translation id="5869546221129391014">Şəbəkə</translation>
+<translation id="5975083100439434680">Kiçildin</translation>
 <translation id="6040143037577758943">Qapat</translation>
 <translation id="6073451960410192870">Çəkməyi dayandırın</translation>
 <translation id="6197807149213783179">Metadatanı yadda saxlayın</translation>
@@ -79,19 +83,21 @@ Rəyiniz şəkil və ya video keyfiyyəti ilə bağlıdırsa, nümunə foto və 
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7670511624014457267">60 FPS</translation>
-<translation id="7974782136796202581">Kənarları yığma/əymə/miqyası dəyişmə seçimlərini göstərin</translation>
 <translation id="7983668134180549431">Mətn aşkarlanıb.</translation>
 <translation id="8067883171444229417">Videonu oxudun</translation>
+<translation id="8120146556401698679">Kənarları yığma, əymə, miqyası dəyişmə</translation>
 <translation id="8131740175452115882">Təsdiq edin</translation>
 <translation id="8145038249676204903">"Foto çəkin" rejiminə keçin</translation>
 <translation id="8239780215768881278">Video snepşotu çəkin</translation>
 <translation id="8261506727792406068">Silin</translation>
+<translation id="8425673304802773841">Aşağı əyin</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Metadatanı önizləyin</translation>
 <translation id="8815966864175525708">Portret fotosu çəkmək üçün keçid edin</translation>
 <translation id="8828441885228359828">Səs yazmağa davam edin</translation>
 <translation id="8870695351537079478">Çəkimə başlamaq mümkün deyil</translation>
+<translation id="8903921497873541725">Zoom</translation>
 <translation id="9045155556724273246">10 saniyə</translation>
 <translation id="945522503751344254">Geri əlaqə göndərin</translation>
 </translationbundle>

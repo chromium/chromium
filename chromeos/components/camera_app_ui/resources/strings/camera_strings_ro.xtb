@@ -56,6 +56,7 @@
 <translation id="5671277269877808209">Pătrat</translation>
 <translation id="5775960006311140197">Modul expert</translation>
 <translation id="5869546221129391014">Grilă</translation>
+<translation id="5975083100439434680">Micșorează</translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6073451960410192870">Oprește înregistrarea</translation>
 <translation id="6197807149213783179">Salvează metadatele</translation>
@@ -81,9 +82,9 @@ Dacă feedbackul tău se referă la calitatea video sau a imaginii, atașează u
 <translation id="7649070708921625228">Ajutor</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7670511624014457267">60 CPS</translation>
-<translation id="7974782136796202581">Afișează opțiunile de deplasare, înclinare și zoom</translation>
 <translation id="7983668134180549431">A fost detectat text.</translation>
 <translation id="8067883171444229417">Redă videoclipul</translation>
+<translation id="8120146556401698679">Deplasează Înclină Mărește / micșorează</translation>
 <translation id="8131740175452115882">Confirmați</translation>
 <translation id="8145038249676204903">Comută pentru a fotografia</translation>
 <translation id="8239780215768881278">Fă un instantaneu video</translation>
@@ -94,6 +95,7 @@ Dacă feedbackul tău se referă la calitatea video sau a imaginii, atașează u
 <translation id="8815966864175525708">Comută pentru a face o fotografie portret</translation>
 <translation id="8828441885228359828">Reia înregistrarea</translation>
 <translation id="8870695351537079478">Nu se poate porni înregistrarea</translation>
+<translation id="8903921497873541725">Mărește</translation>
 <translation id="9045155556724273246">10 secunde</translation>
 <translation id="945522503751344254">Trimite feedback</translation>
 </translationbundle>

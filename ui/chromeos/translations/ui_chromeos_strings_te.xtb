@@ -400,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />మీ పరికరాన్ని వెంటనే తీసివేయవద్దు!<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
        మీ పరికరం వినియోగంలో ఉన్నప్పుడు తీసివేస్తే డేటా నష్టం కలగవచ్చు. దయచేసి చర్య పూర్తయ్యే వరకు వేచి ఉండి ఆపై 'ఫైల్‌లు' యాప్‌ను ఉపయోగించి పరికరాన్ని తీసివేయండి.</translation>
+<translation id="5159560892333415631">ట్రాష్‌ను ఖాళీ చేయి</translation>
 <translation id="5163869187418756376">షేర్ చేయడం విఫలమైంది. మీ కనెక్షన్‌ను తనిఖీ చేసి, తర్వాత మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="516592729076796170">US ప్రోగ్రామర్ డ్వోరక్</translation>
 <translation id="5170477580121653719">Google డిస్క్‌లో మిగిలి ఉన్న ఖాళీ: <ph name="SPACE_AVAILABLE" />.</translation>
@@ -419,6 +420,7 @@
 <translation id="5275973617553375938">Google డిస్క్ నుండి పునరుద్ధరించబడిన ఫైల్‌లు</translation>
 <translation id="5288441970121584418">బర్గర్</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">మీరు ఖచ్చితంగా ట్రాష్ USB‌ను ఖాళీ చేయాలనుకుంటున్నారా?</translation>
 <translation id="5317780077021120954">సేవ్ చేయి</translation>
 <translation id="5318819489018851358">Linuxతో షేర్ చేయి</translation>
 <translation id="5323213332664049067">లాటిన్ అమెరికన్</translation>
@@ -783,6 +785,7 @@
 <translation id="9154418932169119429">ఈ చిత్రం ఆఫ్‌లైన్‌లో అందుబాటులో లేదు.</translation>
 <translation id="9172592259078059678">గుజరాతీ ట్రాన్స్‌లిటరేషన్</translation>
 <translation id="9173120999827300720">అంతర్జాతీయ కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
+<translation id="9174050671906956834">ట్రాష్‌లోని ఐటెమ్‌లు 30 రోజుల తర్వాత శాశ్వతంగా తొలగించబడతాయి.</translation>
 <translation id="9189836632794948435">కజక్</translation>
 <translation id="9213073329713032541">ఇన్‌స్టాలేషన్ విజయవంతంగా ప్రారంభించబడింది.</translation>
 <translation id="9219103736887031265">ఇమేజ్‌లు</translation>

@@ -268,7 +268,6 @@
 <translation id="2856503607207334158">登录失败</translation>
 <translation id="2860954141821109167">请确保已在此设备上启用了一款电话应用</translation>
 <translation id="2870560284913253234">网站</translation>
-<translation id="2876369937070532032">当您面临安全风险时，将您所访问的部分网页的网址发送给 Google</translation>
 <translation id="2888126860611144412">关于 Chrome</translation>
 <translation id="2891154217021530873">停止加载网页</translation>
 <translation id="2892647708214602204">当此文件可供下载时，您会看到一条通知</translation>
@@ -311,7 +310,6 @@
 <translation id="3157842584138209013">通过“更多选项”按钮查看您已节省多少数据流量</translation>
 <translation id="3166827708714933426">标签页和窗口快捷键</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181954750937456830">安全浏览（保护您和您的设备不受危险网站的侵害）</translation>
 <translation id="3205824638308738187">即将完成！</translation>
 <translation id="3207960819495026254">已加书签</translation>
 <translation id="3208584281581115441">立即检查</translation>
@@ -505,6 +503,7 @@
 <translation id="4561979708150884304">无网络连接</translation>
 <translation id="4565377596337484307">隐藏密码</translation>
 <translation id="4572422548854449519">请登录受管理的帐号</translation>
+<translation id="4576892426230499203">请尝试另一种验证方式</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# 分钟前}other{# 分钟前}}</translation>
 <translation id="4587589328781138893">网站</translation>
 <translation id="4594952190837476234">此离线网页是在 <ph name="CREATION_TIME" />创建的，可能与在线版本有所不同。</translation>
@@ -584,7 +583,6 @@
 <translation id="5011311129201317034"><ph name="SITE" /> 希望连接到以下所选设备：</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">允许</translation>
-<translation id="5040262127954254034">隐私权</translation>
 <translation id="5087580092889165836">添加新卡</translation>
 <translation id="5091249083535528968">扩展的使用情况数据</translation>
 <translation id="509429900233858213">出现错误。</translation>
@@ -637,6 +635,7 @@
 <translation id="5441522332038954058">跳转到地址栏</translation>
 <translation id="544776284582297024">若要打开多个标签页并同时访问不同网页，请点按“打开的标签页”按钮</translation>
 <translation id="545042621069398927">正在加快您的下载速度。</translation>
+<translation id="5454166040603940656">提供方：<ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">下载网页</translation>
 <translation id="548278423535722844">在地图应用中打开</translation>
 <translation id="5483197086164197190">探索 Chrome</translation>
@@ -777,6 +776,7 @@
 <translation id="6316139424528454185">Android 版本不受支持</translation>
 <translation id="6324034347079777476">Android 系统同步功能已停用</translation>
 <translation id="6324977638108296054">无法创建指向突出显示的内容的链接</translation>
+<translation id="6324997754869598316">（错误 <ph name="ERROR_CODE" />）</translation>
 <translation id="6333140779060797560">通过<ph name="APPLICATION" />分享</translation>
 <translation id="6337234675334993532">加密</translation>
 <translation id="6341580099087024258">询问文件保存位置</translation>
@@ -793,6 +793,7 @@
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> 上发生了 <ph name="ERROR_CODE" /> 错误</translation>
 <translation id="6404511346730675251">修改书签</translation>
 <translation id="6406506848690869874">同步</translation>
+<translation id="6407224748847589805">无法连接到您的计算机。请尝试另一种验证方式。</translation>
 <translation id="6410404864818553978">基本的使用情况数据</translation>
 <translation id="6410883413783534063">打开多个标签页即可同时访问不同网页</translation>
 <translation id="6412673304250309937">将网址与存储在 Chrome 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
@@ -861,7 +862,6 @@
 <translation id="6813446258015311409">登录 Chrome，已打开。</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">已选择标签页“<ph name="TAB_TITLE" />”</translation>
-<translation id="6845325883481699275">帮助我们改善 Chrome 安全性</translation>
 <translation id="6846298663435243399">正在加载…</translation>
 <translation id="6850409657436465440">您的下载仍在进行中</translation>
 <translation id="6850830437481525139">已关闭 <ph name="TAB_COUNT" /> 个标签页</translation>
@@ -989,7 +989,6 @@
 <translation id="7704317875155739195">自动补全搜索字词和网址</translation>
 <translation id="7707922173985738739">使用移动数据</translation>
 <translation id="7725024127233776428">您添加了书签的网页会显示在此处</translation>
-<translation id="7746457520633464754">为了检测危险应用和网站，Chrome 会将您所访问的部分网页的网址、有限的系统信息以及部分网页内容发送给 Google</translation>
 <translation id="7757787379047923882">分享自“<ph name="DEVICE_NAME" />”的文字</translation>
 <translation id="7761849928583394409">选择日期和时间</translation>
 <translation id="7762668264895820836">SD 卡 <ph name="SD_CARD_NUMBER" /></translation>
