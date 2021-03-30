@@ -102,6 +102,8 @@ bool Profile::OTRProfileID::AllowsBrowserWindows() const {
 
 // static
 const Profile::OTRProfileID Profile::OTRProfileID::PrimaryID() {
+  // OTRProfileID value should be same as
+  // |OTRProfileID.java#sPrimaryOTRProfileID| variable.
   return OTRProfileID("profile::primary_otr");
 }
 

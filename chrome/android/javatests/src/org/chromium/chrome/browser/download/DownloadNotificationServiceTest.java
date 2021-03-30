@@ -51,7 +51,6 @@ import java.util.UUID;
         ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER})
 @Batch(Batch.UNIT_TESTS)
 public class DownloadNotificationServiceTest {
-    public static final String PRIMARY_OTR_PROFILE_ID = "profile::primary_otr";
     private static final ContentId ID1 =
             LegacyHelpers.buildLegacyContentId(false, UUID.randomUUID().toString());
     private static final ContentId ID2 =
@@ -76,7 +75,7 @@ public class DownloadNotificationServiceTest {
 
     private final boolean mEnableOfflinePagesDescriptivePendingStatus;
     private final boolean mEnableOfflinePagesDescriptiveFailStatus;
-    private OTRProfileID mPrimaryOTRProfileID = new OTRProfileID(PRIMARY_OTR_PROFILE_ID);
+    private OTRProfileID mPrimaryOTRProfileID = OTRProfileID.getPrimaryOTRProfileID();
 
     public DownloadNotificationServiceTest(boolean enableOfflinePagesDescriptivePendingStatus,
             boolean enableOfflinePagesDescriptiveFailStatus) {

@@ -14,6 +14,9 @@ import org.chromium.base.annotations.NativeMethods;
  */
 public class OTRProfileID {
     private final String mProfileID;
+    // OTRProfileID value should be same with Profile::OTRProfileID::PrimaryID in native.
+    private static final OTRProfileID sPrimaryOTRProfileID =
+            new OTRProfileID("profile::primary_otr");
 
     @CalledByNative
     public OTRProfileID(String profileID) {
@@ -94,15 +97,14 @@ public class OTRProfileID {
     }
 
     public boolean isPrimaryOTRId() {
-        OTRProfileID primaryId = OTRProfileIDJni.get().getPrimaryID();
-        return this.equals(primaryId);
+        return this.equals(sPrimaryOTRProfileID);
     }
 
     /**
      * @return The OTRProfileID of the primary off-the-record profile.
      */
     public static OTRProfileID getPrimaryOTRProfileID() {
-        return OTRProfileIDJni.get().getPrimaryID();
+        return sPrimaryOTRProfileID;
     }
 
     /**
