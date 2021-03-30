@@ -111,6 +111,11 @@ def ParseArgs():
                       default=False,
                       help='Automatically remove any expectations that are '
                       'determined to be stale from the expectation file.')
+  parser.add_argument('--modify-semi-stale-expectations',
+                      action='store_true',
+                      default=False,
+                      help='If any semi-stale expectations are found, prompt '
+                      'the user about the modification of each one.')
   parser.add_argument('-v',
                       '--verbose',
                       action='count',
@@ -185,16 +190,30 @@ def main():
   result_output.OutputResults(stale, semi_stale, active, unmatched,
                               unused_expectations, args.output_format)
 
+  affected_urls = set()
+  stale_message = ''
   if args.remove_stale_expectations:
     stale_expectations = []
     for _, expectation_map in stale.iteritems():
       stale_expectations.extend(expectation_map.keys())
     stale_expectations.extend(unused_expectations)
-    removed_urls = expectations.RemoveExpectationsFromFile(
+    affected_urls |= expectations.RemoveExpectationsFromFile(
         stale_expectations, args.expectation_file)
-    print('Stale expectations removed from %s. Stale comments, etc. may still '
-          'need to be removed.' % args.expectation_file)
-    result_output.OutputRemovedUrls(removed_urls)
+    stale_message += ('Stale expectations removed from %s. Stale comments, '
+                      'etc. may still need to be removed.\n' %
+                      args.expectation_file)
+
+  if args.modify_semi_stale_expectations:
+    affected_urls |= expectations.ModifySemiStaleExpectations(
+        semi_stale, args.expectation_file)
+    stale_message += ('Semi-stale expectations modified in %s. Stale '
+                      'comments, etc. may still need to be removed.\n' %
+                      args.expectation_file)
+
+  if stale_message:
+    print stale_message
+  if affected_urls:
+    result_output.OutputAffectedUrls(affected_urls)
 
 
 if __name__ == '__main__':

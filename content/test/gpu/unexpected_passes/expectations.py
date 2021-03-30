@@ -3,17 +3,24 @@
 # found in the LICENSE file.
 """Methods related to test expectations/expectation files."""
 
+import collections
 import copy
 import logging
+import sys
 
 import validate_tag_consistency
 
 from typ import expectations_parser
 from unexpected_passes import data_types
+from unexpected_passes import result_output
 
 
 FINDER_DISABLE_COMMENT = 'finder:disable'
 FINDER_ENABLE_COMMENT = 'finder:enable'
+
+FULL_PASS = 1
+NEVER_PASS = 2
+PARTIAL_PASS = 3
 
 
 def CreateTestExpectationMap(expectation_file, tests):
@@ -47,7 +54,8 @@ def CreateTestExpectationMap(expectation_file, tests):
   for e in list_parser.expectations:
     if 'Skip' in e.raw_results:
       continue
-    expectation = data_types.Expectation(e.test, e.tags, e.raw_results)
+    expectation = data_types.Expectation(e.test, e.tags, e.raw_results,
+                                         e.reason)
     expectations_for_test = expectation_map.setdefault(
         e.test, data_types.ExpectationBuilderMap())
     assert expectation not in expectations_for_test
@@ -111,9 +119,6 @@ def SplitExpectationsByStaleness(test_expectation_map):
     removed.
   """
   assert isinstance(test_expectation_map, data_types.TestExpectationMap)
-  FULL_PASS = 1
-  NEVER_PASS = 2
-  PARTIAL_PASS = 3
 
   stale_dict = data_types.TestExpectationMap()
   semi_stale_dict = data_types.TestExpectationMap()
@@ -134,22 +139,9 @@ def SplitExpectationsByStaleness(test_expectation_map):
           PARTIAL_PASS: data_types.BuilderStepMap(),
       }
 
-      for builder_name, step_map in builder_map.iteritems():
-        fully_passed = data_types.StepBuildStatsMap()
-        partially_passed = data_types.StepBuildStatsMap()
-        never_passed = data_types.StepBuildStatsMap()
-
-        for step_name, stats in step_map.iteritems():
-          if stats.passed_builds == stats.total_builds:
-            assert step_name not in fully_passed
-            fully_passed[step_name] = stats
-          elif stats.failed_builds == stats.total_builds:
-            assert step_name not in never_passed
-            never_passed[step_name] = stats
-          else:
-            assert step_name not in partially_passed
-            partially_passed[step_name] = stats
-
+      split_stats_map = builder_map.SplitBuildStatsByPass()
+      for builder_name, (fully_passed, never_passed,
+                         partially_passed) in split_stats_map.iteritems():
         if fully_passed:
           tmp_map[FULL_PASS][builder_name] = fully_passed
         if never_passed:
@@ -202,7 +194,6 @@ def RemoveExpectationsFromFile(expectations, expectation_file):
     A set of strings containing URLs of bugs associated with the removed
     expectations.
   """
-  header = validate_tag_consistency.TAG_HEADER
 
   with open(expectation_file) as f:
     input_contents = f.read()
@@ -214,7 +205,7 @@ def RemoveExpectationsFromFile(expectations, expectation_file):
   for line in input_contents.splitlines(True):
     # Auto-add any comments or empty lines
     stripped_line = line.strip()
-    if not stripped_line or stripped_line.startswith('#'):
+    if _IsCommentOrBlankLine(stripped_line):
       output_contents += line
       assert not (FINDER_DISABLE_COMMENT in line
                   and FINDER_ENABLE_COMMENT in line)
@@ -236,14 +227,7 @@ def RemoveExpectationsFromFile(expectations, expectation_file):
         in_disable_block = False
       continue
 
-    single_line_content = header + line
-    list_parser = expectations_parser.TaggedTestListParser(single_line_content)
-    assert len(list_parser.expectations) == 1
-
-    typ_expectation = list_parser.expectations[0]
-    current_expectation = data_types.Expectation(typ_expectation.test,
-                                                 typ_expectation.tags,
-                                                 typ_expectation.raw_results)
+    current_expectation = _CreateExpectationFromExpectationFileLine(line)
 
     # Add any lines containing expectations that don't match any of the given
     # expectations to remove.
@@ -262,9 +246,9 @@ def RemoveExpectationsFromFile(expectations, expectation_file):
             'comment with reason %s',
             stripped_line.split('#')[0], _GetDisableReasonFromComment(line))
       else:
-        reason = list_parser.expectations[0].reason
-        if reason:
-          removed_urls.add(reason)
+        bug = current_expectation.bug
+        if bug:
+          removed_urls.add(bug)
     else:
       output_contents += line
 
@@ -272,6 +256,185 @@ def RemoveExpectationsFromFile(expectations, expectation_file):
     f.write(output_contents)
 
   return removed_urls
+
+
+def _IsCommentOrBlankLine(line):
+  return (not line or line.startswith('#'))
+
+
+def _CreateExpectationFromExpectationFileLine(line):
+  """Creates a data_types.Expectation from |line|.
+
+  Args:
+    line: A string containing a single line from an expectation file.
+
+  Returns:
+    A data_types.Expectation containing the same information as |line|.
+  """
+  header = validate_tag_consistency.TAG_HEADER
+  single_line_content = header + line
+  list_parser = expectations_parser.TaggedTestListParser(single_line_content)
+  assert len(list_parser.expectations) == 1
+  typ_expectation = list_parser.expectations[0]
+  return data_types.Expectation(typ_expectation.test, typ_expectation.tags,
+                                typ_expectation.raw_results,
+                                typ_expectation.reason)
+
+
+def ModifySemiStaleExpectations(stale_expectation_map, expectation_file):
+  """Modifies lines from |stale_expectation_map| in |expectation_file|.
+
+  Prompts the user for each modification and provides debug information since
+  semi-stale expectations cannot be blindly removed like fully stale ones.
+
+  Args:
+    stale_expectation_map: A data_types.TestExpectationMap containing stale
+        expectations.
+    expectation_file: A filepath pointing to an expectation file to remove lines
+        from.
+    file_handle: An optional open file-like object to output to. If not
+        specified, stdout will be used.
+
+  Returns:
+    A set of strings containing URLs of bugs associated with the modified
+    (manually modified by the user or removed by the script) expectations.
+  """
+  with open(expectation_file) as infile:
+    file_contents = infile.read()
+
+  expectations_to_remove = []
+  expectations_to_modify = []
+  for _, e, builder_map in stale_expectation_map.IterBuilderStepMaps():
+    line, line_number = _GetExpectationLine(e, file_contents)
+    expectation_str = None
+    if not line:
+      logging.error(
+          'Could not find line corresponding to semi-stale expectation for %s '
+          'with tags %s and expected results %s' % e.test, e.tags,
+          e.expected_results)
+      expectation_str = '[ %s ] %s [ %s ]' % (' '.join(
+          e.tags), e.test, ' '.join(e.expected_results))
+    else:
+      expectation_str = '%s (approx. line %d)' % (line, line_number)
+
+    str_dict = _ConvertBuilderMapToPassOrderedStringDict(builder_map)
+    print '\nSemi-stale expectation:\n%s' % expectation_str
+    result_output._RecursivePrintToFile(str_dict, 1, sys.stdout)
+
+    response = _WaitForUserInputOnModification()
+    if response == 'r':
+      expectations_to_remove.append(e)
+    elif response == 'm':
+      expectations_to_modify.append(e)
+
+  modified_urls = RemoveExpectationsFromFile(expectations_to_remove,
+                                             expectation_file)
+  for e in expectations_to_modify:
+    modified_urls.add(e.bug)
+  return modified_urls
+
+
+def _GetExpectationLine(expectation, file_contents):
+  """Gets the line and line number of |expectation| in |file_contents|.
+
+  Args:
+    expectation: A data_types.Expectation.
+    file_contents: A string containing the contents read from an expectation
+        file.
+
+  Returns:
+    A tuple (line, line_number). |line| is a string containing the exact line
+    in |file_contents| corresponding to |expectation|. |line_number| is an int
+    corresponding to where |line| is in |file_contents|. |line_number| may be
+    off if the file on disk has changed since |file_contents| was read. If a
+    corresponding line cannot be found, both |line| and |line_number| are None.
+  """
+  # We have all the information necessary to recreate the expectation line and
+  # line number can be pulled during the initial expectation parsing. However,
+  # the information we have is not necessarily in the same order as the
+  # text file (e.g. tag ordering), and line numbers can change pretty
+  # dramatically between the initial parse and now due to stale expectations
+  # being removed. So, parse this way in order to improve the user experience.
+  file_lines = file_contents.splitlines()
+  for line_number, line in enumerate(file_lines):
+    if _IsCommentOrBlankLine(line.strip()):
+      continue
+    current_expectation = _CreateExpectationFromExpectationFileLine(line)
+    if expectation == current_expectation:
+      return line, line_number + 1
+  return None, None
+
+
+def _ConvertBuilderMapToPassOrderedStringDict(builder_map):
+  """Converts |builder_map| into an ordered dict split by pass type.
+
+  Args:
+    builder_map: A data_types.BuildStepMap.
+
+  Returns:
+    A collections.OrderedDict in the following format:
+    {
+      result_output.FULL_PASS: {
+        builder_name: [
+          step_name (total passes / total builds)
+        ],
+      },
+      result_output.NEVER_PASS: {
+        builder_name: [
+          step_name (total passes / total builds)
+        ],
+      },
+      result_output.PARTIAL_PASS: {
+        builder_name: [
+          step_name (total passes / total builds): [
+            failure links,
+          ],
+        ],
+      },
+    }
+
+    The ordering and presence of the top level keys is guaranteed.
+  """
+  # This is similar to what we do in
+  # result_output._ConvertTestExpectationMapToStringDict, but we want the
+  # top-level grouping to be by pass type rather than by builder, so we can't
+  # re-use the code from there.
+  # Ordered dict used to ensure that order is guaranteed when printing out.
+  str_dict = collections.OrderedDict()
+  str_dict[result_output.FULL_PASS] = {}
+  str_dict[result_output.NEVER_PASS] = {}
+  str_dict[result_output.PARTIAL_PASS] = {}
+  for builder_name, step_name, stats in builder_map.IterBuildStats():
+    step_str = result_output.AddStatsToStr(step_name, stats)
+    if stats.did_fully_pass:
+      str_dict[result_output.FULL_PASS].setdefault(builder_name,
+                                                   []).append(step_str)
+    elif stats.did_never_pass:
+      str_dict[result_output.NEVER_PASS].setdefault(builder_name,
+                                                    []).append(step_str)
+    else:
+      str_dict[result_output.PARTIAL_PASS].setdefault(
+          builder_name, {})[step_str] = list(stats.failure_links)
+  return str_dict
+
+
+def _WaitForUserInputOnModification():
+  """Waits for user input on how to modify a semi-stale expectation.
+
+  Returns:
+    One of the following string values:
+      i - Expectation should be ignored and left alone.
+      m - Expectation will be manually modified by the user.
+      r - Expectation should be removed by the script.
+  """
+  valid_inputs = ['i', 'm', 'r']
+  prompt = ('How should this expectation be handled? (i)gnore/(m)anually '
+            'modify/(r)emove: ')
+  response = raw_input(prompt).lower()
+  while response not in valid_inputs:
+    print 'Invalid input, valid inputs are %s' % (', '.join(valid_inputs))
+    response = raw_input(prompt).lower()
+  return response
 
 
 def MergeExpectationMaps(base_map, merge_map, reference_map=None):

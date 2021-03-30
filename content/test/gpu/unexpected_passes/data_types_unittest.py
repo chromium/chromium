@@ -24,6 +24,8 @@ class ExpectationUnittest(unittest.TestCase):
     self.assertNotEqual(e, other)
     other = data_types.Expectation('test', ['tag1', 'tag2'], 'Failure')
     self.assertNotEqual(e, other)
+    other = data_types.Expectation('test', ['tag1', 'tag2'], 'Pass', 'bug')
+    self.assertNotEqual(e, other)
     other = data_types.Result('test', ['tag1', 'tag2'], 'Pass', 'pixel_tests',
                               'build_id')
     self.assertNotEqual(e, other)

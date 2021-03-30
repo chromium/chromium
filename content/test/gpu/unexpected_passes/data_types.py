@@ -16,9 +16,10 @@ class Expectation(object):
   expectation file.
   """
 
-  def __init__(self, test, tags, expected_results):
+  def __init__(self, test, tags, expected_results, bug=None):
     self.test = test
     self.tags = frozenset(tags)
+    self.bug = bug or ''
     if isinstance(expected_results, str):
       self.expected_results = frozenset([expected_results])
     else:
@@ -35,10 +36,11 @@ class Expectation(object):
   def __eq__(self, other):
     return (isinstance(other, Expectation) and self.test == other.test
             and self.tags == other.tags
-            and self.expected_results == other.expected_results)
+            and self.expected_results == other.expected_results
+            and self.bug == other.bug)
 
   def __hash__(self):
-    return hash((self.test, self.tags, self.expected_results))
+    return hash((self.test, self.tags, self.expected_results, self.bug))
 
   def AppliesToResult(self, result):
     """Checks whether this expectation should have applied to |result|.
@@ -104,6 +106,14 @@ class BuildStats(object):
   @property
   def failed_builds(self):
     return self.total_builds - self.passed_builds
+
+  @property
+  def did_fully_pass(self):
+    return self.passed_builds == self.total_builds
+
+  @property
+  def did_never_pass(self):
+    return self.failed_builds == self.total_builds
 
   def AddPassedBuild(self):
     self.passed_builds += 1
@@ -236,7 +246,7 @@ class ExpectationBuilderMap(BaseTypedMap):
 
 
 class BuilderStepMap(BaseTypedMap):
-  """Typed map for string types -> BuilderStepMap."""
+  """Typed map for string types -> StepBuildStatsMap."""
 
   def __setitem__(self, key, value):
     assert IsStringType(key)
@@ -245,6 +255,42 @@ class BuilderStepMap(BaseTypedMap):
 
   def _value_type(self):
     return StepBuildStatsMap
+
+  def SplitBuildStatsByPass(self):
+    """Splits the underlying BuildStats data by passing-ness.
+
+    Returns:
+      A dict mapping builder name to a tuple (fully_passed, never_passed,
+      partially_passed). Each *_passed is a StepBuildStatsMap containing data
+      for the steps that either fully passed on all builds, never passed on any
+      builds, or passed some of the time.
+    """
+    retval = {}
+    for builder_name, step_map in self.iteritems():
+      fully_passed = StepBuildStatsMap()
+      never_passed = StepBuildStatsMap()
+      partially_passed = StepBuildStatsMap()
+
+      for step_name, stats in step_map.iteritems():
+        if stats.did_fully_pass:
+          assert step_name not in fully_passed
+          fully_passed[step_name] = stats
+        elif stats.did_never_pass:
+          assert step_name not in never_passed
+          never_passed[step_name] = stats
+        else:
+          assert step_name not in partially_passed
+          partially_passed[step_name] = stats
+      retval[builder_name] = (fully_passed, never_passed, partially_passed)
+    return retval
+
+  def IterBuildStats(self):
+    """Iterates over all BuildStats contained in the map.
+
+    Returns:
+      A generator yielding tuples in the form (builder_name (str), step_name
+      (str), build_stats (BuildStats))"""
+    return self.IterToValueType(BuildStats)
 
 
 class StepBuildStatsMap(BaseTypedMap):

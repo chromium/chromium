@@ -500,7 +500,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
     result_output._OutputUrlsForClDescription(urls, self._file_handle)
     self._file_handle.close()
     with open(self._filepath) as f:
-      self.assertEqual(f.read(), ('Affected bugs:\n'
+      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
                                   'Bug: 1234, angleproject:2345\n'))
 
   def testBugLimit(self):
@@ -516,7 +516,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
     result_output._OutputUrlsForClDescription(urls, self._file_handle)
     self._file_handle.close()
     with open(self._filepath) as f:
-      self.assertEqual(f.read(), ('Affected bugs:\n'
+      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
                                   'Bug: 1, 2, 3, 4, 5\n'
                                   'Bug: 6\n'))
 
@@ -530,7 +530,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
     self._file_handle.close()
     with open(self._filepath) as f:
       self.assertEqual(f.read(),
-                       ('Affected bugs:\n'
+                       ('Affected bugs for CL description:\n'
                         'Bug: averylongprojectthatwillgooverthelinelength:1\n'
                         'Bug: averylongprojectthatwillgooverthelinelength:2\n'))
 
@@ -543,7 +543,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
     with open(self._filepath, 'w') as f:
       result_output._OutputUrlsForClDescription(urls, f)
     with open(self._filepath) as f:
-      self.assertEqual(f.read(), ('Affected bugs:\n'
+      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
                                   'Bug: %s:1, 2\n' % project_name))
 
     project_name += 'a'
@@ -554,7 +554,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
     with open(self._filepath, 'w') as f:
       result_output._OutputUrlsForClDescription(urls, f)
     with open(self._filepath) as f:
-      self.assertEqual(f.read(), ('Affected bugs:\n'
+      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
                                   'Bug: %s:1\nBug: 2\n' % project_name))
 
   def testSingleBugOverLineLimit(self):
@@ -567,7 +567,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
     result_output._OutputUrlsForClDescription(urls, self._file_handle)
     self._file_handle.close()
     with open(self._filepath) as f:
-      self.assertEqual(f.read(), ('Affected bugs:\n'
+      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
                                   'Bug: %s:1\n'
                                   'Bug: 2\n' % project_name))
 

@@ -2,23 +2,28 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import collections
 import copy
 import tempfile
 import unittest
 
+import mock
 from pyfakefs import fake_filesystem_unittest
 
 import validate_tag_consistency
 
 from unexpected_passes import data_types
 from unexpected_passes import expectations
+from unexpected_passes import result_output
 from unexpected_passes import unittest_utils as uu
 
 FAKE_EXPECTATION_FILE_CONTENTS = """\
 # tags: [ win linux ]
 # results: [ Failure RetryOnFailure Skip ]
 crbug.com/1234 [ win ] foo/test [ Failure ]
-crbug.com/1233 [ linux ] foo/test [ Failure ]
+
+[ linux ] foo/test [ Failure ]
+
 crbug.com/2345 [ linux ] bar/* [ RetryOnFailure ]
 crbug.com/3456 [ linux ] some/bad/test [ Skip ]
 """
@@ -43,15 +48,19 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
     expectation_map = expectations.CreateTestExpectationMap(filename, None)
     # Skip expectations should be omitted, but everything else should be
     # present.
+    # yapf: disable
     expected_expectation_map = {
         'foo/test': {
-            data_types.Expectation('foo/test', ['win'], ['Failure']): {},
+            data_types.Expectation(
+                'foo/test', ['win'], ['Failure'], 'crbug.com/1234'): {},
             data_types.Expectation('foo/test', ['linux'], ['Failure']): {},
         },
         'bar/*': {
-            data_types.Expectation('bar/*', ['linux'], ['RetryOnFailure']): {},
+            data_types.Expectation(
+                'bar/*', ['linux'], ['RetryOnFailure'], 'crbug.com/2345'): {},
         },
     }
+    # yapf: enable
     self.assertEqual(expectation_map, expected_expectation_map)
     self.assertIsInstance(expectation_map, data_types.TestExpectationMap)
 
@@ -439,7 +448,8 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 """
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure']),
+        data_types.Expectation('foo/test', ['win'], ['Failure'],
+                               'crbug.com/1234'),
         data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'])
     ]
 
@@ -495,7 +505,14 @@ crbug.com/3456 [ win ] foo/test [ Failure ]
 crbug.com/4567 [ win ] foo/test [ Failure ]
 """
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'])
+        data_types.Expectation('foo/test', ['win'], ['Failure'],
+                               'crbug.com/1234'),
+        data_types.Expectation('foo/test', ['win'], ['Failure'],
+                               'crbug.com/2345'),
+        data_types.Expectation('foo/test', ['win'], ['Failure'],
+                               'crbug.com/3456'),
+        data_types.Expectation('foo/test', ['win'], ['Failure'],
+                               'crbug.com/4567'),
     ]
     expected_contents = validate_tag_consistency.TAG_HEADER + """
 # finder:disable
@@ -519,7 +536,12 @@ crbug.com/2345 [ win ] foo/test [ Failure ]  # finder:disable
 crbug.com/3456 [ win ] foo/test [ Failure ]
 """
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'])
+        data_types.Expectation('foo/test', ['win'], ['Failure'],
+                               'crbug.com/1234'),
+        data_types.Expectation('foo/test', ['win'], ['Failure'],
+                               'crbug.com/2345'),
+        data_types.Expectation('foo/test', ['win'], ['Failure'],
+                               'crbug.com/3456'),
     ]
     expected_contents = validate_tag_consistency.TAG_HEADER + """
 crbug.com/2345 [ win ] foo/test [ Failure ]  # finder:disable
@@ -1042,6 +1064,181 @@ class MergeExpectationMapsUnittest(unittest.TestCase):
     expectations.MergeExpectationMaps(base_map, merge_map, original_base_map)
     with self.assertRaises(AssertionError):
       expectations.MergeExpectationMaps(base_map, merge_map, original_base_map)
+
+
+class ConvertBuilderMapToPassOrderedStringDictUnittest(unittest.TestCase):
+  def testEmptyInput(self):
+    """Tests that an empty input doesn't cause breakage."""
+    output = expectations._ConvertBuilderMapToPassOrderedStringDict(
+        data_types.BuilderStepMap())
+    expected_output = collections.OrderedDict()
+    expected_output[result_output.FULL_PASS] = {}
+    expected_output[result_output.NEVER_PASS] = {}
+    expected_output[result_output.PARTIAL_PASS] = {}
+    self.assertEqual(output, expected_output)
+
+  def testBasic(self):
+    """Tests that a map is properly converted."""
+    builder_map = data_types.BuilderStepMap({
+        'fully pass':
+        data_types.StepBuildStatsMap({
+            'step1': uu.CreateStatsWithPassFails(1, 0),
+        }),
+        'never pass':
+        data_types.StepBuildStatsMap({
+            'step3': uu.CreateStatsWithPassFails(0, 1),
+        }),
+        'partial pass':
+        data_types.StepBuildStatsMap({
+            'step5': uu.CreateStatsWithPassFails(1, 1),
+        }),
+        'mixed':
+        data_types.StepBuildStatsMap({
+            'step7': uu.CreateStatsWithPassFails(1, 0),
+            'step8': uu.CreateStatsWithPassFails(0, 1),
+            'step9': uu.CreateStatsWithPassFails(1, 1),
+        }),
+    })
+    output = expectations._ConvertBuilderMapToPassOrderedStringDict(builder_map)
+
+    expected_output = collections.OrderedDict()
+    expected_output[result_output.FULL_PASS] = {
+        'fully pass': [
+            'step1 (1/1)',
+        ],
+        'mixed': [
+            'step7 (1/1)',
+        ],
+    }
+    expected_output[result_output.NEVER_PASS] = {
+        'never pass': [
+            'step3 (0/1)',
+        ],
+        'mixed': [
+            'step8 (0/1)',
+        ],
+    }
+    expected_output[result_output.PARTIAL_PASS] = {
+        'partial pass': {
+            'step5 (1/2)': [
+                'http://ci.chromium.org/b/build_id0',
+            ],
+        },
+        'mixed': {
+            'step9 (1/2)': [
+                'http://ci.chromium.org/b/build_id0',
+            ],
+        },
+    }
+    self.assertEqual(output, expected_output)
+
+
+class GetExpectationLineUnittest(unittest.TestCase):
+  def testNoMatchingExpectation(self):
+    """Tests that the case of no matching expectation is handled."""
+    expectation = data_types.Expectation('foo', ['win'], 'Failure')
+    line, line_number = expectations._GetExpectationLine(
+        expectation, FAKE_EXPECTATION_FILE_CONTENTS)
+    self.assertIsNone(line)
+    self.assertIsNone(line_number)
+
+  def testMatchingExpectation(self):
+    """Tests that matching expectations are found."""
+    expectation = data_types.Expectation('foo/test', ['win'], 'Failure',
+                                         'crbug.com/1234')
+    line, line_number = expectations._GetExpectationLine(
+        expectation, FAKE_EXPECTATION_FILE_CONTENTS)
+    self.assertEqual(line, 'crbug.com/1234 [ win ] foo/test [ Failure ]')
+    self.assertEqual(line_number, 3)
+
+
+class ModifySemiStaleExpectationsUnittest(fake_filesystem_unittest.TestCase):
+  def setUp(self):
+    self.setUpPyfakefs()
+
+    self._input_patcher = mock.patch.object(expectations,
+                                            '_WaitForUserInputOnModification')
+    self._input_mock = self._input_patcher.start()
+    self.addCleanup(self._input_patcher.stop)
+
+    with tempfile.NamedTemporaryFile(delete=False) as f:
+      f.write(FAKE_EXPECTATION_FILE_CONTENTS)
+      self.filename = f.name
+
+  def testEmptyExpectationMap(self):
+    """Tests that an empty expectation map results in a no-op."""
+    modified_urls = expectations.ModifySemiStaleExpectations(
+        data_types.TestExpectationMap(), self.filename)
+    self.assertEqual(modified_urls, set())
+    self._input_mock.assert_not_called()
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), FAKE_EXPECTATION_FILE_CONTENTS)
+
+  def testRemoveExpectation(self):
+    """Tests that specifying to remove an expectation does so."""
+    self._input_mock.return_value = 'r'
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        'foo/test':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+            data_types.BuilderStepMap(),
+        }),
+    })
+    # yapf: enable
+    modified_urls = expectations.ModifySemiStaleExpectations(
+        test_expectation_map, self.filename)
+    self.assertEqual(modified_urls, set(['crbug.com/1234']))
+    expected_file_contents = """\
+# tags: [ win linux ]
+# results: [ Failure RetryOnFailure Skip ]
+
+[ linux ] foo/test [ Failure ]
+
+crbug.com/2345 [ linux ] bar/* [ RetryOnFailure ]
+crbug.com/3456 [ linux ] some/bad/test [ Skip ]
+"""
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_file_contents)
+
+  def testModifyExpectation(self):
+    """Tests that specifying to modify an expectation does not remove it."""
+    self._input_mock.return_value = 'm'
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        'foo/test':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+            data_types.BuilderStepMap(),
+        }),
+    })
+    # yapf: enable
+    modified_urls = expectations.ModifySemiStaleExpectations(
+        test_expectation_map, self.filename)
+    self.assertEqual(modified_urls, set(['crbug.com/1234']))
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), FAKE_EXPECTATION_FILE_CONTENTS)
+
+  def testIgnoreExpectation(self):
+    """Tests that specifying to ignore an expectation does nothing."""
+    self._input_mock.return_value = 'i'
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        'foo/test':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+            data_types.BuilderStepMap(),
+        }),
+    })
+    # yapf: enable
+    modified_urls = expectations.ModifySemiStaleExpectations(
+        test_expectation_map, self.filename)
+    self.assertEqual(modified_urls, set())
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), FAKE_EXPECTATION_FILE_CONTENTS)
 
 
 if __name__ == '__main__':

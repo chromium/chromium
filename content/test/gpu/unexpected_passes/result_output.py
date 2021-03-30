@@ -354,10 +354,10 @@ def _ConvertTestExpectationMapToStringDict(test_expectation_map):
         never_passed = []
 
         for step_name, stats in step_map.iteritems():
-          if stats.passed_builds == stats.total_builds:
-            fully_passed.append(_AddStatsToStr(step_name, stats))
-          elif stats.failed_builds == stats.total_builds:
-            never_passed.append(_AddStatsToStr(step_name, stats))
+          if stats.did_fully_pass:
+            fully_passed.append(AddStatsToStr(step_name, stats))
+          elif stats.did_never_pass:
+            never_passed.append(AddStatsToStr(step_name, stats))
           else:
             assert step_name not in partially_passed
             partially_passed[step_name] = stats
@@ -369,7 +369,7 @@ def _ConvertTestExpectationMapToStringDict(test_expectation_map):
         if partially_passed:
           output_builder_map[PARTIAL_PASS] = {}
           for step_name, stats in partially_passed.iteritems():
-            s = _AddStatsToStr(step_name, stats)
+            s = AddStatsToStr(step_name, stats)
             output_builder_map[PARTIAL_PASS][s] = list(stats.failure_links)
         if never_passed:
           output_builder_map[NEVER_PASS] = never_passed
@@ -437,12 +437,12 @@ def _FormatExpectation(expectation):
       expectation.expected_results), ' '.join(expectation.tags))
 
 
-def _AddStatsToStr(s, stats):
+def AddStatsToStr(s, stats):
   return '%s (%d/%d)' % (s, stats.passed_builds, stats.total_builds)
 
 
-def OutputRemovedUrls(removed_urls):
-  """Outputs URLs of removed expectations for easier consumption by the user.
+def OutputAffectedUrls(removed_urls):
+  """Outputs URLs of affected expectations for easier consumption by the user.
 
   Outputs both a string suitable for passing to Chrome via the command line to
   open all bugs in the browser and a string suitable for copying into the CL
@@ -516,4 +516,4 @@ def _OutputUrlsForClDescription(urls, file_handle=None):
     bugs_on_line += 1
 
   output_str += current_line + '\n'
-  file_handle.write('Affected bugs:\n%s' % output_str)
+  file_handle.write('Affected bugs for CL description:\n%s' % output_str)
