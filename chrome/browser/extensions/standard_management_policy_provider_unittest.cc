@@ -10,9 +10,12 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -120,6 +123,33 @@ TEST_F(StandardManagementPolicyProviderTest, NotRequiredExtension) {
                                                    nullptr));
   EXPECT_TRUE(provider_.ExtensionMayModifySettings(external_pref.get(),
                                                    internal.get(), nullptr));
+}
+
+// Tests the behavior of the ManagementPolicy provider methods for a theme
+// extension with and without a set policy theme.
+TEST_F(StandardManagementPolicyProviderTest, ThemeExtension) {
+  auto extension =
+      ExtensionBuilder("testTheme")
+          .SetLocation(ManifestLocation::kInternal)
+          .SetManifestKey("theme", std::make_unique<base::DictionaryValue>())
+          .Build();
+  std::u16string error16;
+
+  EXPECT_EQ(extension->GetType(), Manifest::TYPE_THEME);
+  EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error16));
+  EXPECT_EQ(std::u16string(), error16);
+
+  // Setting policy theme prevents users from loading an extension theme.
+  profile_.GetTestingPrefService()->SetManagedPref(
+      prefs::kPolicyThemeColor, std::make_unique<base::Value>(100));
+
+  EXPECT_FALSE(provider_.UserMayLoad(extension.get(), &error16));
+  EXPECT_NE(std::u16string(), error16);
+
+  // Unsetting policy theme allows users to load an extension theme.
+  profile_.GetTestingPrefService()->RemoveManagedPref(prefs::kPolicyThemeColor);
+
+  EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error16));
 }
 
 }  // namespace extensions
