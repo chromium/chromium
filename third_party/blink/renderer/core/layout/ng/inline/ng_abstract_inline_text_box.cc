@@ -93,12 +93,19 @@ NGAbstractInlineTextBox::~NGAbstractInlineTextBox() {
 }
 
 void NGAbstractInlineTextBox::Detach() {
-  if (Node* const node = GetNode()) {
-    if (AXObjectCache* cache = node->GetDocument().ExistingAXObjectCache())
-      cache->InlineTextBoxesUpdated(GetLineLayoutItem());
-  }
+  LayoutObject* prev_layout_object = GetLayoutObject();
+  AXObjectCache* cache = ExistingAXObjectCache();
+
   AbstractInlineTextBox::Detach();
+  DCHECK(!GetLayoutObject());
+
   fragment_item_ = nullptr;
+
+  if (cache) {
+    prev_layout_object->CheckIsNotDestroyed();
+    DCHECK(IsA<LayoutText>(prev_layout_object));
+    cache->InlineTextBoxesUpdated(prev_layout_object);
+  }
 }
 
 NGInlineCursor NGAbstractInlineTextBox::GetCursor() const {
