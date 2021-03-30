@@ -37,7 +37,7 @@ Polymer({
     deviceInfo_: {
       type: String,
       value: '',
-      computed: 'getDeviceInfo_(systemInfo_.versionInfo.milestoneVersion,' +
+      computed: 'getDeviceInfo_(systemInfo_.versionInfo.fullVersionString,' +
           'systemInfo_.boardName)'
     },
   },
@@ -67,11 +67,11 @@ Polymer({
   getDeviceInfo_() {
     const marketingNameValid = !this.shouldHideMarketingName_();
     const boardName = this.systemInfo_.boardName;
-    const milestoneVersion = this.systemInfo_.versionInfo.milestoneVersion;
+    const version = this.systemInfo_.versionInfo.fullVersionString;
 
     if (!boardName && !marketingNameValid) {
       const versionInfo =
-          loadTimeData.getStringF('versionInfo', milestoneVersion);
+          loadTimeData.getStringF('versionInfo', version);
       // Capitalize "v" in "version" if board and marketing name are missing.
       return versionInfo[0].toUpperCase() + versionInfo.slice(1);
     }
@@ -79,8 +79,8 @@ Polymer({
     let deviceInfo = this.systemInfo_.boardName ?
         loadTimeData.getStringF(
             'boardAndVersionInfo', this.systemInfo_.boardName,
-            milestoneVersion) :
-        loadTimeData.getStringF('versionInfo', milestoneVersion);
+            version) :
+        loadTimeData.getStringF('versionInfo', version);
     return marketingNameValid ? `(${deviceInfo})` : deviceInfo;
   },
 

@@ -22,9 +22,8 @@ const char kNewline[] = "\n";
 const char kSeparator[] = " - ";
 const char kStartedDescription[] = "Started";
 
-std::string GetCurrentTimeAsString() {
-  return base::UTF16ToUTF8(
-      base::TimeFormatTimeOfDayWithMilliseconds(base::Time::Now()));
+std::string GetCurrentDateTimeAsString() {
+  return base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(base::Time::Now()));
 }
 
 std::string getRoutineResultString(mojom::StandardRoutineResult result) {
@@ -68,7 +67,7 @@ void RoutineLog::LogRoutineStarted(mojom::RoutineType type) {
   }
 
   std::stringstream log_line;
-  log_line << GetCurrentTimeAsString() << kSeparator
+  log_line << GetCurrentDateTimeAsString() << kSeparator
            << getRoutineTypeString(type) << kSeparator << kStartedDescription
            << kNewline;
   AppendToLog(log_line.str());
@@ -79,7 +78,7 @@ void RoutineLog::LogRoutineCompleted(mojom::RoutineType type,
   DCHECK(base::PathExists(routine_log_file_path_));
 
   std::stringstream log_line;
-  log_line << GetCurrentTimeAsString() << kSeparator
+  log_line << GetCurrentDateTimeAsString() << kSeparator
            << getRoutineTypeString(type) << kSeparator
            << getRoutineResultString(result) << kNewline;
   AppendToLog(log_line.str());
@@ -89,8 +88,8 @@ void RoutineLog::LogRoutineCancelled() {
   DCHECK(base::PathExists(routine_log_file_path_));
 
   std::stringstream log_line;
-  log_line << GetCurrentTimeAsString() << kSeparator << kCancelledDescription
-           << kNewline;
+  log_line << GetCurrentDateTimeAsString() << kSeparator
+           << kCancelledDescription << kNewline;
   AppendToLog(log_line.str());
 }
 

@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chromeos/components/diagnostics_ui/backend/log_test_helpers.h"
 #include "chromeos/components/diagnostics_ui/backend/routine_log.h"
@@ -42,8 +43,9 @@ mojom::SystemInfoPtr CreateSystemInfoPtr(const std::string& board_name,
                                          uint16_t cpu_threads_count,
                                          uint32_t cpu_max_clock_speed_khz,
                                          bool has_battery,
-                                         const std::string& milestone_version) {
-  auto version_info = mojom::VersionInfo::New(milestone_version);
+                                         const std::string& milestone_version,
+                                         const std::string& full_version) {
+  auto version_info = mojom::VersionInfo::New(milestone_version, full_version);
   auto device_capabilities = mojom::DeviceCapabilities::New(has_battery);
 
   auto system_info = mojom::SystemInfo::New(
@@ -194,11 +196,12 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
   const uint32_t expected_cpu_max_clock_speed_khz = 91011;
   const bool expected_has_battery = true;
   const std::string expected_milestone_version = "M99";
+  const std::string expected_full_version = "M99.1234.5.6";
   mojom::SystemInfoPtr test_info = CreateSystemInfoPtr(
       expected_board_name, expected_marketing_name, expected_cpu_model,
       expected_total_memory_kib, expected_cpu_threads_count,
       expected_cpu_max_clock_speed_khz, expected_has_battery,
-      expected_milestone_version);
+      expected_milestone_version, expected_full_version);
 
   telemetry_log_->UpdateSystemInfo(std::move(test_info));
 
@@ -211,30 +214,33 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
 
   const std::string expected_telemetry_log_header = "=== Telemetry Log ===";
   const std::string expected_system_info_section_name = "--- System Info ---";
+  const std::string expected_snapshot_time_prefix = "Snapshot Time: ";
   const std::vector<std::string> log_lines = GetCombinedLogContents(log_path);
-  ASSERT_EQ(12u, log_lines.size());
+  ASSERT_EQ(13u, log_lines.size());
   EXPECT_EQ(expected_telemetry_log_header, log_lines[0]);
   EXPECT_EQ(expected_system_info_section_name, log_lines[1]);
-  EXPECT_EQ("Board Name: " + expected_board_name, log_lines[2]);
-  EXPECT_EQ("Marketing Name: " + expected_marketing_name, log_lines[3]);
-  EXPECT_EQ("CpuModel Name: " + expected_cpu_model, log_lines[4]);
+  EXPECT_GT(log_lines[2].size(), expected_snapshot_time_prefix.size());
+  EXPECT_TRUE(base::StartsWith(log_lines[2], expected_snapshot_time_prefix));
+  EXPECT_EQ("Board Name: " + expected_board_name, log_lines[3]);
+  EXPECT_EQ("Marketing Name: " + expected_marketing_name, log_lines[4]);
+  EXPECT_EQ("CpuModel Name: " + expected_cpu_model, log_lines[5]);
   EXPECT_EQ(
       "Total Memory (kib): " + base::NumberToString(expected_total_memory_kib),
-      log_lines[5]);
+      log_lines[6]);
   EXPECT_EQ(
       "Thread Count:  " + base::NumberToString(expected_cpu_threads_count),
-      log_lines[6]);
+      log_lines[7]);
   EXPECT_EQ("Cpu Max Clock Speed (kHz):  " +
                 base::NumberToString(expected_cpu_max_clock_speed_khz),
-            log_lines[7]);
-  EXPECT_EQ("Milestone Version: " + expected_milestone_version, log_lines[8]);
-  EXPECT_EQ("Has Battery: true", log_lines[9]);
+            log_lines[8]);
+  EXPECT_EQ("Version: " + expected_full_version, log_lines[9]);
+  EXPECT_EQ("Has Battery: true", log_lines[10]);
 
   const std::string expected_routine_log_header = "=== Routine Log ===";
-  EXPECT_EQ(expected_routine_log_header, log_lines[10]);
+  EXPECT_EQ(expected_routine_log_header, log_lines[11]);
 
   const std::vector<std::string> first_routine_log_line_contents =
-      GetLogLineContents(log_lines[11]);
+      GetLogLineContents(log_lines[12]);
   ASSERT_EQ(3u, first_routine_log_line_contents.size());
   // first_routine_log_line_contents[0] is ignored because it's a timestamp.
   EXPECT_EQ("CpuStress", first_routine_log_line_contents[1]);

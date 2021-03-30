@@ -82,7 +82,7 @@ export function overviewCardTestSuite() {
     return initializeOverviewCard(fakeSystemInfoWithoutBoardName).then(() => {
       const versionInfo = loadTimeData.getStringF(
           'versionInfo',
-          fakeSystemInfoWithoutBoardName.versionInfo.milestoneVersion);
+          fakeSystemInfoWithoutBoardName.versionInfo.fullVersionString);
       assertEquals(
           overviewElement.$$('#deviceInfo').textContent,
           versionInfo[0].toUpperCase() + versionInfo.slice(1));
