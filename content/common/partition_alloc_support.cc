@@ -247,10 +247,44 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
   if (process_type == switches::kRendererProcess &&
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocLargeThreadCacheSize)) {
+    largest_cached_size_ = base::internal::ThreadCache::kLargeSizeThreshold;
     base::internal::ThreadCache::SetLargestCachedSize(
         base::internal::ThreadCache::kLargeSizeThreshold);
   }
 
+#endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&
+        // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+}
+
+void PartitionAllocSupport::OnForegrounded() {
+#if defined(PA_THREAD_CACHE_SUPPORTED) && \
+    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  {
+    base::AutoLock scoped_lock(lock_);
+    if (established_process_type_ != switches::kRendererProcess)
+      return;
+  }
+
+  base::internal::ThreadCache::SetLargestCachedSize(largest_cached_size_);
+#endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&
+        // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+}
+
+void PartitionAllocSupport::OnBackgrounded() {
+#if defined(PA_THREAD_CACHE_SUPPORTED) && \
+    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  {
+    base::AutoLock scoped_lock(lock_);
+    if (established_process_type_ != switches::kRendererProcess)
+      return;
+  }
+
+  // Performance matters less for background renderers, don't pay the memory
+  // cost.
+  //
+  // TODO(lizeb): Consider forcing a one-off thread cache purge.
+  base::internal::ThreadCache::SetLargestCachedSize(
+      base::internal::ThreadCache::kDefaultSizeThreshold);
 #endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&
         // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }

@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 
@@ -44,6 +46,9 @@ class PartitionAllocSupport {
   void ReconfigureAfterFeatureListInit(const std::string& process_type);
   void ReconfigureAfterTaskRunnerInit(const std::string& process_type);
 
+  void OnForegrounded();
+  void OnBackgrounded();
+
   static PartitionAllocSupport* Get() {
     static auto* singleton = new PartitionAllocSupport();
     return singleton;
@@ -58,6 +63,12 @@ class PartitionAllocSupport {
   bool called_after_feature_list_init_ GUARDED_BY(lock_) = false;
   bool called_after_thread_pool_init_ GUARDED_BY(lock_) = false;
   std::string established_process_type_ GUARDED_BY(lock_) = "INVALID";
+
+#if defined(PA_THREAD_CACHE_SUPPORTED) && \
+    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  size_t largest_cached_size_ =
+      base::internal::ThreadCache::kDefaultSizeThreshold;
+#endif
 };
 
 }  // namespace internal
