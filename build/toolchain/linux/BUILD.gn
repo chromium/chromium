@@ -182,7 +182,7 @@ clang_toolchain("ash_clang_x64") {
     # This turns off all of the LaCrOS-specific flags.
     also_build_ash_chrome = false
     chromeos_is_browser_only = false
-    ozone_platform = ""
+    ozone_platform = "x11"
     ozone_platform_wayland = false
   }
 }
