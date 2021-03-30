@@ -637,7 +637,6 @@ source_set("quiche") {
       "src/spdy/platform/api/spdy_estimate_memory_usage.h",
       "src/spdy/platform/api/spdy_flags.h",
       "src/spdy/platform/api/spdy_logging.h",
-      "src/spdy/platform/api/spdy_mem_slice.h",
       "src/spdy/platform/api/spdy_string_utils.h",
     ]
   }
@@ -1456,7 +1455,6 @@ source_set("quiche_tests") {
     "src/spdy/core/spdy_simple_arena_test.cc",
     "src/spdy/core/spdy_test_utils.cc",
     "src/spdy/core/spdy_test_utils.h",
-    "src/spdy/platform/api/spdy_mem_slice_test.cc",
     "src/spdy/platform/api/spdy_string_utils_test.cc",
     "src/spdy/platform/api/spdy_test_helpers.h",
   ]

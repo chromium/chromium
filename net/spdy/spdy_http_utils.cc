@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"

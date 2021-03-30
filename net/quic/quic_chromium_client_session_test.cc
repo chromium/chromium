@@ -1895,7 +1895,7 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
   quic_data2.AddRead(
       SYNCHRONOUS, server_maker_.MakePingPacket(1, /*include_version=*/false));
   quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
-  if (VersionUsesHttp3(version_.transport_version)) {
+  if (version_.UsesHttp3() || version_.HasIetfInvariantHeader()) {
     quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeAckAndPingPacket(
                                          packet_num++, false, 1, 1));
   } else {
