@@ -762,20 +762,9 @@ void MediaCodecVideoDecoder::FlushCodec() {
   if (!codec_ || codec_->IsFlushed())
     return;
 
-  if (codec_->SupportsFlush(device_info_)) {
-    DVLOG(2) << "Flushing codec";
-    if (!codec_->Flush())
-      EnterTerminalState(State::kError, "Codec flush failed");
-  } else {
-    DVLOG(2) << "flush() workaround: creating a new codec";
-    // Release the codec and create a new one.
-    // Note: we may end up with two codecs attached to the same surface if the
-    // release hangs on one thread and create proceeds on another. This will
-    // result in an error, letting the user retry the playback. The alternative
-    // of waiting for the release risks hanging the playback forever.
-    ReleaseCodec();
-    CreateCodec();
-  }
+  DVLOG(2) << "Flushing codec";
+  if (!codec_->Flush())
+    EnterTerminalState(State::kError, "Codec flush failed");
 }
 
 void MediaCodecVideoDecoder::PumpCodec(bool force_start_timer) {

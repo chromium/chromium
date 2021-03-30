@@ -28,7 +28,6 @@ using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaIntArrayToIntVector;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
-using base::android::SDK_VERSION_KITKAT;
 using base::android::SDK_VERSION_LOLLIPOP;
 using base::android::SDK_VERSION_LOLLIPOP_MR1;
 using base::android::SDK_VERSION_P;
@@ -183,33 +182,11 @@ bool MediaCodecUtil::IsMediaCodecAvailableFor(int sdk, const char* model) {
   static const BlocklistEntry blocklist[] = {
       // crbug.com/653905
       {"LGMS330", SDK_VERSION_LOLLIPOP_MR1},
-
-      // crbug.com/615872
-      {"GT-I9100", SDK_VERSION_KITKAT},
-      {"GT-I9300", SDK_VERSION_KITKAT},
-      {"GT-N7000", SDK_VERSION_KITKAT},
-      {"GT-N7100", SDK_VERSION_KITKAT},
-
-      // crbug.com/628509
-      {"A6600", SDK_VERSION_KITKAT},
-      {"A6800", SDK_VERSION_KITKAT},
-
-      // crbug.com/634920
-      {"GT-S7262", SDK_VERSION_KITKAT},
-      {"GT-S5282", SDK_VERSION_KITKAT},
-      {"GT-I8552", SDK_VERSION_KITKAT},
   };
 
   const BlocklistEntry* iter = std::find(
       std::begin(blocklist), std::end(blocklist), BlocklistEntry(model, 0));
   return iter == std::end(blocklist) || sdk > iter->last_bad_sdk;
-}
-
-// static
-bool MediaCodecUtil::SupportsSetParameters() {
-  // MediaCodec.setParameters() is only available starting with KitKat.
-  return base::android::BuildInfo::GetInstance()->sdk_int() >=
-         SDK_VERSION_KITKAT;
 }
 
 // static
@@ -383,19 +360,12 @@ bool MediaCodecUtil::IsKnownUnaccelerated(VideoCodec codec,
     return true;
 
   // MediaTek hardware vp8 is known slower than the software implementation.
-  // MediaTek hardware vp9 is known crashy, see http://crbug.com/446974 and
-  // http://crbug.com/597836.
   if (base::StartsWith(codec_name, "OMX.MTK.", base::CompareCase::SENSITIVE)) {
     if (codec == kCodecVP8) {
       // We may still reject VP8 hardware decoding later on certain chipsets,
       // see isDecoderSupportedForDevice(). We don't have the the chipset ID
       // here to check now though.
       return base::android::BuildInfo::GetInstance()->sdk_int() < SDK_VERSION_P;
-    }
-
-    if (codec == kCodecVP9) {
-      return base::android::BuildInfo::GetInstance()->sdk_int() <
-             SDK_VERSION_LOLLIPOP;
     }
 
     return false;
@@ -409,17 +379,6 @@ bool MediaCodecUtil::IsKnownUnaccelerated(VideoCodec codec,
   return base::StartsWith(codec_name, "OMX.google.",
                           base::CompareCase::SENSITIVE) ||
          base::StartsWith(codec_name, "OMX.SEC.", base::CompareCase::SENSITIVE);
-}
-
-// static
-bool MediaCodecUtil::CodecNeedsFlushWorkaround(MediaCodecBridge* codec) {
-  const auto& codec_name = codec->GetName();
-  return base::android::BuildInfo::GetInstance()->sdk_int() ==
-             SDK_VERSION_KITKAT &&
-         base::StartsWith(base::android::BuildInfo::GetInstance()->model(),
-                          "SM-G800", base::CompareCase::INSENSITIVE_ASCII) &&
-         ("OMX.Exynos.avc.dec" == codec_name ||
-          "OMX.Exynos.avc.dec.secure" == codec_name);
 }
 
 }  // namespace media

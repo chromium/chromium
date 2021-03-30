@@ -200,11 +200,6 @@ std::unique_ptr<webrtc::VideoEncoderFactory> CreateHWVideoEncoderFactory(
     encoder_factory = std::make_unique<RTCVideoEncoderFactory>(gpu_factories);
   }
 
-#if defined(OS_ANDROID)
-  if (!media::MediaCodecUtil::SupportsSetParameters())
-    encoder_factory.reset();
-#endif
-
   return encoder_factory;
 }
 

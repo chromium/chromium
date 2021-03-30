@@ -123,9 +123,6 @@ class MEDIA_GPU_EXPORT CodecWrapper {
   // Releases all dequeued output buffers back to the codec without rendering.
   void DiscardOutputBuffers();
 
-  // Whether the codec supports Flush().
-  bool SupportsFlush(DeviceInfo* device_info) const;
-
   // Flushes the codec and discards all output buffers.
   bool Flush();
 
