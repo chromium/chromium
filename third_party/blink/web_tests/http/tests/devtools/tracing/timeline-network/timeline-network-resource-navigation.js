@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests presence and order of tracing events for a browser navigation.\n`);
-  await TestRunner.loadModule(`performance_test_runner`);
+  await TestRunner.loadTestModule(`performance_test_runner`);
   await TestRunner.showPanel(`timeline`);
   await TestRunner.NetworkAgent.setCacheDisabled(true);
 
