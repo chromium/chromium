@@ -46,12 +46,12 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate_android.h"
-#include "chrome/browser/nfc/nfc_permission_context_android.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
+#include "components/permissions/contexts/nfc_permission_context_android.h"
 #else
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate.h"
-#include "chrome/browser/nfc/nfc_permission_context.h"
 #include "components/permissions/contexts/geolocation_permission_context.h"
+#include "components/permissions/contexts/nfc_permission_context.h"
 #endif
 
 namespace {
@@ -115,11 +115,12 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   auto nfc_delegate = std::make_unique<ChromeNfcPermissionContextDelegate>();
 #if !defined(OS_ANDROID)
   permission_contexts[ContentSettingsType::NFC] =
-      std::make_unique<NfcPermissionContext>(profile, std::move(nfc_delegate));
+      std::make_unique<permissions::NfcPermissionContext>(
+          profile, std::move(nfc_delegate));
 #else
   permission_contexts[ContentSettingsType::NFC] =
-      std::make_unique<NfcPermissionContextAndroid>(profile,
-                                                    std::move(nfc_delegate));
+      std::make_unique<permissions::NfcPermissionContextAndroid>(
+          profile, std::move(nfc_delegate));
 #endif
   permission_contexts[ContentSettingsType::VR] =
       std::make_unique<permissions::WebXrPermissionContext>(

@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NFC_NFC_PERMISSION_CONTEXT_H_
-#define CHROME_BROWSER_NFC_NFC_PERMISSION_CONTEXT_H_
+#ifndef COMPONENTS_PERMISSIONS_CONTEXTS_NFC_PERMISSION_CONTEXT_H_
+#define COMPONENTS_PERMISSIONS_CONTEXTS_NFC_PERMISSION_CONTEXT_H_
 
 #include "build/build_config.h"
 #include "components/permissions/permission_context_base.h"
 
-class NfcPermissionContext : public permissions::PermissionContextBase {
+namespace permissions {
+
+class NfcPermissionContext : public PermissionContextBase {
  public:
   // The delegate allows embedders to modify the permission context logic.
   class Delegate {
@@ -40,17 +42,18 @@ class NfcPermissionContext : public permissions::PermissionContextBase {
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
 #endif
-  void DecidePermission(
-      content::WebContents* web_contents,
-      const permissions::PermissionRequestID& id,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin,
-      bool user_gesture,
-      permissions::BrowserPermissionCallback callback) override;
-  void UpdateTabContext(const permissions::PermissionRequestID& id,
+  void DecidePermission(content::WebContents* web_contents,
+                        const PermissionRequestID& id,
+                        const GURL& requesting_origin,
+                        const GURL& embedding_origin,
+                        bool user_gesture,
+                        BrowserPermissionCallback callback) override;
+  void UpdateTabContext(const PermissionRequestID& id,
                         const GURL& requesting_frame,
                         bool allowed) override;
   bool IsRestrictedToSecureOrigins() const override;
 };
 
-#endif  // CHROME_BROWSER_NFC_NFC_PERMISSION_CONTEXT_H_
+}  // namespace permissions
+
+#endif  // COMPONENTS_PERMISSIONS_CONTEXTS_NFC_PERMISSION_CONTEXT_H_

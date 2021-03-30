@@ -3634,7 +3634,6 @@ test("unit_tests") {
     "../browser/net/secure_dns_policy_handler_unittest.cc",
     "../browser/net/secure_dns_util_unittest.cc",
     "../browser/net/stub_resolver_config_reader_unittest.cc",
-    "../browser/nfc/nfc_permission_context_unittest.cc",
     "../browser/notifications/metrics/notification_metrics_logger_unittest.cc",
     "../browser/notifications/notification_display_queue_unittest.cc",
     "../browser/notifications/notification_display_service_impl_unittest.cc",
@@ -4457,7 +4456,6 @@ test("unit_tests") {
       "//components/location/android:test_support",
       "//components/messages/android:test_support",
       "//components/module_installer/android:module_installer_java",
-      "//components/permissions/android:test_support",
       "//components/signin/public/android:signin_java_test_support",
       "//content/public/android:content_java",
     ]

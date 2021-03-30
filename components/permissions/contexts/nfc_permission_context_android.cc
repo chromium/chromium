@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/nfc/nfc_permission_context_android.h"
+#include "components/permissions/contexts/nfc_permission_context_android.h"
 
 #include "base/android/jni_android.h"
 #include "base/bind.h"
@@ -10,20 +10,22 @@
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/web_contents.h"
 
+namespace permissions {
+
 NfcPermissionContextAndroid::NfcPermissionContextAndroid(
     content::BrowserContext* browser_context,
     std::unique_ptr<Delegate> delegate)
     : NfcPermissionContext(browser_context, std::move(delegate)),
-      nfc_system_level_setting_(
-          std::make_unique<permissions::NfcSystemLevelSettingImpl>()) {}
+      nfc_system_level_setting_(std::make_unique<NfcSystemLevelSettingImpl>()) {
+}
 
 NfcPermissionContextAndroid::~NfcPermissionContextAndroid() = default;
 
 void NfcPermissionContextAndroid::NotifyPermissionSet(
-    const permissions::PermissionRequestID& id,
+    const PermissionRequestID& id,
     const GURL& requesting_origin,
     const GURL& embedding_origin,
-    permissions::BrowserPermissionCallback callback,
+    BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
     bool is_one_time) {
@@ -50,7 +52,7 @@ void NfcPermissionContextAndroid::NotifyPermissionSet(
   // is user-interactable (i.e. is the current tab, and Chrome is active and not
   // in tab-switching mode).
   if (!delegate_->IsInteractable(web_contents)) {
-    permissions::PermissionContextBase::NotifyPermissionSet(
+    PermissionContextBase::NotifyPermissionSet(
         id, requesting_origin, embedding_origin, std::move(callback),
         false /* persist */, CONTENT_SETTING_BLOCK, /*is_one_time=*/false);
     return;
@@ -65,13 +67,15 @@ void NfcPermissionContextAndroid::NotifyPermissionSet(
 }
 
 void NfcPermissionContextAndroid::OnNfcSystemLevelSettingPromptClosed(
-    const permissions::PermissionRequestID& id,
+    const PermissionRequestID& id,
     const GURL& requesting_origin,
     const GURL& embedding_origin,
-    permissions::BrowserPermissionCallback callback,
+    BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting) {
   NfcPermissionContext::NotifyPermissionSet(
       id, requesting_origin, embedding_origin, std::move(callback), persist,
       content_setting, /*is_one_time=*/false);
 }
+
+}  // namespace permissions

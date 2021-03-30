@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_NFC_CHROME_NFC_PERMISSION_CONTEXT_DELEGATE_H_
 
 #include "build/build_config.h"
-#include "chrome/browser/nfc/nfc_permission_context.h"
+#include "components/permissions/contexts/nfc_permission_context.h"
 
 class ChromeNfcPermissionContextDelegate
-    : public NfcPermissionContext::Delegate {
+    : public permissions::NfcPermissionContext::Delegate {
  public:
   ChromeNfcPermissionContextDelegate();
 
