@@ -9,6 +9,7 @@ import {NodeUtils} from './node_utils.js';
 import {ParagraphUtils} from './paragraph_utils.js';
 import {PrefsManager} from './prefs_manager.js';
 import {SelectToSpeakConstants} from './select_to_speak_constants.js';
+import {TtsManager} from './tts_manager.js';
 import {SelectToSpeakUiListener, UiManager} from './ui_manager.js';
 import {WordUtils} from './word_utils.js';
 
@@ -59,21 +60,6 @@ export class SelectToSpeak {
      * @private {!chrome.accessibilityPrivate.SelectToSpeakState}
      */
     this.state_ = SelectToSpeakState.INACTIVE;
-
-    /**
-     * Whether the TTS is on pause. When |this.state_| is
-     * SelectToSpeakState.SPEAKING, |this.paused_| indicates whether we are
-     * putting TTS on hold.
-     * TODO(leileilei): use SelectToSpeakState.PAUSE to indicate the status.
-     * @private {boolean}
-     */
-    this.ttsPaused_ = false;
-
-    /**
-     * Function to be called when STS finishes a pausing request.
-     * @private {?function()}
-     */
-    this.pauseCompleteCallback_ = null;
 
     /** @type {InputHandler} */
     this.inputHandler_ = null;
@@ -169,6 +155,9 @@ export class SelectToSpeak {
 
     /** @private {!UiManager} */
     this.uiManager_ = new UiManager(this.prefsManager_, this /* listener */);
+
+    /** @private {!TtsManager} */
+    this.ttsManager_ = new TtsManager();
 
     this.runContentScripts_();
     this.setUpEventListeners_();
@@ -535,57 +524,28 @@ export class SelectToSpeak {
   }
 
   /**
-   * Whether the STS is on a pause state, where |this.ttsPaused_| is true and
-   * |this.state_| is SPEAKING.
+   * Whether the STS is on a pause state, where |this.ttsManager_.isSpeaking| is
+   * false and |this.state_| is SPEAKING.
+   * TODO(leileilei): use two SelectToSpeak states to differentiate speaking and
+   * pausing with panel.
    * @private
-   * TODO(leileilei): use SelectToSpeakState.PAUSE to indicate the status.
    */
   isPaused_() {
-    return this.ttsPaused_ && this.state_ === SelectToSpeakState.SPEAKING;
+    return !this.ttsManager_.isSpeaking() &&
+        this.state_ === SelectToSpeakState.SPEAKING;
   }
 
   /**
-   * Set |this.ttsPaused_| and |this.state_| according to pause status.
-   * @param {boolean} shouldPause whether the TTS is on pause or speaking.
-   * @private
-   * TODO(leileilei): use SelectToSpeakState.PAUSE to indicate the status and
-   * consider refactoring the name of this function.
-   */
-  updatePauseStatusFromTtsEvent_(shouldPause) {
-    this.ttsPaused_ = shouldPause;
-    this.onStateChanged_(SelectToSpeakState.SPEAKING);
-    if (shouldPause && this.pauseCompleteCallback_) {
-      this.pauseCompleteCallback_();
-    }
-  }
-
-  /**
-   * Pause the TTS. We do not assert isPaused_() before stopping TTS in case
-   * |this.ttsPaused_| was true while tts is speaking. This function also sets
-   * the |this.pauseCompleteCallback_|, which will be executed at the end of
-   * the pause process in |updatePauseStatusFromTtsEvent_|. This enables us to
-   * execute functions when the pause request is finished. For example, to
-   * navigate the next sentence, we trigger pause_ and start finding the next
-   * sentence when the pause function is fulfilled.
+   * Pause the TTS.
    * @return {!Promise}
    * @private
    */
   pause_() {
-    return new Promise((resolve) => {
-      this.pauseCompleteCallback_ = () => {
-        this.pauseCompleteCallback_ = null;
-        resolve();
-      };
-      chrome.tts.stop();
-    });
+    return this.ttsManager_.pause();
   }
 
   /**
-   * Resume the TTS. If there is remaining user-selected content, STS will read
-   * from the current position to the end of the user-selected content. If there
-   * is no remaining user-selected content, STS will read from the current
-   * position to the end of the current paragraph. If there is no content left
-   * in this paragraph, we navigate to the next paragraph.
+   * Resume the TTS.
    * @private
    */
   resume_() {
@@ -594,34 +554,54 @@ export class SelectToSpeak {
       return;
     }
     const currentNodeGroup = this.getCurrentNodeGroup_();
-    const endNodeGroup = this.getLastNodeGroup_();
     // If there is no processed node group, that means the user has not selected
     // anything. Ignore the resume command.
-    if (!currentNodeGroup || !endNodeGroup) {
+    if (!currentNodeGroup) {
       return;
     }
 
-    // Get the current position. If we did not find a position based on the
-    // |this.currentCharIndex_|, that means we have reached the end of current
-    // node group. We fallback to the end position.
+    this.ttsManager_.resume(this.getTtsOptionsForCurrentNodeGroup_());
+  }
+
+  /**
+   * If resume is successful, a resume event will be sent. We use this event to
+   * update node state.
+   * @param {!chrome.tts.TtsEvent} event
+   */
+  onTtsResumeSucceedEvent_(event) {
+    // If the node group is invalid, ignore the resume event. This is not
+    // expected.
+    const currentNodeGroup = this.getCurrentNodeGroup_();
+    if (!currentNodeGroup) {
+      console.warn('Unexpected invalid node group on TTS resume event.');
+      return;
+    }
+    this.onTtsWordEvent_(event, currentNodeGroup);
+  }
+
+  /**
+   * When resuming with empty content, an error event will be sent. If there
+   * is no remaining user-selected content, STS will read from the current
+   * position to the end of the current paragraph. If there is no content left
+   * in this paragraph, we navigate to the next paragraph.
+   * @param {!chrome.tts.TtsEvent} event
+   */
+  onTtsResumeErrorEvent_(event) {
+    // If the node group is invalid, ignore the error event. This is not
+    // expected.
+    const currentNodeGroup = this.getCurrentNodeGroup_();
+    if (!currentNodeGroup) {
+      console.warn(
+          'Unexpected invalid node group on TTS error event when resuming.');
+      return;
+    }
+
+    // STS should try to read from the current position to the end of the
+    // current paragraph. First, we get the current position. If we do not find
+    // a position based on the |this.currentCharIndex_|, that means we have
+    // reached the end of current node group. We fallback to the end position.
     const currentPosition = NodeUtils.getPositionFromNodeGroup(
         currentNodeGroup, this.currentCharIndex_, true /* fallbackToEnd */);
-
-    // Get the end position of the user-selected content. If
-    // |endNodeGroup.endOffset| is undefined, that means we did not apply
-    // offset. We fallback to the end position.
-    const endPosition = NodeUtils.getPositionFromNodeGroup(
-        endNodeGroup, endNodeGroup.endOffset, true /* fallbackToEnd */);
-
-    if (NodeUtils.getDirectionBetweenPositions(currentPosition, endPosition) ===
-        constants.Dir.FORWARD) {
-      // If the end position is after the current position, we still have
-      // user-selected content and STS reads nodes from the current position to
-      // the end position.
-      this.readNodesBetweenPositions_(
-          currentPosition, endPosition, false /* userRequested */);
-      return;
-    }
 
     // If we have passed the user-selected content, STS should speak the content
     // from the current position to the end of the current node group.
@@ -650,7 +630,7 @@ export class SelectToSpeak {
    * @private
    */
   stopAll_() {
-    chrome.tts.stop();
+    this.ttsManager_.stop();
     this.uiManager_.clear();
     this.onStateChanged_(SelectToSpeakState.INACTIVE);
   }
@@ -852,7 +832,6 @@ export class SelectToSpeak {
    */
   onChangeSpeedRequested(rateMultiplier) {
     this.speechRateMultiplier_ = rateMultiplier;
-
     // If currently playing, stop TTS, then resume from current spot.
     if (!this.isPaused_()) {
       this.pause_().then(() => {
@@ -957,7 +936,7 @@ export class SelectToSpeak {
         this.onStateChanged_(SelectToSpeakState.INACTIVE);
       }
     };
-    chrome.tts.speak(text, options);
+    this.ttsManager_.speak(text, options);
   }
 
   /**
@@ -1095,6 +1074,21 @@ export class SelectToSpeak {
     if (!nodeGroup) {
       return;
     }
+
+    if (!nodeGroup.text) {
+      this.onNodeGroupSpeakingCompleted_();
+      return;
+    }
+
+    this.ttsManager_.speak(
+        nodeGroup.text, this.getTtsOptionsForCurrentNodeGroup_());
+  }
+
+  getTtsOptionsForCurrentNodeGroup_() {
+    const nodeGroup = this.getCurrentNodeGroup_();
+    if (!nodeGroup) {
+      return;
+    }
     const options = /** @type {!chrome.tts.TtsOptions} */ ({});
     // Copy options so we can add lang below
     Object.assign(options, this.prefsManager_.speechOptions());
@@ -1112,59 +1106,79 @@ export class SelectToSpeak {
     const nodeGroupText = nodeGroup.text || '';
 
     options.onEvent = (event) => {
-      if (event.type === 'start' && nodeGroup.nodes.length > 0) {
-        this.updatePauseStatusFromTtsEvent_(false /* shouldPause */);
+      switch (event.type) {
+        case chrome.tts.EventType.START:
+          if (nodeGroup.nodes.length <= 0) {
+            break;
+          }
+          this.onStateChanged_(SelectToSpeakState.SPEAKING);
 
-        // Update |this.currentCharIndex_|. Find the first non-space char index
-        // in nodeGroup text, or 0 if the text is undefined or the first char is
-        // non-space.
-        this.currentCharIndex_ = nodeGroupText.search(/\S|$/);
+          // Update |this.currentCharIndex_|. Find the first non-space char
+          // index in nodeGroup text, or 0 if the text is undefined or the first
+          // char is non-space.
+          this.currentCharIndex_ = nodeGroupText.search(/\S|$/);
 
-        this.syncCurrentNodeWithCharIndex_(nodeGroup, this.currentCharIndex_);
-        if (this.prefsManager_.wordHighlightingEnabled()) {
-          // At 'start', find the first word and highlight that. Clear the
-          // previous word in the node.
-          this.currentNodeWord_ = null;
-          // If |this.currentCharIndex_| is not 0, that means we have applied a
-          // start offset. Thus, we need to pass startIndexInNodeGroup to
-          // opt_startIndex and overwrite the word boundaries in the original
-          // node.
-          this.updateNodeHighlight_(
-              nodeGroupText, this.currentCharIndex_,
-              this.currentCharIndex_ !== 0 ? this.currentCharIndex_ :
-                                             undefined);
-        } else {
-          this.updateUi_();
-        }
-      } else if (event.type === 'interrupted' || event.type === 'cancelled') {
-        if (!this.shouldShowNavigationControls_()) {
-          this.onStateChanged_(SelectToSpeakState.INACTIVE);
-          return;
-        }
-        if (this.state_ === SelectToSpeakState.SELECTING) {
-          // Do not go into inactive state if navigation controls are enabled
-          // and we're currently making a new selection. This enables users
-          // to select new nodes while STS is active without first exiting.
-          return;
-        }
-        if (this.pauseCompleteCallback_) {
-          // Set to paused state if interruption/cancelled event triggered from
-          // a pause. Currently, we check |this.pauseCompleteCallback_| as a
-          // proxy to see if the interrupted events are from |this.pause_|.
-          this.updatePauseStatusFromTtsEvent_(true /* shouldPause */);
-        }
-      } else if (event.type === 'end') {
-        this.onNodeGroupSpeakingCompleted_();
-      } else if (event.type === 'word') {
-        // The Closure compiler doesn't realize that we did a !nodeGroup earlier
-        // so we check again here.
-        if (!nodeGroup) {
-          return;
-        }
-        this.onTtsWordEvent_(event, nodeGroup);
+          this.syncCurrentNodeWithCharIndex_(nodeGroup, this.currentCharIndex_);
+          if (this.prefsManager_.wordHighlightingEnabled()) {
+            // At start, find the first word and highlight that. Clear the
+            // previous word in the node.
+            this.currentNodeWord_ = null;
+            // If |this.currentCharIndex_| is not 0, that means we have applied
+            // a start offset. Thus, we need to pass startIndexInNodeGroup to
+            // opt_startIndex and overwrite the word boundaries in the original
+            // node.
+            this.updateNodeHighlight_(
+                nodeGroupText, this.currentCharIndex_,
+                this.currentCharIndex_ !== 0 ? this.currentCharIndex_ :
+                                               undefined);
+          } else {
+            this.updateUi_();
+          }
+          break;
+        case chrome.tts.EventType.RESUME:
+          this.onTtsResumeSucceedEvent_(event);
+          break;
+        case chrome.tts.EventType.ERROR:
+          if (event.errorMessage ===
+              TtsManager.ErrorMessage.RESUME_WITH_EMPTY_CONTENT) {
+            this.onTtsResumeErrorEvent_(event);
+          }
+          break;
+        case chrome.tts.EventType.PAUSE:
+          // Updates the select to speak state to speaking to keep navigation
+          // panel visible, so that the user can click resume from the panel.
+          this.onStateChanged_(SelectToSpeakState.SPEAKING);
+          // Fall through.
+        case chrome.tts.EventType.INTERRUPTED:
+        case chrome.tts.EventType.CANCELLED:
+          if (!this.shouldShowNavigationControls_()) {
+            this.onStateChanged_(SelectToSpeakState.INACTIVE);
+            break;
+          }
+          if (this.state_ === SelectToSpeakState.SELECTING) {
+            // Do not go into inactive state if navigation controls are enabled
+            // and we're currently making a new selection. This enables users
+            // to select new nodes while STS is active without first exiting.
+            break;
+          }
+          break;
+        case chrome.tts.EventType.END:
+          this.onNodeGroupSpeakingCompleted_();
+          break;
+        case chrome.tts.EventType.WORD:
+          // The Closure compiler doesn't realize that we did a !nodeGroup
+          // earlier so we check again here.
+          if (!nodeGroup) {
+            break;
+          }
+          this.onTtsWordEvent_(event, nodeGroup);
+          break;
+        default:
+          break;
       }
     };
-    chrome.tts.speak(nodeGroupText, options);
+
+    return options;
   }
 
   /**
@@ -1193,9 +1207,9 @@ export class SelectToSpeak {
       if (!this.shouldShowNavigationControls_()) {
         this.onStateChanged_(SelectToSpeakState.INACTIVE);
       } else {
-        // If navigation features are enabled, we should turn the pause status
-        // to true so that the user can hit resume to continue.
-        this.updatePauseStatusFromTtsEvent_(true /* shouldPause */);
+        // If navigation features are enabled, we should keep STS state to
+        // speaking so that the user can hit resume to continue.
+        this.onStateChanged_(SelectToSpeakState.SPEAKING);
       }
       return;
     }
@@ -1278,7 +1292,7 @@ export class SelectToSpeak {
   }
 
   /**
-   * Prepares for speech. Call once before chrome.tts.speak is called.
+   * Prepares for speech. Call once before this.ttsManager_.speak is called.
    * @param {boolean} clearFocusRing Whether to clear the focus ring.
    * @private
    */
@@ -1396,7 +1410,7 @@ export class SelectToSpeak {
       this.stopAll_();
     } else {
       // Just stop speech
-      chrome.tts.stop();
+      this.ttsManager_.stop();
     }
   }
 

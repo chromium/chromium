@@ -44,6 +44,7 @@ run_jsbundler("select_to_speak_copied_files") {
     "select_to_speak_options.js",
     "sentence_utils.js",
     "test_node_generator.js",
+    "tts_manager.js",
     "ui_manager.js",
     "unchecked.png",
     "word_utils.js",
@@ -96,6 +97,7 @@ js2gtest("select_to_speak_extjs_tests") {
     "paragraph_utils_unittest.js",
     "select_to_speak_unittest.js",
     "sentence_utils_unittest.js",
+    "tts_manager_unittest.js",
     "ui_manager_unittest.js",
     "word_utils_unittest.js",
   ]
@@ -135,6 +137,7 @@ js_type_check("closure_compile") {
     ":select_to_speak_constants",
     ":select_to_speak_options",
     ":sentence_utils",
+    ":tts_manager",
     ":ui_manager",
     ":word_utils",
     "../common:automation_predicate",
@@ -156,6 +159,7 @@ js_library("select_to_speak") {
     ":paragraph_utils",
     ":prefs_manager",
     ":sentence_utils",
+    ":tts_manager",
     ":ui_manager",
     ":word_utils",
     "../common:automation_util",
@@ -240,4 +244,8 @@ js_library("ui_manager") {
     ":prefs_manager",
   ]
   externs_list = [ "$externs_path/accessibility_private.js" ]
+}
+
+js_library("tts_manager") {
+  externs_list = [ "$externs_path/tts.js" ]
 }

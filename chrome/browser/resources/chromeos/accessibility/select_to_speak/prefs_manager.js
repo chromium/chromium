@@ -279,7 +279,7 @@ export class PrefsManager {
    * @return {!chrome.tts.TtsOptions} options The TTS options.
    */
   speechOptions() {
-    const options = /** @type {!chrome.tts.TtsOptions} */ ({enqueue: true});
+    const options = /** @type {!chrome.tts.TtsOptions} */ ({});
 
     // To use the default (system) voice: don't specify options['voiceName'].
     if (this.voiceNameFromPrefs_ === PrefsManager.SYSTEM_VOICE) {
