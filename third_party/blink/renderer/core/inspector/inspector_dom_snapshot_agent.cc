@@ -319,7 +319,7 @@ protocol::Response InspectorDOMSnapshotAgent::captureSnapshot(
   *documents = std::move(documents_);
   *strings = std::move(strings_);
   css_property_filter_.reset();
-  paint_order_map_.Clear();
+  paint_order_map_.reset();
   string_table_.clear();
   document_order_map_.clear();
   documents_.reset();
@@ -702,10 +702,10 @@ InspectorDOMSnapshotAgent::BuildStylesForNode(Node* node) {
 }
 
 // static
-InspectorDOMSnapshotAgent::PaintOrderMap*
+std::unique_ptr<InspectorDOMSnapshotAgent::PaintOrderMap>
 InspectorDOMSnapshotAgent::BuildPaintLayerTree(Document* document) {
-  auto* result = MakeGarbageCollected<PaintOrderMap>();
-  TraversePaintLayerTree(document, result);
+  auto result = std::make_unique<PaintOrderMap>();
+  TraversePaintLayerTree(document, result.get());
   return result;
 }
 
@@ -740,7 +740,7 @@ void InspectorDOMSnapshotAgent::VisitPaintLayer(
     return;
   }
 
-  PaintLayerPaintOrderIterator iterator(layer, kAllChildren);
+  PaintLayerPaintOrderIterator iterator(*layer, kAllChildren);
   while (PaintLayer* child_layer = iterator.Next())
     VisitPaintLayer(child_layer, paint_order_map);
 }
@@ -748,7 +748,6 @@ void InspectorDOMSnapshotAgent::VisitPaintLayer(
 void InspectorDOMSnapshotAgent::Trace(Visitor* visitor) const {
   visitor->Trace(inspected_frames_);
   visitor->Trace(dom_debugger_agent_);
-  visitor->Trace(paint_order_map_);
   visitor->Trace(document_order_map_);
   visitor->Trace(css_value_cache_);
   visitor->Trace(style_cache_);

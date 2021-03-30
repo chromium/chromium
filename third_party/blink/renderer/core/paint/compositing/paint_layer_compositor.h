@@ -63,8 +63,9 @@ enum CompositingStateTransitionType {
 // With CompositeAfterPaint, PaintLayerCompositor will be eventually replaced by
 // PaintArtifactCompositor.
 
-class CORE_EXPORT PaintLayerCompositor final
-    : public GarbageCollected<PaintLayerCompositor> {
+class CORE_EXPORT PaintLayerCompositor {
+  USING_FAST_MALLOC(PaintLayerCompositor);
+
  public:
   explicit PaintLayerCompositor(LayoutView&);
   ~PaintLayerCompositor();
@@ -145,8 +146,6 @@ class CORE_EXPORT PaintLayerCompositor final
     compositing_inputs_root_.Update(layer);
   }
 
-  void Trace(Visitor*) const;
-
  private:
 #if DCHECK_IS_ON()
   void AssertNoUnresolvedDirtyBits();
@@ -172,7 +171,7 @@ class CORE_EXPORT PaintLayerCompositor final
 
   bool IsMainFrame() const;
 
-  Member<LayoutView> layout_view_;
+  UntracedMember<LayoutView> layout_view_;
 
   bool compositing_ = false;
   bool root_layer_attachment_dirty_ = false;

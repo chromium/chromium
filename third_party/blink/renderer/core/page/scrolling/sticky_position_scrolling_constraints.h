@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
@@ -15,8 +14,7 @@ namespace blink {
 class PaintLayer;
 struct StickyPositionScrollingConstraints;
 
-typedef HeapHashMap<Member<PaintLayer>,
-                    Member<StickyPositionScrollingConstraints>>
+typedef WTF::HashMap<PaintLayer*, StickyPositionScrollingConstraints>
     StickyConstraintsMap;
 
 // Encapsulates the constraint information for a position: sticky element and
@@ -73,14 +71,15 @@ typedef HeapHashMap<Member<PaintLayer>,
 // already being shifted by its ancestor. To correctly handle such situations we
 // apply more complicated logic which is explained in the implementation of
 // |ComputeStickyOffset|.
-struct CORE_EXPORT StickyPositionScrollingConstraints final
-    : public GarbageCollected<StickyPositionScrollingConstraints> {
+struct StickyPositionScrollingConstraints final {
  public:
   StickyPositionScrollingConstraints()
       : is_anchored_left(false),
         is_anchored_right(false),
         is_anchored_top(false),
         is_anchored_bottom(false) {}
+  StickyPositionScrollingConstraints(
+      const StickyPositionScrollingConstraints& other) = default;
 
   // Computes the sticky offset for a given overflow clip rect.
   //
@@ -96,8 +95,6 @@ struct CORE_EXPORT StickyPositionScrollingConstraints final
   // and must only be called when compositing inputs are clean for the sticky
   // element. (Or after prepaint for CompositeAfterPaint).
   PhysicalOffset GetOffsetForStickyPosition(const StickyConstraintsMap&) const;
-
-  void Trace(Visitor* visitor) const;
 
   bool is_anchored_left : 1;
   bool is_anchored_right : 1;
@@ -138,8 +135,8 @@ struct CORE_EXPORT StickyPositionScrollingConstraints final
   //
   // See the implementation of |ComputeStickyOffset| for documentation on how
   // these ancestors are used to correct the offset calculation.
-  Member<PaintLayer> nearest_sticky_layer_shifting_sticky_box = nullptr;
-  Member<PaintLayer> nearest_sticky_layer_shifting_containing_block = nullptr;
+  PaintLayer* nearest_sticky_layer_shifting_sticky_box = nullptr;
+  PaintLayer* nearest_sticky_layer_shifting_containing_block = nullptr;
 
  private:
   // For performance we cache our accumulated sticky offset to allow descendant

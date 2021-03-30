@@ -51,8 +51,6 @@ struct PaintLayerFragment {
   DISALLOW_NEW();
 
  public:
-  void Trace(Visitor*) const;
-
   // See |root_fragment_data| for the coordinate space of |layer_bounds|,
   // |background_rect| and |foreground_rect|.
 
@@ -84,12 +82,14 @@ struct PaintLayerFragment {
   // Defines the coordinate space of the above rects:
   // root_fragment_data->LocalBorderBoxProperties().Transform() +
   // root_fragment_data.PaintOffset().
-  Member<const FragmentData> root_fragment_data = nullptr;
+  const FragmentData* root_fragment_data = nullptr;
 
   // The corresponding FragmentData of this structure.
-  Member<const FragmentData> fragment_data = nullptr;
+  const FragmentData* fragment_data = nullptr;
 
   Member<const NGPhysicalBoxFragment> physical_fragment;
+
+  void Trace(Visitor*) const;
 };
 
 typedef HeapVector<PaintLayerFragment, 1> PaintLayerFragments;

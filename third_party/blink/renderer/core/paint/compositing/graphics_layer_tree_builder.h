@@ -46,8 +46,7 @@ class GraphicsLayerTreeBuilder {
   // Maps from PaintLayer::ScrollParent to index into |child_layers| (see below
   // for child_layers parameter) at which to insert the overflow controls
   // graphics layers for ScrollParent when reparenting them.
-  using PendingOverflowControlReparents =
-      HeapHashMap<Member<const PaintLayer>, size_t>;
+  using PendingOverflowControlReparents = HashMap<const PaintLayer*, size_t>;
 
   void RebuildRecursive(PaintLayer&,
                         GraphicsLayerVector& child_layers,
