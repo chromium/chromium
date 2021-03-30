@@ -116,7 +116,7 @@
       }
 
       #pinInput::part(input) {
-        font-size: 28px;
+        font-size: 18px;
       }
 
       #pinInput {
@@ -165,8 +165,8 @@
             on-keydown="onInputKeyDown_" force-underline="true"
             disabled="[[disabled]]">
         </cr-input>
+        <slot select="[problem]"></slot>
       </div>
-      <slot select="[problem]"></slot>
       <div id="rowsContainer">
         <div class="row">
           <cr-button class="digit-button" on-click="onNumberTap_" value="1"
