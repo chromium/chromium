@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_HISTOGRAM_SYNCHRONIZER_H_
-#define CONTENT_BROWSER_HISTOGRAM_SYNCHRONIZER_H_
+#ifndef CONTENT_BROWSER_METRICS_HISTOGRAM_SYNCHRONIZER_H_
+#define CONTENT_BROWSER_METRICS_HISTOGRAM_SYNCHRONIZER_H_
 
 #include <string>
 #include <vector>
@@ -14,7 +14,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task_runner.h"
 #include "base/time/time.h"
-#include "content/browser/histogram_subscriber.h"
+#include "content/browser/metrics/histogram_subscriber.h"
 
 namespace content {
 
@@ -149,4 +149,4 @@ class HistogramSynchronizer : public HistogramSubscriber {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_HISTOGRAM_SYNCHRONIZER_H_
+#endif  // CONTENT_BROWSER_METRICS_HISTOGRAM_SYNCHRONIZER_H_

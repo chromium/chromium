@@ -31,7 +31,7 @@
 #include "components/tracing/common/trace_startup_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/browser/browser_main_loop.h"
-#include "content/browser/histogram_controller.h"
+#include "content/browser/metrics/histogram_controller.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/common/child_process_host_impl.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"

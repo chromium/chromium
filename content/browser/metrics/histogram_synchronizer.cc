@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/histogram_synchronizer.h"
+#include "content/browser/metrics/histogram_synchronizer.h"
 
 #include <utility>
 
@@ -17,7 +17,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
-#include "content/browser/histogram_controller.h"
+#include "content/browser/metrics/histogram_controller.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/histogram_fetcher.h"
@@ -161,10 +161,9 @@ class HistogramSynchronizer::RequestContext {
 };
 
 // static
-base::LazyInstance
-    <HistogramSynchronizer::RequestContext::RequestContextMap>::Leaky
-        HistogramSynchronizer::RequestContext::outstanding_requests_ =
-            LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<HistogramSynchronizer::RequestContext::RequestContextMap>::
+    Leaky HistogramSynchronizer::RequestContext::outstanding_requests_ =
+        LAZY_INSTANCE_INITIALIZER;
 
 HistogramSynchronizer::HistogramSynchronizer()
     : lock_(),
@@ -201,8 +200,7 @@ void HistogramSynchronizer::FetchHistograms() {
     return;
 
   current_synchronizer->RegisterAndNotifyAllProcesses(
-      HistogramSynchronizer::UNKNOWN,
-      base::TimeDelta::FromMinutes(1));
+      HistogramSynchronizer::UNKNOWN, base::TimeDelta::FromMinutes(1));
 }
 
 void FetchHistogramsAsynchronously(scoped_refptr<base::TaskRunner> task_runner,

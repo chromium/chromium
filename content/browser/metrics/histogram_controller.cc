@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/histogram_controller.h"
+#include "content/browser/metrics/histogram_controller.h"
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_handle.h"
-#include "content/browser/histogram_subscriber.h"
+#include "content/browser/metrics/histogram_subscriber.h"
 #include "content/common/histogram_fetcher.mojom.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -27,8 +27,7 @@ HistogramController* HistogramController::GetInstance() {
 
 HistogramController::HistogramController() : subscriber_(nullptr) {}
 
-HistogramController::~HistogramController() {
-}
+HistogramController::~HistogramController() {}
 
 void HistogramController::OnPendingProcesses(int sequence_number,
                                              int pending_processes,
@@ -51,8 +50,7 @@ void HistogramController::OnHistogramDataCollected(
   }
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (subscriber_) {
-    subscriber_->OnHistogramDataCollected(sequence_number,
-                                          pickled_histograms);
+    subscriber_->OnHistogramDataCollected(sequence_number, pickled_histograms);
   }
 }
 
@@ -62,8 +60,7 @@ void HistogramController::Register(HistogramSubscriber* subscriber) {
   subscriber_ = subscriber;
 }
 
-void HistogramController::Unregister(
-    const HistogramSubscriber* subscriber) {
+void HistogramController::Unregister(const HistogramSubscriber* subscriber) {
   DCHECK_EQ(subscriber_, subscriber);
   subscriber_ = nullptr;
 }

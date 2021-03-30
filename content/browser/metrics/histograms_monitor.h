@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_HISTOGRAMS_MONITOR_H_
-#define CONTENT_BROWSER_HISTOGRAMS_MONITOR_H_
+#ifndef CONTENT_BROWSER_METRICS_HISTOGRAMS_MONITOR_H_
+#define CONTENT_BROWSER_METRICS_HISTOGRAMS_MONITOR_H_
 
 #include <map>
 
@@ -50,4 +50,4 @@ class CONTENT_EXPORT HistogramsMonitor {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_HISTOGRAMS_MONITOR_H_
+#endif  // CONTENT_BROWSER_METRICS_HISTOGRAMS_MONITOR_H_

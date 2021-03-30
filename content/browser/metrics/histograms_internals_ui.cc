@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/histograms_internals_ui.h"
+#include "content/browser/metrics/histograms_internals_ui.h"
 
 #include <stddef.h>
 
@@ -15,8 +15,8 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/values.h"
-#include "content/browser/histogram_synchronizer.h"
-#include "content/browser/histograms_monitor.h"
+#include "content/browser/metrics/histogram_synchronizer.h"
+#include "content/browser/metrics/histograms_monitor.h"
 #include "content/grit/content_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"

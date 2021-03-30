@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/histograms_monitor.h"
+#include "content/browser/metrics/histograms_monitor.h"
 
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/statistics_recorder.h"
