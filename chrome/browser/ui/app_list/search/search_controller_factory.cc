@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/app_list/search/files/zero_state_drive_provider.h"
 #include "chrome/browser/ui/app_list/search/files/zero_state_file_provider.h"
 #include "chrome/browser/ui/app_list/search/help_app_provider.h"
-#include "chrome/browser/ui/app_list/search/launcher_search/launcher_search_provider.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
 #include "chrome/browser/ui/app_list/search/omnibox_provider.h"
 #include "chrome/browser/ui/app_list/search/os_settings_provider.h"
@@ -59,7 +58,6 @@ constexpr size_t kGenericMaxResults = 10;
 // number of results to be displayed in UI. This also accounts for two results
 // (tile and chip) being created for each app.
 constexpr size_t kMaxAppsGroupResults = 14;
-constexpr size_t kMaxLauncherSearchResults = 4;
 constexpr size_t kMaxFileSearchResults = 6;
 constexpr size_t kMaxDriveSearchResults = 6;
 // We need twice as many ZeroState and Drive file results as we need
@@ -85,12 +83,6 @@ constexpr size_t kMaxAppShortcutResults = 4;
 constexpr size_t kMaxAssistantChipResults = 1;
 
 constexpr size_t kMaxAssistantTextResults = 1;
-
-// A flag to control whether to replace the existing Launcher Search Provider
-// with the new Drive and Local file providers, which are under development.
-// TODO(crbug.com/1154513): Remove this flag and switch to the new providers
-// once implementation is finished.
-constexpr bool kUseNewFileProviders = false;
 
 }  // namespace
 
@@ -134,23 +126,15 @@ std::unique_ptr<SearchController> CreateSearchController(
                             std::make_unique<AssistantTextSearchProvider>());
   }
 
-  // LauncherSearchProvider and file search providers are added only when not in
-  // guest session and running on Chrome OS.
+  // File search providers are added only when not in guest session and running
+  // on Chrome OS.
   if (!profile->IsGuestSession()) {
-    if (kUseNewFileProviders) {
-      size_t local_file_group_id = controller->AddGroup(kMaxFileSearchResults);
-      controller->AddProvider(local_file_group_id,
-                              std::make_unique<FileSearchProvider>(profile));
-      size_t drive_file_group_id = controller->AddGroup(kMaxDriveSearchResults);
-      controller->AddProvider(drive_file_group_id,
-                              std::make_unique<DriveSearchProvider>(profile));
-    } else {
-      size_t search_api_group_id =
-          controller->AddGroup(kMaxLauncherSearchResults);
-      controller->AddProvider(
-          search_api_group_id,
-          std::make_unique<LauncherSearchProvider>(profile));
-    }
+    size_t local_file_group_id = controller->AddGroup(kMaxFileSearchResults);
+    controller->AddProvider(local_file_group_id,
+                            std::make_unique<FileSearchProvider>(profile));
+    size_t drive_file_group_id = controller->AddGroup(kMaxDriveSearchResults);
+    controller->AddProvider(drive_file_group_id,
+                            std::make_unique<DriveSearchProvider>(profile));
   }
 
   // reinstallation candidates for Arc++ apps.

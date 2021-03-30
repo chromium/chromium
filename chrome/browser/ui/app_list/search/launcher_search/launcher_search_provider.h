@@ -23,6 +23,8 @@ namespace app_list {
 
 // LauncherSearchProvider dispatches queries to extensions and fetches the
 // results from them via chrome.launcherSearchProvider API.
+// TODO(crbug.com/1188495): This provider is no longer used and should be
+// cleaned up.
 class LauncherSearchProvider : public SearchProvider {
  public:
   explicit LauncherSearchProvider(Profile* profile);
