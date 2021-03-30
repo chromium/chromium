@@ -131,14 +131,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentIndex.ContentAdded" enum="ContentIndexCategory"
-    expires_after="M89">
+    expires_after="M95">
   <owner>rayankans@chromium.org</owner>
   <owner>platform-capabilities@chromium.org</owner>
   <summary>Records the category of the content when registered.</summary>
 </histogram>
 
 <histogram base="true" name="ContentIndex.ContentDeleteEvent"
-    enum="ServiceWorkerStatusCode" expires_after="M89">
+    enum="ServiceWorkerStatusCode" expires_after="M95">
 <!-- Name completed by histogram_suffixes name="ContentIndexDispatchPhase" -->
 
   <owner>rayankans@chromium.org</owner>
@@ -150,14 +150,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentIndex.ContentOpened" enum="ContentIndexCategory"
-    expires_after="M89">
+    expires_after="M95">
   <owner>rayankans@chromium.org</owner>
   <owner>platform-capabilities@chromium.org</owner>
   <summary>Records the category of the entry clicked on by a user.</summary>
 </histogram>
 
 <histogram base="true" name="ContentIndex.Database"
-    enum="ServiceWorkerStatusCode" expires_after="M89">
+    enum="ServiceWorkerStatusCode" expires_after="M95">
 <!-- Name completed by histogram_suffixes name="ContentIndexDatabaseTask" -->
 
   <owner>rayankans@chromium.org</owner>
@@ -166,7 +166,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentIndex.NumEntriesAvailable" units="entries"
-    expires_after="M89">
+    expires_after="M95">
   <owner>rayankans@chromium.org</owner>
   <owner>platform-capabilities@chromium.org</owner>
   <summary>
@@ -175,7 +175,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentIndex.RegistrationBlocked" enum="ContentIndexCategory"
-    expires_after="M89">
+    expires_after="M95">
   <owner>rayankans@chromium.org</owner>
   <owner>platform-capabilities@chromium.org</owner>
   <summary>
