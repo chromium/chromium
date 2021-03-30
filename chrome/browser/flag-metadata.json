@@ -3083,6 +3083,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "happiness-tracking-surveys-for-desktop-privacy-sandbox",
+    "owners": [ "sauski", "chrome-friendly-settings@google.com" ],
+    "expiry_milestone": 94
+  },
+  {
     "name": "happiness-tracking-surveys-for-desktop-settings",
     "owners": [ "msramek", "chrome-friendly-settings@google.com" ],
     "expiry_milestone": 93

@@ -5226,6 +5226,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kHappinessTrackingSurveysForDesktopDemo)},
 
+    {"happiness-tracking-surveys-for-desktop-privacy-sandbox",
+     flag_descriptions::kHappinessTrackingSurveysForDesktopPrivacySandboxName,
+     flag_descriptions::
+         kHappinessTrackingSurveysForDesktopPrivacySandboxDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         features::kHappinessTrackingSurveysForDesktopPrivacySandbox)},
+
     {"happiness-tracking-surveys-for-desktop-settings",
      flag_descriptions::kHappinessTrackingSurveysForDesktopSettingsName,
      flag_descriptions::kHappinessTrackingSurveysForDesktopSettingsDescription,

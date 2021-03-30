@@ -32,6 +32,7 @@ class Profile;
 
 // Trigger identifiers currently used; duplicates not allowed.
 extern const char kHatsSurveyTriggerTesting[];
+extern const char kHatsSurveyTriggerPrivacySandbox[];
 extern const char kHatsSurveyTriggerSatisfaction[];
 extern const char kHatsSurveyTriggerSettings[];
 extern const char kHatsSurveyTriggerSettingsPrivacy[];

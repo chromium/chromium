@@ -301,6 +301,7 @@ js_library("privacy_page_test") {
 
 js_library("privacy_sandbox_test") {
   deps = [
+    ":test_hats_browser_proxy",
     ":test_metrics_browser_proxy",
     ":test_open_window_proxy",
     "..:chai_assert",

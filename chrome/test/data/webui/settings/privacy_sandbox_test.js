@@ -5,23 +5,32 @@
 import 'chrome://settings/privacy_sandbox/app.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertTrue} from '../chai_assert.js';
 import {flushTasks} from '../test_util.m.js';
 
+import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestOpenWindowProxy} from './test_open_window_proxy.js';
 
 suite('PrivacySandbox', function() {
   /** @type {PrivacySandboxAppElement} */
   let page;
+
   /** @type {?TestMetricsBrowserProxy} */
   let metricsBrowserProxy = null;
+
   /** @type {?TestOpenWindowProxy} */
   let openWindowProxy = null;
 
+  /** @type {!TestHatsBrowserProxy} */
+  let testHatsBrowserProxy;
+
   setup(function() {
+    testHatsBrowserProxy = new TestHatsBrowserProxy();
+    HatsBrowserProxyImpl.instance_ = testHatsBrowserProxy;
+
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.instance_ = metricsBrowserProxy;
 
@@ -82,4 +91,10 @@ suite('PrivacySandbox', function() {
     await CrSettingsPrefs.initialized;
     assertTrue(!!page.getPref('privacy_sandbox.page_viewed').value);
   });
+
+  test('hatsSurvey', function() {
+    // Confirm that the page called out to the HaTS proxy.
+    return testHatsBrowserProxy.whenCalled('tryShowPrivacySandboxSurvey');
+  });
+
 });

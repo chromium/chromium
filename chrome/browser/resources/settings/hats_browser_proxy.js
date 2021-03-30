@@ -16,6 +16,13 @@ import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
      * that decides whether it's appropriate to show a survey.
      */
     tryShowSurvey() {}
+
+    /**
+     * Helper which initiates launching of the HaTS survey for the Privacy
+     * Sandbox page. A survey is only shown if the HaTS service determines it
+     * is appropriate to show.
+     */
+    tryShowPrivacySandboxSurvey() {}
   }
 
   /** @implements {HatsBrowserProxy} */
@@ -23,6 +30,11 @@ import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
     /** @override*/
     tryShowSurvey() {
       chrome.send('tryShowHatsSurvey');
+    }
+
+    /** @override*/
+    tryShowPrivacySandboxSurvey() {
+      chrome.send('tryShowPrivacySandboxSurvey');
     }
   }
 

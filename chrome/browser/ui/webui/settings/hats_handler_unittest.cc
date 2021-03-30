@@ -12,6 +12,10 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -59,6 +63,23 @@ TEST_F(HatsHandlerTest, HandleTryShowHatsSurvey) {
                                        web_contents(), 20000, testing::_));
   base::ListValue args;
   handler()->HandleTryShowHatsSurvey(&args);
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(HatsHandlerTest, HandleTryShowPrivacySandboxHatsSurvey) {
+  // Check that the handler correctly forwards the survey request to the
+  // HaTS service and also includes the appropriate product specific data.
+  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
+  profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+  std::map<std::string, bool> expected_psd = {
+      {"3P cookies blocked", true}, {"Privacy Sandbox enabled", false}};
+  EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
+                                       kHatsSurveyTriggerPrivacySandbox,
+                                       web_contents(), 20000, expected_psd));
+  base::ListValue args;
+  handler()->HandleTryShowPrivacySandboxHatsSurvey(&args);
   task_environment()->RunUntilIdle();
 }
 

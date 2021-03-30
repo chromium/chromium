@@ -484,6 +484,7 @@ static_library("ui") {
     "//components/permissions",
     "//components/policy/core/browser",
     "//components/pref_registry",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/proxy_config",
     "//components/query_parser",
     "//components/reading_list/core",

@@ -464,6 +464,12 @@ const base::Feature kHaTSDesktopDevToolsIssuesCSP{
 const base::Feature kHaTSDesktopDevToolsLayoutPanel{
     "HaTSDesktopDevToolsLayoutPanel", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables the Happiness Tracking System for Desktop Privacy
+// Sandbox.
+const base::Feature kHappinessTrackingSurveysForDesktopPrivacySandbox{
+    "HappinessTrackingSurveysForDesktopPrivacySandbox",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the Happiness Tracking System for Desktop Chrome
 // Settings.
 const base::Feature kHappinessTrackingSurveysForDesktopSettings{

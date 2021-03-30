@@ -9,6 +9,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 
@@ -23,6 +27,10 @@ void HatsHandler::RegisterMessages() {
       "tryShowHatsSurvey",
       base::BindRepeating(&HatsHandler::HandleTryShowHatsSurvey,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "tryShowPrivacySandboxSurvey",
+      base::BindRepeating(&HatsHandler::HandleTryShowPrivacySandboxHatsSurvey,
+                          base::Unretained(this)));
 }
 
 void HatsHandler::HandleTryShowHatsSurvey(const base::ListValue* args) {
@@ -32,6 +40,29 @@ void HatsHandler::HandleTryShowHatsSurvey(const base::ListValue* args) {
     hats_service->LaunchDelayedSurveyForWebContents(
         kHatsSurveyTriggerSettingsPrivacy, web_ui()->GetWebContents(), 20000);
   }
+}
+
+void HatsHandler::HandleTryShowPrivacySandboxHatsSurvey(
+    const base::ListValue* args) {
+  auto* profile = Profile::FromWebUI(web_ui());
+  HatsService* hats_service = HatsServiceFactory::GetForProfile(
+      profile, /* create_if_necessary = */ true);
+
+  // The HaTS service may not be available for the profile, for example if it
+  // is a guest profile.
+  if (!hats_service)
+    return;
+
+  bool third_party_cookies_blocked =
+      static_cast<content_settings::CookieControlsMode>(
+          profile->GetPrefs()->GetInteger(prefs::kCookieControlsMode)) ==
+      content_settings::CookieControlsMode::kBlockThirdParty;
+  bool privacy_sandbox_enabled =
+      profile->GetPrefs()->GetBoolean(prefs::kPrivacySandboxApisEnabled);
+  hats_service->LaunchDelayedSurveyForWebContents(
+      kHatsSurveyTriggerPrivacySandbox, web_ui()->GetWebContents(), 20000,
+      {{"3P cookies blocked", third_party_cookies_blocked},
+       {"Privacy Sandbox enabled", privacy_sandbox_enabled}});
 }
 
 }  // namespace settings

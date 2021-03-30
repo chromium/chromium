@@ -3512,6 +3512,12 @@ const char kHappinessTrackingSurveysForDesktopDemoName[] =
 const char kHappinessTrackingSurveysForDesktopDemoDescription[] =
     "Enable showing Happiness Tracking Surveys Demo to users on Desktop";
 
+const char kHappinessTrackingSurveysForDesktopPrivacySandboxName[] =
+    "Happiness Tracking Surveys for the Privacy Sandbox";
+const char kHappinessTrackingSurveysForDesktopPrivacySandboxDescription[] =
+    "Enable showing Happiness Tracking Surveys for the Privacy Sandbox to "
+    "users on Desktop";
+
 const char kHappinessTrackingSurveysForDesktopSettingsName[] =
     "Happiness Tracking Surveys for Settings";
 const char kHappinessTrackingSurveysForDesktopSettingsDescription[] =

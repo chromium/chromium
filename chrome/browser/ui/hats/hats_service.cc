@@ -31,6 +31,7 @@
 #include "net/base/network_change_notifier.h"
 
 constexpr char kHatsSurveyTriggerTesting[] = "testing";
+constexpr char kHatsSurveyTriggerPrivacySandbox[] = "privacy-sandbox";
 constexpr char kHatsSurveyTriggerSatisfaction[] = "satisfaction";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
 constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
@@ -125,6 +126,12 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopSettingsPrivacy,
       kHatsSurveyTriggerSettingsPrivacy);
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForDesktopPrivacySandbox,
+      kHatsSurveyTriggerPrivacySandbox,
+      /*presupplied_trigger_id=*/base::nullopt,
+      std::vector<std::string>{"3P cookies blocked",
+                               "Privacy Sandbox enabled"});
 
   return survey_configs;
 }
