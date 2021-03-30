@@ -210,7 +210,6 @@ class TestRunner {
   bool PolicyDelegateEnabled() const;
   bool PolicyDelegateIsPermissive() const;
   bool PolicyDelegateShouldNotifyDone() const;
-  void SetToolTipText(const blink::WebString&);
   void SetDragImage(const SkBitmap& drag_image);
   bool ShouldDumpNavigationPolicy() const;
 
