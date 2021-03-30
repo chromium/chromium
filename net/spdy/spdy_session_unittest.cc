@@ -407,10 +407,15 @@ class SpdySessionTestWithMockTime : public SpdySessionTest {
 // Try to create a SPDY session that will fail during
 // initialization. Nothing should blow up.
 TEST_F(SpdySessionTest, InitialReadError) {
-  CreateNetworkSession();
+  MockRead reads[] = {MockRead(ASYNC, ERR_CONNECTION_CLOSED, 0)};
+  SequencedSocketData data(reads, base::span<MockWrite>());
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
 
-  session_ = TryCreateFakeSpdySessionExpectingFailure(spdy_session_pool_, key_,
-                                                      ERR_CONNECTION_CLOSED);
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+  CreateSpdySession();
+
   EXPECT_TRUE(session_);
   // Flush the read.
   base::RunLoop().RunUntilIdle();

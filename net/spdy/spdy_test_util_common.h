@@ -278,21 +278,11 @@ base::WeakPtr<SpdySession> CreateSpdySessionWithIpBasedPoolingDisabled(
     const SpdySessionKey& key,
     const NetLogWithSource& net_log);
 
-// Creates an insecure SPDY session for the given key and puts it in
-// |pool|. The returned session will neither receive nor send any
-// data. A SPDY session for |key| must not already exist.
+// Creates a SPDY session for the given key and puts it in |pool|.
+// The returned session will neither receive nor send any data.
+// A SPDY session for |key| must not already exist.
 base::WeakPtr<SpdySession> CreateFakeSpdySession(SpdySessionPool* pool,
                                                  const SpdySessionKey& key);
-
-// Tries to create an insecure SPDY session for the given key but
-// expects the attempt to fail with the given error. The session will
-// neither receive nor send any data. A SPDY session for |key| must
-// not already exist. The session will be created but close in the
-// next event loop iteration.
-base::WeakPtr<SpdySession> TryCreateFakeSpdySessionExpectingFailure(
-    SpdySessionPool* pool,
-    const SpdySessionKey& key,
-    Error expected_status);
 
 class SpdySessionPoolPeer {
  public:
