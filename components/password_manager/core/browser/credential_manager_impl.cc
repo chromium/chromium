@@ -38,8 +38,6 @@ CredentialManagerImpl::~CredentialManagerImpl() = default;
 void CredentialManagerImpl::Store(const CredentialInfo& credential,
                                   StoreCallback callback) {
   DCHECK_NE(CredentialType::CREDENTIAL_TYPE_EMPTY, credential.type);
-  // Temporary debugging for UpdatingPSLMatchedCredentialCreatesSecondEntry test
-  VLOG(0) << "CredentialManagerImpl::Store";
 
   const url::Origin origin = GetOrigin();
   if (password_manager_util::IsLoggingActive(client_)) {
@@ -246,14 +244,11 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
   DCHECK(form_manager_);
   const PasswordForm& form = form_manager_->GetPendingCredentials();
   DCHECK(client_->IsSavingAndFillingEnabled(form.url));
-  // Temporary debugging for UpdatingPSLMatchedCredentialCreatesSecondEntry test
-  VLOG(0) << "OnProvisionalSaveComplete";
 
   if (form_manager_->IsPendingCredentialsPublicSuffixMatch()) {
     // Having a credential with a PSL match implies there is no credential with
     // an exactly matching origin and username. In order to avoid showing a save
     // bubble to the user Save() is called directly.
-    VLOG(0) << "Silently save PSL";
     form_manager_->Save();
     return;
   }
@@ -275,12 +270,10 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
     // 'skip_zero_click' state, as we've gotten an explicit signal that the page
     // understands the credential management API and so can be trusted to notify
     // us when they sign the user out.
-    VLOG(0) << "Silently update existing";
     form_manager_->Update(form_manager_->GetPendingCredentials());
     return;
   }
 
-  VLOG(0) << "PromptUserToSaveOrUpdatePassword";
   // Otherwise, this is a new form, so as the user if they'd like to save.
   client_->PromptUserToSaveOrUpdatePassword(std::move(form_manager_), false);
 }

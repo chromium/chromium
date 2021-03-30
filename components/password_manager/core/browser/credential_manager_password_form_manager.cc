@@ -32,10 +32,7 @@ CredentialManagerPasswordFormManager::CredentialManagerPasswordFormManager(
           form_saver
               ? std::make_unique<PasswordSaveManagerImpl>(std::move(form_saver))
               : PasswordSaveManagerImpl::CreatePasswordSaveManagerImpl(client)),
-      delegate_(delegate) {
-  // Temporary debugging for UpdatingPSLMatchedCredentialCreatesSecondEntry test
-  VLOG(0) << "CredentialManagerPasswordFormManager";
-}
+      delegate_(delegate) {}
 
 CredentialManagerPasswordFormManager::~CredentialManagerPasswordFormManager() =
     default;
