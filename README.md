@@ -1,19 +1,62 @@
-# ![Logo](chrome/app/theme/chromium/product_logo_64.png) Chromium
 
-Chromium is an open-source browser project that aims to build a safer, faster,
-and more stable way for all users to experience the web.
+This repository is a chromium fork that has has been adapted to use the record/replay driver.
 
-The project's web site is https://www.chromium.org.
+# Setting up builds
 
-To check out the source code locally, don't use `git clone`! Instead,
-follow [the instructions on how to get the code](docs/get_the_code.md).
+Only one build configuration is currently supported.
 
-Documentation in the source is rooted in [docs/README.md](docs/README.md).
+Install depot_tools per https://chromium.googlesource.com/chromium/src/+/master/docs/mac_build_instructions.md#Install
 
-Learn how to [Get Around the Chromium Source Code Directory Structure
-](https://www.chromium.org/developers/how-tos/getting-around-the-chrome-source-code).
+```
+cd src
+gn gen out/Release
+gn args out/Release
+```
 
-For historical reasons, there are some small top level directories. Now the
-guidance is that new top level directories are for product (e.g. Chrome,
-Android WebView, Ash). Even if these products have multiple executables, the
-code should be in subdirectories of the product.
+Add the following settings:
+
+```
+is_debug = false
+enable_nacl = false
+```
+
+Build:
+
+```
+autoninja -C out/Release chrome
+```
+
+# Merging from upstream
+
+Because chromium's source is split across many git repositories, merging changes from upstream is tricky
+
+Pull upstream changes and merge into master branch:
+
+```
+git checkout upstream
+git pull https://github.com/chromium/chromium.git master
+git push
+git checkout master
+git merge upstream
+... fix merge conflicts ...
+git commit -a
+git push
+```
+
+Update other dependencies:
+
+```
+cd /path/to/chromium
+gclient sync -D
+```
+
+gclient will change V8 to point back to the default google remote, erasing all record/replay changes.  Merge them back in:
+
+```
+cd v8
+git remote set-url origin https://github.com/RecordReplay/v8
+git pull
+... fix merge conflicts ...
+git commit -a
+git push
+```
