@@ -304,10 +304,10 @@ class MessagePipe {
     throwIfReserved(messageType);
 
     const messageId = this.nextMessageId_++;
-    this.postToTarget_(messageType, message, messageId);
-
     const resolver = new NativeResolver();
     this.pendingMessages_.set(messageId, resolver);
+
+    this.postToTarget_(messageType, message, messageId);
 
     return resolver.promise;
   }
