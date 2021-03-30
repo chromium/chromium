@@ -41,12 +41,12 @@ public class LanguageItemListPreference
     }
 
     /**
-     * If the LanguageItemListDelegate for this preference is set and has languages to show update
-     * the summary.  Otherwise leave the summary as is.
+     * If the LanguageItemListDelegate for this preference is set update the summary. Otherwise
+     * leave the summary as is.
      */
     public void updateSummary() {
         String summary = makeSummary();
-        if (TextUtils.isEmpty(summary)) return;
+        if (summary == null) return;
         setSummary(summary);
     }
 
@@ -61,13 +61,12 @@ public class LanguageItemListPreference
 
     /**
      * If the ListDelegate for this preference is set return a comma separated string of
-     * display names for at most the first three languages. If the list is empty or delegate is not
-     * set return the empty string.
+     * display names for at most the first three languages. If the delegate is not set return null.
      * @param languages List of LanguageItems.
      * @return Comma sepperated string of language display names.
      */
     private String makeSummary() {
-        if (mLanguageItemListDelegate == null) return "";
+        if (mLanguageItemListDelegate == null) return null;
         int index = 0;
         ArrayList<String> languageNames = new ArrayList<String>();
         for (LanguageItem item : mLanguageItemListDelegate.getLanguageItems()) {
