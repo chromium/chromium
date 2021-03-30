@@ -164,6 +164,9 @@ constexpr const char* kAtomsToCache[] = {
     "text/rtf",
     "text/uri-list",
     "text/x-moz-url",
+    "xwayland-pointer",
+    "xwayland-keyboard",
+    "xwayland-touch",
 };
 
 constexpr int kCacheCount = base::size(kAtomsToCache);
