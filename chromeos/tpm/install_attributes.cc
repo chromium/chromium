@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -22,9 +23,9 @@
 #include "base/time/time.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/cryptohome/tpm_util.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "chromeos/dbus/userdataauth/install_attributes_util.h"
 #include "components/policy/proto/install_attributes.pb.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -71,7 +72,7 @@ void InstallAttributes::Initialize() {
     return;
 
   DCHECK(!g_install_attributes);
-  g_install_attributes = new InstallAttributes(CryptohomeClient::Get());
+  g_install_attributes = new InstallAttributes(InstallAttributesClient::Get());
   g_install_attributes->Init(
       base::PathService::CheckedGet(dbus_paths::FILE_INSTALL_ATTRIBUTES));
 }
@@ -113,8 +114,9 @@ void InstallAttributes::ShutdownForTesting() {
   g_using_install_attributes_for_testing = false;
 }
 
-InstallAttributes::InstallAttributes(CryptohomeClient* cryptohome_client)
-    : cryptohome_client_(cryptohome_client) {}
+InstallAttributes::InstallAttributes(
+    InstallAttributesClient* userdataauth_client)
+    : install_attributes_client_(userdataauth_client) {}
 
 InstallAttributes::~InstallAttributes() {}
 
@@ -125,7 +127,7 @@ void InstallAttributes::Init(const base::FilePath& cache_file) {
   // blocked, but wait for the cryptohome service to be available before
   // actually calling TriggerConsistencyCheck().
   consistency_check_running_ = true;
-  cryptohome_client_->WaitForServiceToBeAvailable(
+  install_attributes_client_->WaitForServiceToBeAvailable(
       base::BindOnce(&InstallAttributes::OnCryptohomeServiceInitiallyAvailable,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -170,55 +172,72 @@ void InstallAttributes::ReadImmutableAttributes(base::OnceClosure callback) {
     return;
   }
 
-  cryptohome_client_->InstallAttributesIsReady(
+  // Get Install Attributes Status to know if it's ready.
+  install_attributes_client_->InstallAttributesGetStatus(
+      user_data_auth::InstallAttributesGetStatusRequest(),
       base::BindOnce(&InstallAttributes::ReadAttributesIfReady,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void InstallAttributes::ReadAttributesIfReady(base::OnceClosure callback,
-                                              base::Optional<bool> is_ready) {
-  if (is_ready.value_or(false)) {
-    registration_mode_ = policy::DEVICE_MODE_NOT_SET;
-    if (!tpm_util::InstallAttributesIsInvalid() &&
-        !tpm_util::InstallAttributesIsFirstInstall()) {
-      device_locked_ = true;
+void InstallAttributes::ReadAttributesIfReady(
+    base::OnceClosure callback,
+    base::Optional<user_data_auth::InstallAttributesGetStatusReply> reply) {
+  base::ScopedClosureRunner callback_runner(std::move(callback));
 
-      static const char* const kEnterpriseAttributes[] = {
-          kAttrEnterpriseDeviceId,   kAttrEnterpriseDomain,
-          kAttrEnterpriseRealm,      kAttrEnterpriseMode,
-          kAttrEnterpriseOwned,      kAttrEnterpriseUser,
-          kAttrConsumerKioskEnabled,
-      };
-      std::map<std::string, std::string> attr_map;
-      for (size_t i = 0; i < base::size(kEnterpriseAttributes); ++i) {
-        std::string value;
-        if (tpm_util::InstallAttributesGet(kEnterpriseAttributes[i], &value))
-          attr_map[kEnterpriseAttributes[i]] = value;
-      }
-
-      DecodeInstallAttributes(attr_map);
-    }
+  // Can't proceed if the call failed.
+  if (!reply.has_value()) {
+    return;
   }
-  std::move(callback).Run();
+
+  // Can't proceed if not ready.
+  if (reply->state() == ::user_data_auth::InstallAttributesState::UNKNOWN ||
+      reply->state() ==
+          ::user_data_auth::InstallAttributesState::TPM_NOT_OWNED) {
+    return;
+  }
+
+  registration_mode_ = policy::DEVICE_MODE_NOT_SET;
+  // TODO(b/183608597): Migrate this to check reply->state() to avoid the
+  // blocking calls below.
+  if (!install_attributes_util::InstallAttributesIsInvalid() &&
+      !install_attributes_util::InstallAttributesIsFirstInstall()) {
+    device_locked_ = true;
+
+    static const char* const kEnterpriseAttributes[] = {
+        kAttrEnterpriseDeviceId,   kAttrEnterpriseDomain, kAttrEnterpriseRealm,
+        kAttrEnterpriseMode,       kAttrEnterpriseOwned,  kAttrEnterpriseUser,
+        kAttrConsumerKioskEnabled,
+    };
+    std::map<std::string, std::string> attr_map;
+    for (size_t i = 0; i < base::size(kEnterpriseAttributes); ++i) {
+      std::string value;
+      if (install_attributes_util::InstallAttributesGet(
+              kEnterpriseAttributes[i], &value))
+        attr_map[kEnterpriseAttributes[i]] = value;
+    }
+
+    DecodeInstallAttributes(attr_map);
+  }
 }
 
 void InstallAttributes::SetBlockDevmodeInTpm(
     bool block_devmode,
-    DBusMethodCallback<cryptohome::BaseReply> callback) {
+    DBusMethodCallback<user_data_auth::SetFirmwareManagementParametersReply>
+        callback) {
   DCHECK(!callback.is_null());
   DCHECK(!device_locked_);
 
-  cryptohome::SetFirmwareManagementParametersRequest request;
+  user_data_auth::SetFirmwareManagementParametersRequest request;
   // Set the flags, according to enum FirmwareManagementParametersFlags from
   // rpc.proto if devmode is blocked.
   if (block_devmode) {
-    request.set_flags(
+    request.mutable_fwmp()->set_flags(
         cryptohome::DEVELOPER_DISABLE_BOOT |
         cryptohome::DEVELOPER_DISABLE_CASE_CLOSED_DEBUGGING_UNLOCK);
   }
 
-  cryptohome_client_->SetFirmwareManagementParametersInTpm(request,
-                                                           std::move(callback));
+  install_attributes_client_->SetFirmwareManagementParameters(
+      request, std::move(callback));
 }
 
 void InstallAttributes::LockDevice(policy::DeviceMode device_mode,
@@ -271,7 +290,9 @@ void InstallAttributes::LockDevice(policy::DeviceMode device_mode,
   }
 
   device_lock_running_ = true;
-  cryptohome_client_->InstallAttributesIsReady(
+  // Get Install Attributes Status to know if it's ready.
+  install_attributes_client_->InstallAttributesGetStatus(
+      user_data_auth::InstallAttributesGetStatusRequest(),
       base::BindOnce(&InstallAttributes::LockDeviceIfAttributesIsReady,
                      weak_ptr_factory_.GetWeakPtr(), device_mode, domain, realm,
                      device_id, std::move(callback)));
@@ -283,8 +304,11 @@ void InstallAttributes::LockDeviceIfAttributesIsReady(
     const std::string& realm,
     const std::string& device_id,
     LockResultCallback callback,
-    base::Optional<bool> is_ready) {
-  if (!is_ready.has_value() || !is_ready.value()) {
+    base::Optional<user_data_auth::InstallAttributesGetStatusReply> reply) {
+  if (!reply.has_value() ||
+      reply->state() == ::user_data_auth::InstallAttributesState::UNKNOWN ||
+      reply->state() ==
+          ::user_data_auth::InstallAttributesState::TPM_NOT_OWNED) {
     device_lock_running_ = false;
     std::move(callback).Run(LOCK_NOT_READY);
     return;
@@ -298,14 +322,14 @@ void InstallAttributes::LockDeviceIfAttributesIsReady(
                      weak_ptr_factory_.GetWeakPtr()));
 
   // Make sure we really have a working InstallAttrs.
-  if (tpm_util::InstallAttributesIsInvalid()) {
+  if (install_attributes_util::InstallAttributesIsInvalid()) {
     LOG(ERROR) << "Install attributes invalid.";
     device_lock_running_ = false;
     std::move(callback).Run(LOCK_BACKEND_INVALID);
     return;
   }
 
-  if (!tpm_util::InstallAttributesIsFirstInstall()) {
+  if (!install_attributes_util::InstallAttributesIsFirstInstall()) {
     LOG(ERROR) << "Install attributes already installed.";
     device_lock_running_ = false;
     std::move(callback).Run(LOCK_ALREADY_LOCKED);
@@ -320,21 +344,26 @@ void InstallAttributes::LockDeviceIfAttributesIsReady(
     enterprise_owned = "true";
   }
   std::string mode = GetDeviceModeString(device_mode);
-  if (!tpm_util::InstallAttributesSet(kAttrConsumerKioskEnabled,
-                                      kiosk_enabled) ||
-      !tpm_util::InstallAttributesSet(kAttrEnterpriseOwned, enterprise_owned) ||
-      !tpm_util::InstallAttributesSet(kAttrEnterpriseMode, mode) ||
-      !tpm_util::InstallAttributesSet(kAttrEnterpriseDomain, domain) ||
-      !tpm_util::InstallAttributesSet(kAttrEnterpriseRealm, realm) ||
-      !tpm_util::InstallAttributesSet(kAttrEnterpriseDeviceId, device_id)) {
+  if (!install_attributes_util::InstallAttributesSet(kAttrConsumerKioskEnabled,
+                                                     kiosk_enabled) ||
+      !install_attributes_util::InstallAttributesSet(kAttrEnterpriseOwned,
+                                                     enterprise_owned) ||
+      !install_attributes_util::InstallAttributesSet(kAttrEnterpriseMode,
+                                                     mode) ||
+      !install_attributes_util::InstallAttributesSet(kAttrEnterpriseDomain,
+                                                     domain) ||
+      !install_attributes_util::InstallAttributesSet(kAttrEnterpriseRealm,
+                                                     realm) ||
+      !install_attributes_util::InstallAttributesSet(kAttrEnterpriseDeviceId,
+                                                     device_id)) {
     LOG(ERROR) << "Failed writing attributes.";
     device_lock_running_ = false;
     std::move(callback).Run(LOCK_SET_ERROR);
     return;
   }
 
-  if (!tpm_util::InstallAttributesFinalize() ||
-      tpm_util::InstallAttributesIsFirstInstall()) {
+  if (!install_attributes_util::InstallAttributesFinalize() ||
+      install_attributes_util::InstallAttributesIsFirstInstall()) {
     LOG(ERROR) << "Failed locking.";
     device_lock_running_ = false;
     std::move(callback).Run(LOCK_FINALIZE_ERROR);

@@ -601,10 +601,18 @@ void EnrollmentHandlerChromeOS::SetFirmwareManagementParametersData() {
 }
 
 void EnrollmentHandlerChromeOS::OnFirmwareManagementParametersDataSet(
-    base::Optional<cryptohome::BaseReply> reply) {
+    base::Optional<user_data_auth::SetFirmwareManagementParametersReply>
+        reply) {
   DCHECK_EQ(STEP_SET_FWMP_DATA, enrollment_step_);
-  if (!reply.has_value())
-    LOG(ERROR) << "Failed to update firmware management parameters in TPM.";
+  if (!reply.has_value()) {
+    LOG(ERROR) << "Failed to update firmware management parameters in TPM due "
+                  "to DBus error.";
+  } else if (reply->error() !=
+             user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    LOG(ERROR) << "Failed to update firmware management parameters in TPM, "
+                  "error code: "
+               << static_cast<int>(reply->error());
+  }
 
   SetStep(STEP_LOCK_DEVICE);
   StartLockDevice();

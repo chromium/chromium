@@ -17,8 +17,8 @@
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/cryptohome/tpm_util.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "chromeos/dbus/userdataauth/install_attributes_util.h"
 #include "components/policy/proto/install_attributes.pb.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,15 +51,15 @@ class InstallAttributesTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(base::PathService::OverrideAndCreateIfNeeded(
         dbus_paths::FILE_INSTALL_ATTRIBUTES, GetTempPath(), true, false));
-    CryptohomeClient::InitializeFake();
+    InstallAttributesClient::InitializeFake();
     TpmManagerClient::InitializeFake();
     install_attributes_ =
-        std::make_unique<InstallAttributes>(CryptohomeClient::Get());
+        std::make_unique<InstallAttributes>(InstallAttributesClient::Get());
   }
 
   void TearDown() override {
     TpmManagerClient::Shutdown();
-    CryptohomeClient::Shutdown();
+    InstallAttributesClient::Shutdown();
   }
 
   base::FilePath GetTempPath() const {
@@ -220,12 +220,12 @@ TEST_F(InstallAttributesTest, ConsumerDevice) {
   install_attributes_->Init(GetTempPath());
   EXPECT_EQ(policy::DEVICE_MODE_PENDING, install_attributes_->GetMode());
   // Lock the attributes empty.
-  ASSERT_TRUE(tpm_util::InstallAttributesFinalize());
+  ASSERT_TRUE(install_attributes_util::InstallAttributesFinalize());
   base::RunLoop loop;
   install_attributes_->ReadImmutableAttributes(loop.QuitClosure());
   loop.Run();
 
-  ASSERT_FALSE(tpm_util::InstallAttributesIsFirstInstall());
+  ASSERT_FALSE(install_attributes_util::InstallAttributesIsFirstInstall());
   EXPECT_EQ(policy::DEVICE_MODE_CONSUMER, install_attributes_->GetMode());
   EXPECT_EQ(std::string(), install_attributes_->GetDomain());
   EXPECT_EQ(std::string(), install_attributes_->GetRealm());
@@ -241,7 +241,7 @@ TEST_F(InstallAttributesTest, ConsumerKioskDevice) {
       LockDeviceAndWaitForResult(policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH,
                                  std::string(), std::string(), std::string()));
 
-  ASSERT_FALSE(tpm_util::InstallAttributesIsFirstInstall());
+  ASSERT_FALSE(install_attributes_util::InstallAttributesIsFirstInstall());
   EXPECT_EQ(policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH,
             install_attributes_->GetMode());
   EXPECT_EQ(std::string(), install_attributes_->GetDomain());
@@ -254,16 +254,16 @@ TEST_F(InstallAttributesTest, DeviceLockedFromOlderVersion) {
   install_attributes_->Init(GetTempPath());
   EXPECT_EQ(policy::DEVICE_MODE_PENDING, install_attributes_->GetMode());
   // Lock the attributes as if it was done from older Chrome version.
-  ASSERT_TRUE(tpm_util::InstallAttributesSet(
+  ASSERT_TRUE(install_attributes_util::InstallAttributesSet(
       InstallAttributes::kAttrEnterpriseOwned, "true"));
-  ASSERT_TRUE(tpm_util::InstallAttributesSet(
+  ASSERT_TRUE(install_attributes_util::InstallAttributesSet(
       InstallAttributes::kAttrEnterpriseUser, kTestUserDeprecated));
-  ASSERT_TRUE(tpm_util::InstallAttributesFinalize());
+  ASSERT_TRUE(install_attributes_util::InstallAttributesFinalize());
   base::RunLoop loop;
   install_attributes_->ReadImmutableAttributes(loop.QuitClosure());
   loop.Run();
 
-  ASSERT_FALSE(tpm_util::InstallAttributesIsFirstInstall());
+  ASSERT_FALSE(install_attributes_util::InstallAttributesIsFirstInstall());
   EXPECT_EQ(policy::DEVICE_MODE_ENTERPRISE, install_attributes_->GetMode());
   EXPECT_EQ(kTestDomain, install_attributes_->GetDomain());
   EXPECT_EQ(std::string(), install_attributes_->GetRealm());
@@ -302,19 +302,20 @@ TEST_F(InstallAttributesTest, InitForConsumerKiosk) {
 }
 
 TEST_F(InstallAttributesTest, VerifyFakeInstallAttributesCache) {
-  // This test verifies that FakeCryptohomeClient::InstallAttributesFinalize
-  // writes a cache that InstallAttributes::Init accepts.
+  // This test verifies that
+  // install_attributes_util::InstallAttributesFinalize() writes a cache that
+  // InstallAttributes::Init accepts.
 
   // Verify that no attributes are initially set.
   install_attributes_->Init(GetTempPath());
   EXPECT_EQ(policy::DEVICE_MODE_PENDING, install_attributes_->GetMode());
 
   // Write test values.
-  ASSERT_TRUE(tpm_util::InstallAttributesSet(
+  ASSERT_TRUE(install_attributes_util::InstallAttributesSet(
       InstallAttributes::kAttrEnterpriseOwned, "true"));
-  ASSERT_TRUE(tpm_util::InstallAttributesSet(
+  ASSERT_TRUE(install_attributes_util::InstallAttributesSet(
       InstallAttributes::kAttrEnterpriseUser, kTestUserDeprecated));
-  ASSERT_TRUE(tpm_util::InstallAttributesFinalize());
+  ASSERT_TRUE(install_attributes_util::InstallAttributesFinalize());
 
   // Verify that InstallAttributes correctly decodes the stub cache file.
   install_attributes_->Init(GetTempPath());
@@ -325,17 +326,21 @@ TEST_F(InstallAttributesTest, VerifyFakeInstallAttributesCache) {
 }
 
 TEST_F(InstallAttributesTest, CheckSetBlockDevmodeInTpm) {
-  bool succeeded = false;
+  base::Optional<::user_data_auth::SetFirmwareManagementParametersReply> reply;
   install_attributes_->SetBlockDevmodeInTpm(
-      true,
-      base::BindOnce(
-          [](bool* succeeded, base::Optional<cryptohome::BaseReply> reply) {
-            *succeeded = reply.has_value();
-          },
-          &succeeded));
+      true, base::BindOnce(
+                [](base::Optional<
+                       ::user_data_auth::SetFirmwareManagementParametersReply>*
+                       reply_ptr,
+                   base::Optional<
+                       ::user_data_auth::SetFirmwareManagementParametersReply>
+                       reply) { *reply_ptr = reply; },
+                &reply));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(succeeded);
+  ASSERT_TRUE(reply.has_value());
+  EXPECT_EQ(reply->error(),
+            ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET);
 }
 
 TEST_F(InstallAttributesTest, ConsistencyCheckTriggeredWithTpmPassword) {

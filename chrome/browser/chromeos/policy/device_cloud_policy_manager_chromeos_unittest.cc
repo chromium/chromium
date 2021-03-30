@@ -39,6 +39,8 @@
 #include "chromeos/dbus/dbus_client_implementation_type.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
+#include "chromeos/dbus/userdataauth/fake_install_attributes_client.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/install_attributes.h"
@@ -155,10 +157,13 @@ class DeviceCloudPolicyManagerChromeOSTest
     if (set_empty_system_salt_) {
       chromeos::FakeCryptohomeClient::Get()->set_system_salt(
           std::vector<uint8_t>());
+      chromeos::FakeCryptohomeMiscClient::Get()->set_system_salt(
+          std::vector<uint8_t>());
     }
 
+    chromeos::InstallAttributesClient::InitializeFake();
     install_attributes_ = std::make_unique<chromeos::InstallAttributes>(
-        chromeos::FakeCryptohomeClient::Get());
+        chromeos::FakeInstallAttributesClient::Get());
     store_ = new DeviceCloudPolicyStoreChromeOS(
         device_settings_service_.get(), install_attributes_.get(),
         base::ThreadTaskRunnerHandle::Get());
@@ -201,6 +206,7 @@ class DeviceCloudPolicyManagerChromeOSTest
 
     DeviceOAuth2TokenServiceFactory::Shutdown();
     chromeos::SystemSaltGetter::Shutdown();
+    chromeos::InstallAttributesClient::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 
     DeviceSettingsTestBase::TearDown();

@@ -19,6 +19,7 @@
 #include "chrome/browser/policy/device_account_initializer.h"
 #include "chromeos/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -165,7 +166,8 @@ class EnrollmentHandlerChromeOS : public CloudPolicyClient::Observer,
 
   // Invoked after the firmware management partition in TPM is updated.
   void OnFirmwareManagementParametersDataSet(
-      base::Optional<cryptohome::BaseReply> reply);
+      base::Optional<user_data_auth::SetFirmwareManagementParametersReply>
+          reply);
 
   // Calls InstallAttributes::LockDevice() for enterprise enrollment and
   // DeviceSettingsService::SetManagementSettings() for consumer
