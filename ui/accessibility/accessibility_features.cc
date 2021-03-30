@@ -117,6 +117,14 @@ bool IsMagnifierContinuousMouseFollowingModeSettingEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kMagnifierContinuousMouseFollowingModeSetting);
 }
+
+const base::Feature kEnableSwitchAccessPointScanning{
+    "EnableSwitchAccessPointScanning", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsSwitchAccessPointScanningEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kEnableSwitchAccessPointScanning);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const base::Feature kAugmentExistingImageLabels{

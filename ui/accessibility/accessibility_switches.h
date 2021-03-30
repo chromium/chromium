@@ -26,7 +26,6 @@ AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilityLanguageDetectionDynamic[];
 AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilitySwitchAccessText[];
-AX_BASE_EXPORT extern const char kEnableSwitchAccessPointScanning[];
 AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilitySwitchAccessSetupGuide[];
 
@@ -57,9 +56,6 @@ AX_BASE_EXPORT extern const char kEnableExperimentalUIAutomation[];
 
 // Returns true if experimental support for UIAutomation is enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilityPlatformUIAEnabled();
-
-// Returns true if Switch Access point scanning is enabled.
-AX_BASE_EXPORT bool IsSwitchAccessPointScanningEnabled();
 
 // Optionally disable AXMenuList, which makes the internal pop-up menu
 // UI for a select element directly accessible.

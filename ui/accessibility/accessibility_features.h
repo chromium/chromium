@@ -100,6 +100,13 @@ AX_BASE_EXPORT extern const base::Feature
 // Returns true if the feature to allow choosing the new continuous mouse
 // following mode in Magnifier settings is enabled.
 AX_BASE_EXPORT bool IsMagnifierContinuousMouseFollowingModeSettingEnabled();
+
+// Enables ability to choose point scanning mode in switch access.
+AX_BASE_EXPORT extern const base::Feature kEnableSwitchAccessPointScanning;
+
+// Returns true if the feature to allow point scanning in switch access is
+// enabled.
+AX_BASE_EXPORT bool IsSwitchAccessPointScanningEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables Get Image Descriptions to augment existing images labels,

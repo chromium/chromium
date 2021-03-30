@@ -1113,7 +1113,7 @@ bool AccessibilityControllerImpl::IsPointScanEnabled() {
 }
 
 void AccessibilityControllerImpl::StartPointScan() {
-  if (::switches::IsSwitchAccessPointScanningEnabled()) {
+  if (features::IsSwitchAccessPointScanningEnabled()) {
     point_scan_controller_->Start();
   }
 }

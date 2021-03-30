@@ -12,7 +12,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
-#include "ui/accessibility/accessibility_switches.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/mojom/ax_node_data.mojom-shared.h"
 #include "ui/events/event.h"
@@ -94,7 +94,7 @@ const base::flat_map<std::string, ButtonInfo>& GetMenuButtonDetails() {
           IDS_ASH_SWITCH_ACCESS_START_TEXT_SELECTION}},
     });
     menu_button_details->swap(kBaseMenuButtonDetails);
-    if (::switches::IsSwitchAccessPointScanningEnabled()) {
+    if (features::IsSwitchAccessPointScanningEnabled()) {
       menu_button_details->insert(
           {"pointScan",
            {&kSwitchAccessPointScanIcon, IDS_ASH_SWITCH_ACCESS_POINT_SCAN}});

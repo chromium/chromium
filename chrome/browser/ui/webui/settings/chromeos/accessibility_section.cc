@@ -347,8 +347,7 @@ bool IsSwitchAccessTextAllowed() {
 }
 
 bool IsSwitchAccessPointScanningEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kEnableSwitchAccessPointScanning);
+  return features::IsSwitchAccessPointScanningEnabled();
 }
 
 bool IsSwitchAccessSetupGuideAllowed() {

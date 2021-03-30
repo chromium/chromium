@@ -47,10 +47,6 @@ const char kEnableExperimentalAccessibilityLanguageDetectionDynamic[] =
 const char kEnableExperimentalAccessibilitySwitchAccessText[] =
     "enable-experimental-accessibility-switch-access-text";
 
-// Enables Switch Access point scanning. This feature hasn't launched yet.
-const char kEnableSwitchAccessPointScanning[] =
-    "enable-switch-access-point-scanning";
-
 // Enables the Switch Access setup guide that hasn't launched yet.
 const char kEnableExperimentalAccessibilitySwitchAccessSetupGuide[] =
     "enable-experimental-accessibility-switch-access-setup-guide";
@@ -83,11 +79,6 @@ bool IsExperimentalAccessibilityLanguageDetectionDynamicEnabled() {
 bool IsExperimentalAccessibilitySwitchAccessTextEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableExperimentalAccessibilitySwitchAccessText);
-}
-
-bool IsSwitchAccessPointScanningEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kEnableSwitchAccessPointScanning);
 }
 
 #if defined(OS_WIN)
