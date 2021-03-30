@@ -9778,14 +9778,11 @@ const std::string CalculateMethod(
 }
 
 bool DoBaseURLExpectationsMatch(const GURL& renderer_base_url,
-                                const net::Error& net_error_code) {
+                                bool is_error_page) {
   // base_url value is currently only used in the browser side to check if a
   // navigation results in an error page or not in
-  // NavigationRequest::DidCommitNavigation. This can be known by just checking
-  // for the net error code value instead, as all navigations that result in an
-  // error page should be known by the browser side before committing.
-  if (renderer_base_url == kUnreachableWebDataURL &&
-      net_error_code == net::OK) {
+  // NavigationRequest::DidCommitNavigation.
+  if (renderer_base_url == kUnreachableWebDataURL && !is_error_page) {
     return false;
   }
   // Note: base_url might be set in |params| in other cases (e.g. if a page has
@@ -9797,10 +9794,11 @@ bool DoBaseURLExpectationsMatch(const GURL& renderer_base_url,
 
 bool CalculateURLIsUnreachable(
     NavigationRequest* request,
+    bool is_error_page,
     bool is_loaded_from_load_data_with_base_url_and_unreachable_url) {
   // url_is_unreachable should only be true in two cases:
   // 1) The navigation is for an error page
-  if (request->GetNetErrorCode() != net::OK)
+  if (is_error_page)
     return true;
   // 2) This is a main frame navigation to a data: URL document with a base_url
   // (either an initial load or a same-document navigation).
@@ -9883,12 +9881,19 @@ void RenderFrameHostImpl::
   // - gesture
   // TODO(crbug.com/1131832): Verify more params.
   const GURL& browser_base_url = request->common_params().base_url_for_data_url;
+  // We can know if we're going to be in an error page after this navigation
+  // if the net error code is not net::OK, or if we're doing a same-document
+  // navigation on an error page (only possible for renderer-initiated
+  // navigations).
+  const bool is_error_page = (request->GetNetErrorCode() != net::OK ||
+                              (is_error_page_ && request->IsSameDocument()));
 
   const bool browser_url_is_unreachable = CalculateURLIsUnreachable(
-      request, is_loaded_from_load_data_with_base_url_and_unreachable_url_);
+      request, is_error_page,
+      is_loaded_from_load_data_with_base_url_and_unreachable_url_);
 
   const bool base_url_expectations_match =
-      DoBaseURLExpectationsMatch(params.base_url, request->GetNetErrorCode());
+      DoBaseURLExpectationsMatch(params.base_url, is_error_page);
 
   const bool is_same_document_navigation = !!same_document_params;
   const bool is_same_document_history_api_navigation =
@@ -10025,6 +10030,7 @@ void RenderFrameHostImpl::
                         !frame_tree_node_->IsMainFrame());
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_form_submission",
                         request->IsFormSubmission());
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_error_page", is_error_page);
   SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "net_error",
                           request->GetNetErrorCode());
 

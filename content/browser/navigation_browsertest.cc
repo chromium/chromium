@@ -3466,6 +3466,35 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     EXPECT_TRUE(navigation_1.has_committed());
     EXPECT_FALSE(navigation_1.was_same_document());
   }
+
+  // This case is also an empty 404 page, but we do replaceState and pushState
+  // afterwards, creating successful same-document navigations.
+  {
+    // Navigate to empty 404, committing an error page.
+    GURL url1 = embedded_test_server()->GetURL("a.com", "/empty404.html");
+    NavigationHandleCommitObserver navigation(web_contents(), url1);
+    EXPECT_FALSE(NavigateToURL(shell(), url1));
+    EXPECT_TRUE(navigation.has_committed());
+    EXPECT_FALSE(navigation.was_same_document());
+
+    // replaceState on an error page, without changing the URL.
+    {
+      FrameNavigateParamsCapturer capturer(main_frame());
+      capturer.set_wait_for_load(false);
+      EXPECT_TRUE(ExecJs(shell(), "history.replaceState('foo', '')"));
+      capturer.Wait();
+      EXPECT_TRUE(capturer.is_same_document());
+    }
+
+    // pushState on an error page, without changing the URL.
+    {
+      FrameNavigateParamsCapturer capturer(main_frame());
+      capturer.set_wait_for_load(false);
+      EXPECT_TRUE(ExecJs(shell(), "history.pushState('foo', '')"));
+      capturer.Wait();
+      EXPECT_TRUE(capturer.is_same_document());
+    }
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
