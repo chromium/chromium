@@ -1537,12 +1537,17 @@ int HttpNetworkTransaction::HandleSSLClientAuthError(int error) {
   // proxy.
   //
   // Origin errors are handled here, while most proxy errors are handled in the
-  // HttpStreamFactory and below. However, if the request is not tunneled (i.e.
-  // the origin is HTTP, so there is no HTTPS connection) and the proxy does not
-  // report a bad client certificate until after the TLS handshake completes.
-  // The latter occurs in TLS 1.3 or TLS 1.2 with False Start (disabled for
-  // proxies). The error will then surface out of Read() rather than Connect()
-  // and ultimately surfaced out of DoReadHeadersComplete().
+  // HttpStreamFactory and below, while handshaking with the proxy. However, in
+  // TLS 1.2 with False Start, or TLS 1.3, client certificate errors are
+  // reported immediately after the handshake. The error will then surface out
+  // of the first Read() rather than Connect().
+  //
+  // If the request is tunneled (i.e. the origin is HTTPS), this first Read()
+  // occurs while establishing the tunnel and HttpStreamFactory handles the
+  // proxy error. However, if the request is not tunneled (i.e. the origin is
+  // HTTP), this first Read() happens late and is ultimately surfaced out of
+  // DoReadHeadersComplete(). This method will then be responsible for both
+  // origin and proxy errors.
   //
   // See https://crbug.com/828965.
   bool is_server = !UsingHttpProxyWithoutTunnel();
