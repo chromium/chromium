@@ -241,19 +241,6 @@ PredictionManager::PredictionManager(
       clock_(base::DefaultClock::GetInstance()) {
   DCHECK(model_and_features_store_);
 
-  if (features::IsModelDownloadingEnabled()) {
-    base::FilePath models_dir;
-    base::PathService::Get(chrome::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,
-                           &models_dir);
-    prediction_model_download_manager_ =
-        std::make_unique<PredictionModelDownloadManager>(
-            DownloadServiceFactory::GetForKey(profile->GetProfileKey()),
-            models_dir,
-            base::ThreadPool::CreateSequencedTaskRunner(
-                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
-    prediction_model_download_manager_->AddObserver(this);
-  }
-
   Initialize();
 }
 
@@ -893,6 +880,21 @@ void PredictionManager::OnHostModelFeaturesStored() {
 void PredictionManager::OnStoreInitialized() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   store_is_ready_ = true;
+
+  // Create the download manager here if we are allowed to.
+  if (features::IsModelDownloadingEnabled() && !profile_->IsOffTheRecord() &&
+      !prediction_model_download_manager_) {
+    base::FilePath models_dir;
+    base::PathService::Get(chrome::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,
+                           &models_dir);
+    prediction_model_download_manager_ =
+        std::make_unique<PredictionModelDownloadManager>(
+            DownloadServiceFactory::GetForKey(profile_->GetProfileKey()),
+            models_dir,
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
+    prediction_model_download_manager_->AddObserver(this);
+  }
 
   // Only load host model features if there are optimization targets registered.
   if (registered_optimization_targets_and_metadata_.empty())
