@@ -422,8 +422,8 @@ Widget::MoveLoopResult DesktopWindowTreeHostWin::RunMoveLoop(
   const bool hide_on_escape =
       escape_behavior == Widget::MoveLoopEscapeBehavior::kHide;
   return message_handler_->RunMoveLoop(drag_offset, hide_on_escape)
-             ? Widget::MOVE_LOOP_SUCCESSFUL
-             : Widget::MOVE_LOOP_CANCELED;
+             ? Widget::MoveLoopResult::kSuccessful
+             : Widget::MoveLoopResult::kCanceled;
 }
 
 void DesktopWindowTreeHostWin::EndMoveLoop() {

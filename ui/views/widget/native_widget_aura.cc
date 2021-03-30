@@ -796,11 +796,11 @@ Widget::MoveLoopResult NativeWidgetAura::RunMoveLoop(
   // |escape_behavior| is only needed on windows when running the native message
   // loop.
   if (!window_ || !window_->GetRootWindow())
-    return Widget::MOVE_LOOP_CANCELED;
+    return Widget::MoveLoopResult::kCanceled;
   wm::WindowMoveClient* move_client =
       wm::GetWindowMoveClient(window_->GetRootWindow());
   if (!move_client)
-    return Widget::MOVE_LOOP_CANCELED;
+    return Widget::MoveLoopResult::kCanceled;
 
   SetCapture();
   wm::WindowMoveSource window_move_source =
@@ -808,9 +808,9 @@ Widget::MoveLoopResult NativeWidgetAura::RunMoveLoop(
                                                : wm::WINDOW_MOVE_SOURCE_TOUCH;
   if (move_client->RunMoveLoop(window_, drag_offset, window_move_source) ==
       wm::MOVE_SUCCESSFUL) {
-    return Widget::MOVE_LOOP_SUCCESSFUL;
+    return Widget::MoveLoopResult::kSuccessful;
   }
-  return Widget::MOVE_LOOP_CANCELED;
+  return Widget::MoveLoopResult::kCanceled;
 }
 
 void NativeWidgetAura::EndMoveLoop() {

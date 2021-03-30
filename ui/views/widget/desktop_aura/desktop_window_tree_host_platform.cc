@@ -569,8 +569,8 @@ Widget::MoveLoopResult DesktopWindowTreeHostPlatform::RunMoveLoop(
     Widget::MoveLoopEscapeBehavior escape_behavior) {
   auto* move_loop_handler = ui::GetWmMoveLoopHandler(*platform_window());
   if (move_loop_handler && move_loop_handler->RunMoveLoop(drag_offset))
-    return Widget::MOVE_LOOP_SUCCESSFUL;
-  return Widget::MOVE_LOOP_CANCELED;
+    return Widget::MoveLoopResult::kSuccessful;
+  return Widget::MoveLoopResult::kCanceled;
 }
 
 void DesktopWindowTreeHostPlatform::EndMoveLoop() {

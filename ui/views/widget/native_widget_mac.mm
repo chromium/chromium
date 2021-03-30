@@ -743,12 +743,12 @@ Widget::MoveLoopResult NativeWidgetMac::RunMoveLoop(
     Widget::MoveLoopSource source,
     Widget::MoveLoopEscapeBehavior escape_behavior) {
   if (!GetInProcessNSWindowBridge())
-    return Widget::MOVE_LOOP_CANCELED;
+    return Widget::MoveLoopResult::kCanceled;
 
   ReleaseCapture();
   return GetInProcessNSWindowBridge()->RunMoveLoop(drag_offset)
-             ? Widget::MOVE_LOOP_SUCCESSFUL
-             : Widget::MOVE_LOOP_CANCELED;
+             ? Widget::MoveLoopResult::kSuccessful
+             : Widget::MoveLoopResult::kCanceled;
 }
 
 void NativeWidgetMac::EndMoveLoop() {

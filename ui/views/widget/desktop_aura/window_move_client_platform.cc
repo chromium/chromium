@@ -26,8 +26,9 @@ wm::WindowMoveResult WindowMoveClientPlatform::RunMoveLoop(
           : Widget::MoveLoopSource::kTouch,
       Widget::MoveLoopEscapeBehavior::kHide);
 
-  return move_loop_result == Widget::MOVE_LOOP_SUCCESSFUL ? wm::MOVE_SUCCESSFUL
-                                                          : wm::MOVE_CANCELED;
+  return move_loop_result == Widget::MoveLoopResult::kSuccessful
+             ? wm::MOVE_SUCCESSFUL
+             : wm::MOVE_CANCELED;
 }
 
 void WindowMoveClientPlatform::EndMoveLoop() {

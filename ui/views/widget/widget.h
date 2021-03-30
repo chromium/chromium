@@ -111,12 +111,12 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   };
 
   // Result from RunMoveLoop().
-  enum MoveLoopResult {
+  enum class MoveLoopResult {
     // The move loop completed successfully.
-    MOVE_LOOP_SUCCESSFUL,
+    kSuccessful,
 
     // The user canceled the move loop.
-    MOVE_LOOP_CANCELED
+    kCanceled
   };
 
   // Source that initiated the move loop.
