@@ -130,9 +130,6 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
           .disable_post_sub_buffers_for_onscreen_surfaces) {
     capabilities_.supports_post_sub_buffer = false;
   }
-  if (feature_info->workarounds().force_rgb10a2_overlay_support_flags) {
-    capabilities_.forces_rgb10a2_overlay_support_flags = true;
-  }
   if (feature_info->workarounds().supports_two_yuv_hardware_overlays) {
     capabilities_.supports_two_yuv_hardware_overlays = true;
   }

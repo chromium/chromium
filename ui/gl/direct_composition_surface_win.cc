@@ -130,6 +130,18 @@ UINT g_rgb10a2_overlay_support_flags = 0;
 // as supported as well.
 bool g_enable_bgra8_overlays_with_yuv_overlay_support = false;
 
+// Force enabling DXGI_FORMAT_R10G10B10A2_UNORM format for overlay. Intel
+// celake and Tigerlake fail to report the cap of this HDR overlay format.
+// TODO(magchen@): Remove this workaround when this cap is fixed in the Intel
+// drivers.
+bool g_force_rgb10a2_overlay_support = false;
+
+// Per Intel's request, only use NV12 for overlay when
+// COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P709 is also supported. At least one Intel
+// Gen9 SKU does not support NV12 overlays and it cannot be screened by the
+// device id.
+bool g_check_ycbcr_studio_g22_left_p709_for_nv12_support = false;
+
 void SetOverlaySupportFlagsForFormats(UINT nv12_flags,
                                       UINT yuy2_flags,
                                       UINT bgra8_flags,
@@ -222,12 +234,11 @@ void GetGpuDriverOverlayInfo(bool* supports_overlays,
                                  rgb10a2_overlay_support_flags);
     if (FlagsSupportsOverlays(*nv12_overlay_support_flags)) {
       // NV12 format is preferred if it's supported.
+      *overlay_format_used = DXGI_FORMAT_NV12;
+      *supports_hardware_overlays = true;
 
-      // Per Intel's request, use NV12 only when
-      // COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P709 is also supported. Rec 709 is
-      // commonly used for H.264 and HEVC. At least one Intel Gen9 SKU will not
-      // support NV12 overlays.
-      if (CheckOverlayColorSpaceSupport(
+      if (g_check_ycbcr_studio_g22_left_p709_for_nv12_support &&
+          !CheckOverlayColorSpaceSupport(
               DXGI_FORMAT_NV12, DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P709,
               output, d3d11_device)) {
         // Some new Intel drivers only claim to support unscaled overlays, but
@@ -235,8 +246,7 @@ void GetGpuDriverOverlayInfo(bool* supports_overlays,
         // performing an extra scaling Blt before calling the driver. Even when
         // scaled overlays aren't actually supported, presentation using the
         // overlay path should be relatively efficient.
-        *overlay_format_used = DXGI_FORMAT_NV12;
-        *supports_hardware_overlays = true;
+        *supports_hardware_overlays = false;
       }
     }
     if (!*supports_hardware_overlays &&
@@ -260,6 +270,9 @@ void GetGpuDriverOverlayInfo(bool* supports_overlays,
               DXGI_FORMAT_R10G10B10A2_UNORM,
               DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020, output, d3d11_device))
         *rgb10a2_overlay_support_flags = 0;
+    }
+    if (g_force_rgb10a2_overlay_support) {
+      *rgb10a2_overlay_support_flags = DXGI_OVERLAY_SUPPORT_FLAG_SCALING;
     }
 
     // Early out after the first output that reports overlay support. All
@@ -706,6 +719,20 @@ void DirectCompositionSurfaceWin::ForceNV12OverlaySupport() {
   // This has to be set before initializing overlay caps.
   DCHECK(!OverlayCapsValid());
   g_force_nv12_overlay_support = true;
+}
+
+// static
+void DirectCompositionSurfaceWin::ForceRgb10a2OverlaySupport() {
+  // This has to be set before initializing overlay caps.
+  DCHECK(!OverlayCapsValid());
+  g_force_rgb10a2_overlay_support = true;
+}
+// static
+void DirectCompositionSurfaceWin::
+    SetCheckYCbCrStudioG22LeftP709ForNv12Support() {
+  // This has to be set before initializing overlay caps.
+  DCHECK(!OverlayCapsValid());
+  g_check_ycbcr_studio_g22_left_p709_for_nv12_support = true;
 }
 
 bool DirectCompositionSurfaceWin::Initialize(GLSurfaceFormat format) {

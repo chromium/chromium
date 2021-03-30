@@ -82,8 +82,7 @@ void OverlayProcessorWin::ProcessForOverlays(
   // supporting RGB10 format. Let overlay deal with HDR content in this
   // situation.
   bool supports_rgb10a2_overlay =
-      (gl::GetOverlaySupportFlags(DXGI_FORMAT_R10G10B10A2_UNORM) != 0 ||
-       output_surface_->capabilities().forces_rgb10a2_overlay_support_flags);
+      gl::GetOverlaySupportFlags(DXGI_FORMAT_R10G10B10A2_UNORM) != 0;
   if (root_render_pass->content_color_usage == gfx::ContentColorUsage::kHDR &&
       !supports_rgb10a2_overlay) {
     return;

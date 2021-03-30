@@ -99,6 +99,16 @@ void InitializePlatformOverlaySettings(GPUInfo* gpu_info,
   if (gpu_feature_info.IsWorkaroundEnabled(gpu::FORCE_NV12_OVERLAY_SUPPORT)) {
     gl::DirectCompositionSurfaceWin::ForceNV12OverlaySupport();
   }
+  if (gpu_feature_info.IsWorkaroundEnabled(
+          gpu::FORCE_RGB10A2_OVERLAY_SUPPORT_FLAGS)) {
+    gl::DirectCompositionSurfaceWin::ForceRgb10a2OverlaySupport();
+  }
+  if (gpu_feature_info.IsWorkaroundEnabled(
+          gpu::CHECK_YCBCR_STUDIO_G22_LEFT_P709_FOR_NV12_SUPPORT)) {
+    gl::DirectCompositionSurfaceWin::
+        SetCheckYCbCrStudioG22LeftP709ForNv12Support();
+  }
+
   DCHECK(gpu_info);
   CollectHardwareOverlayInfo(&gpu_info->overlay_info);
 #elif defined(OS_ANDROID)

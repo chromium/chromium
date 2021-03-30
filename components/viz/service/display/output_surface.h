@@ -89,11 +89,6 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     OrientationMode orientation_mode = OrientationMode::kLogic;
     // Whether this OutputSurface supports direct composition layers.
     bool supports_dc_layers = false;
-    // Set RGB10A2 overlay support flags true by force, which is used for
-    // playing hdr video.
-    // TODO(richard.li@intel.com): Remove this when Intel fixs its overlay caps.
-    // checking bug in their driver.
-    bool forces_rgb10a2_overlay_support_flags = false;
     // Whether this OutputSurface should skip DrawAndSwap(). This is true for
     // the unified display on Chrome OS. All drawing is handled by the physical
     // displays so the unified display should skip that work.
