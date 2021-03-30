@@ -148,4 +148,13 @@ Polymer({
     }
     return false;
   },
+
+  /**
+   * Helper function to toggle the expanded properties when the routine group
+   * is clicked.
+   * @private
+   */
+  onToggleExpanded_() {
+    this.set('expanded', !this.expanded);
+  },
 });

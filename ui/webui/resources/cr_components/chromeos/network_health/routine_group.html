@@ -26,8 +26,9 @@
       }
     </style>
 
-    <network-health-container expanded="[[expanded]]" label="[[name]]">
-      <span slot="header">
+    <network-health-container expanded="[[expanded]]" label="[[name]]"
+        on-toggle-expanded="onToggleExpanded_">
+      <span slot="header" >
         <template is="dom-if" if="[[running]]">
           <paper-spinner-lite active></paper-spinner-lite>
         </template>

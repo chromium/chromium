@@ -33,6 +33,13 @@ Polymer({
    */
   networkHealth_: null,
 
+  /**
+   * Expanded state per network type.
+   * @private
+   * @type {!Array<boolean>}
+   */
+  typeExpanded_: [],
+
   /** @override */
   created() {
     this.networkHealth_ =
@@ -206,5 +213,30 @@ Polymer({
    */
   joinAddresses_(addresses) {
     return addresses.join(', ');
+  },
+
+  /**
+   * Returns a boolean flag if the routine type should be expanded.
+   * @param {chromeos.networkConfig.mojom.NetworkType} type
+   * @private
+   */
+  getTypeExpanded_(type) {
+    if (this.typeExpanded_[type] === undefined) {
+      this.set('typeExpanded_.' + type, false);
+      return false;
+    }
+
+    return this.typeExpanded_[type];
+  },
+
+  /**
+   * Helper function to toggle the expanded properties when the network
+   * container is toggled.
+   * @param {!Event} event
+   * @private
+   */
+  onToggleExpanded_(event) {
+    const type = event.model.network.type;
+    this.set('typeExpanded_.' + type, !this.typeExpanded_[type]);
   },
 });

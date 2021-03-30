@@ -37,11 +37,10 @@ Polymer({
   },
 
   /**
-   * Helper function to toggle the expanded properties when the routine group
-   * is clicked.
+   * Helper function to fire the toggle event when clicked.
    * @private
    */
   onClick_() {
-    this.set('expanded', !this.expanded);
+    this.fire('toggle-expanded');
   },
 });
