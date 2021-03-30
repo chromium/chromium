@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_assistant/browser/self_delete_full_card_requester.h"
+#include "components/autofill_assistant/browser/full_card_requester.h"
 
 #include <memory>
 #include <utility>
@@ -21,9 +21,9 @@ namespace autofill_assistant {
 
 using autofill::payments::FullCardRequest;
 
-SelfDeleteFullCardRequester::SelfDeleteFullCardRequester() {}
+FullCardRequester::FullCardRequester() {}
 
-void SelfDeleteFullCardRequester::GetFullCard(
+void FullCardRequester::GetFullCard(
     content::WebContents* web_contents,
     const autofill::CreditCard* card,
     ActionDelegate::GetFullCardCallback callback) {
@@ -50,18 +50,17 @@ void SelfDeleteFullCardRequester::GetFullCard(
       driver->autofill_manager()->GetAsFullCardRequestUIDelegate());
 }
 
-SelfDeleteFullCardRequester::~SelfDeleteFullCardRequester() = default;
+FullCardRequester::~FullCardRequester() = default;
 
-void SelfDeleteFullCardRequester::OnFullCardRequestSucceeded(
+void FullCardRequester::OnFullCardRequestSucceeded(
     const FullCardRequest& /* full_card_request */,
     const autofill::CreditCard& card,
     const std::u16string& cvc) {
   std::move(callback_).Run(OkClientStatus(),
                            std::make_unique<autofill::CreditCard>(card), cvc);
-  delete this;
 }
 
-void SelfDeleteFullCardRequester::OnFullCardRequestFailed(
+void FullCardRequester::OnFullCardRequestFailed(
     FullCardRequest::FailureType failure_type) {
   ClientStatus status(GET_FULL_CARD_FAILED);
   AutofillErrorInfoProto::GetFullCardFailureType error_type =
@@ -86,6 +85,5 @@ void SelfDeleteFullCardRequester::OnFullCardRequestFailed(
       ->mutable_autofill_error_info()
       ->set_get_full_card_failure_type(error_type);
   std::move(callback_).Run(status, nullptr, std::u16string());
-  delete this;
 }
 }  // namespace autofill_assistant

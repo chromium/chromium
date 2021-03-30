@@ -20,8 +20,8 @@
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/full_card_requester.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
-#include "components/autofill_assistant/browser/self_delete_full_card_requester.h"
 #include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/wait_for_document_operation.h"
@@ -454,19 +454,22 @@ void ScriptExecutor::GetFullCard(const autofill::CreditCard* credit_card,
   // User might be asked to provide the cvc.
   delegate_->EnterState(AutofillAssistantState::MODAL_DIALOG);
 
-  // TODO(crbug.com/806868): Consider refactoring SelfDeleteFullCardRequester
-  // so as to unit test it.
-  (new SelfDeleteFullCardRequester())
-      ->GetFullCard(
-          GetWebContents(), credit_card,
-          base::BindOnce(&ScriptExecutor::OnGetFullCard,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  std::unique_ptr<FullCardRequester> full_card_requester =
+      std::make_unique<FullCardRequester>();
+  FullCardRequester* full_card_requester_ptr = full_card_requester.get();
+  full_card_requester_ptr->GetFullCard(
+      GetWebContents(), credit_card,
+      base::BindOnce(&ScriptExecutor::OnGetFullCard,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(full_card_requester), std::move(callback)));
 }
 
-void ScriptExecutor::OnGetFullCard(GetFullCardCallback callback,
-                                   const ClientStatus& status,
-                                   std::unique_ptr<autofill::CreditCard> card,
-                                   const std::u16string& cvc) {
+void ScriptExecutor::OnGetFullCard(
+    std::unique_ptr<FullCardRequester> full_card_requester,
+    GetFullCardCallback callback,
+    const ClientStatus& status,
+    std::unique_ptr<autofill::CreditCard> card,
+    const std::u16string& cvc) {
   delegate_->EnterState(AutofillAssistantState::RUNNING);
   std::move(callback).Run(status, std::move(card), cvc);
 }
