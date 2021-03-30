@@ -857,6 +857,9 @@ API_AVAILABLE(ios(13.0))
           base::mac::ObjCCastStrict<TableViewSigninPromoCell>(cell);
       signinPromoCell.signinPromoView.imageView.hidden = YES;
       signinPromoCell.signinPromoView.textLabel.hidden = YES;
+      if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
+        signinPromoCell.backgroundColor = nil;
+      }
     }
   }
   // Retrieve favicons for closed tabs and remote sessions.
