@@ -193,6 +193,7 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
 }
 
 void PasswordAccessoryControllerImpl::OnFillingTriggered(
+    autofill::FieldGlobalId focused_field_id,
     const autofill::UserInfo::Field& selection) {
   if (!AppearsInSuggestions(selection.display_text(), selection.is_obfuscated(),
                             GetFocusedFrameOrigin())) {

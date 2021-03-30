@@ -127,10 +127,16 @@ void ManualFillingControllerImpl::RefreshSuggestions(
 }
 
 void ManualFillingControllerImpl::NotifyFocusedInputChanged(
+    autofill::FieldRendererId focused_field_id,
     autofill::mojom::FocusedFieldType focused_field_type) {
   TRACE_EVENT0("passwords",
                "ManualFillingControllerImpl::NotifyFocusedInputChanged");
-  focused_field_type_ = focused_field_type;
+  autofill::LocalFrameToken frame_token;
+  if (content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame()) {
+    frame_token = autofill::LocalFrameToken(rfh->GetFrameToken().value());
+  }
+  last_focused_field_id_ = {frame_token, focused_field_id};
+  last_focused_field_type_ = focused_field_type;
 
   // Ensure warnings and filling state is updated according to focused field.
   if (cc_controller_)
@@ -179,7 +185,7 @@ void ManualFillingControllerImpl::OnFillingTriggered(
   AccessoryController* controller = GetControllerForTab(type);
   if (!controller)
     return;  // Controller not available anymore.
-  controller->OnFillingTriggered(selection);
+  controller->OnFillingTriggered(last_focused_field_id_, selection);
   view_->SwapSheetWithKeyboard();  // Soft-close the keyboard.
 }
 
@@ -290,13 +296,15 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
           autofill::features::kAutofillKeyboardAccessory) &&
       !base::FeatureList::IsEnabled(
           autofill::features::kAutofillManualFallbackAndroid)) {
-    return focused_field_type_ == FocusedFieldType::kFillablePasswordField ||
-           (focused_field_type_ == FocusedFieldType::kFillableUsernameField &&
+    return last_focused_field_type_ ==
+               FocusedFieldType::kFillablePasswordField ||
+           (last_focused_field_type_ ==
+                FocusedFieldType::kFillableUsernameField &&
             (base::FeatureList::IsEnabled(
                  password_manager::features::kFillingPasswordsFromAnyOrigin) ||
              available_sources_.contains(FillingSource::PASSWORD_FALLBACKS)));
   }
-  switch (focused_field_type_) {
+  switch (last_focused_field_type_) {
     // Always show on password fields to provide management and generation.
     case FocusedFieldType::kFillablePasswordField:
       return true;
@@ -322,7 +330,7 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
     case FocusedFieldType::kUnknown:
       return false;
   }
-  NOTREACHED() << "Unhandled field type " << focused_field_type_;
+  NOTREACHED() << "Unhandled field type " << last_focused_field_type_;
   return false;
 }
 

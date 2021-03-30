@@ -30,9 +30,6 @@ interface AutofillAgent {
   ClearPreviewedForm();
 
   // Sets the value of |field| (if it is still the currently selected node).
-  // As a special case, if |field| is null, the currently selected node's value
-  // is set; this is for credit_card_accessory_controller_impl.cc.
-  // TODO(crbug/1187858): Remove the special case for null |field|.
   FillFieldWithValue(FieldRendererId field, mojo_base.mojom.String16 value);
 
   // Sets the suggested value of |field| (if it is still the currently selected

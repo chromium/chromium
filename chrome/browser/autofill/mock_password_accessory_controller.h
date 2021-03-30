@@ -44,7 +44,7 @@ class MockPasswordAccessoryController : public PasswordAccessoryController {
               (const, override));
   MOCK_METHOD(void,
               OnFillingTriggered,
-              (const autofill::UserInfo::Field&),
+              (autofill::FieldGlobalId, const autofill::UserInfo::Field&),
               (override));
   MOCK_METHOD(void,
               OnOptionSelected,

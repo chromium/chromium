@@ -308,9 +308,11 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     explicit FocusStateNotifier(PasswordAutofillAgent* agent);
     ~FocusStateNotifier();
 
-    void FocusedInputChanged(mojom::FocusedFieldType focused_field_type);
+    void FocusedInputChanged(FieldRendererId focused_field_id,
+                             mojom::FocusedFieldType focused_field_type);
 
    private:
+    FieldRendererId focused_field_id_;
     mojom::FocusedFieldType focused_field_type_ =
         mojom::FocusedFieldType::kUnknown;
     PasswordAutofillAgent* agent_ = nullptr;

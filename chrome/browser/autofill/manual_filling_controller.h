@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 // Controller interface for the view that includes the keyboard accessory and
@@ -79,6 +80,7 @@ class ManualFillingController {
   // Notifies that the focused field changed which allows the controller to
   // update the UI visibility.
   virtual void NotifyFocusedInputChanged(
+      autofill::FieldRendererId focused_field_id,
       autofill::mojom::FocusedFieldType focused_field_type) = 0;
 
   // Reports for a source whether it provides suggestions or just default

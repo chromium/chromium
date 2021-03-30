@@ -477,12 +477,8 @@ void AutofillAgent::ClearPreviewedForm() {
 
 void AutofillAgent::FillFieldWithValue(FieldRendererId field_id,
                                        const std::u16string& value) {
-  // TODO(crbug/1187858) Remove the "field_id &&" once
-  // AddressAccessoryControllerImpl::OnFillingTriggered() sets the correct
-  // field_id renderer ID.
   if (element_.IsNull() ||
-      (field_id &&
-       field_id != FieldRendererId(element_.UniqueRendererFormControlId()))) {
+      field_id != FieldRendererId(element_.UniqueRendererFormControlId())) {
     return;
   }
 

@@ -27,7 +27,8 @@ class CreditCardAccessoryControllerImpl
   // AccessoryController:
   void RegisterFillingSourceObserver(FillingSourceObserver observer) override;
   base::Optional<autofill::AccessorySheetData> GetSheetData() const override;
-  void OnFillingTriggered(const UserInfo::Field& selection) override;
+  void OnFillingTriggered(FieldGlobalId focused_field_id,
+                          const UserInfo::Field& selection) override;
   void OnOptionSelected(AccessoryAction selected_action) override;
   void OnToggleChanged(AccessoryAction toggled_action, bool enabled) override;
 
@@ -75,6 +76,10 @@ class CreditCardAccessoryControllerImpl
   PersonalDataManager* const personal_data_manager_;
   autofill::AutofillManager* af_manager_for_testing_ = nullptr;
   autofill::AutofillDriver* af_driver_for_testing_ = nullptr;
+
+  // OnFillingTriggered() sets this so that OnCreditCardFetched() can assert
+  // that the focused frame has not changed and knows the field to be filled.
+  FieldGlobalId last_focused_field_id_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

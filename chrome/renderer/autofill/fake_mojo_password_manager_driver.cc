@@ -74,6 +74,8 @@ void FakeMojoPasswordManagerDriver::InformAboutUserInput(
 }
 
 void FakeMojoPasswordManagerDriver::FocusedInputChanged(
+    autofill::FieldRendererId focused_field_id,
     autofill::mojom::FocusedFieldType focused_field_type) {
+  last_focused_field_id_ = focused_field_id;
   last_focused_field_type_ = focused_field_type;
 }

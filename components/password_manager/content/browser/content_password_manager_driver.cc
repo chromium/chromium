@@ -322,8 +322,9 @@ void ContentPasswordManagerDriver::CheckSafeBrowsingReputation(
 }
 
 void ContentPasswordManagerDriver::FocusedInputChanged(
+    autofill::FieldRendererId focused_field_id,
     FocusedFieldType focused_field_type) {
-  client_->FocusedInputChanged(this, focused_field_type);
+  client_->FocusedInputChanged(this, focused_field_id, focused_field_type);
 }
 
 void ContentPasswordManagerDriver::LogFirstFillingResult(

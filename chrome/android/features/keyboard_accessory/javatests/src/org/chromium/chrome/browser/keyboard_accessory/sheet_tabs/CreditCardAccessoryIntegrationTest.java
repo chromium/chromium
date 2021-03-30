@@ -134,7 +134,7 @@ public class CreditCardAccessoryIntegrationTest {
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1182626
     public void testFillsSuggestionOnClick() throws TimeoutException {
         loadTestPage(FakeKeyboard::new);
-        mHelper.clickNodeAndShowKeyboard("CREDIT_CARD_NAME_FULL");
+        mHelper.clickNodeAndShowKeyboard("CREDIT_CARD_NAME_FULL", 1);
         DOMUtils.focusNode(mActivityTestRule.getWebContents(), "CREDIT_CARD_NAME_FULL");
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 

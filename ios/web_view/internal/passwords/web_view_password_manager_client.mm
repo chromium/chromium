@@ -145,6 +145,7 @@ void WebViewPasswordManagerClient::HideManualFallbackForSaving() {
 
 void WebViewPasswordManagerClient::FocusedInputChanged(
     password_manager::PasswordManagerDriver* driver,
+    autofill::FieldRendererId focused_field_id,
     autofill::mojom::FocusedFieldType focused_field_type) {
   NOTIMPLEMENTED();
 }

@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
@@ -87,6 +88,7 @@
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #endif  // defined(OS_ANDROID)
 
+using autofill::FieldRendererId;
 using autofill::mojom::FocusedFieldType;
 using content::BrowserContext;
 using content::WebContents;
@@ -898,7 +900,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 
   std::unique_ptr<password_manager::ContentPasswordManagerDriver> driver =
       CreateContentPasswordManagerDriver(main_rfh());
-  client->FocusedInputChanged(driver.get(),
+  client->FocusedInputChanged(driver.get(), FieldRendererId(123),
                               FocusedFieldType::kFillablePasswordField);
 
   PasswordGenerationController* pwd_generation_controller =
@@ -923,7 +925,8 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 
   ASSERT_FALSE(web_contents()->GetFocusedFrame());
   ASSERT_TRUE(pwd_generation_controller->GetActiveFrameDriver());
-  client->FocusedInputChanged(driver.get(), FocusedFieldType::kUnknown);
+  client->FocusedInputChanged(driver.get(), FieldRendererId(123),
+                              FocusedFieldType::kUnknown);
 
   // Check that the event was processed by the generation controller and that
   // the active frame driver was unset.
@@ -942,7 +945,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest, FocusedInputChangedWrongFrame) {
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   std::unique_ptr<password_manager::ContentPasswordManagerDriver> driver =
       CreateContentPasswordManagerDriver(subframe);
-  client->FocusedInputChanged(driver.get(),
+  client->FocusedInputChanged(driver.get(), FieldRendererId(123),
                               FocusedFieldType::kFillablePasswordField);
 
   PasswordGenerationController* pwd_generation_controller =
@@ -960,7 +963,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest, FocusedInputChangedGoodFrame) {
   std::unique_ptr<password_manager::ContentPasswordManagerDriver> driver =
       CreateContentPasswordManagerDriver(main_rfh());
   FocusWebContentsOnMainFrame();
-  client->FocusedInputChanged(driver.get(),
+  client->FocusedInputChanged(driver.get(), FieldRendererId(123),
                               FocusedFieldType::kFillablePasswordField);
 
   PasswordGenerationController* pwd_generation_controller =

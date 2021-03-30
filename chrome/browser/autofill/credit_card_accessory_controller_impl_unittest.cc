@@ -240,12 +240,12 @@ TEST_F(CreditCardAccessoryControllerTest, ServerCardUnmask) {
   content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
   ASSERT_TRUE(rfh);
   FieldGlobalId field_id{.frame_token = LocalFrameToken(*rfh->GetFrameToken()),
-                         .renderer_id = FieldRendererId()};
+                         .renderer_id = FieldRendererId(123)};
 
   EXPECT_CALL(mock_af_driver_,
               RendererShouldFillFieldWithValue(field_id, expected_number));
 
-  cc_controller->OnFillingTriggered(field);
+  cc_controller->OnFillingTriggered(field_id, field);
 }
 
 }  // namespace autofill

@@ -16,6 +16,7 @@
 #include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {
@@ -37,6 +38,7 @@ class ManualFillingControllerImpl
   void RefreshSuggestions(
       const autofill::AccessorySheetData& accessory_sheet_data) override;
   void NotifyFocusedInputChanged(
+      autofill::FieldRendererId focused_field_id,
       autofill::mojom::FocusedFieldType focused_field_type) override;
   void UpdateSourceAvailability(FillingSource source,
                                 bool has_suggestions) override;
@@ -123,8 +125,11 @@ class ManualFillingControllerImpl
   // This map contains sheets for each sources to be shown to the user.
   base::flat_map<FillingSource, autofill::AccessorySheetData> available_sheets_;
 
+  // The unique renderer ID of the last known selected field.
+  autofill::FieldGlobalId last_focused_field_id_;
+
   // Type of the last known selected field. Helps to determine UI visibility.
-  autofill::mojom::FocusedFieldType focused_field_type_ =
+  autofill::mojom::FocusedFieldType last_focused_field_type_ =
       autofill::mojom::FocusedFieldType::kUnknown;
 
   // Controllers which handle events relating to a specific tab and the

@@ -88,20 +88,17 @@ CreditCardAccessoryControllerImpl::GetSheetData() const {
 }
 
 void CreditCardAccessoryControllerImpl::OnFillingTriggered(
+    FieldGlobalId focused_field_id,
     const UserInfo::Field& selection) {
   content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
   if (!rfh)
     return;  // Without focused frame, driver and manager will be undefined.
   DCHECK(GetDriver());
 
-  // TODO(crbug/1187858): Fill in correct renderer ID here.
-  FieldGlobalId field_id{.frame_token = LocalFrameToken(*rfh->GetFrameToken()),
-                         .renderer_id = FieldRendererId()};
-
   // Credit card number fields have a GUID populated to allow deobfuscation
   // before filling.
   if (selection.id().empty()) {
-    GetDriver()->RendererShouldFillFieldWithValue(field_id,
+    GetDriver()->RendererShouldFillFieldWithValue(focused_field_id,
                                                   selection.display_text());
     return;
   }
@@ -120,10 +117,11 @@ void CreditCardAccessoryControllerImpl::OnFillingTriggered(
   if (matching_card->record_type() ==
       CreditCard::RecordType::MASKED_SERVER_CARD) {
     DCHECK(GetManager());
+    last_focused_field_id_ = focused_field_id;
     GetManager()->credit_card_access_manager()->FetchCreditCard(matching_card,
                                                                 AsWeakPtr());
   } else {
-    GetDriver()->RendererShouldFillFieldWithValue(field_id,
+    GetDriver()->RendererShouldFillFieldWithValue(focused_field_id,
                                                   matching_card->number());
   }
 }
@@ -218,16 +216,18 @@ void CreditCardAccessoryControllerImpl::OnCreditCardFetched(
   if (!did_succeed)
     return;
   content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
-  if (!rfh)
+  if (!rfh || !last_focused_field_id_ ||
+      last_focused_field_id_.frame_token !=
+          autofill::LocalFrameToken(rfh->GetFrameToken().value())) {
+    last_focused_field_id_ = {};
     return;  // If frame isn't focused anymore, don't attempt to fill.
+  }
   DCHECK(credit_card);
   DCHECK(GetDriver());
 
-  // TODO(crbug/1187858): Fill in correct renderer ID here.
-  FieldGlobalId field_id{.frame_token = LocalFrameToken(*rfh->GetFrameToken()),
-                         .renderer_id = FieldRendererId()};
-  GetDriver()->RendererShouldFillFieldWithValue(field_id,
+  GetDriver()->RendererShouldFillFieldWithValue(last_focused_field_id_,
                                                 credit_card->number());
+  last_focused_field_id_ = {};
 }
 
 // static

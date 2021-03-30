@@ -71,6 +71,8 @@ AccessorySheetData populate_sheet(AccessoryTabType type) {
       .Build();
 }
 
+constexpr autofill::FieldRendererId kFocusedFieldId(123);
+
 }  // namespace
 
 // Fixture that tests the manual filling experience with the most recent version
@@ -97,7 +99,7 @@ class ManualFillingControllerTest : public testing::Test {
   void FocusFieldAndClearExpectations(FocusedFieldType fieldType) {
     // Depending on |fieldType|, different calls can be expected. All of them
     // are irrelevant during setup.
-    controller()->NotifyFocusedInputChanged(fieldType);
+    controller()->NotifyFocusedInputChanged(kFocusedFieldId, fieldType);
     testing::Mock::VerifyAndClearExpectations(view());
   }
 
@@ -197,7 +199,8 @@ TEST_F(ManualFillingControllerLegacyTest,
 
   EXPECT_CALL(*view(), CloseAccessorySheet());
   EXPECT_CALL(*view(), SwapSheetWithKeyboard()).Times(0);
-  controller()->NotifyFocusedInputChanged(FocusedFieldType::kUnfillableElement);
+  controller()->NotifyFocusedInputChanged(kFocusedFieldId,
+                                          FocusedFieldType::kUnfillableElement);
 }
 
 TEST_F(ManualFillingControllerLegacyTest,
@@ -208,7 +211,7 @@ TEST_F(ManualFillingControllerLegacyTest,
   EXPECT_CALL(*view(), CloseAccessorySheet()).Times(0);
   EXPECT_CALL(*view(), SwapSheetWithKeyboard());
   controller()->NotifyFocusedInputChanged(
-      FocusedFieldType::kFillablePasswordField);
+      kFocusedFieldId, FocusedFieldType::kFillablePasswordField);
 }
 
 TEST_F(ManualFillingControllerLegacyTest, ClosesSheetWhenFocusingSearchField) {
@@ -218,7 +221,7 @@ TEST_F(ManualFillingControllerLegacyTest, ClosesSheetWhenFocusingSearchField) {
   EXPECT_CALL(*view(), CloseAccessorySheet());
   EXPECT_CALL(*view(), SwapSheetWithKeyboard()).Times(0);
   controller()->NotifyFocusedInputChanged(
-      FocusedFieldType::kFillableSearchField);
+      kFocusedFieldId, FocusedFieldType::kFillableSearchField);
 }
 
 TEST_F(ManualFillingControllerLegacyTest, ClosesSheetWhenFocusingTextArea) {
@@ -227,7 +230,8 @@ TEST_F(ManualFillingControllerLegacyTest, ClosesSheetWhenFocusingTextArea) {
 
   EXPECT_CALL(*view(), CloseAccessorySheet());
   EXPECT_CALL(*view(), SwapSheetWithKeyboard()).Times(0);
-  controller()->NotifyFocusedInputChanged(FocusedFieldType::kFillableTextArea);
+  controller()->NotifyFocusedInputChanged(kFocusedFieldId,
+                                          FocusedFieldType::kFillableTextArea);
 }
 
 TEST_F(ManualFillingControllerLegacyTest,
@@ -382,8 +386,17 @@ TEST_F(ManualFillingControllerLegacyTest,
   const autofill::UserInfo::Field field(text_to_fill, text_to_fill, false,
                                         true);
 
-  EXPECT_CALL(mock_pwd_controller_, OnFillingTriggered(field));
+  EXPECT_CALL(mock_pwd_controller_,
+              OnFillingTriggered(autofill::FieldGlobalId(), field));
   EXPECT_CALL(*view(), SwapSheetWithKeyboard());
+  controller()->OnFillingTriggered(AccessoryTabType::PASSWORDS, field);
+
+  autofill::FieldGlobalId field_id{autofill::LocalFrameToken(),
+                                   kFocusedFieldId};
+  EXPECT_CALL(mock_pwd_controller_, OnFillingTriggered(field_id, field));
+  EXPECT_CALL(*view(), SwapSheetWithKeyboard());
+  controller()->NotifyFocusedInputChanged(
+      kFocusedFieldId, autofill::mojom::FocusedFieldType::kUnknown);
   controller()->OnFillingTriggered(AccessoryTabType::PASSWORDS, field);
 }
 

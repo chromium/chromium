@@ -145,7 +145,8 @@ interface PasswordManagerDriver {
 
   // The focus changed to a different input in the same frame (e.g. tabbed from
   // email to password field).
-  FocusedInputChanged(FocusedFieldType focused_field_type);
+  FocusedInputChanged(FieldRendererId focused_field_id,
+                      FocusedFieldType focused_field_type);
 
   // Sends the success state of filling credentials into a form. This happens
   // only if the form being filled has a renderer_id. |result| is an

@@ -473,13 +473,17 @@ PasswordAutofillAgent::FocusStateNotifier::FocusStateNotifier(
 PasswordAutofillAgent::FocusStateNotifier::~FocusStateNotifier() = default;
 
 void PasswordAutofillAgent::FocusStateNotifier::FocusedInputChanged(
+    autofill::FieldRendererId focused_field_id,
     FocusedFieldType focused_field_type) {
   // Forward the request if the type changed or the field is fillable.
-  if (focused_field_type != focused_field_type_ ||
+  if (focused_field_id_ != focused_field_id ||
+      focused_field_type != focused_field_type_ ||
       IsFillable(focused_field_type)) {
-    agent_->GetPasswordManagerDriver()->FocusedInputChanged(focused_field_type);
+    agent_->GetPasswordManagerDriver()->FocusedInputChanged(focused_field_id,
+                                                            focused_field_type);
   }
 
+  focused_field_id_ = focused_field_id;
   focused_field_type_ = focused_field_type;
 }
 
@@ -538,7 +542,13 @@ bool PasswordAutofillAgent::TextDidChangeInTextField(
 }
 
 void PasswordAutofillAgent::DidEndTextFieldEditing() {
-  focus_state_notifier_.FocusedInputChanged(FocusedFieldType::kUnknown);
+  FieldRendererId field_id;
+  if (!focused_input_element_.IsNull()) {
+    field_id =
+        FieldRendererId(focused_input_element_.UniqueRendererFormControlId());
+  }
+  focus_state_notifier_.FocusedInputChanged(field_id,
+                                            FocusedFieldType::kUnknown);
 }
 
 void PasswordAutofillAgent::UpdateStateForTextChange(
@@ -1310,23 +1320,27 @@ void PasswordAutofillAgent::InformNoSavedCredentials(
 void PasswordAutofillAgent::FocusedNodeHasChanged(const blink::WebNode& node) {
   DCHECK(!node.IsNull());
   focused_input_element_.Reset();
+
   if (!node.IsElementNode()) {
-    focus_state_notifier_.FocusedInputChanged(FocusedFieldType::kUnknown);
+    focus_state_notifier_.FocusedInputChanged(FieldRendererId(),
+                                              FocusedFieldType::kUnknown);
     return;
   }
 
   auto element = node.ToConst<WebElement>();
   if (element.IsFormControlElement() &&
       form_util::IsTextAreaElement(element.ToConst<WebFormControlElement>())) {
+    FieldRendererId textarea_id(
+        element.ToConst<WebFormControlElement>().UniqueRendererFormControlId());
     focus_state_notifier_.FocusedInputChanged(
-        FocusedFieldType::kFillableTextArea);
+        textarea_id, FocusedFieldType::kFillableTextArea);
     return;
   }
 
   auto* input_element = ToWebInputElement(&element);
   if (!input_element) {
     focus_state_notifier_.FocusedInputChanged(
-        FocusedFieldType::kUnfillableElement);
+        FieldRendererId(), FocusedFieldType::kUnfillableElement);
     return;
   }
 
@@ -1345,8 +1359,8 @@ void PasswordAutofillAgent::FocusedNodeHasChanged(const blink::WebNode& node) {
       focused_field_type = FocusedFieldType::kFillableNonSearchField;
   }
 
-  focus_state_notifier_.FocusedInputChanged(focused_field_type);
   const FieldRendererId input_id(input_element->UniqueRendererFormControlId());
+  focus_state_notifier_.FocusedInputChanged(input_id, focused_field_type);
   field_data_manager_->UpdateFieldDataMapWithNullValue(
       input_id, FieldPropertiesFlags::kHadFocus);
 }

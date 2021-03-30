@@ -116,6 +116,7 @@ class ContentPasswordManagerDriver
   void CheckSafeBrowsingReputation(const GURL& form_action,
                                    const GURL& frame_url) override;
   void FocusedInputChanged(
+      autofill::FieldRendererId focused_field_id,
       autofill::mojom::FocusedFieldType focused_field_type) override;
   void LogFirstFillingResult(autofill::FormRendererId form_renderer_id,
                              int32_t result) override;

@@ -115,6 +115,10 @@ class FakeMojoPasswordManagerDriver
     return called_inform_about_user_input_count_;
   }
 
+  autofill::FieldRendererId last_focused_field_id() const {
+    return last_focused_field_id_;
+  }
+
   autofill::mojom::FocusedFieldType last_focused_field_type() const {
     return last_focused_field_type_;
   }
@@ -146,6 +150,7 @@ class FakeMojoPasswordManagerDriver
   void InformAboutUserInput(const autofill::FormData& form_data) override;
 
   void FocusedInputChanged(
+      autofill::FieldRendererId focused_field_id,
       autofill::mojom::FocusedFieldType focused_field_type) override;
   void LogFirstFillingResult(autofill::FormRendererId form_renderer_id,
                              int32_t result) override {}
@@ -183,8 +188,9 @@ class FakeMojoPasswordManagerDriver
   // Records the number of request to inform about user input.
   int called_inform_about_user_input_count_ = 0;
 
-  // Records the last focused field type that FocusedInputChanged() was called
-  // with.
+  // Records the last focused field ID and type that FocusedInputChanged() was
+  // called with.
+  autofill::FieldRendererId last_focused_field_id_;
   autofill::mojom::FocusedFieldType last_focused_field_type_ =
       autofill::mojom::FocusedFieldType::kUnknown;
 

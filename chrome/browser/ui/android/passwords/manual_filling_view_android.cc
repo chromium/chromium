@@ -245,10 +245,12 @@ void JNI_ManualFillingComponentBridge_CachePasswordSheetDataForTesting(
 void JNI_ManualFillingComponentBridge_NotifyFocusedFieldTypeForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_web_contents,
+    jlong j_focused_field_id,
     jint j_available) {
   ManualFillingControllerImpl::GetOrCreate(
       content::WebContents::FromJavaWebContents(j_web_contents))
       ->NotifyFocusedInputChanged(
+          autofill::FieldRendererId(j_focused_field_id),
           static_cast<autofill::mojom::FocusedFieldType>(j_available));
 }
 

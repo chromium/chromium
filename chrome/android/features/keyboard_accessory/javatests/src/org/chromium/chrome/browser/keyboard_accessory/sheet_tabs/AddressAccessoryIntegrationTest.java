@@ -126,7 +126,7 @@ public class AddressAccessoryIntegrationTest {
     @EnableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
     public void testFillsSuggestionOnClick() throws TimeoutException {
         loadTestPage(FakeKeyboard::new);
-        mHelper.clickNodeAndShowKeyboard("NAME_FIRST");
+        mHelper.clickNodeAndShowKeyboard("NAME_FIRST", 1);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
         // Scroll to last element and click the second icon:
