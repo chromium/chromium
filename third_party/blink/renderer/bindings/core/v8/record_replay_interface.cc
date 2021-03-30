@@ -26,6 +26,7 @@ const {
   setCommandCallback,
   setClearPauseDataCallback,
   getCurrentError,
+  notifyDriverOnConsoleAPICall,
   ignoreScript,
   dump,
 } = __RECORD_REPLAY_ARGUMENTS__;
@@ -140,9 +141,14 @@ let gLastConsoleAPICall;
 
 function onConsoleAPICall(params) {
   gLastConsoleAPICall = params;
+  notifyDriverOnConsoleAPICall();
 }
 
 function Target_getCurrentMessageContents() {
+  // We could be getting the contents of either an error object that was reported
+  // to the driver via C++, or a console API call that was reported to the driver
+  // via onConsoleAPICall(). We use these two paths because the bookmark
+  // associated with thrown exceptions isn't available via the CDP currently.
   const error = getCurrentError();
 
   if (error) {
@@ -158,34 +164,10 @@ function Target_getCurrentMessageContents() {
     };
   }
 
-  // Look for the "args" variable on an onConsoleMessage frame.
-  // The arguments are also stored on the last console API call, though
-  // if we use that we need to be careful because the pause state could have
-  // been cleared since the last Runtime.consoleAPICalled event.
-  const { callFrames } = sendMessage("Debugger.getCallFrames");
-  const consoleMessageFrame = callFrames.find(
-    frame => frame.functionName == "onConsoleMessage"
-  );
-  assert(consoleMessageFrame);
-  assert(consoleMessageFrame.this.type == "object");
-  assert(consoleMessageFrame.this.className == "Array");
-  const argumentsId = consoleMessageFrame.this.objectId;
-
-  // Get the properties of the message arguments array.
-  const argumentsProperties = sendMessage("Runtime.getProperties", {
-    objectId: argumentsId,
-    ownProperties: true,
-    generatePreview: false,
-  }).result;
-
   // Get the protocol representation of the message arguments.
   const argumentValues = [];
-  for (let i = 0;; i++) {
-    const property = argumentsProperties.find(prop => prop.name == i.toString());
-    if (!property) {
-      break;
-    }
-    argumentValues.push(remoteObjectToProtocolValue(property.value));
+  for (const arg of gLastConsoleAPICall.args || []) {
+    argumentValues.push(remoteObjectToProtocolValue(arg));
   }
 
   let level = "info";
@@ -860,6 +842,12 @@ static void SendCDPMessage(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
 static void GetCurrentError(const v8::FunctionCallbackInfo<v8::Value>& args);
 
+extern "C" void V8RecordReplayOnConsoleMessage(size_t bookmark);
+
+static void NotifyDriverOnConsoleAPICall(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  V8RecordReplayOnConsoleMessage(0);
+}
+
 extern "C" void V8RecordReplayFinishRecording();
 
 // Mimic the gecko test runner behavior when using window.dump() to signal that the
@@ -896,6 +884,8 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
                       v8::FunctionCallbackRecordReplayIgnoreScript);
   SetFunctionProperty(isolate, args, "getCurrentError",
                       GetCurrentError);
+  SetFunctionProperty(isolate, args, "notifyDriverOnConsoleAPICall",
+                      NotifyDriverOnConsoleAPICall);
   SetFunctionProperty(isolate, args, "dump",
                       DumpCallback);
 
@@ -906,8 +896,6 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
   v8::Local<v8::Script> script = v8::Script::Compile(context, source, &origin).ToLocalChecked();
   script->Run(context).ToLocalChecked();
 }
-
-extern "C" void V8RecordReplayOnConsoleMessage(size_t bookmark);
 
 static ErrorEvent* gCurrentErrorEvent;
 
