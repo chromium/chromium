@@ -342,6 +342,53 @@ TEST_F(MobileFriendlinessCheckerTest, TextTooWideInvisible) {
   EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 0);
 }
 
+TEST_F(MobileFriendlinessCheckerTest, TextTooWideHidden) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(
+      R"(
+<html>
+  <body>
+    <pre style="overflow:hidden">)" +
+      std::string(10000, 'a') + R"(</pre>
+  </body>
+</html>
+)");
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 0);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, TextTooWideHiddenInDiv) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(
+      R"(
+<html>
+  <body>
+    <div style="overflow:hidden">
+      <pre>)" +
+      std::string(10000, 'a') + R"(
+      </pre>
+    </div>
+  </body>
+</html>
+)");
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 0);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, TextTooWideHiddenInDivDiv) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(
+      R"(
+<html>
+  <body>
+    <div style="overflow:hidden">
+      <div>
+        <pre>)" +
+      std::string(10000, 'a') + R"(
+        </pre>
+      <div>
+    </div>
+  </body>
+</html>
+)");
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 0);
+}
+
 TEST_F(MobileFriendlinessCheckerTest, ImageNarrow) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
