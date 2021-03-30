@@ -74,6 +74,9 @@ export class ModuleDescriptor {
     if (!this.element_) {
       return;
     }
+    if (this.element_.height !== undefined) {
+      this.heightPx_ = this.element_.height;
+    }
     const loadEndTime = BrowserProxy.getInstance().now();
     BrowserProxy.getInstance().handler.onModuleLoaded(
         this.id_, mojoTimeDelta(loadEndTime - loadStartTime), loadEndTime);

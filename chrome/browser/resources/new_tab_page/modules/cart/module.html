@@ -52,16 +52,12 @@
     font-size: 13px;
     height: 20px;
     justify-content: center;
-    margin-inline-end: auto;
-    margin-inline-start: auto;
-    margin-top: 4px;
+    margin: 4px 8px 0 8px;
     text-align: center;
-    width: 72px;
   }
 
   .cart-title .merchant {
     font-weight: 400;
-    max-width: 54px;
     overflow: hidden;
     text-overflow: ellipsis;
     text-shadow: var(--ntp-theme-text-shadow);
@@ -100,7 +96,7 @@
   }
 
   .thumbnail-img {
-    border: 2px solid white;
+    border: 2px solid var(--ntp-background-override-color);
     border-radius: 50%;
     height: 44px;
     object-fit: cover;
@@ -121,9 +117,10 @@
 
   .cart-item cr-icon-button {
     --cr-icon-button-fill-color: var(--ntp-icon-button-color);
-    --cr-icon-button-size: 16px;
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 24px;
     --cr-icon-button-transition: none;
-    margin: 11px 8px;
+    margin: 4px 4px;
     opacity: 0;
     position: absolute;
     right: 0;
@@ -188,7 +185,7 @@
 
   .probe {
     display: inline-flex;
-    width: 15px;
+    width: 12px;
   }
 </style>
 <ntp-module-header

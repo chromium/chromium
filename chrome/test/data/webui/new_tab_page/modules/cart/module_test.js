@@ -88,6 +88,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     // Assert.
     const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
     assertEquals(4, cartItems.length);
+    assertEquals(216, chromeCartDescriptor.heightPx);
 
     assertEquals('https://amazon.com/', cartItems[0].href);
     assertEquals('Amazon', cartItems[0].querySelector('.merchant').innerText);
@@ -164,6 +165,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     assertEquals(
         loadTimeData.getString('modulesCartWarmWelcome'),
         headerDescription.innerText);
+    assertEquals(226, chromeCartDescriptor.heightPx);
   });
 
   test('Backend is notified when module is dismissed or restored', async () => {

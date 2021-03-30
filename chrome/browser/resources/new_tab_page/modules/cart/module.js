@@ -57,6 +57,9 @@ class ChromeCartModuleElement extends mixinBehaviors
       /** @private {string} */
       cartMenuRemoveItem_: String,
 
+      /** @private {number} */
+      height: Number,
+
       /**
        * Data about the most recently dismissed cart item.
        * @type {?{message: string, restoreCallback: function()}}
@@ -348,6 +351,7 @@ async function createCartElement() {
     element.headerChipText = loadTimeData.getString('modulesCartHeaderNew');
     element.headerDescriptionText =
         loadTimeData.getString('modulesCartWarmWelcome');
+    element.height = 226;
   }
   element.cartItems = carts;
   return element;
