@@ -71,5 +71,9 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
           ProfileSyncServiceFactory::GetForBrowserState(chrome_browser_state),
           IdentityManagerFactory::GetForBrowserState(chrome_browser_state)),
       chrome_browser_state->IsOffTheRecord(),
-      GetApplicationContext()->GetVariationsService());
+      GetApplicationContext()->GetVariationsService(),
+      // Referrer chain provider is currently not available on iOS. Once it
+      // is implemented, inject it to enable referrer chain in real time
+      // requests.
+      /*referrer_chain_provider=*/nullptr);
 }

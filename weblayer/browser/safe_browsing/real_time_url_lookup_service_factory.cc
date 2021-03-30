@@ -85,7 +85,11 @@ KeyedService* RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
                               access_token_fetches_enabled_for_testing,
                           base::Unretained(this)),
       static_cast<BrowserContextImpl*>(context)->IsOffTheRecord(),
-      FeatureListCreator::GetInstance()->variations_service());
+      FeatureListCreator::GetInstance()->variations_service(),
+      // Referrer chain provider is currently not available on WebLayer. Once it
+      // is implemented, inject it to enable referrer chain in real time
+      // requests.
+      /*referrer_chain_provider=*/nullptr);
 }
 
 }  // namespace weblayer

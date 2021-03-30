@@ -99,6 +99,10 @@ const base::Feature kRealTimeUrlLookupEnabledWithToken{
     "SafeBrowsingRealTimeUrlLookupEnabledWithToken",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kRealTimeUrlLookupReferrerChain{
+    "SafeBrowsingRealTimeUrlLookupReferrerChain",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSafeBrowsingSeparateNetworkContexts{
     "SafeBrowsingSeparateNetworkContexts", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -147,6 +151,7 @@ constexpr struct {
     {&kRealTimeUrlLookupEnabledForEnterprise, true},
     {&kRealTimeUrlLookupEnterpriseGaEndpoint, true},
     {&kRealTimeUrlLookupEnabledWithToken, true},
+    {&kRealTimeUrlLookupReferrerChain, true},
     {&kSafeBrowsingSeparateNetworkContexts, true},
     {&kSuspiciousSiteTriggerQuotaFeature, true},
     {&kThreatDomDetailsTagAndAttributeFeature, false},

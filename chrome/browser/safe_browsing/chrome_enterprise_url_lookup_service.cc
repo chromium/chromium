@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
@@ -31,10 +32,12 @@ ChromeEnterpriseRealTimeUrlLookupService::
         Profile* profile,
         base::RepeatingCallback<ChromeUserPopulation()>
             get_user_population_callback,
-        enterprise_connectors::ConnectorsService* connectors_service)
+        enterprise_connectors::ConnectorsService* connectors_service,
+        ReferrerChainProvider* referrer_chain_provider)
     : RealTimeUrlLookupServiceBase(url_loader_factory,
                                    cache_manager,
-                                   get_user_population_callback),
+                                   get_user_population_callback,
+                                   referrer_chain_provider),
       profile_(profile),
       connectors_service_(connectors_service) {}
 
@@ -51,6 +54,11 @@ bool ChromeEnterpriseRealTimeUrlLookupService::CanPerformFullURLLookup() const {
 bool ChromeEnterpriseRealTimeUrlLookupService::
     CanPerformFullURLLookupWithToken() const {
   // URL lookup with token is disabled for enterprise users.
+  return false;
+}
+
+bool ChromeEnterpriseRealTimeUrlLookupService::CanAttachReferrerChain() const {
+  // Referrer chain is currently not supported for enterprise users.
   return false;
 }
 

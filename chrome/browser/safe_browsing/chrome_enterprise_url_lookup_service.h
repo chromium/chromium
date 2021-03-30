@@ -25,6 +25,8 @@ class Profile;
 
 namespace safe_browsing {
 
+class ReferrerChainProvider;
+
 // This class implements the real time lookup feature for a given user/profile.
 // It is separated from the base class for logic that is related to enterprise
 // users.(See: go/chrome-protego-enterprise-dd)
@@ -37,7 +39,8 @@ class ChromeEnterpriseRealTimeUrlLookupService
       Profile* profile,
       base::RepeatingCallback<ChromeUserPopulation()>
           get_user_population_callback,
-      enterprise_connectors::ConnectorsService* connectors_service);
+      enterprise_connectors::ConnectorsService* connectors_service,
+      ReferrerChainProvider* referrer_chain_provider);
   ~ChromeEnterpriseRealTimeUrlLookupService() override;
 
   // RealTimeUrlLookupServiceBase:
@@ -50,6 +53,7 @@ class ChromeEnterpriseRealTimeUrlLookupService
   GURL GetRealTimeLookupUrl() const override;
   net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() const override;
   bool CanPerformFullURLLookupWithToken() const override;
+  bool CanAttachReferrerChain() const override;
   void GetAccessToken(const GURL& url,
                       RTLookupRequestCallback request_callback,
                       RTLookupResponseCallback response_callback) override;

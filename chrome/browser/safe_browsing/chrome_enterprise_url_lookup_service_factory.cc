@@ -11,6 +11,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/user_population.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
@@ -69,7 +70,10 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
       VerdictCacheManagerFactory::GetForProfile(profile), profile,
       base::BindRepeating(&safe_browsing::GetUserPopulation, profile),
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-          profile));
+          profile),
+      // Referrer chain provider is set to nullptr for enterprise because
+      // it is currently not supported for enterprise users.
+      /*referrer_chain_provider=*/nullptr);
 }
 
 }  // namespace safe_browsing

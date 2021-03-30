@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -40,7 +41,7 @@ const size_t kURLLookupTimeoutDurationInSeconds = 3;
 constexpr char kAuthHeaderBearer[] = "Bearer ";
 
 // Represents the value stored in the |version| field of |RTLookupRequest|.
-const int kRTLookupRequestVersion = 1;
+const int kRTLookupRequestVersion = 2;
 
 // UMA helper functions.
 void RecordBooleanWithAndWithoutSuffix(const std::string& metric,
@@ -123,10 +124,12 @@ RealTimeUrlLookupServiceBase::RealTimeUrlLookupServiceBase(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     VerdictCacheManager* cache_manager,
     base::RepeatingCallback<ChromeUserPopulation()>
-        get_user_population_callback)
+        get_user_population_callback,
+    ReferrerChainProvider* referrer_chain_provider)
     : url_loader_factory_(url_loader_factory),
       cache_manager_(cache_manager),
-      get_user_population_callback_(get_user_population_callback) {}
+      get_user_population_callback_(get_user_population_callback),
+      referrer_chain_provider_(referrer_chain_provider) {}
 
 RealTimeUrlLookupServiceBase::~RealTimeUrlLookupServiceBase() = default;
 
@@ -433,6 +436,14 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
   }
 
   *request->mutable_population() = get_user_population_callback_.Run();
+
+  if (CanAttachReferrerChain() && referrer_chain_provider_) {
+    referrer_chain_provider_->IdentifyReferrerChainByPendingEventURL(
+        SanitizeURL(url), /*user_gesture_count_limit=*/2,
+        request->mutable_referrer_chain());
+    // TODO(crbug.com/1161342): Sanitize referrer chain. Remove subframe URLs
+    // for non-ESB users.
+  }
 
   return request;
 }

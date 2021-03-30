@@ -13,10 +13,12 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/realtime/policy_engine.h"
 #include "net/base/ip_address.h"
 #include "net/base/load_flags.h"
@@ -37,10 +39,12 @@ RealTimeUrlLookupService::RealTimeUrlLookupService(
     std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
     const ClientConfiguredForTokenFetchesCallback& client_token_config_callback,
     bool is_off_the_record,
-    variations::VariationsService* variations_service)
+    variations::VariationsService* variations_service,
+    ReferrerChainProvider* referrer_chain_provider)
     : RealTimeUrlLookupServiceBase(url_loader_factory,
                                    cache_manager,
-                                   get_user_population_callback),
+                                   get_user_population_callback,
+                                   referrer_chain_provider),
       pref_service_(pref_service),
       token_fetcher_(std::move(token_fetcher)),
       client_token_config_callback_(client_token_config_callback),
@@ -83,6 +87,10 @@ bool RealTimeUrlLookupService::CanPerformFullURLLookupWithToken() const {
   return RealTimePolicyEngine::CanPerformFullURLLookupWithToken(
       pref_service_, is_off_the_record_, client_token_config_callback_,
       variations_);
+}
+
+bool RealTimeUrlLookupService::CanAttachReferrerChain() const {
+  return base::FeatureList::IsEnabled(kRealTimeUrlLookupReferrerChain);
 }
 
 bool RealTimeUrlLookupService::CanCheckSubresourceURL() const {
