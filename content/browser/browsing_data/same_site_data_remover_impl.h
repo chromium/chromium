@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
 
 namespace net {
 class CookieStore;
@@ -39,6 +40,11 @@ class CONTENT_EXPORT SameSiteDataRemoverImpl {
   // This is called safely on an instance which is destroyed after the function
   // call since it's not needed for the function execution.
   void ClearStoragePartitionData(base::OnceClosure closure);
+
+  // Clears storage for domains in the provided set.
+  void ClearStoragePartitionForOrigins(
+      base::OnceClosure closure,
+      StoragePartition::OriginMatcherFunction origin_matcher);
 
   // For testing purposes only.
   void OverrideStoragePartitionForTesting(StoragePartition* storage_partition);

@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "content/browser/browsing_data/browsing_data_browsertest_utils.h"
 #include "content/browser/browsing_data/browsing_data_test_utils.h"
 #include "content/public/browser/same_site_data_remover.h"
@@ -72,6 +73,19 @@ class SameSiteDataRemoverBrowserTest : public ContentBrowserTest {
     run_loop.Run();
   }
 
+  void ClearData(std::set<std::string>& clear_storage_hosts) {
+    base::RunLoop run_loop;
+    ClearSameSiteNoneCookiesAndStorageForOrigins(
+        run_loop.QuitClosure(), GetBrowserContext(),
+        base::BindLambdaForTesting(
+            [&clear_storage_hosts](const url::Origin& origin,
+                                   storage::SpecialStoragePolicy* policy) {
+              return clear_storage_hosts.find(origin.host()) !=
+                     clear_storage_hosts.end();
+            }));
+    run_loop.Run();
+  }
+
  private:
   // Handles all requests.
   //
@@ -114,6 +128,34 @@ IN_PROC_BROWSER_TEST_F(SameSiteDataRemoverBrowserTest, TestClearData) {
   std::vector<StorageUsageInfo> service_workers =
       browsing_data_browsertest_utils::GetServiceWorkers(storage_partition);
   EXPECT_THAT(service_workers, IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(SameSiteDataRemoverBrowserTest,
+                       TestClearDataWithDomains) {
+  StoragePartition* storage_partition = GetStoragePartition();
+  CreateCookieForTest(
+      "TestCookie", "www.google.com", net::CookieSameSite::NO_RESTRICTION,
+      net::CookieOptions::SameSiteCookieContext(
+          net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE),
+      true /* is_cookie_secure */, GetBrowserContext());
+  browsing_data_browsertest_utils::AddServiceWorker(
+      "google.com", storage_partition, GetHttpsServer());
+  browsing_data_browsertest_utils::AddServiceWorker(
+      "foo.bar.com", storage_partition, GetHttpsServer());
+
+  std::set<std::string> clear_hosts = {"google.com"};
+  ClearData(clear_hosts);
+
+  // Check that cookies were deleted.
+  const std::vector<net::CanonicalCookie>& cookies =
+      GetAllCookies(GetBrowserContext());
+  EXPECT_THAT(cookies, IsEmpty());
+
+  // Check that the service worker for the cookie domain was removed.
+  std::vector<StorageUsageInfo> service_workers =
+      browsing_data_browsertest_utils::GetServiceWorkers(storage_partition);
+  EXPECT_EQ(service_workers.size(), 1u);
+  EXPECT_EQ(service_workers[0].origin.host(), "foo.bar.com");
 }
 
 }  // namespace content

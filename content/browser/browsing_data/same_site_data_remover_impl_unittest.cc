@@ -97,6 +97,18 @@ class SameSiteDataRemoverImplTest : public testing::Test {
     run_loop.Run();
   }
 
+  void ClearStoragePartitionForOrigins(std::set<std::string>& origins) {
+    base::RunLoop run_loop;
+    GetSameSiteDataRemoverImpl()->ClearStoragePartitionForOrigins(
+        run_loop.QuitClosure(),
+        base::BindLambdaForTesting(
+            [&origins](const url::Origin& origin,
+                       storage::SpecialStoragePolicy* policy) {
+              return origins.find(origin.Serialize()) != origins.end();
+            }));
+    run_loop.Run();
+  }
+
  private:
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<BrowserContext> browser_context_;
@@ -297,6 +309,40 @@ TEST_F(SameSiteDataRemoverImplTest, TestStoragePartitionDataRemoval) {
       special_storage_policy.get()));
   EXPECT_TRUE(removal_data.origin_matcher.Run(
       url::Origin::Create(GURL("http://google.com")),
+      special_storage_policy.get()));
+  EXPECT_FALSE(removal_data.origin_matcher.Run(
+      url::Origin::Create(GURL("http://youtube.com")),
+      special_storage_policy.get()));
+}
+
+TEST_F(SameSiteDataRemoverImplTest, TestClearStoragePartitionsForOrigins) {
+  BrowserContext* browser_context = GetBrowserContext();
+  network::mojom::CookieManager* cookie_manager =
+      GetCookieManager(browser_context);
+  SameSiteRemoverTestStoragePartition storage_partition;
+  storage_partition.set_cookie_manager_for_browser_process(cookie_manager);
+  GetSameSiteDataRemoverImpl()->OverrideStoragePartitionForTesting(
+      &storage_partition);
+
+  std::set<std::string> clear_origins = {"https://a.com", "https://b.com"};
+  ClearStoragePartitionForOrigins(clear_origins);
+  StoragePartitionSameSiteRemovalData removal_data =
+      storage_partition.GetStoragePartitionRemovalData();
+
+  const uint32_t expected_removal_mask =
+      content::StoragePartition::REMOVE_DATA_MASK_ALL &
+      ~content::StoragePartition::REMOVE_DATA_MASK_COOKIES;
+  EXPECT_EQ(removal_data.removal_mask, expected_removal_mask);
+
+  const uint32_t expected_quota_storage_mask =
+      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL;
+  EXPECT_EQ(removal_data.quota_storage_removal_mask,
+            expected_quota_storage_mask);
+
+  auto special_storage_policy =
+      base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
+  EXPECT_TRUE(removal_data.origin_matcher.Run(
+      url::Origin::Create(GURL("https://a.com")),
       special_storage_policy.get()));
   EXPECT_FALSE(removal_data.origin_matcher.Run(
       url::Origin::Create(GURL("http://youtube.com")),
