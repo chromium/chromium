@@ -4,8 +4,6 @@
 
 #include "fuchsia/base/fake_component_context.h"
 
-#include <fuchsia/base/agent_impl.h>
-
 #include <memory>
 #include <string>
 #include <utility>
@@ -13,6 +11,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "fuchsia/base/agent_impl.h"
 
 namespace cr_fuchsia {
 

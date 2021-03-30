@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <device/bluetooth/test/test_bluetooth_local_gatt_service_delegate.h>
+#include "device/bluetooth/test/test_bluetooth_local_gatt_service_delegate.h"
+
 #include "base/callback.h"
 #include "device/bluetooth/test/bluetooth_gatt_server_test.h"
 

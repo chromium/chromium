@@ -5,14 +5,15 @@
 #ifndef FUCHSIA_BASE_FAKE_COMPONENT_CONTEXT_H_
 #define FUCHSIA_BASE_FAKE_COMPONENT_CONTEXT_H_
 
-#include <fuchsia/base/agent_impl.h>
 #include <fuchsia/modular/cpp/fidl_test_base.h>
+
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/strings/string_piece.h"
+#include "fuchsia/base/agent_impl.h"
 
 namespace cr_fuchsia {
 
