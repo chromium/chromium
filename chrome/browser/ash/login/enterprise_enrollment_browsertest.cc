@@ -48,7 +48,7 @@ constexpr char kAdUserDomain[] = "user.domain.com";
 constexpr char kAdMachineDomain[] = "machine.domain.com";
 constexpr char kAdMachineDomainDN[] =
     "OU=leaf,OU=root,DC=machine,DC=domain,DC=com";
-constexpr const char* kAdOrganizationlUnit[] = {"leaf", "root"};
+constexpr const char* kAdOrganizationalUnit[] = {"leaf", "root"};
 constexpr char kAdTestUser[] = "test_user@user.domain.com";
 constexpr char kDMToken[] = "dm_token";
 constexpr char kAdDomainJoinEncryptedConfig[] =
@@ -420,7 +420,7 @@ class ActiveDirectoryJoinTest : public EnterpriseEnrollmentTest {
 };
 
 // Shows the enrollment screen and simulates an enrollment complete event. We
-// verify that the enrollmenth helper receives the correct auth code.
+// verify that the enrollment helper receives the correct auth code.
 IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentTest,
                        TestAuthCodeGetsProperlyReceivedFromGaia) {
   ShowEnrollmentScreen();
@@ -561,8 +561,8 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
       "machine_name", kAdMachineDomain,
       authpolicy::KerberosEncryptionTypes::ENC_TYPES_STRONG,
       std::vector<std::string>(
-          kAdOrganizationlUnit,
-          kAdOrganizationlUnit + base::size(kAdOrganizationlUnit)),
+          kAdOrganizationalUnit,
+          kAdOrganizationalUnit + base::size(kAdOrganizationalUnit)),
       kAdTestUser, kDMToken);
   SubmitActiveDirectoryCredentials("machine_name", kAdMachineDomainDN,
                                    "" /* encryption_types */, kAdTestUser,
