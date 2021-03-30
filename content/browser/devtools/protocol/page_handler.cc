@@ -204,15 +204,18 @@ PageHandler::PageHandler(EmulationHandler* emulation_handler,
       browser_handler_(browser_handler) {
   bool create_video_consumer = true;
 #ifdef OS_ANDROID
+  constexpr auto kScreencastPixelFormat = media::PIXEL_FORMAT_I420;
   // Video capture doesn't work on Android WebView. Use CopyFromSurface instead.
   if (!CompositorImpl::IsInitialized())
     create_video_consumer = false;
+#else
+  constexpr auto kScreencastPixelFormat = media::PIXEL_FORMAT_ARGB;
 #endif
   if (create_video_consumer) {
     video_consumer_ = std::make_unique<DevToolsVideoConsumer>(
         base::BindRepeating(&PageHandler::OnFrameFromVideoConsumer,
                             weak_factory_.GetWeakPtr()));
-    video_consumer_->SetFormat(media::PIXEL_FORMAT_ARGB,
+    video_consumer_->SetFormat(kScreencastPixelFormat,
                                gfx::ColorSpace::CreateREC709());
   }
   DCHECK(emulation_handler_);
