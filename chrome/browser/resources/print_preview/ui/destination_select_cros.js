@@ -101,15 +101,6 @@ Polymer({
       computed: 'computeIsCurrentDestinationCrosLocal_(destination)',
       reflectToAttribute: true,
     },
-
-    /** @private */
-    saveToDriveFlagEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('printSaveToDrive');
-      },
-      readOnly: true,
-    },
   },
 
   /** @private {!IronMetaElement} */

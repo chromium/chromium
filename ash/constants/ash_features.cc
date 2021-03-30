@@ -545,10 +545,6 @@ const base::Feature kPrinterStatus{"PrinterStatus",
 const base::Feature kPrinterStatusDialog{"PrinterStatusDialog",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Changes Print Preview Save to Drive to use local Drive.
-const base::Feature kPrintSaveToDrive{"PrintSaveToDrive",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Allows print servers to be selected when beyond a specified limit.
 const base::Feature kPrintServerScaling{"PrintServerScaling",
                                         base::FEATURE_ENABLED_BY_DEFAULT};

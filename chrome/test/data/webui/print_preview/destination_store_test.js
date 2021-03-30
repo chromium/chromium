@@ -65,10 +65,6 @@ suite(destination_store_test.suiteName, function() {
   /** @type {number} */
   let numPrintersSelected = 0;
 
-  /** @type {boolean} */
-  const saveToDriveFlagEnabled =
-      isChromeOS && loadTimeData.getBoolean('printSaveToDrive');
-
   /** @override */
   setup(function() {
     // Clear the UI.
@@ -215,7 +211,7 @@ suite(destination_store_test.suiteName, function() {
           // The other local destinations should be in the store, but only one
           // should have been selected so there was only one preview request.
           const reportedPrinters = destinationStore.destinations();
-          const expectedPrinters = isChromeOS && saveToDriveFlagEnabled ? 7 : 6;
+          const expectedPrinters = isChromeOS ? 7 : 6;
           assertEquals(expectedPrinters, reportedPrinters.length);
           destinations.forEach((destination, index) => {
             assertTrue(reportedPrinters.some(p => p.id === destination.id));
@@ -396,10 +392,6 @@ suite(destination_store_test.suiteName, function() {
       assert(
           destination_store_test.TestNames.MultipleRecentDestinationsAccounts),
       function() {
-        if (isChromeOS && saveToDriveFlagEnabled) {
-          return;
-        }
-
         const account1 = 'foo@chromium.org';
         const account2 = 'bar@chromium.org';
         const driveUser1 = getGoogleDriveDestination(account1);

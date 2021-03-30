@@ -178,15 +178,6 @@ Polymer({
       },
       readOnly: true,
     },
-
-    /** @private */
-    saveToDriveFlagEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('printSaveToDrive');
-      },
-      readOnly: true,
-    },
     // </if>
   },
 
@@ -243,9 +234,7 @@ Polymer({
         Destination.GooglePromotedId.DOCS, DestinationOrigin.COOKIES,
         this.activeUser_);
     // <if expr="chromeos">
-    if (this.saveToDriveFlagEnabled_) {
-      key = SAVE_TO_DRIVE_CROS_DESTINATION_KEY;
-    }
+    key = SAVE_TO_DRIVE_CROS_DESTINATION_KEY;
     // </if>
     this.driveDestinationKey_ =
         this.destinationStore_.getDestinationByKey(key) ? key : '';

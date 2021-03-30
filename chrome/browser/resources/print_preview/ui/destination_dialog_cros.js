@@ -96,15 +96,6 @@ Polymer({
       value: null,
     },
 
-    /** @private */
-    saveToDriveFlagEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('printSaveToDrive');
-      },
-      readOnly: true,
-    },
-
     /** @private {boolean} */
     isSingleServerFetchingMode_: {
       type: Boolean,
@@ -247,17 +238,14 @@ Polymer({
    * @private
    */
   getDestinationList_() {
-    const destinations = this.destinationStore.destinations(this.activeUser);
-    // When |saveToDriveFlagEnabled_| is true, we don't want to show a
-    // 'Save to Drive' option in the destination dialog.
-    if (this.saveToDriveFlagEnabled_) {
-      return destinations.filter(
-          destination => destination.id !== Destination.GooglePromotedId.DOCS &&
-              destination.id !==
-                  Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS);
-    }
-
-    return destinations;
+    // Filter out the 'Save to Drive' option so it is not shown in the
+    // list of available options.
+    return this.destinationStore.destinations(this.activeUser)
+        .filter(
+            destination =>
+                destination.id !== Destination.GooglePromotedId.DOCS &&
+                destination.id !==
+                    Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS);
   },
 
   /** @private */

@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
@@ -81,7 +80,6 @@
 #include "third_party/icu/source/i18n/unicode/ulocdata.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -226,8 +224,7 @@ UserActionBuckets DetermineUserAction(const base::Value& settings) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(chromeos::features::kPrintSaveToDrive) &&
-      settings.FindBoolKey(kSettingPrintToGoogleDrive).value_or(false)) {
+  if (settings.FindBoolKey(kSettingPrintToGoogleDrive).value_or(false)) {
     return UserActionBuckets::kPrintToGoogleDriveCros;
   }
 #endif
@@ -888,13 +885,11 @@ void PrintPreviewHandler::SendInitialSettings(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(chromeos::features::kPrintSaveToDrive)) {
-    drive::DriveIntegrationService* drive_service =
-        drive::DriveIntegrationServiceFactory::GetForProfile(
-            Profile::FromWebUI(web_ui()));
-    initial_settings.SetBoolKey(kIsDriveMounted,
-                                drive_service && drive_service->IsMounted());
-  }
+  drive::DriveIntegrationService* drive_service =
+      drive::DriveIntegrationServiceFactory::GetForProfile(
+          Profile::FromWebUI(web_ui()));
+  initial_settings.SetBoolKey(kIsDriveMounted,
+                              drive_service && drive_service->IsMounted());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   ResolveJavascriptCallback(base::Value(callback_id), initial_settings);

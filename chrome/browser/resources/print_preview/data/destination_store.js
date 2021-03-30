@@ -297,11 +297,6 @@ export class DestinationStore extends EventTarget {
     this.useSystemDefaultAsDefault_ =
         loadTimeData.getBoolean('useSystemDefaultPrinter');
 
-    // <if expr="chromeos">
-    /** @private */
-    this.saveToDriveFlagEnabled_ = loadTimeData.getBoolean('printSaveToDrive');
-    // </if>
-
     addListenerCallback('printers-added', this.onPrintersAdded_.bind(this));
   }
 
@@ -397,7 +392,7 @@ export class DestinationStore extends EventTarget {
     this.pdfPrinterEnabled_ = !pdfPrinterDisabled;
     this.createLocalPdfPrintDestination_();
     // <if expr="chromeos">
-    if (this.saveToDriveFlagEnabled_ && isDriveMounted) {
+    if (isDriveMounted) {
       this.createLocalDrivePrintDestination_();
     }
     // </if>

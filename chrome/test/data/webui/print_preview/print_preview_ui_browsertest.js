@@ -346,16 +346,6 @@ var PrintPreviewModelTestCros = class extends PrintPreviewTest {
   get suiteName() {
     return model_test.suiteName;
   }
-
-  /** @override */
-  get featureList() {
-    const kPrintSaveToDrive = ['chromeos::features::kPrintSaveToDrive'];
-    const featureList = super.featureList || [];
-    featureList.enabled = featureList.enabled ?
-        featureList.enabled.concat(kPrintSaveToDrive) :
-        kPrintSaveToDrive;
-    return featureList;
-  }
 };
 
 TEST_F('PrintPreviewModelTestCros', 'PrintToGoogleDriveCros', function() {
@@ -653,12 +643,14 @@ TEST_F('PrintPreviewDestinationStoreTest', 'RecentSaveAsPdf', function() {
   this.runMochaTest(destination_store_test.TestNames.RecentSaveAsPdf);
 });
 
+GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH)');
 TEST_F(
     'PrintPreviewDestinationStoreTest', 'MultipleRecentDestinationsAccounts',
     function() {
       this.runMochaTest(
           destination_store_test.TestNames.MultipleRecentDestinationsAccounts);
     });
+GEN('#endif');
 
 GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 // eslint-disable-next-line no-var
@@ -671,16 +663,6 @@ var PrintPreviewDestinationStoreTestCros = class extends PrintPreviewTest {
   /** @override */
   get suiteName() {
     return destination_store_test.suiteName;
-  }
-
-  /** @override */
-  get featureList() {
-    const kPrintSaveToDrive = ['chromeos::features::kPrintSaveToDrive'];
-    const featureList = super.featureList || [];
-    featureList.enabled = featureList.enabled ?
-        featureList.enabled.concat(kPrintSaveToDrive) :
-        kPrintSaveToDrive;
-    return featureList;
   }
 };
 
@@ -1253,16 +1235,6 @@ var PrintPreviewPrintButtonTestCros = class extends PrintPreviewTest {
   get suiteName() {
     return print_button_test.suiteName;
   }
-
-  /** @override */
-  get featureList() {
-    const kPrintSaveToDrive = ['chromeos::features::kPrintSaveToDrive'];
-    const featureList = super.featureList || [];
-    featureList.enabled = featureList.enabled ?
-        featureList.enabled.concat(kPrintSaveToDrive) :
-        kPrintSaveToDrive;
-    return featureList;
-  }
 };
 
 TEST_F(
@@ -1606,16 +1578,6 @@ var PrintPreviewDestinationSettingsTestCros = class extends PrintPreviewTest {
   /** @override */
   get suiteName() {
     return destination_settings_test_cros.suiteName;
-  }
-
-  /** @override */
-  get featureList() {
-    const kPrintSaveToDrive = ['chromeos::features::kPrintSaveToDrive'];
-    const featureList = super.featureList || [];
-    featureList.enabled = featureList.enabled ?
-        featureList.enabled.concat(kPrintSaveToDrive) :
-        kPrintSaveToDrive;
-    return featureList;
   }
 };
 
