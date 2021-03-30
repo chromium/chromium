@@ -9,7 +9,7 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.TOP_MARGIN;
 
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -36,14 +36,18 @@ class SecondaryTasksSurfaceViewBinder {
             setTopBarHeight(viewHolder, model.get(TOP_MARGIN));
         }
 
+        // We don't need to handle toolbar scrolling problem on secondary tasks surface so
+        // topToolbarPlaceholderView is not needed.
+        viewHolder.topToolbarPlaceholderView.setVisibility(View.GONE);
         viewHolder.tasksSurfaceView.setVisibility(isShowing ? View.VISIBLE : View.GONE);
     }
 
     private static void setTopBarHeight(TasksSurfaceViewBinder.ViewHolder viewHolder, int height) {
-        ViewGroup.LayoutParams lp = viewHolder.topToolbarPlaceholderView.getLayoutParams();
-        if (lp == null) return;
+        MarginLayoutParams layoutParams =
+                (MarginLayoutParams) viewHolder.tasksSurfaceView.getLayoutParams();
+        if (layoutParams == null) return;
 
-        lp.height = height;
-        viewHolder.topToolbarPlaceholderView.setLayoutParams(lp);
+        layoutParams.topMargin = height;
+        viewHolder.tasksSurfaceView.setLayoutParams(layoutParams);
     }
 }

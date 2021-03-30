@@ -15,6 +15,7 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
 
 import androidx.test.filters.SmallTest;
@@ -33,7 +34,7 @@ import org.chromium.ui.test.util.DummyUiActivityTestCase;
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class SecondaryTasksSurfaceViewBinderTest extends DummyUiActivityTestCase {
     private ViewGroup mParentView;
-    private ViewGroup mTasksSurfaceView;
+    private View mTasksSurfaceView;
     private View mTopToolbarPlaceholderView;
     private PropertyModel mPropertyModel;
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
@@ -47,9 +48,8 @@ public class SecondaryTasksSurfaceViewBinderTest extends DummyUiActivityTestCase
             // Note that the specific type of the parent view and tasks surface view do not matter
             // for the SecondaryTasksSurfaceViewBinderTest.
             mParentView = new FrameLayout(getActivity());
-            mTasksSurfaceView = new FrameLayout(getActivity());
+            mTasksSurfaceView = new View(getActivity());
             mTopToolbarPlaceholderView = new View(getActivity());
-            mTasksSurfaceView.addView(mTopToolbarPlaceholderView);
             getActivity().setContentView(mParentView);
         });
 
@@ -126,8 +126,9 @@ public class SecondaryTasksSurfaceViewBinderTest extends DummyUiActivityTestCase
         mPropertyModel.set(IS_SECONDARY_SURFACE_VISIBLE, true);
         assertNotNull(mTasksSurfaceView.getParent());
         assertEquals(mTasksSurfaceView.getVisibility(), View.VISIBLE);
-        ViewGroup.LayoutParams layoutParams = mTopToolbarPlaceholderView.getLayoutParams();
-        assertEquals(20, layoutParams.height);
+        assertEquals(View.GONE, mTopToolbarPlaceholderView.getVisibility());
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mTasksSurfaceView.getLayoutParams();
+        assertEquals(20, layoutParams.topMargin);
 
         mPropertyModel.set(IS_SECONDARY_SURFACE_VISIBLE, false);
         assertNotNull(mTasksSurfaceView.getParent());
@@ -144,6 +145,7 @@ public class SecondaryTasksSurfaceViewBinderTest extends DummyUiActivityTestCase
     public void testSetTopMargin() {
         assertFalse(mPropertyModel.get(IS_SHOWING_OVERVIEW));
         assertFalse(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE));
+        assertNull(mTasksSurfaceView.getParent());
 
         // Setting the top margin shouldn't cause a NullPointerException when the layout params are
         // null, since this should be handled in the *ViewBinder.
@@ -151,11 +153,11 @@ public class SecondaryTasksSurfaceViewBinderTest extends DummyUiActivityTestCase
         mPropertyModel.set(IS_SHOWING_OVERVIEW, true);
         mPropertyModel.set(IS_SECONDARY_SURFACE_VISIBLE, true);
 
-        ViewGroup.LayoutParams layoutParams = mTopToolbarPlaceholderView.getLayoutParams();
-        assertEquals("Top margin isn't initialized correctly.", 20, layoutParams.height);
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mTasksSurfaceView.getLayoutParams();
+        assertEquals("Top margin isn't initialized correctly.", 20, layoutParams.topMargin);
 
-        layoutParams = mTopToolbarPlaceholderView.getLayoutParams();
+        layoutParams = (MarginLayoutParams) mTasksSurfaceView.getLayoutParams();
         mPropertyModel.set(TOP_MARGIN, 40);
-        assertEquals("Wrong top margin.", 40, layoutParams.height);
+        assertEquals("Wrong top margin.", 40, layoutParams.topMargin);
     }
 }

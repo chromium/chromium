@@ -179,10 +179,19 @@ class StartSurfaceToolbarMediator {
         // If it's on the non-incognito homepage, start surface toolbar is visible (omnibox has no
         // focus), and scrolling offset is smaller than toolbar's height, we need to hide toolbar
         // layout until start surface toolbar is disappearing.
+        // When mPropertyModel.get(TRANSLATION_Y) is 0, we cannot hide toolbar layout, otherwise
+        // previous toolbar focus may be cleared.
         return mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE
                 && !mPropertyModel.get(IS_INCOGNITO) && mPropertyModel.get(IS_VISIBLE)
                 && -mPropertyModel.get(TRANSLATION_Y) != 0
                 && -mPropertyModel.get(TRANSLATION_Y) < toolbarHeight;
+    }
+
+    boolean isToolbarOnScreenTop() {
+        return (mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE
+                || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER)
+                && !mPropertyModel.get(IS_INCOGNITO) && mPropertyModel.get(IS_VISIBLE)
+                && mPropertyModel.get(TRANSLATION_Y) == 0;
     }
 
     void setOnNewTabClickHandler(View.OnClickListener listener) {

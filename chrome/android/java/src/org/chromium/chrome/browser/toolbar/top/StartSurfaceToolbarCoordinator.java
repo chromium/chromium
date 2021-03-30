@@ -234,6 +234,10 @@ public class StartSurfaceToolbarCoordinator {
         return mToolbarMediator.shouldHideToolbarLayout(toolbarHeight);
     }
 
+    boolean isToolbarOnScreenTop() {
+        return mToolbarMediator.isToolbarOnScreenTop();
+    }
+
     void onNativeLibraryReady() {
         mToolbarMediator.onNativeLibraryReady();
     }

@@ -10,11 +10,15 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressKey;
 import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -56,6 +60,7 @@ import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.BoundedMatcher;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Description;
@@ -176,6 +181,7 @@ public class InstantStartTest {
             + ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0";
     private static final int ARTICLE_SECTION_HEADER_POSITION = 0;
     private static final long MAX_TIMEOUT_MS = 30000L;
+    private static final String SHADOW_VIEW_TAG = "TabListViewShadow";
     private Bitmap mBitmap;
     private int mThumbnailFetchCount;
 
@@ -1042,7 +1048,7 @@ public class InstantStartTest {
         onView(withId(org.chromium.chrome.start_surface.R.id.toolbar_container))
                 .check(matches(isDisplayed()));
 
-        View surface = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
+        View surface = mActivityTestRule.getActivity().findViewById(R.id.control_container);
         ChromeRenderTestRule.sanitize(surface);
         mRenderTestRule.render(surface, "singlePane_floatingTopToolbar");
 
@@ -1053,6 +1059,7 @@ public class InstantStartTest {
         // Clear the focus.
         TestThreadUtils.runOnUiThreadBlocking(urlBar::clearFocus);
         // Default search engine logo should still show.
+        surface = mActivityTestRule.getActivity().findViewById(R.id.control_container);
         ChromeRenderTestRule.sanitize(surface);
         mRenderTestRule.render(surface, "singlePane_floatingTopToolbar");
     }
@@ -1066,16 +1073,21 @@ public class InstantStartTest {
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
-    public void testShadowVisibility() throws IOException {
+    public void testShadowVisibility() {
         // clang-format on
         startMainActivityFromLauncher();
         CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
 
-        int shadowVisibility =
-                mActivityTestRule.getActivity().findViewById(R.id.toolbar_shadow).getVisibility();
+        onView(withId(R.id.toolbar_shadow))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
 
-        Assert.assertEquals(View.INVISIBLE, shadowVisibility);
+        startAndWaitNativeInitialization();
+        CriteriaHelper.pollUiThread(
+                () -> mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+
+        onView(withId(R.id.toolbar_shadow))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
     }
 
     @Test
@@ -1088,10 +1100,17 @@ public class InstantStartTest {
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
-    public void testShadowVisibilityWithoutInstantStart() throws IOException {
+    public void testShadowVisibilityWithoutInstantStart() {
         // clang-format on
         startMainActivityFromLauncher();
         onViewWaiting(withId(R.id.toolbar_shadow)).check(matches(isDisplayed()));
+
+        startAndWaitNativeInitialization();
+        CriteriaHelper.pollUiThread(
+                () -> mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+
+        onView(withId(R.id.toolbar_shadow))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
     }
 
     @Test
@@ -1330,7 +1349,7 @@ public class InstantStartTest {
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
     public void testScrollToSelectedTab() throws IOException {
         // clang-format on
-        createTabStateFile(new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, null, 9);
+        createTabStateFile(new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, null, 5);
         startMainActivityFromLauncher();
         CriteriaHelper.pollUiThread(
                 mActivityTestRule.getActivity().getLayoutManager()::overviewVisible);
@@ -1360,8 +1379,19 @@ public class InstantStartTest {
                     Assert.assertTrue(v instanceof RecyclerView);
                     LinearLayoutManager layoutManager =
                             (LinearLayoutManager) ((RecyclerView) v).getLayoutManager();
-                    assertEquals(9, layoutManager.findLastVisibleItemPosition());
+                    assertEquals(7, layoutManager.findLastVisibleItemPosition());
                 });
+
+        // On tab switcher page, shadow is handled by TabListRecyclerView itself, so toolbar shadow
+        // shouldn't show.
+        onView(withId(R.id.toolbar_shadow)).check(matches(not(isDisplayed())));
+
+        // Scroll the tab list a little bit and shadow should show.
+        onView(allOf(withId(R.id.tab_list_view), withParent(withId(R.id.tasks_surface_body))))
+                .perform(swipeUp());
+        onView(allOf(withTagValue(is(SHADOW_VIEW_TAG)),
+                       isDescendantOfA(withId(R.id.tasks_surface_body))))
+                .check(matches(isDisplayed()));
     }
 
     @Test
