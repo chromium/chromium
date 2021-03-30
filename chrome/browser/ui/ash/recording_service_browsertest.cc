@@ -19,10 +19,13 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/dbus/cros_disks_client.h"
 #include "content/public/test/browser_test.h"
 #include "media/base/media_tracks.h"
 #include "media/base/mock_media_log.h"
@@ -274,4 +277,26 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
   ChromeCaptureModeDelegate::Get()->SetIsScreenCaptureLocked(true);
   const base::FilePath video_path = WaitForVideoFileToBeSaved();
   VerifyVideoFileAndDelete(video_path);
+}
+
+// Tests that an invalid downloads path set in the browser settings (such as one
+// that points to a location in a non-existing removable device) won't affect
+// where the recordings are saved, and the recording file will be successfully
+// saved. https://crbug.com/1192406.
+IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, InvalidDownloadsPath) {
+  auto* download_prefs =
+      DownloadPrefs::FromBrowserContext(browser()->profile());
+  const base::FilePath removable_path =
+      chromeos::CrosDisksClient::GetRemovableDiskMountPoint();
+  const base::FilePath invalid_path =
+      removable_path.Append(FILE_PATH_LITERAL("backup"));
+  download_prefs->SetDownloadPath(invalid_path);
+  // The invalid path will still be accepted by the browser, but won't be used
+  // by Capture Mode.
+  EXPECT_EQ(invalid_path, download_prefs->DownloadPath());
+  EXPECT_NE(invalid_path,
+            ChromeCaptureModeDelegate::Get()->GetScreenCaptureDir());
+  ash::CaptureModeTestApi test_api;
+  test_api.StartForFullscreen(/*for_video=*/true);
+  FinishVideoRecordingTest(&test_api);
 }
