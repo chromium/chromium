@@ -10,6 +10,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.GURL;
 
@@ -34,6 +35,11 @@ class ContinuousSearchListProperties {
     public static final WritableBooleanPropertyKey IS_SELECTED = new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<OnClickListener> CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
+    public static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey TITLE_TEXT_STYLE = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey DESCRIPTION_TEXT_STYLE =
+            new WritableIntPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = {LABEL, URL, IS_SELECTED, CLICK_LISTENER};
+    public static final PropertyKey[] ALL_KEYS = {LABEL, URL, IS_SELECTED, CLICK_LISTENER,
+            BACKGROUND_COLOR, TITLE_TEXT_STYLE, DESCRIPTION_TEXT_STYLE};
 }

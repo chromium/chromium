@@ -5,8 +5,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_margin="5dp"
     android:orientation="vertical"
-    android:padding="5dp">
+    android:background="@drawable/continuous_search_list_item_background"
+    android:padding="7dp">
 
     <TextView
         android:id="@+id/continuous_search_list_item_text"
@@ -14,7 +16,7 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:singleLine="true"
-        android:maxWidth="100dp"
+        android:maxWidth="150dp"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
 
     <TextView
@@ -23,7 +25,7 @@
         android:layout_height="wrap_content"
         android:ellipsize="start"
         android:singleLine="true"
-        android:maxWidth="100dp"
+        android:maxWidth="150dp"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
 </LinearLayout>

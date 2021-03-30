@@ -28,6 +28,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/theme:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_java",
@@ -44,6 +45,7 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "android/java/res/drawable/continuous_search_list_item_background.xml",
     "android/java/res/layout/continuous_search_container.xml",
     "android/java/res/layout/continuous_search_list_ad.xml",
     "android/java/res/layout/continuous_search_list_group_label.xml",
@@ -100,6 +102,7 @@ android_library("junit") {
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/continuous_search/internal:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/theme:java",
     "//content/public/android:content_java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",

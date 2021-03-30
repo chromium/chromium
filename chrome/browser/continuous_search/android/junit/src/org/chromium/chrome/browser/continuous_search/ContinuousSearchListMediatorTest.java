@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
+import android.content.res.Resources;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,6 +17,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -42,7 +45,7 @@ public class ContinuousSearchListMediatorTest {
             } else {
                 mLayoutVisibilityFalse.notifyCalled();
             }
-        });
+        }, Mockito.mock(ThemeColorProvider.class), Mockito.mock(Resources.class));
         SearchResultUserData searchResultUserData = Mockito.mock(SearchResultUserData.class);
         SearchResultUserData.setInstanceForTesting(searchResultUserData);
     }

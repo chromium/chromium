@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
+import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewStub;
 
@@ -13,6 +14,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -41,7 +43,8 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
             ObservableSupplier<Tab> tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<Boolean> canAnimateNativeBrowserControls,
-            Supplier<Integer> defaultTopContainerHeightSupplier) {
+            Supplier<Integer> defaultTopContainerHeightSupplier,
+            ThemeColorProvider themeColorProvider, Resources resources) {
         mViewStub = containerViewStub;
         mLayoutManager = layoutManager;
         mResourceManager = resourceManager;
@@ -50,13 +53,13 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
         mContainerMediator = new ContinuousSearchContainerMediator(browserControlsStateProvider,
                 canAnimateNativeBrowserControls, defaultTopContainerHeightSupplier,
                 this::initializeLayout);
-        mListCoordinator = new ContinuousSearchListCoordinator(tabSupplier, (isVisible -> {
+        mListCoordinator = new ContinuousSearchListCoordinator(tabSupplier, isVisible -> {
             if (isVisible) {
                 mContainerMediator.show();
             } else {
                 mContainerMediator.hide();
             }
-        }));
+        }, themeColorProvider, resources);
     }
 
     private void initializeLayout() {
