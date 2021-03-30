@@ -1476,14 +1476,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.EME" enum="CdmPromiseResult"
-    expires_after="2021-05-07">
-  <owner>sandersd@chromium.org</owner>
+    expires_after="2022-05-07">
+  <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>Result of EME promises that were handled by Chromium code.</summary>
 </histogram>
 
 <histogram name="Media.EME.CdmFileIO.FileSizeKBOnError" units="KB"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1494,7 +1494,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.CdmFileIO.FileSizeKBOnFirstRead" units="KB"
-    expires_after="2021-09-12">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1514,7 +1514,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.CdmHostVerificationStatus"
-    enum="CdmHostVerificationStatus" expires_after="2021-05-07">
+    enum="CdmHostVerificationStatus" expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1523,7 +1523,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.CdmInterfaceVersion" enum="GenericEnum"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1534,7 +1534,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.CdmLoadErrorCode" enum="WinGetLastError"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1543,20 +1543,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.CdmLoadResult" enum="CdmLoadResult"
-    expires_after="2021-08-22">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>The result from an attempt to load a library CDM.</summary>
 </histogram>
 
-<histogram name="Media.EME.CdmLoadTime" units="ms" expires_after="2021-08-22">
+<histogram name="Media.EME.CdmLoadTime" units="ms" expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>The time spent to load a library CDM.</summary>
 </histogram>
 
 <histogram base="true" name="Media.EME.CreateCdm" enum="BooleanSuccess"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1567,14 +1567,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.EME.CreateCdmTime" units="ms"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>The time it takes to create the CDM instance.</summary>
 </histogram>
 
 <histogram base="true" name="Media.EME.CreateSession.SessionType"
-    enum="EmeSessionType" expires_after="2021-05-07">
+    enum="EmeSessionType" expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>EME session type passed into CreateSession.</summary>
@@ -1600,7 +1600,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.EncryptedEvent" enum="BooleanEncryptedEvent"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1613,7 +1613,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.EncryptedMediaEnabled" enum="BooleanEnabled"
-    expires_after="2021-08-09">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1625,7 +1625,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.EncryptionScheme.Initial.Audio"
-    enum="MediaEncryptionScheme" expires_after="2021-05-07">
+    enum="MediaEncryptionScheme" expires_after="2022-05-07">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1635,7 +1635,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.EncryptionScheme.Initial.Video"
-    enum="MediaEncryptionScheme" expires_after="2021-05-07">
+    enum="MediaEncryptionScheme" expires_after="2022-05-07">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1645,7 +1645,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.IsIncognito" enum="BooleanIncognito"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1656,14 +1656,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.EME.KeyStatusSystemCode"
-    enum="CdmSystemCode" expires_after="2021-05-07">
+    enum="CdmSystemCode" expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>System code count associated with key status.</summary>
 </histogram>
 
 <histogram base="true" name="Media.EME.LibraryCdmAvailable"
-    enum="BooleanAvailable" expires_after="2021-05-07">
+    enum="BooleanAvailable" expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1675,7 +1675,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.MaxCdmProcessCount" units="processes"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1686,7 +1686,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.MediaCryptoAvailable" enum="BooleanAvailable"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1729,7 +1729,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.MediaDrmBridge.KeySystemSupport"
-    enum="BooleanSupported" expires_after="2021-05-07">
+    enum="BooleanSupported" expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1739,7 +1739,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.MojoCdm.ConnectionError"
-    enum="BooleanConnectionError" expires_after="2021-05-07">
+    enum="BooleanConnectionError" expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1751,7 +1751,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.OutputProtection" enum="MediaOutputProtectionStatus"
-    expires_after="2021-09-12">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1771,8 +1771,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.RequestMediaKeySystemAccess"
-    enum="RequestMediaKeySystemAccessStatus" expires_after="2021-08-22">
-  <owner>sandersd@chromium.org</owner>
+    enum="RequestMediaKeySystemAccessStatus" expires_after="2022-05-07">
+  <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
     Key system support query status and result, as reported by
@@ -1782,14 +1782,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.EME.SystemCode" enum="CdmSystemCode"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>System code count in promise rejection.</summary>
 </histogram>
 
 <histogram base="true" name="Media.EME.TimeTo" units="ms"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>The time it takes to resolve a EME promise.</summary>
@@ -1806,7 +1806,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.Widevine.VideoCapability.HasEmptyRobustness"
-    enum="BooleanEmpty" expires_after="2021-08-22">
+    enum="BooleanEmpty" expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2404,7 +2404,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.LoadType" enum="MediaLoadType"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -4449,7 +4449,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoRenderer.LowDelay" enum="Boolean"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
