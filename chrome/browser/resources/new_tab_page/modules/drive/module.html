@@ -7,30 +7,27 @@
 
   #files {
     display: flex;
+    flex-direction: column;
   }
 
   .file {
+    align-items: center;
+    border-top: 0.5px solid var(--ntp-border-color);
     color: var(--cr-primary-text-color);
-    display: block;
+    display: flex;
     flex-shrink: 0;
+    height: 38px;
+    margin-inline-end: 16px;
     margin-inline-start: 16px;
     text-decoration: none;
-    width: 165px;
-  }
-
-  .file-icon-container {
-    align-items: center;
-    background: var(--google-grey-refresh-100);
-    border-radius: 4px;
-    display: flex;
-    height: 136px;
-    justify-content: center;
-    margin-bottom: 8px;
   }
 
   .file-icon {
-    max-height: 80px;
-    width: 80px;
+    margin-inline-end: 8px;
+  }
+
+  .file-title {
+    text-overflow: ellipsis;
   }
 
   .file-description {
@@ -41,7 +38,13 @@
     display: flex;
   }
 
+  .justification-container {
+    align-items: center;
+    display: flex;
+  }
+
   .user-image {
+    border-radius: 50%;
     max-height: 30px;
   }
 </style>
@@ -53,20 +56,18 @@
   $i18n{modulesDriveTitle}
 </ntp-module-header>
 <div id="files">
-  <template id="fileRepeat" is="dom-repeat" on-dom-change="onDomChange_"
-      items="[[files]]">
+  <template id="fileRepeat" is="dom-repeat" items="[[files]]">
     <a class="file" href="[[item.itemUrl.url]]" on-click="onFileClick_"
         on-auxclick="onFileClick_">
-      <div class="file-icon-container">
-        <img
-            is="ntp-img"
-            class="file-icon"
-            draggable="false"
-            auto-src="[[getImageSrc_(item)]]">
-        </img>
-      </div>
-      <div class="file-info">
-        <template is="dom-if" if="[[item.untrustedPhotoUrl.url]]">
+      <img
+          is="ntp-img"
+          class="file-icon"
+          draggable="false"
+          auto-src="[[getImageSrc_(item)]]">
+      </img>
+      <div class="file-title" title="[[item.title]]">[[item.title]]</div>
+      <div class="justification-container">
+        <template is="dom-if" if="[[item.untrustedPhotoUrl]]">
           <img
               is="ntp-img"
               class="user-image"
@@ -74,10 +75,7 @@
               auto-src="[[item.untrustedPhotoUrl.url]]">
           </img>
         </template>
-        <div>
-          <div class="file-title">[[item.title]]</div>
-          <div class="file-description">[[item.justificationText]]</div>
-        </div>
+        <div class="file-description">[[item.justificationText]]</div>
       </div>
     </a>
   </template>

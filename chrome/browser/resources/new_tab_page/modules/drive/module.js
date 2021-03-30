@@ -60,25 +60,8 @@ class DriveModuleElement extends mixinBehaviors
    * @private
    */
   getImageSrc_(file) {
-    return 'https://drive-thirdparty.googleusercontent.com/128/type/' +
+    return 'https://drive-thirdparty.googleusercontent.com/16/type/' +
         file.mimeType;
-  }
-
-  /** @private */
-  onDomChange_() {
-    if (!this.intersectionObserver_) {
-      this.intersectionObserver_ = new IntersectionObserver(entries => {
-        entries.forEach(({intersectionRatio, target}) => {
-          target.style.visibility =
-              intersectionRatio < 1 ? 'hidden' : 'visible';
-        });
-        this.dispatchEvent(new Event('change-visibility'));
-      }, {root: this, threshold: 1});
-    } else {
-      this.intersectionObserver_.disconnect();
-    }
-    this.shadowRoot.querySelectorAll('.file').forEach(
-        el => this.intersectionObserver_.observe(el));
   }
 
   /**

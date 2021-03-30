@@ -65,13 +65,13 @@ suite('NewTabPageModulesDriveModuleTest', () => {
         'Edited today',
         items[1].querySelector('.file-description').textContent);
     assertEquals(
-        'https://drive-thirdparty.googleusercontent.com/128/type/application/vnd.google-apps.spreadsheet',
+        'https://drive-thirdparty.googleusercontent.com/16/type/application/vnd.google-apps.spreadsheet',
         items[0].querySelector('.file-icon').autoSrc);
     assertEquals(
-        'https://drive-thirdparty.googleusercontent.com/128/type/application/vnd.google-apps.document',
+        'https://drive-thirdparty.googleusercontent.com/16/type/application/vnd.google-apps.document',
         items[1].querySelector('.file-icon').autoSrc);
     assertEquals(
-        'https://drive-thirdparty.googleusercontent.com/128/type/application/vnd.google-apps.presentation',
+        'https://drive-thirdparty.googleusercontent.com/16/type/application/vnd.google-apps.presentation',
         items[2].querySelector('.file-icon').autoSrc);
     assertEquals(
         'https://photo.com', items[0].querySelector('.user-image').autoSrc);
@@ -81,39 +81,6 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     assertEquals('https://caz.com/', urls[2].href);
   });
 
-  test('documents are hidden at narrower widths', async () => {
-    const repeat = (n, fn) => Array(n).fill(0).map(fn);
-    testProxy.handler.setResultFor('getFiles', Promise.resolve({
-      files: repeat(3, () => ({
-                         justification: 'edited',
-                         title: 'foo',
-                         id: '123',
-                         mimeType: 'application/vnd.google-apps.document',
-                         itemUrl: {url: 'https://foo.com'},
-                         untrustedPhotoUrl: {url: 'https://photo.com'},
-                       }))
-    }));
-
-    await driveDescriptor.initialize();
-    const module = driveDescriptor.element;
-    document.body.append(module);
-    module.$.fileRepeat.render();
-
-    const items = Array.from(module.shadowRoot.querySelectorAll('.file'));
-    // Setting the module height ensures that the IntersectionRatio
-    // can only be made less than one by the width.
-    module.style.height = '260px';
-    const countHidden = async (width, count) => {
-      module.style.width = width;
-      var waitForEvent = eventToPromise('change-visibility', module);
-      await waitForEvent;
-      assertEquals(
-          count, items.filter(el => el.style.visibility === 'hidden').length);
-    };
-    await countHidden('200px', 2);
-    await countHidden('600px', 0);
-    await countHidden('400px', 1);
-  });
   test('documents do not show without data', async () => {
     testProxy.handler.setResultFor('getFiles', Promise.resolve({files: []}));
 
