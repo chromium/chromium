@@ -233,8 +233,9 @@ void SyncInternalsMessageHandler::OnReceivedAllNodes(
     std::unique_ptr<base::ListValue> nodes) {
   base::Value id(callback_id);
   base::Value nodes_clone = nodes->Clone();
+  base::Value success(true);
 
-  std::vector<const base::Value*> args{&id, &nodes_clone};
+  std::vector<const base::Value*> args{&id, &success, &nodes_clone};
   web_ui()->CallJavascriptFunction("cr.webUIResponse", args);
 }
 

@@ -184,14 +184,11 @@ function refresh() {
   setLastRefreshTime('In progress since ' + (new Date()).toLocaleString());
 
   getAllNodes(function(nodeMap) {
-    // Put all nodes into one big list that ignores the type.
-    const nodes = nodeMap
-                      .map(function(x) {
-                        return x.nodes;
-                      })
-                      .reduce(function(a, b) {
-                        return a.concat(b);
-                      });
+    let nodes = [];
+    if (nodeMap && nodeMap.length > 0) {
+      // Put all nodes into one big list that ignores the type.
+      nodes = nodeMap.map(x => x.nodes).reduce((a, b) => a.concat(b));
+    }
 
     const treeContainer = $('sync-node-tree-container');
     const tree = document.createElement('tree');
