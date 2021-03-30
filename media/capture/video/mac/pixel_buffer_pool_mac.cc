@@ -4,13 +4,15 @@
 
 #include "media/capture/video/mac/pixel_buffer_pool_mac.h"
 
-#include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace media {
 
 namespace {
+
+constexpr size_t kMaxNumConsecutiveErrors = 30;
 
 template <typename T>
 class CFNumber {
@@ -91,7 +93,8 @@ PixelBufferPool::PixelBufferPool(
     base::ScopedCFTypeRef<CVPixelBufferPoolRef> buffer_pool,
     base::Optional<size_t> max_buffers)
     : buffer_pool_(std::move(buffer_pool)),
-      max_buffers_(std::move(max_buffers)) {
+      max_buffers_(std::move(max_buffers)),
+      num_consecutive_errors_(0) {
   DCHECK(buffer_pool_);
 }
 
@@ -126,13 +129,26 @@ base::ScopedCFTypeRef<CVPixelBufferRef> PixelBufferPool::CreateBuffer() {
         nil, buffer_pool_, attributes.get(), buffer.InitializeInto());
   }
   if (buffer_creation_error == kCVReturnWouldExceedAllocationThreshold) {
-    // PixelBufferPool cannot create more buffers.
-    return base::ScopedCFTypeRef<CVPixelBufferRef>(nil);
+    LOG(ERROR) << "Cannot exceed the pool's maximum buffer count";
+    // kCVReturnWouldExceedAllocationThreshold does not count as an error.
+    num_consecutive_errors_ = 0;
+    return base::ScopedCFTypeRef<CVPixelBufferRef>();
   }
-  // If |max_buffers_| wasn't reached, this operation must succeed.
-  CHECK(buffer_creation_error == noErr)
-      << "Failed to create destination CVPixelBuffer with CVReturn error: "
+  // If a different error occurred, crash on debug builds or log and return null
+  // on release builds.
+  DCHECK(buffer_creation_error == noErr)
+      << "Failed to create a buffer due to CVReturn error code: "
       << buffer_creation_error;
+  if (buffer_creation_error != noErr) {
+    LOG(ERROR) << "Failed to create a buffer due to CVReturn error code: "
+               << buffer_creation_error;
+    ++num_consecutive_errors_;
+    CHECK_LE(num_consecutive_errors_, kMaxNumConsecutiveErrors)
+        << "Exceeded maximum allowed consecutive error count with error code: "
+        << buffer_creation_error;
+    return base::ScopedCFTypeRef<CVPixelBufferRef>();
+  }
+  num_consecutive_errors_ = 0;
   return buffer;
 }
 

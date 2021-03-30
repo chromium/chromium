@@ -526,9 +526,8 @@ base::ScopedCFTypeRef<CVPixelBufferRef> SampleBufferTransformer::Transform(
   base::ScopedCFTypeRef<CVPixelBufferRef> destination_pixel_buffer =
       destination_pixel_buffer_pool_->CreateBuffer();
   if (!destination_pixel_buffer) {
-    // Maximum destination buffers exceeded. Old buffers are not being released
-    // (and thus not returned to the pool) in time.
-    LOG(ERROR) << "Maximum destination buffers exceeded";
+    // Most likely the buffer count was exceeded, but other errors are possible.
+    LOG(ERROR) << "Failed to create a destination buffer";
     return base::ScopedCFTypeRef<CVPixelBufferRef>();
   }
   // Do pixel transfer or libyuv conversion + rescale.
@@ -549,9 +548,8 @@ base::ScopedCFTypeRef<CVPixelBufferRef> SampleBufferTransformer::Transform(
   base::ScopedCFTypeRef<CVPixelBufferRef> destination_pixel_buffer =
       destination_pixel_buffer_pool_->CreateBuffer();
   if (!destination_pixel_buffer) {
-    // Maximum destination buffers exceeded. Old buffers are not being released
-    // (and thus not returned to the pool) in time.
-    LOG(ERROR) << "Maximum destination buffers exceeded";
+    // Most likely the buffer count was exceeded, but other errors are possible.
+    LOG(ERROR) << "Failed to create a destination buffer";
     return base::ScopedCFTypeRef<CVPixelBufferRef>();
   }
   // Sample buffer path - it's MJPEG. Do libyuv conversion + rescale.
