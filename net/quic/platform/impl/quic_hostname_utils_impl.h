@@ -6,8 +6,8 @@
 #define NET_QUIC_PLATFORM_IMPL_QUIC_HOSTNAME_UTILS_IMPL_H_
 
 #include "base/macros.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_string_view.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_export.h"
+#include "third_party/abseil-cpp/absl/strings/string_view.h"
 
 namespace quic {
 

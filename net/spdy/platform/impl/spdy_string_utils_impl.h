@@ -12,8 +12,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/hex_utils.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_string_view.h"
 #include "net/third_party/quiche/src/common/platform/api/quiche_text_utils.h"
+#include "third_party/abseil-cpp/absl/strings/string_view.h"
 
 namespace spdy {
 
