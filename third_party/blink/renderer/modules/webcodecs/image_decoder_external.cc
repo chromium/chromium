@@ -53,34 +53,42 @@ media::VideoPixelFormat YUVSubsamplingToMediaPixelFormat(
   }
 }
 
-gfx::ColorSpace YUVColorSpaceToGfxColorSpace(SkYUVColorSpace yuv_cs,
-                                             const gfx::ColorSpace& rgb_cs) {
+gfx::ColorSpace YUVColorSpaceToGfxColorSpace(
+    SkYUVColorSpace yuv_cs,
+    gfx::ColorSpace::PrimaryID primary_id,
+    gfx::ColorSpace::TransferID transfer_id) {
   switch (yuv_cs) {
     case kJPEG_Full_SkYUVColorSpace:
-      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::SMPTE170M,
-                                          gfx::ColorSpace::RangeID::FULL);
+      return gfx::ColorSpace(primary_id, transfer_id,
+                             gfx::ColorSpace::MatrixID::SMPTE170M,
+                             gfx::ColorSpace::RangeID::FULL);
     case kRec601_Limited_SkYUVColorSpace:
-      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::SMPTE170M,
-                                          gfx::ColorSpace::RangeID::LIMITED);
+      return gfx::ColorSpace(primary_id, transfer_id,
+                             gfx::ColorSpace::MatrixID::SMPTE170M,
+                             gfx::ColorSpace::RangeID::LIMITED);
     case kRec709_Full_SkYUVColorSpace:
-      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::BT709,
-                                          gfx::ColorSpace::RangeID::FULL);
+      return gfx::ColorSpace(primary_id, transfer_id,
+                             gfx::ColorSpace::MatrixID::BT709,
+                             gfx::ColorSpace::RangeID::FULL);
     case kRec709_Limited_SkYUVColorSpace:
-      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::BT709,
-                                          gfx::ColorSpace::RangeID::LIMITED);
+      return gfx::ColorSpace(primary_id, transfer_id,
+                             gfx::ColorSpace::MatrixID::BT709,
+                             gfx::ColorSpace::RangeID::LIMITED);
     case kBT2020_8bit_Full_SkYUVColorSpace:
     case kBT2020_10bit_Full_SkYUVColorSpace:
     case kBT2020_12bit_Full_SkYUVColorSpace:
-      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::BT2020_NCL,
-                                          gfx::ColorSpace::RangeID::FULL);
+      return gfx::ColorSpace(primary_id, transfer_id,
+                             gfx::ColorSpace::MatrixID::BT2020_NCL,
+                             gfx::ColorSpace::RangeID::FULL);
     case kBT2020_8bit_Limited_SkYUVColorSpace:
     case kBT2020_10bit_Limited_SkYUVColorSpace:
     case kBT2020_12bit_Limited_SkYUVColorSpace:
-      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::BT2020_NCL,
-                                          gfx::ColorSpace::RangeID::LIMITED);
+      return gfx::ColorSpace(primary_id, transfer_id,
+                             gfx::ColorSpace::MatrixID::BT2020_NCL,
+                             gfx::ColorSpace::RangeID::LIMITED);
     case kIdentity_SkYUVColorSpace:
-      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::GBR,
-                                          gfx::ColorSpace::RangeID::FULL);
+      NOTREACHED();
+      return gfx::ColorSpace();
   };
 }
 
@@ -722,10 +730,49 @@ scoped_refptr<media::VideoFrame> ImageDecoderExternal::MaybeDecodeToYuv() {
   if (decoder_->Failed() || !decoder_->HasDisplayableYUVData())
     return nullptr;
 
-  frame->set_color_space(YUVColorSpaceToGfxColorSpace(
-      decoder_->GetYUVColorSpace(),
-      gfx::ColorSpace(*decoder_->ColorSpaceForSkImages())));
+  gfx::ColorSpace gfx_cs;
+  if (auto sk_cs = decoder_->ColorSpaceForSkImages())
+    gfx_cs = gfx::ColorSpace(*sk_cs);
 
+  const auto skyuv_cs = decoder_->GetYUVColorSpace();
+  DCHECK_NE(skyuv_cs, kIdentity_SkYUVColorSpace);
+
+  if (!gfx_cs.IsValid()) {
+    if (skyuv_cs == kJPEG_Full_SkYUVColorSpace) {
+      gfx_cs = gfx::ColorSpace::CreateJpeg();
+    } else if (skyuv_cs == kRec601_Limited_SkYUVColorSpace) {
+      gfx_cs = gfx::ColorSpace::CreateREC601();
+    } else if (skyuv_cs == kRec709_Limited_SkYUVColorSpace ||
+               skyuv_cs == kRec709_Full_SkYUVColorSpace) {
+      gfx_cs = gfx::ColorSpace::CreateREC709();
+    }
+  }
+
+  if (gfx_cs.IsValid()) {
+    frame->set_color_space(YUVColorSpaceToGfxColorSpace(
+        skyuv_cs, gfx_cs.GetPrimaryID(), gfx_cs.GetTransferID()));
+    return frame;
+  }
+
+  DCHECK(skyuv_cs == kBT2020_8bit_Full_SkYUVColorSpace ||
+         skyuv_cs == kBT2020_8bit_Limited_SkYUVColorSpace ||
+         skyuv_cs == kBT2020_10bit_Full_SkYUVColorSpace ||
+         skyuv_cs == kBT2020_10bit_Limited_SkYUVColorSpace ||
+         skyuv_cs == kBT2020_12bit_Full_SkYUVColorSpace ||
+         skyuv_cs == kBT2020_12bit_Limited_SkYUVColorSpace)
+      << "Unexpected SkYUVColorSpace: " << skyuv_cs;
+
+  auto transfer_id = gfx::ColorSpace::TransferID::BT709;
+  if (skyuv_cs == kBT2020_10bit_Full_SkYUVColorSpace ||
+      skyuv_cs == kBT2020_10bit_Limited_SkYUVColorSpace) {
+    transfer_id = gfx::ColorSpace::TransferID::BT2020_10;
+  } else if (skyuv_cs == kBT2020_12bit_Full_SkYUVColorSpace ||
+             skyuv_cs == kBT2020_12bit_Limited_SkYUVColorSpace) {
+    transfer_id = gfx::ColorSpace::TransferID::BT2020_12;
+  }
+
+  frame->set_color_space(YUVColorSpaceToGfxColorSpace(
+      skyuv_cs, gfx::ColorSpace::PrimaryID::BT2020, transfer_id));
   return frame;
 }
 
