@@ -58,6 +58,11 @@
       <meta-data
           android:name="org.chromium.weblayer.ENABLE_BACKGROUND_FETCH" android:value="true"/>
 
+      <!-- Enable ADB logging of js logs (console.log). This is disabled by default because some
+           websites log PII. -->
+      <meta-data
+          android:name="org.chromium.weblayer.ENABLE_LOGGING_OF_JS_CONSOLE_MESSAGES" android:value="true"/>
+
       {% if weblayer_package is defined %}
             <meta-data android:name="org.chromium.weblayer.WebLayerPackage"
                        android:value="{{ weblayer_package }}"/>

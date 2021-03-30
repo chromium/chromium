@@ -550,6 +550,8 @@ source_set("weblayer_lib_base") {
     sources += [
       "app/jni_onload.cc",
       "app/jni_onload.h",
+      "browser/android/application_info_helper.cc",
+      "browser/android/application_info_helper.h",
       "browser/android/exception_filter.cc",
       "browser/android/exception_filter.h",
       "browser/android/metrics/uma_utils.cc",

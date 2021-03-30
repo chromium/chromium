@@ -13,25 +13,23 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 
-/** Provides feature enable/disable state for BackgroundFetch. */
+/** Exposes values of metadata tags to native code. */
 @JNINamespace("weblayer")
-public class BackgroundFetchHelper {
-    private BackgroundFetchHelper() {}
+public class ApplicationInfoHelper {
+    private ApplicationInfoHelper() {}
 
     /**
-     * Returns whether background fetch should be enabled.
-     *
-     * Embedding apps can control this with a manifest metadata tag. The default is false.
+     * Returns the boolean value for a metadata tag in the application's manifest.
      */
     @CalledByNative
-    public static boolean isEnabled() {
+    public static boolean getMetadataAsBoolean(String metadataTag, boolean defaultValue) {
         Context context = ContextUtils.getApplicationContext();
         try {
             ApplicationInfo info = context.getPackageManager().getApplicationInfo(
                     context.getPackageName(), PackageManager.GET_META_DATA);
-            return info.metaData.getBoolean("org.chromium.weblayer.ENABLE_BACKGROUND_FETCH", false);
+            return info.metaData.getBoolean(metadataTag, defaultValue);
         } catch (NameNotFoundException exception) {
-            return false;
+            return defaultValue;
         }
     }
 }

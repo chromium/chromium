@@ -13,8 +13,7 @@
 #include "weblayer/browser/host_content_settings_map_factory.h"
 
 #if defined(OS_ANDROID)
-#include "base/android/jni_android.h"
-#include "weblayer/browser/java/jni/BackgroundFetchHelper_jni.h"
+#include "weblayer/browser/android/application_info_helper.h"
 #endif
 
 namespace weblayer {
@@ -22,8 +21,9 @@ namespace weblayer {
 // static
 bool BackgroundFetchDelegateFactory::IsEnabled() {
 #if defined(OS_ANDROID)
-  static bool enabled = Java_BackgroundFetchHelper_isEnabled(
-      base::android::AttachCurrentThread());
+  static bool enabled = GetApplicationMetadataAsBoolean(
+      "org.chromium.weblayer.ENABLE_BACKGROUND_FETCH",
+      /*defaultValue=*/false);
   return enabled;
 #else
   return true;

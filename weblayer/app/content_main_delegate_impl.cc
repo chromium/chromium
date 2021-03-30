@@ -48,6 +48,7 @@
 #include "content/public/browser/android/compositor.h"
 #include "ui/base/resource/resource_bundle_android.h"
 #include "ui/base/ui_base_switches.h"
+#include "weblayer/browser/android/application_info_helper.h"
 #include "weblayer/browser/android/exception_filter.h"
 #include "weblayer/browser/android_descriptors.h"
 #include "weblayer/common/crash_reporter/crash_keys.h"
@@ -192,6 +193,12 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
         autofill::features::kAutofillExtractAllDatalists);
     enabled_features.push_back(
         autofill::features::kAutofillSkipComparingInferredLabels);
+  }
+
+  if (GetApplicationMetadataAsBoolean(
+          "org.chromium.weblayer.ENABLE_LOGGING_OF_JS_CONSOLE_MESSAGES",
+          /*default_value=*/false)) {
+    enabled_features.push_back(features::kLogJsConsoleMessages);
   }
 #endif
 
