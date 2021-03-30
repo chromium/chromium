@@ -91,11 +91,11 @@ export class ActionManager {
    * @param {!SwitchAccessMenuAction} action
    */
   static performAction(action) {
+    ActionManager.exitCurrentMenu();
     const manager = ActionManager.instance;
     manager.handleGlobalActions_(action) ||
         manager.handlePointScanActions_(action) ||
         manager.performActionOnCurrentNode_(action);
-    ActionManager.exitCurrentMenu();
   }
 
 
