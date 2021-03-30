@@ -119,14 +119,16 @@ function extractImage(item) {
     return lazyUrl;
 
   // If |image| is <amp-img>, image.src won't work.
+  const src = image.src || image.getAttribute('src');
   if (verbose > 1)
-    console.log('image src', image.getAttribute('src'));
-  const src = image.getAttribute('src');
+    console.log('image src', src);
   if (src != null) {
     // data: images are usually placeholders.
     // Even if it's valid, we prefer http(s) URLs.
-    if (!src.startsWith('data:'))
-      return src;
+    if (!src.startsWith('data:')) {
+      // Get absolute URL in case it's <amp-img>.
+      return (new URL(src, document.location)).href
+    }
   }
   let sourceSet = image.getAttribute('data-search-image-source-set');
   if (sourceSet == null && image.parentElement.tagName == 'PICTURE') {
