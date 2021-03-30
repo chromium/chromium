@@ -35,9 +35,6 @@ class LatencyTracker {
     INPUT_METRIC_EVENT_MAX = SCROLL_UPDATE_WHEEL
   };
 
-  void OnGpuSwapBuffersCompleted(const LatencyInfo& latency,
-                                 bool top_controls_visible_height_changed);
-
   void ReportUkmScrollLatency(
       const InputMetricEvent& metric_event,
       base::TimeTicks start_timestamp,

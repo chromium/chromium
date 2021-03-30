@@ -4,7 +4,6 @@
 
 #include "ui/latency/latency_tracker.h"
 
-#include <algorithm>
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -50,10 +49,6 @@ bool IsInertialScroll(const LatencyInfo& latency) {
   return latency.source_event_type() == ui::SourceEventType::INERTIAL;
 }
 
-bool LatencyTraceIdCompare(const LatencyInfo& i, const LatencyInfo& j) {
-  return i.trace_id() < j.trace_id();
-}
-
 }  // namespace
 
 LatencyTracker::LatencyTracker() = default;
@@ -62,42 +57,35 @@ LatencyTracker::~LatencyTracker() = default;
 void LatencyTracker::OnGpuSwapBuffersCompleted(
     std::vector<ui::LatencyInfo> latency_info,
     bool top_controls_visible_height_changed) {
-  // Sort latency_info as they can be in incorrect order.
-  std::sort(latency_info.begin(), latency_info.end(), LatencyTraceIdCompare);
-  for (const auto& latency : latency_info)
-    OnGpuSwapBuffersCompleted(latency, top_controls_visible_height_changed);
-}
+  for (const auto& latency : latency_info) {
+    base::TimeTicks gpu_swap_end_timestamp;
+    if (!latency.FindLatency(INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT,
+                             &gpu_swap_end_timestamp)) {
+      continue;
+    }
 
-void LatencyTracker::OnGpuSwapBuffersCompleted(
-    const LatencyInfo& latency,
-    bool top_controls_visible_height_changed) {
-  base::TimeTicks gpu_swap_end_timestamp;
-  if (!latency.FindLatency(INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT,
-                           &gpu_swap_end_timestamp)) {
-    return;
-  }
+    base::TimeTicks gpu_swap_begin_timestamp;
+    bool found_component = latency.FindLatency(
+        ui::INPUT_EVENT_GPU_SWAP_BUFFER_COMPONENT, &gpu_swap_begin_timestamp);
+    DCHECK_AND_RETURN_ON_FAIL(found_component);
 
-  base::TimeTicks gpu_swap_begin_timestamp;
-  bool found_component = latency.FindLatency(
-      ui::INPUT_EVENT_GPU_SWAP_BUFFER_COMPONENT, &gpu_swap_begin_timestamp);
-  DCHECK_AND_RETURN_ON_FAIL(found_component);
+    if (!latency.FindLatency(ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT,
+                             nullptr)) {
+      continue;
+    }
 
-  if (!latency.FindLatency(ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT,
-                           nullptr)) {
-    return;
-  }
-
-  ui::SourceEventType source_event_type = latency.source_event_type();
-  if (source_event_type == ui::SourceEventType::WHEEL ||
-      source_event_type == ui::SourceEventType::MOUSE ||
-      source_event_type == ui::SourceEventType::TOUCH ||
-      source_event_type == ui::SourceEventType::INERTIAL ||
-      source_event_type == ui::SourceEventType::KEY_PRESS ||
-      source_event_type == ui::SourceEventType::TOUCHPAD ||
-      source_event_type == ui::SourceEventType::SCROLLBAR) {
-    ComputeEndToEndLatencyHistograms(gpu_swap_begin_timestamp,
-                                     gpu_swap_end_timestamp, latency,
-                                     top_controls_visible_height_changed);
+    ui::SourceEventType source_event_type = latency.source_event_type();
+    if (source_event_type == ui::SourceEventType::WHEEL ||
+        source_event_type == ui::SourceEventType::MOUSE ||
+        source_event_type == ui::SourceEventType::TOUCH ||
+        source_event_type == ui::SourceEventType::INERTIAL ||
+        source_event_type == ui::SourceEventType::KEY_PRESS ||
+        source_event_type == ui::SourceEventType::TOUCHPAD ||
+        source_event_type == ui::SourceEventType::SCROLLBAR) {
+      ComputeEndToEndLatencyHistograms(gpu_swap_begin_timestamp,
+                                       gpu_swap_end_timestamp, latency,
+                                       top_controls_visible_height_changed);
+    }
   }
 }
 
