@@ -160,7 +160,9 @@ END_METADATA
 class MenuScrollViewContainer::MenuScrollView : public View {
  public:
   METADATA_HEADER(MenuScrollView);
-  explicit MenuScrollView(View* child) { AddChildView(child); }
+  MenuScrollView(View* child, MenuScrollViewContainer* owner) : owner_(owner) {
+    AddChildView(child);
+  }
   MenuScrollView(const MenuScrollView&) = delete;
   MenuScrollView& operator=(const MenuScrollView&) = delete;
 
@@ -181,13 +183,32 @@ class MenuScrollViewContainer::MenuScrollView : public View {
     // Convert rect.y() to view's coordinates and make sure we don't show past
     // the bottom of the view.
     View* child = GetContents();
-    child->SetY(-std::max(
+    int old_y = child->y();
+    int y = -std::max(
         0, std::min(child->GetPreferredSize().height() - this->height(),
-                    dy - child->y())));
+                    dy - child->y()));
+    child->SetY(y);
+
+    const int min_y = 0;
+    const int max_y = -(child->GetPreferredSize().height() - this->height());
+
+    if (old_y == min_y && old_y != y)
+      owner_->DidScrollAwayFromTop();
+    if (old_y == max_y && old_y != y)
+      owner_->DidScrollAwayFromBottom();
+
+    if (y == min_y)
+      owner_->DidScrollToTop();
+    if (y == max_y)
+      owner_->DidScrollToBottom();
   }
 
   // Returns the contents, which is the SubmenuView.
   View* GetContents() { return children().front(); }
+  const View* GetContents() const { return children().front(); }
+
+ private:
+  MenuScrollViewContainer* owner_;
 };
 
 BEGIN_METADATA(MenuScrollViewContainer, MenuScrollView, View)
@@ -203,7 +224,8 @@ MenuScrollViewContainer::MenuScrollViewContainer(SubmenuView* content_view)
   scroll_up_button_ =
       AddChildView(std::make_unique<MenuScrollButton>(content_view, true));
 
-  scroll_view_ = AddChildView(std::make_unique<MenuScrollView>(content_view));
+  scroll_view_ =
+      AddChildView(std::make_unique<MenuScrollView>(content_view, this));
   scroll_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
@@ -279,14 +301,36 @@ void MenuScrollViewContainer::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void MenuScrollViewContainer::OnBoundsChanged(
     const gfx::Rect& previous_bounds) {
-  const bool scroll_buttons_visible =
-      scroll_view_->GetContents()->GetPreferredSize().height() > height();
-  scroll_up_button_->SetVisible(scroll_buttons_visible);
-  scroll_down_button_->SetVisible(scroll_buttons_visible);
+  // When the bounds on the MenuScrollViewContainer itself change, the scroll
+  // offset is always reset to 0, so always hide the scroll-up control, and only
+  // show the scroll-down control if it's going to be useful.
+  scroll_up_button_->SetVisible(false);
+  scroll_down_button_->SetVisible(
+      scroll_view_->GetContents()->GetPreferredSize().height() > height());
+
+  const bool any_scroll_button_visible =
+      scroll_up_button_->GetVisible() || scroll_down_button_->GetVisible();
+
   MenuItemView* const footnote = GetFootnote();
   if (footnote)
-    footnote->SetCornerRadius(scroll_buttons_visible ? 0 : corner_radius_);
+    footnote->SetCornerRadius(any_scroll_button_visible ? 0 : corner_radius_);
   InvalidateLayout();
+}
+
+void MenuScrollViewContainer::DidScrollToTop() {
+  scroll_up_button_->SetVisible(false);
+}
+
+void MenuScrollViewContainer::DidScrollToBottom() {
+  scroll_down_button_->SetVisible(false);
+}
+
+void MenuScrollViewContainer::DidScrollAwayFromTop() {
+  scroll_up_button_->SetVisible(true);
+}
+
+void MenuScrollViewContainer::DidScrollAwayFromBottom() {
+  scroll_down_button_->SetVisible(true);
 }
 
 void MenuScrollViewContainer::CreateBorder() {
