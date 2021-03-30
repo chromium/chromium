@@ -64,7 +64,7 @@ public class LanguageSplitInstaller {
      * @param InstallListener Callback to handle install success or failure.
      */
     public void installLanguage(String languageName, InstallListener listener) {
-        if (mStateUpdateListener != null) {
+        if (mInstallListener != null) {
             throw new UnsupportedOperationException(
                     "Only supports one language install at a time.");
         }

@@ -226,18 +226,18 @@ public class LanguageSettings extends PreferenceFragmentCompat
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != Activity.RESULT_OK) return;
+
         String code = data.getStringExtra(AddLanguageFragment.INTENT_SELECTED_LANGUAGE);
-        if (requestCode == REQUEST_CODE_ADD_ACCEPT_LANGUAGE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == REQUEST_CODE_ADD_ACCEPT_LANGUAGE) {
             LanguagesManager.getInstance().addToAcceptLanguages(code);
             LanguagesManager.recordAction(
                     LanguagesManager.LanguageSettingsActionType.LANGUAGE_ADDED);
-        } else if (requestCode == REQUEST_CODE_CHANGE_APP_LANGUAGE
-                && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == REQUEST_CODE_CHANGE_APP_LANGUAGE) {
             LanguagesManager.recordAction(
                     LanguagesManager.LanguageSettingsActionType.CHANGE_CHROME_LANGUAGE);
             startLanguageSplitDownload(code);
-        } else if (requestCode == REQUEST_CODE_CHANGE_TARGET_LANGUAGE
-                && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == REQUEST_CODE_CHANGE_TARGET_LANGUAGE) {
             LanguageItemPickerPreference targetLanguagePreference =
                     (LanguageItemPickerPreference) findPreference(TARGET_LANGUAGE_KEY);
             targetLanguagePreference.setLanguageItem(code);
