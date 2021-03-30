@@ -6,7 +6,19 @@ import("//build/config/ios/asset_catalog.gni")
 import("//build/config/ios/rules.gni")
 
 group("resources") {
-  deps = [ ":default_browser_illustration" ]
+  deps = [
+    ":all_your_tabs",
+    ":default_browser_illustration",
+  ]
+}
+
+imageset("all_your_tabs") {
+  sources = [
+    "all_your_tabs.imageset/Contents.json",
+    "all_your_tabs.imageset/all_your_tabs.png",
+    "all_your_tabs.imageset/all_your_tabs@2x.png",
+    "all_your_tabs.imageset/all_your_tabs@3x.png",
+  ]
 }
 
 imageset("default_browser_illustration") {
