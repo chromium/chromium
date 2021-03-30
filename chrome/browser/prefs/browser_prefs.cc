@@ -430,10 +430,6 @@ const char kLocalSearchServiceSyncMetricsHelpAppCount[] =
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Deprecated 3/2020
-const char kDataReductionNetworkProperties[] =
-    "data_reduction.network_properties";
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 4/2020
 const char kAmbientModeTopicSource[] = "settings.ambient_mode.topic_source";
@@ -598,8 +594,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 // Register prefs used only for migration (clearing or moving to a new key).
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterDictionaryPref(kDataReductionNetworkProperties);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterDictionaryPref(kSupervisedUserAllowlists);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1266,7 +1260,8 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   syncer::MigrateSyncSuppressedPref(profile_prefs);
 
   // Added 3/2020.
-  profile_prefs->ClearPref(kDataReductionNetworkProperties);
+  // TODO(crbug.com/1062698): Remove this once the privacy settings redesign
+  // is fully launched.
   chrome_browser_net::secure_dns::MigrateProbesSettingToOrFromBackup(
       profile_prefs);
 
