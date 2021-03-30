@@ -385,8 +385,12 @@ int64_t QuicHttpStream::GetTotalSentBytes() const {
 
 bool QuicHttpStream::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
   bool is_first_stream = closed_is_first_stream_;
-  if (stream_)
+  if (stream_) {
     is_first_stream = stream_->IsFirstStream();
+    load_timing_info->first_early_hints_time =
+        stream_->first_early_hints_time();
+  }
+
   if (is_first_stream) {
     load_timing_info->socket_reused = false;
     load_timing_info->connect_timing = connect_timing_;

@@ -63,6 +63,9 @@ QuicChromiumClientStream::Handle::~Handle() {
 }
 
 void QuicChromiumClientStream::Handle::OnEarlyHintsAvailable() {
+  if (first_early_hints_time_.is_null())
+    first_early_hints_time_ = base::TimeTicks::Now();
+
   if (!read_headers_callback_)
     return;  // Wait for ReadInitialHeaders to be called.
 

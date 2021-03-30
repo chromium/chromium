@@ -1049,11 +1049,14 @@ TEST_P(QuicChromiumClientStreamTest, EarlyHintsResponses) {
             handle_->ReadInitialHeaders(&headers, base::DoNothing()));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(headers, hints1_headers);
+  base::TimeTicks first_early_hints_time = handle_->first_early_hints_time();
+  EXPECT_FALSE(first_early_hints_time.is_null());
 
   EXPECT_EQ(static_cast<int>(hints2_bytes),
             handle_->ReadInitialHeaders(&headers, base::DoNothing()));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(headers, hints2_headers);
+  EXPECT_EQ(first_early_hints_time, handle_->first_early_hints_time());
 
   // The third read should return the initial headers.
   EXPECT_EQ(static_cast<int>(initial_headers_bytes),

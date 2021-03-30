@@ -15,6 +15,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/idempotency.h"
 #include "net/base/ip_endpoint.h"
@@ -127,6 +128,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     bool IsDoneReading() const;
     bool IsFirstStream() const;
 
+    base::TimeTicks first_early_hints_time() const {
+      return first_early_hints_time_;
+    }
+
     // TODO(rch): Move these test-only methods to a peer, or else remove.
     void OnPromiseHeaderList(quic::QuicStreamId promised_id,
                              size_t frame_len,
@@ -201,6 +206,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     int net_error_;
 
     NetLogWithSource net_log_;
+
+    // The time at which the first 103 Early Hints response is received.
+    base::TimeTicks first_early_hints_time_;
 
     base::WeakPtrFactory<Handle> weak_factory_{this};
 
