@@ -886,13 +886,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   EXPECT_TRUE(IsPlayingSessionDisplayedFirst());
 }
 
-// Flaky on Mac: crbug.com/1163666
-#if defined(OS_MAC)
-#define MAYBE_LiveCaption DISABLED_LiveCaption
-#else
-#define MAYBE_LiveCaption LiveCaption
-#endif  // defined(OS_MAC)
-IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
+IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveCaption) {
   // Open a tab and play media.
   OpenTestURL();
   StartPlayback();

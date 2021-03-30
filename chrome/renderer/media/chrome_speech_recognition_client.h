@@ -120,6 +120,7 @@ class ChromeSpeechRecognitionClient
   // Whether the UI in the browser is still requesting transcriptions.
   bool is_browser_requesting_transcription_ = true;
 
+  // Whether all mojo pipes are bound to the speech recognition service.
   bool is_recognizer_bound_ = false;
 
   // A flag indicating whether the speech recognition service supports
