@@ -279,6 +279,8 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
     {"aboutOsProductTitle", IDS_PRODUCT_OS_NAME},
     {"aboutReleaseNotesOffline", IDS_SETTINGS_ABOUT_PAGE_RELEASE_NOTES},
     {"aboutShowReleaseNotes", IDS_SETTINGS_ABOUT_PAGE_SHOW_RELEASE_NOTES},
+    {"aboutManagedEndOfLifeSubtitle",
+     IDS_SETTINGS_ABOUT_PAGE_MANAGED_END_OF_LIFE_SUBTITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

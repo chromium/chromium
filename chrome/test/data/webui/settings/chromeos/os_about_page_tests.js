@@ -455,7 +455,32 @@ cr.define('settings_about_page', function() {
       await checkHasEndOfLife(false);
     });
 
+    test('managed detailed build info page', async () => {
+      loadTimeData.overrideValues({
+        isManaged: true,
+      });
+
+      // Despite there being a valid end of life, the information is not
+      // shown if the user is managed.
+      aboutBrowserProxy.setEndOfLifeInfo({
+        hasEndOfLife: true,
+        aboutPageEndOfLifeMessage: 'message',
+      });
+      await initNewPage();
+      page.scroller = page.offsetParent;
+      assertTrue(!!page.$['detailed-build-info-trigger']);
+      page.$['detailed-build-info-trigger'].click();
+      const buildInfoPage = page.$$('settings-detailed-build-info');
+      assertTrue(!!buildInfoPage);
+      assertTrue(!!buildInfoPage.$['endOfLifeSectionContainer']);
+      assertTrue(buildInfoPage.$['endOfLifeSectionContainer'].hidden);
+    });
+
     test('detailed build info page', async () => {
+      loadTimeData.overrideValues({
+        isManaged: false,
+      });
+
       async function checkEndOfLifeSection() {
         await aboutBrowserProxy.whenCalled('getEndOfLifeInfo');
         const buildInfoPage = page.$$('settings-detailed-build-info');
