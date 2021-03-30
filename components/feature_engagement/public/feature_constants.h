@@ -36,6 +36,8 @@ extern const base::Feature kIPHDesktopPwaInstallFeature;
 // should also be declared in:
 // org.chromium.components.feature_engagement.FeatureConstants.
 #if defined(OS_ANDROID)
+extern const base::Feature kIPHAddToHomescreenMessageFeature;
+extern const base::Feature kIPHAddToHomescreenTextBubbleFeature;
 extern const base::Feature kIPHDataSaverDetailFeature;
 extern const base::Feature kIPHDataSaverMilestonePromoFeature;
 extern const base::Feature kIPHDataSaverPreviewFeature;

@@ -73,12 +73,15 @@ import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoU
 import org.chromium.chrome.browser.ui.tablet.emptybackground.EmptyBackgroundViewWrapper;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
+import org.chromium.chrome.browser.webapps.AddToHomescreenIPHController;
+import org.chromium.chrome.browser.webapps.AddToHomescreenMostVisitedTileClickObserver;
 import org.chromium.chrome.browser.webapps.PwaBottomSheetController;
 import org.chromium.chrome.browser.webapps.PwaBottomSheetControllerFactory;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /**
@@ -99,6 +102,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private WebFeedFollowIntroController mWebFeedFollowIntroController;
     private UrlFocusChangeListener mUrlFocusChangeListener;
     private @Nullable ToolbarButtonInProductHelpController mToolbarButtonInProductHelpController;
+    private AddToHomescreenIPHController mAddToHomescreenIPHController;
+    private AddToHomescreenMostVisitedTileClickObserver mAddToHomescreenMostVisitedTileObserver;
     private AppBannerInProductHelpController mAppBannerInProductHelpController;
     private PwaBottomSheetController mPwaBottomSheetController;
     private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
@@ -411,6 +416,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mAppMenuCoordinator.getAppMenuHandler(), mStatusIndicatorCoordinator);
         }
 
+        mAddToHomescreenIPHController = new AddToHomescreenIPHController(mActivity,
+                mActivity.getWindowAndroid(), mActivity.getModalDialogManager(),
+                mAppMenuCoordinator.getAppMenuHandler(), R.id.add_to_homescreen_id,
+                ()
+                        -> mActivity.getToolbarManager().getMenuButtonView(),
+                MessageDispatcherProvider.from(mActivity.getWindowAndroid()));
+        mAddToHomescreenMostVisitedTileObserver = new AddToHomescreenMostVisitedTileClickObserver(
+                mTabSupplier, mAddToHomescreenIPHController);
         mAppBannerInProductHelpController =
                 AppBannerInProductHelpControllerFactory.createAppBannerInProductHelpController(
                         mActivity, mAppMenuCoordinator.getAppMenuHandler(),

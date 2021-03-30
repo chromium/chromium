@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ObserverList;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
@@ -111,6 +112,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final NewTabPageUma mNewTabPageUma;
     private final ContextMenuManager mContextMenuManager;
+    private final ObserverList<MostVisitedTileClickObserver> mMostVisitedTileClickObservers;
     private FeedSurfaceProvider mFeedSurfaceProvider;
 
     private NewTabPageLayout mNewTabPageLayout;
@@ -160,6 +162,18 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
          * @param scrollPercentage The percentage the search box has been scrolled off the page.
          */
         void onNtpScrollChanged(float scrollPercentage);
+    }
+
+    /**
+     * An observer for most visited tile clicks.
+     */
+    public interface MostVisitedTileClickObserver {
+        /**
+         * Called when a most visited tile is clicked.
+         * @param tile The most visited tile that was clicked.
+         * @param tab The tab hosting the most visited tile section.
+         */
+        void onMostVisitedTileClicked(Tile tile, Tab tab);
     }
 
     protected class NewTabPageManagerImpl
@@ -253,7 +267,9 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             if (mIsDestroyed) return;
 
             super.openMostVisitedItem(windowDisposition, tile);
-
+            for (MostVisitedTileClickObserver observer : mMostVisitedTileClickObservers) {
+                observer.onMostVisitedTileClicked(tile, mTab);
+            }
             if (windowDisposition != WindowOpenDisposition.NEW_WINDOW) {
                 RecordHistogram.recordMediumTimesHistogram("NewTabPage.MostVisitedTime",
                         (System.nanoTime() - mLastShownTimeNs)
@@ -293,6 +309,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mActivityLifecycleDispatcher = lifecycleDispatcher;
         mTab = tab;
         mNewTabPageUma = uma;
+        mMostVisitedTileClickObservers = new ObserverList<>();
         Profile profile = Profile.fromWebContents(mTab.getWebContents());
 
         SuggestionsNavigationDelegate navigationDelegate = new SuggestionsNavigationDelegate(
@@ -635,6 +652,16 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     @Override
     public void onVoiceAvailabilityImpacted() {
         mNewTabPageLayout.updateVoiceSearchButtonVisibility();
+    }
+
+    /** Adds an observer to be notified on most visited tile clicks. */
+    public void addMostVisitedTileClickObserver(MostVisitedTileClickObserver observer) {
+        mMostVisitedTileClickObservers.addObserver(observer);
+    }
+
+    /** Removes the observer. */
+    public void removeMostVisitedTileClickObserver(MostVisitedTileClickObserver observer) {
+        mMostVisitedTileClickObservers.removeObserver(observer);
     }
 
     /**

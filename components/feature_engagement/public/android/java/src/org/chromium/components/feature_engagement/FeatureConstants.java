@@ -13,9 +13,11 @@ import java.lang.annotation.RetentionPolicy;
  * FeatureConstants contains the String name of all base::Feature in-product help features declared
  * in //components/feature_engagement/public/feature_constants.h.
  */
-@StringDef({FeatureConstants.DOWNLOAD_PAGE_FEATURE,
-        FeatureConstants.DOWNLOAD_PAGE_SCREENSHOT_FEATURE, FeatureConstants.DOWNLOAD_HOME_FEATURE,
-        FeatureConstants.DOWNLOAD_INDICATOR_FEATURE, FeatureConstants.CHROME_HOME_EXPAND_FEATURE,
+@StringDef({FeatureConstants.ADD_TO_HOMESCREEN_MESSAGE_FEATURE,
+        FeatureConstants.ADD_TO_HOMESCREEN_TEXT_BUBBLE_FEATURE,
+        FeatureConstants.DOWNLOAD_PAGE_FEATURE, FeatureConstants.DOWNLOAD_PAGE_SCREENSHOT_FEATURE,
+        FeatureConstants.DOWNLOAD_HOME_FEATURE, FeatureConstants.DOWNLOAD_INDICATOR_FEATURE,
+        FeatureConstants.CHROME_HOME_EXPAND_FEATURE,
         FeatureConstants.CHROME_HOME_PULL_TO_REFRESH_FEATURE,
         FeatureConstants.DATA_SAVER_PREVIEW_FEATURE, FeatureConstants.DATA_SAVER_DETAIL_FEATURE,
         FeatureConstants.EPHEMERAL_TAB_FEATURE, FeatureConstants.PREVIEWS_OMNIBOX_UI_FEATURE,
@@ -50,6 +52,8 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.IPH_SHARE_SCREENSHOT_FEATURE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface FeatureConstants {
+    String ADD_TO_HOMESCREEN_MESSAGE_FEATURE = "IPH_AddToHomescreenMessage";
+    String ADD_TO_HOMESCREEN_TEXT_BUBBLE_FEATURE = "IPH_AddToHomescreenTextBubble";
     String DOWNLOAD_PAGE_FEATURE = "IPH_DownloadPage";
     String DOWNLOAD_PAGE_SCREENSHOT_FEATURE = "IPH_DownloadPageScreenshot";
     String DOWNLOAD_HOME_FEATURE = "IPH_DownloadHome";
