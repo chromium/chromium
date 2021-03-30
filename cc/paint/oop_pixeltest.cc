@@ -1741,12 +1741,9 @@ class OopTextBlobPixelTest
     // The nexus5 and nexus5x bots are particularly susceptible to small changes
     // when bilerping an image (not visible).
     const int sdk = base::android::BuildInfo::GetInstance()->sdk_int();
-    if (sdk <= base::android::SDK_VERSION_LOLLIPOP_MR1) {
+    if (sdk <= base::android::SDK_VERSION_MARSHMALLOW) {
       error_pixels_percentage = 10.f;
       max_abs_error = 16;
-    } else if (sdk <= base::android::SDK_VERSION_MARSHMALLOW) {
-      error_pixels_percentage = 2.f;
-      max_abs_error = 2;
     }
 #elif defined(OS_MAC) || defined(OS_WIN)
     // Mac and Windows need very small tolerances only under complex transforms
