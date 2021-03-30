@@ -57,7 +57,7 @@ class NGLineBreakerTest : public NGLayoutTest {
     builder.SetAvailableSize({available_width, kIndefiniteSize});
     NGConstraintSpace space = builder.ToConstraintSpace();
 
-    const NGInlineBreakToken* break_token = nullptr;
+    scoped_refptr<NGInlineBreakToken> break_token;
 
     Vector<std::pair<String, unsigned>> lines;
     trailing_whitespaces_.resize(0);
@@ -68,7 +68,7 @@ class NGLineBreakerTest : public NGLayoutTest {
       NGLineInfo line_info;
       NGLineBreaker line_breaker(node, NGLineBreakerMode::kContent, space,
                                  line_opportunity, leading_floats, 0u,
-                                 break_token, &exclusion_space);
+                                 break_token.get(), &exclusion_space);
       line_breaker.NextLine(&line_info);
       if (callback)
         callback(line_breaker, line_info);

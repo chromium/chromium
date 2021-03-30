@@ -375,7 +375,7 @@ class ColumnConstraintsBuilder {
 
 // Computes constraints specified on column elements.
 void ComputeColumnElementConstraints(
-    const HeapVector<NGBlockNode>& columns,
+    const Vector<NGBlockNode>& columns,
     bool is_fixed_layout,
     NGTableTypes::Columns* column_constraints) {
   ColumnConstraintsBuilder constraints_builder(column_constraints,
@@ -507,7 +507,7 @@ NGConstraintSpace NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
 
 // Computes maximum possible number of non-mergeable columns.
 wtf_size_t NGTableAlgorithmUtils::ComputeMaximumNonMergeableColumnCount(
-    const HeapVector<NGBlockNode>& columns,
+    const Vector<NGBlockNode>& columns,
     bool is_fixed_layout) {
   // Build column constraints.
   scoped_refptr<NGTableTypes::Columns> column_constraints =

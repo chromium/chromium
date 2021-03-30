@@ -250,8 +250,6 @@ scoped_refptr<const NGTableConstraintSpaceData> CreateConstraintSpaceData(
 // in NGTableFragmentData. Geometry data is also copied
 // back to LayoutObject.
 class ColumnGeometriesBuilder {
-  STACK_ALLOCATED();
-
  public:
   void VisitCol(const NGLayoutInputNode& col,
                 wtf_size_t start_column_index,
@@ -263,11 +261,10 @@ class ColumnGeometriesBuilder {
                                     column_locations[start_column_index].offset;
     col.GetLayoutBox()->SetLogicalWidth(column_inline_size);
     col.GetLayoutBox()->SetLogicalHeight(table_grid_block_size);
-    column_geometries->emplace_back(
-        start_column_index, span,
-        column_locations[start_column_index].offset -
-            border_spacing.inline_size,
-        column_inline_size, col);
+    column_geometries.emplace_back(start_column_index, span,
+                                   column_locations[start_column_index].offset -
+                                       border_spacing.inline_size,
+                                   column_inline_size, col);
   }
 
   void EnterColgroup(const NGLayoutInputNode& colgroup,
@@ -285,18 +282,17 @@ class ColumnGeometriesBuilder {
                                column_locations[start_column_index].offset;
     colgroup.GetLayoutBox()->SetLogicalWidth(colgroup_size);
     colgroup.GetLayoutBox()->SetLogicalHeight(table_grid_block_size);
-    column_geometries->emplace_back(
-        start_column_index, span,
-        column_locations[start_column_index].offset -
-            border_spacing.inline_size,
-        colgroup_size, colgroup);
+    column_geometries.emplace_back(start_column_index, span,
+                                   column_locations[start_column_index].offset -
+                                       border_spacing.inline_size,
+                                   colgroup_size, colgroup);
   }
 
   void Sort() {
     // Geometries need to be sorted because this must be true:
     // - parent COLGROUP must come before child COLs.
     // - child COLs are in ascending order.
-    std::sort(column_geometries->begin(), column_geometries->end(),
+    std::sort(column_geometries.begin(), column_geometries.end(),
               [](const NGTableFragmentData::ColumnGeometry& a,
                  const NGTableFragmentData::ColumnGeometry& b) {
                 if (a.node.IsTableCol() && b.node.IsTableCol()) {
@@ -327,8 +323,7 @@ class ColumnGeometriesBuilder {
       : column_locations(column_locations),
         table_grid_block_size(table_grid_block_size),
         border_spacing(border_spacing) {}
-  NGTableFragmentData::ColumnGeometries* column_geometries =
-      MakeGarbageCollected<NGTableFragmentData::ColumnGeometries>();
+  NGTableFragmentData::ColumnGeometries column_geometries;
   const NGTableTypes::ColumnLocations& column_locations;
   const LayoutUnit table_grid_block_size;
   const LogicalSize& border_spacing;

@@ -90,7 +90,6 @@ ScriptPromise CustomLayoutChild::layoutNextFragment(
 }
 
 void CustomLayoutChild::Trace(Visitor* visitor) const {
-  visitor->Trace(node_);
   visitor->Trace(style_map_);
   visitor->Trace(token_);
   ScriptWrappable::Trace(visitor);

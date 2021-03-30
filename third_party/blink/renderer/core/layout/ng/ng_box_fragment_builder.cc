@@ -146,7 +146,7 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
           // If there is an inline break token, it will always be the last
           // child.
           last_inline_break_token_ =
-              DynamicTo<NGInlineBreakToken>(child_tokens.back().Get());
+              DynamicTo<NGInlineBreakToken>(child_tokens.back());
           if (last_inline_break_token_)
             return;
         }
@@ -159,7 +159,7 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
     }
     return;
   }
-  auto* token = NGBlockBreakToken::CreateBreakBefore(child, is_forced_break);
+  auto token = NGBlockBreakToken::CreateBreakBefore(child, is_forced_break);
   child_break_tokens_.push_back(token);
 }
 
@@ -318,10 +318,11 @@ void NGBoxFragmentBuilder::AddChild(const NGPhysicalContainerFragment& child,
   AddChildInternal(&child, adjusted_offset);
 }
 
-void NGBoxFragmentBuilder::AddBreakToken(const NGBreakToken* token,
-                                         bool is_in_parallel_flow) {
-  DCHECK(token);
-  child_break_tokens_.push_back(token);
+void NGBoxFragmentBuilder::AddBreakToken(
+    scoped_refptr<const NGBreakToken> token,
+    bool is_in_parallel_flow) {
+  DCHECK(token.get());
+  child_break_tokens_.push_back(std::move(token));
   has_inflow_child_break_inside_ |= !is_in_parallel_flow;
 }
 
@@ -455,7 +456,7 @@ const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(
         items_builder_->HasFloatingDescendantsForPaint();
   }
 
-  const NGPhysicalBoxFragment* fragment =
+  scoped_refptr<const NGPhysicalBoxFragment> fragment =
       NGPhysicalBoxFragment::Create(this, block_or_line_writing_mode);
   fragment->CheckType();
 

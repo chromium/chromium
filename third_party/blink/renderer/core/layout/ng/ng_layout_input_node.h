@@ -313,8 +313,6 @@ class CORE_EXPORT NGLayoutInputNode {
   void ShowNodeTree() const;
 #endif
 
-  void Trace(Visitor* visitor) const { visitor->Trace(box_); }
-
  protected:
   NGLayoutInputNode(LayoutBox* box, NGLayoutInputNodeType type)
       : box_(box), type_(type) {}
@@ -323,7 +321,7 @@ class CORE_EXPORT NGLayoutInputNode {
       base::Optional<LayoutUnit>* computed_inline_size,
       base::Optional<LayoutUnit>* computed_block_size) const;
 
-  Member<LayoutBox> box_;
+  UntracedMember<LayoutBox> box_;
 
   unsigned type_ : 1;  // NGLayoutInputNodeType
 };

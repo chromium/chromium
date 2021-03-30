@@ -116,7 +116,7 @@ class MulticolPartWalker {
   NGBlockNode spanner_ = nullptr;
   NGBlockNode multicol_container_;
   const NGBlockBreakToken* parent_break_token_;
-  const NGBlockBreakToken* next_column_token_ = nullptr;
+  scoped_refptr<const NGBlockBreakToken> next_column_token_;
 
   // An index into parent_break_token_'s ChildBreakTokens() vector. Used for
   // keeping track of the next child break token to inspect.
@@ -156,7 +156,7 @@ void MulticolPartWalker::UpdateCurrent() {
     const auto& child_break_tokens = parent_break_token_->ChildBreakTokens();
     if (child_token_idx_ < child_break_tokens.size()) {
       const auto* child_break_token =
-          To<NGBlockBreakToken>(child_break_tokens[child_token_idx_].Get());
+          To<NGBlockBreakToken>(child_break_tokens[child_token_idx_]);
       if (child_break_token->InputNode() == multicol_container_) {
         current_.spanner = nullptr;
       } else {
@@ -174,7 +174,7 @@ void MulticolPartWalker::UpdateCurrent() {
   }
 
   if (next_column_token_) {
-    current_ = Entry(next_column_token_, /* spanner */ nullptr);
+    current_ = Entry(next_column_token_.get(), /* spanner */ nullptr);
     return;
   }
 
@@ -305,7 +305,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::Layout() {
     // out at the outermost context. If this multicol has OOF positioned
     // elements pending layout, store its node for later use.
     if (container_builder_.HasOutOfFlowFragmentainerDescendants()) {
-      container_builder_.AddMulticolWithPendingOOFs(node_);
+      container_builder_.AddMulticolWithPendingOOFs(Node());
     }
   }
 
@@ -577,7 +577,8 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
   const NGLayoutResult* result = nullptr;
 
   do {
-    const NGBlockBreakToken* column_break_token = next_column_token;
+    scoped_refptr<const NGBlockBreakToken> column_break_token =
+        next_column_token;
 
     bool allow_discard_start_margin =
         column_break_token && !column_break_token->IsCausedByColumnSpanner();
@@ -603,7 +604,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
           CalculateInitialFragmentGeometry(child_space, Node());
 
       NGBlockLayoutAlgorithm child_algorithm(
-          {Node(), fragment_geometry, child_space, column_break_token});
+          {Node(), fragment_geometry, child_space, column_break_token.get()});
       child_algorithm.SetBoxType(NGPhysicalFragment::kColumnBox);
       result = child_algorithm.Layout();
       const auto& column = result->PhysicalFragment();
@@ -935,11 +936,11 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
 
   // First split into content runs at explicit (forced) breaks.
   ContentRuns content_runs;
-  const NGBlockBreakToken* break_token = child_break_token;
+  scoped_refptr<const NGBlockBreakToken> break_token = child_break_token;
   tallest_unbreakable_block_size_ = LayoutUnit();
   do {
     NGBlockLayoutAlgorithm balancing_algorithm(
-        {Node(), fragment_geometry, space, break_token});
+        {Node(), fragment_geometry, space, break_token.get()});
     balancing_algorithm.SetBoxType(NGPhysicalFragment::kColumnBox);
     const NGLayoutResult* result = balancing_algorithm.Layout();
 

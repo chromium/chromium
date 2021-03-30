@@ -563,7 +563,7 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
   // Try to reuse line box fragments from cached fragments if possible.
   // When possible, this adds fragments to |container_builder_| and update
   // |previous_inflow_position| and |BreakToken()|.
-  const NGInlineBreakToken* previous_inline_break_token = nullptr;
+  scoped_refptr<const NGInlineBreakToken> previous_inline_break_token;
 
   NGBlockChildIterator child_iterator(Node().FirstChild(), BreakToken());
 
@@ -577,7 +577,7 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
   NGBlockNode placeholder_child(nullptr);
   for (auto entry = child_iterator.NextChild();
        NGLayoutInputNode child = entry.node;
-       entry = child_iterator.NextChild(previous_inline_break_token)) {
+       entry = child_iterator.NextChild(previous_inline_break_token.get())) {
     const NGBreakToken* child_break_token = entry.token;
 
     if (child.IsOutOfFlowPositioned()) {
@@ -687,7 +687,7 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
         NGLayoutResult::kNeedsRelayoutWithNoForcedTruncateAtLineClamp);
   }
 
-  if (!child_iterator.NextChild(previous_inline_break_token).node) {
+  if (!child_iterator.NextChild(previous_inline_break_token.get()).node) {
     // We've gone through all the children. This doesn't necessarily mean that
     // we're done fragmenting, as there may be parallel flows [1] (visible
     // overflow) still needing more space than what the current fragmentainer
@@ -936,7 +936,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
 bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
     NGInlineNode inline_node,
     NGPreviousInflowPosition* previous_inflow_position,
-    const NGInlineBreakToken** inline_break_token_out) {
+    scoped_refptr<const NGInlineBreakToken>* inline_break_token_out) {
   DCHECK(previous_result_);
   DCHECK(!inline_node.IsEmptyInline());
   DCHECK(container_builder_.BfcBlockOffset());
@@ -1537,7 +1537,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleInflow(
     const NGBreakToken* child_break_token,
     NGPreviousInflowPosition* previous_inflow_position,
     NGInlineChildLayoutContext* inline_child_layout_context,
-    const NGInlineBreakToken** previous_inline_break_token) {
+    scoped_refptr<const NGInlineBreakToken>* previous_inline_break_token) {
   DCHECK(child);
   DCHECK(!child.IsFloating());
   DCHECK(!child.IsOutOfFlowPositioned());
@@ -1623,7 +1623,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
     NGInflowChildData* child_data,
     NGPreviousInflowPosition* previous_inflow_position,
     NGInlineChildLayoutContext* inline_child_layout_context,
-    const NGInlineBreakToken** previous_inline_break_token) {
+    scoped_refptr<const NGInlineBreakToken>* previous_inline_break_token) {
   base::Optional<LayoutUnit> child_bfc_block_offset =
       layout_result->BfcBlockOffset();
 
@@ -2884,11 +2884,11 @@ bool NGBlockLayoutAlgorithm::IsRubyText(const NGLayoutInputNode& child) const {
 void NGBlockLayoutAlgorithm::HandleRubyText(NGBlockNode ruby_text_child) {
   DCHECK(Node().IsRubyRun());
 
-  const NGBlockBreakToken* break_token = nullptr;
+  scoped_refptr<const NGBlockBreakToken> break_token;
   if (const auto* token = BreakToken()) {
-    for (const auto& child_token : token->ChildBreakTokens()) {
+    for (const auto* child_token : token->ChildBreakTokens()) {
       if (child_token->InputNode() == ruby_text_child) {
-        break_token = To<NGBlockBreakToken>(child_token.Get());
+        break_token = To<NGBlockBreakToken>(child_token);
         break;
       }
     }
@@ -2904,7 +2904,7 @@ void NGBlockLayoutAlgorithm::HandleRubyText(NGBlockNode ruby_text_child) {
     builder.SetStretchInlineSizeIfAuto(true);
 
   const NGLayoutResult* result =
-      ruby_text_child.Layout(builder.ToConstraintSpace(), break_token);
+      ruby_text_child.Layout(builder.ToConstraintSpace(), break_token.get());
 
   LayoutUnit ruby_text_box_top;
   const NGPhysicalBoxFragment& ruby_text_fragment =

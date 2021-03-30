@@ -67,12 +67,14 @@ class CORE_EXPORT NGLayoutResult final
                  LayoutUnit block_offset_delta);
 
   // Creates a copy of NGLayoutResult with a new (but "identical") fragment.
-  NGLayoutResult(const NGLayoutResult& other,
-                 const NGPhysicalContainerFragment* physical_fragment);
+  NGLayoutResult(
+      const NGLayoutResult& other,
+      scoped_refptr<const NGPhysicalContainerFragment> physical_fragment);
 
   // Delegate constructor that sets up what it can, based on the builder.
-  NGLayoutResult(const NGPhysicalContainerFragment* physical_fragment,
-                 NGContainerFragmentBuilder* builder);
+  NGLayoutResult(
+      scoped_refptr<const NGPhysicalContainerFragment> physical_fragment,
+      NGContainerFragmentBuilder* builder);
 
   // We don't need the copy constructor, move constructor, copy
   // assigmnment-operator, or move assignment-operator today.
@@ -373,15 +375,17 @@ class CORE_EXPORT NGLayoutResult final
   // This constructor is for a non-success status.
   NGLayoutResult(NGBoxFragmentBuilderPassKey, EStatus, NGBoxFragmentBuilder*);
   // This constructor requires a non-null fragment and sets a success status.
-  NGLayoutResult(NGBoxFragmentBuilderPassKey,
-                 const NGPhysicalContainerFragment* physical_fragment,
-                 NGBoxFragmentBuilder*);
+  NGLayoutResult(
+      NGBoxFragmentBuilderPassKey,
+      scoped_refptr<const NGPhysicalContainerFragment> physical_fragment,
+      NGBoxFragmentBuilder*);
   using NGLineBoxFragmentBuilderPassKey =
       base::PassKey<NGLineBoxFragmentBuilder>;
   // This constructor requires a non-null fragment and sets a success status.
-  NGLayoutResult(NGLineBoxFragmentBuilderPassKey,
-                 const NGPhysicalContainerFragment* physical_fragment,
-                 NGLineBoxFragmentBuilder*);
+  NGLayoutResult(
+      NGLineBoxFragmentBuilderPassKey,
+      scoped_refptr<const NGPhysicalContainerFragment> physical_fragment,
+      NGLineBoxFragmentBuilder*);
 
   void Trace(Visitor*) const;
 
@@ -539,7 +543,7 @@ class CORE_EXPORT NGLayoutResult final
   // as indicated by |has_valid_space_|.
   const NGConstraintSpace space_;
 
-  Member<const NGPhysicalContainerFragment> physical_fragment_;
+  scoped_refptr<const NGPhysicalContainerFragment> physical_fragment_;
 
   // |rare_data_| is not stored in the union because |Bitfields::has_rare_data|
   // is not initialized in constructor's initializer list and it cannot be

@@ -23,7 +23,7 @@ namespace {
 struct SameSizeAsNGLayoutResult
     : public GarbageCollected<SameSizeAsNGLayoutResult> {
   const NGConstraintSpace space;
-  Member<void*> physical_fragment;
+  scoped_refptr<void*> physical_fragment;
   Member<void*> rare_data_;
   union {
     NGBfcOffset bfc_offset;
@@ -53,7 +53,7 @@ const NGLayoutResult* NGLayoutResult::CloneWithPostLayoutFragments(
 
 NGLayoutResult::NGLayoutResult(
     NGBoxFragmentBuilderPassKey passkey,
-    const NGPhysicalContainerFragment* physical_fragment,
+    scoped_refptr<const NGPhysicalContainerFragment> physical_fragment,
     NGBoxFragmentBuilder* builder)
     : NGLayoutResult(std::move(physical_fragment),
                      static_cast<NGContainerFragmentBuilder*>(builder)) {
@@ -118,7 +118,7 @@ NGLayoutResult::NGLayoutResult(
 
 NGLayoutResult::NGLayoutResult(
     NGLineBoxFragmentBuilderPassKey passkey,
-    const NGPhysicalContainerFragment* physical_fragment,
+    scoped_refptr<const NGPhysicalContainerFragment> physical_fragment,
     NGLineBoxFragmentBuilder* builder)
     : NGLayoutResult(std::move(physical_fragment),
                      static_cast<NGContainerFragmentBuilder*>(builder)) {}
@@ -180,7 +180,7 @@ NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
 
 NGLayoutResult::NGLayoutResult(
     const NGLayoutResult& other,
-    const NGPhysicalContainerFragment* physical_fragment)
+    scoped_refptr<const NGPhysicalContainerFragment> physical_fragment)
     : space_(other.space_),
       physical_fragment_(std::move(physical_fragment)),
       intrinsic_block_size_(other.intrinsic_block_size_),
@@ -202,7 +202,7 @@ NGLayoutResult::NGLayoutResult(
 }
 
 NGLayoutResult::NGLayoutResult(
-    const NGPhysicalContainerFragment* physical_fragment,
+    scoped_refptr<const NGPhysicalContainerFragment> physical_fragment,
     NGContainerFragmentBuilder* builder)
     : space_(builder->space_ ? NGConstraintSpace(*builder->space_)
                              : NGConstraintSpace()),
@@ -356,14 +356,12 @@ void NGLayoutResult::AssertSoleBoxFragment() const {
 
 void NGLayoutResult::Trace(Visitor* visitor) const {
   visitor->Trace(space_);
-  visitor->Trace(physical_fragment_);
   visitor->Trace(rare_data_);
 }
 
 void NGLayoutResult::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(early_break);
   visitor->Trace(unpositioned_list_marker);
-  visitor->Trace(column_spanner);
   visitor->Trace(exclusion_space);
 }
 

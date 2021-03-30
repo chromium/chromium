@@ -355,14 +355,6 @@ NGTableGroupedChildren::NGTableGroupedChildren(const NGBlockNode& table)
   }
 }
 
-void NGTableGroupedChildren::Trace(Visitor* visitor) const {
-  visitor->Trace(captions);
-  visitor->Trace(columns);
-  visitor->Trace(header);
-  visitor->Trace(bodies);
-  visitor->Trace(footer);
-}
-
 NGTableGroupedChildrenIterator NGTableGroupedChildren::begin() const {
   return NGTableGroupedChildrenIterator(*this);
 }
@@ -390,8 +382,8 @@ NGTableGroupedChildrenIterator& NGTableGroupedChildrenIterator::operator++() {
       AdvanceToNonEmptySection();
       break;
     case kBody:
-      ++position_;
-      if (body_vector_->begin() + position_ == grouped_children_.bodies.end())
+      ++body_iterator_;
+      if (body_iterator_ == grouped_children_.bodies.end())
         AdvanceToNonEmptySection();
       break;
     case kEnd:
@@ -410,7 +402,7 @@ NGBlockNode NGTableGroupedChildrenIterator::operator*() const {
     case kFoot:
       return grouped_children_.footer;
     case kBody:
-      return body_vector_->at(position_);
+      return *body_iterator_;
     case kEnd:
     case kNone:
       NOTREACHED();
@@ -423,7 +415,7 @@ bool NGTableGroupedChildrenIterator::operator==(
   if (current_section_ != rhs.current_section_)
     return false;
   if (current_section_ == kBody)
-    return rhs.body_vector_ == body_vector_ && rhs.position_ == position_;
+    return rhs.body_iterator_ == body_iterator_;
   return true;
 }
 
@@ -441,9 +433,8 @@ void NGTableGroupedChildrenIterator::AdvanceToNonEmptySection() {
       break;
     case kHead:
       current_section_ = kBody;
-      body_vector_ = &grouped_children_.bodies;
-      position_ = 0;
-      if (body_vector_->size() == 0)
+      body_iterator_ = grouped_children_.bodies.begin();
+      if (body_iterator_ == grouped_children_.bodies.end())
         AdvanceToNonEmptySection();
       break;
     case kBody:

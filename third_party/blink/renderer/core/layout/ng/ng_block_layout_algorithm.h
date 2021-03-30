@@ -148,7 +148,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   bool TryReuseFragmentsFromCache(
       NGInlineNode child,
       NGPreviousInflowPosition*,
-      const NGInlineBreakToken** inline_break_token_out);
+      scoped_refptr<const NGInlineBreakToken>* inline_break_token_out);
 
   void HandleOutOfFlowPositioned(const NGPreviousInflowPosition&, NGBlockNode);
   void HandleFloat(const NGPreviousInflowPosition&,
@@ -195,7 +195,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
       const NGBreakToken* child_break_token,
       NGPreviousInflowPosition*,
       NGInlineChildLayoutContext*,
-      const NGInlineBreakToken** previous_inline_break_token);
+      scoped_refptr<const NGInlineBreakToken>* previous_inline_break_token);
 
   NGLayoutResult::EStatus FinishInflow(
       NGLayoutInputNode child,
@@ -206,7 +206,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
       NGInflowChildData*,
       NGPreviousInflowPosition*,
       NGInlineChildLayoutContext*,
-      const NGInlineBreakToken** previous_inline_break_token);
+      scoped_refptr<const NGInlineBreakToken>* previous_inline_break_token);
 
   // Performs any final adjustments for table-cells.
   void FinalizeForTableCell(LayoutUnit unconstrained_intrinsic_block_size);

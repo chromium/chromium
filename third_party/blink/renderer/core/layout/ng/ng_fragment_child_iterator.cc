@@ -33,7 +33,7 @@ NGFragmentChildIterator::NGFragmentChildIterator(
 NGFragmentChildIterator::NGFragmentChildIterator(
     const NGInlineCursor& parent,
     const NGBlockBreakToken* parent_break_token,
-    base::span<const Member<const NGBreakToken>> child_break_tokens)
+    base::span<const NGBreakToken* const> child_break_tokens)
     : parent_break_token_(parent_break_token),
       child_break_tokens_(child_break_tokens) {
   current_.block_break_token_ = parent_break_token;
@@ -63,7 +63,7 @@ bool NGFragmentChildIterator::AdvanceChildFragment() {
   DCHECK(parent_fragment_);
   const auto children = parent_fragment_->Children();
   const NGPhysicalBoxFragment* previous_fragment =
-      To<NGPhysicalBoxFragment>(current_.link_.fragment.Get());
+      To<NGPhysicalBoxFragment>(current_.link_.fragment);
   DCHECK(previous_fragment);
   if (child_fragment_idx_ < children.size())
     child_fragment_idx_++;
@@ -89,8 +89,8 @@ void NGFragmentChildIterator::UpdateSelfFromFragment(
   DCHECK(current_.link_.fragment);
   SkipToBlockBreakToken();
   if (child_break_token_idx_ < child_break_tokens_.size()) {
-    current_.block_break_token_ = To<NGBlockBreakToken>(
-        child_break_tokens_[child_break_token_idx_].Get());
+    current_.block_break_token_ =
+        To<NGBlockBreakToken>(child_break_tokens_[child_break_token_idx_]);
     // TODO(mstensho): Clean up this. What we're trying to do here is to detect
     // whether the incoming break token matches the current fragment or not.
     // Figuring out if a fragment is generated from a given node is currently
@@ -124,7 +124,7 @@ void NGFragmentChildIterator::UpdateSelfFromFragment(
              previous_fragment->IsColumnSpanAll());
     }
   } else if (current_.link_.fragment->IsOutOfFlowPositioned() &&
-             !To<NGPhysicalBoxFragment>(current_.link_.fragment.Get())
+             !To<NGPhysicalBoxFragment>(current_.link_.fragment)
                   ->IsFirstForNode()) {
     // If an out-of-flow positioned element fragments beyond the last existing
     // fragmentainer in a nested fragmentation context, instead of creating a
@@ -136,7 +136,7 @@ void NGFragmentChildIterator::UpdateSelfFromFragment(
     const auto* layout_object = current_.link_.fragment->GetLayoutObject();
     DCHECK(layout_object);
     for (wtf_size_t index = child_fragment_idx_; index > 0; index--) {
-      const auto* child_fragment = children[index - 1].fragment.Get();
+      const auto* child_fragment = children[index - 1].fragment;
       if (layout_object == child_fragment->GetLayoutObject()) {
         current_.block_break_token_ = To<NGBlockBreakToken>(
             To<NGPhysicalBoxFragment>(child_fragment)->BreakToken());
@@ -190,7 +190,7 @@ void NGFragmentChildIterator::SkipToBlockBreakToken() {
   // There may be inline break tokens here. Ignore them.
   while (child_break_token_idx_ < child_break_tokens_.size()) {
     const auto* current_break_token = DynamicTo<NGBlockBreakToken>(
-        child_break_tokens_[child_break_token_idx_].Get());
+        child_break_tokens_[child_break_token_idx_]);
     // Skip over any out-of-flow positioned break tokens that are the result of
     // a break before.
     if (current_break_token &&
