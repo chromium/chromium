@@ -159,6 +159,10 @@ ResultExpr RestrictCloneToThreadsAndEPERMFork() {
       .Else(CrashSIGSYSClone());
 }
 
+#ifndef PR_PAC_RESET_KEYS
+#define PR_PAC_RESET_KEYS 54
+#endif
+
 ResultExpr RestrictPrctl() {
   // Will need to add seccomp compositing in the future. PR_SET_PTRACER is
   // used by breakpad but not needed anymore.
@@ -167,7 +171,7 @@ ResultExpr RestrictPrctl() {
       .CASES((PR_GET_NAME, PR_SET_NAME, PR_GET_DUMPABLE, PR_SET_DUMPABLE
 #if defined(OS_ANDROID)
               , PR_SET_VMA, PR_SET_PTRACER, PR_SET_TIMERSLACK
-              , PR_GET_NO_NEW_PRIVS
+              , PR_GET_NO_NEW_PRIVS, PR_PAC_RESET_KEYS
 
 // Enable PR_SET_TIMERSLACK_PID, an Android custom prctl which is used in:
 // https://android.googlesource.com/platform/system/core/+/lollipop-release/libcutils/sched_policy.c.
