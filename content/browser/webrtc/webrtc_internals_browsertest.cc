@@ -82,7 +82,7 @@ typedef std::map<string, std::vector<string> > StatsMap;
 
 class PeerConnectionEntry {
  public:
-  PeerConnectionEntry(int pid, int lid) : pid_(pid), lid_(lid) {}
+  PeerConnectionEntry(int rid, int lid) : rid_(rid), lid_(lid) {}
 
   void AddEvent(const string& type, const string& value) {
     EventEntry entry = {type, value};
@@ -91,19 +91,19 @@ class PeerConnectionEntry {
 
   string getIdString() const {
     std::stringstream ss;
-    ss << pid_ << "-" << lid_;
+    ss << rid_ << "-" << lid_;
     return ss.str();
   }
 
   string getLogIdString() const {
     std::stringstream ss;
-    ss << pid_ << "-" << lid_ << "-update-log";
+    ss << rid_ << "-" << lid_ << "-update-log";
     return ss.str();
   }
 
   string getAllUpdateString() const {
     std::stringstream ss;
-    ss << "{pid:" << pid_ << ", lid:" << lid_ << ", log:[";
+    ss << "{rid:" << rid_ << ", lid:" << lid_ << ", log:[";
     for (size_t i = 0; i < events_.size(); ++i) {
       ss << "{type:'" << events_[i].type <<
           "', value:'" << events_[i].value << "'},";
@@ -112,7 +112,7 @@ class PeerConnectionEntry {
     return ss.str();
   }
 
-  int pid_;
+  int rid_;
   int lid_;
   std::vector<EventEntry> events_;
   // This is a record of the history of stats value reported for each stats
@@ -124,19 +124,19 @@ class PeerConnectionEntry {
 
 class UserMediaRequestEntry {
  public:
-  UserMediaRequestEntry(int pid,
-                        int rid,
+  UserMediaRequestEntry(int rid,
+                        int pid,
                         const std::string& origin,
                         const std::string& audio_constraints,
                         const std::string& video_constraints)
-      : pid(pid),
-        rid(rid),
+      : rid(rid),
+        pid(pid),
         origin(origin),
         audio_constraints(audio_constraints),
         video_constraints(video_constraints) {}
 
-  int pid;
   int rid;
+  int pid;
   std::string origin;
   std::string audio_constraints;
   std::string video_constraints;
@@ -179,8 +179,8 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
   // Execute the javascript of addPeerConnection.
   void ExecuteAddPeerConnectionJs(const PeerConnectionEntry& pc) {
     std::stringstream ss;
-    ss << "{pid:" << pc.pid_ <<", lid:" << pc.lid_ << ", " <<
-           "url:'u', rtcConfiguration:'s', constraints:'c'}";
+    ss << "{rid:" << pc.rid_ << ", lid:" << pc.lid_ << ", pid:" << 0 << ", "
+       << "url:'u', rtcConfiguration:'s', constraints:'c'}";
     ASSERT_TRUE(ExecuteJavascript(
         "cr.webUIListenerCallback('add-peer-connection', " + ss.str() + ");"));
   }
@@ -188,7 +188,7 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
   // Execute the javascript of removePeerConnection.
   void ExecuteRemovePeerConnectionJs(const PeerConnectionEntry& pc) {
     std::stringstream ss;
-    ss << "{pid:" << pc.pid_ <<", lid:" << pc.lid_ << "}";
+    ss << "{rid:" << pc.rid_ << ", lid:" << pc.lid_ << "}";
 
     ASSERT_TRUE(ExecuteJavascript(
         "cr.webUIListenerCallback('remove-peer-connection', " + ss.str() +
@@ -198,7 +198,7 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
   // Execute the javascript of addGetUserMedia.
   void ExecuteAddGetUserMediaJs(const UserMediaRequestEntry& request) {
     std::stringstream ss;
-    ss << "{pid:" << request.pid << ", rid:" << request.rid << ", origin:'"
+    ss << "{rid:" << request.rid << ", pid:" << request.pid << ", origin:'"
        << request.origin << "', audio:'" << request.audio_constraints
        << "', video:'" << request.video_constraints << "'}";
 
@@ -258,15 +258,15 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     for (size_t i = 0; i < requests.size(); ++i) {
       base::DictionaryValue* dict = nullptr;
       ASSERT_TRUE(list_request->GetDictionary(i, &dict));
-      int pid, rid;
+      int rid, pid;
       std::string origin, audio, video;
-      ASSERT_TRUE(dict->GetInteger("pid", &pid));
       ASSERT_TRUE(dict->GetInteger("rid", &rid));
+      ASSERT_TRUE(dict->GetInteger("pid", &pid));
       ASSERT_TRUE(dict->GetString("origin", &origin));
       ASSERT_TRUE(dict->GetString("audio", &audio));
       ASSERT_TRUE(dict->GetString("video", &video));
-      EXPECT_EQ(requests[i].pid, pid);
       EXPECT_EQ(requests[i].rid, rid);
+      EXPECT_EQ(requests[i].pid, pid);
       EXPECT_EQ(requests[i].origin, origin);
       EXPECT_EQ(requests[i].audio_constraints, audio);
       EXPECT_EQ(requests[i].video_constraints, video);
@@ -320,8 +320,8 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     pc.AddEvent(type, value);
 
     std::stringstream ss;
-    ss << "{pid:" << pc.pid_ <<", lid:" << pc.lid_ <<
-         ", type:'" << type << "', value:'" << value << "'}";
+    ss << "{rid:" << pc.rid_ << ", lid:" << pc.lid_ << ", type:'" << type
+       << "', value:'" << value << "'}";
     ASSERT_TRUE(ExecuteJavascript(
         "cr.webUIListenerCallback('update-peer-connection', " + ss.str() +
         ")"));
@@ -344,7 +344,7 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     ss << "(() => {\n";
     ss << "  setCurrentGetStatsMethod(OPTION_GETSTATS_LEGACY);\n";
     ss << "  cr.webUIListenerCallback('add-legacy-stats', "
-       << "{pid:" << pc.pid_ << ", lid:" << pc.lid_ << ", reports:[{id:'" << id
+       << "{rid:" << pc.rid_ << ", lid:" << pc.lid_ << ", reports:[{id:'" << id
        << "', type:'" << type << "', stats:" << stats.GetString() << "}]});\n";
     ss << "})()";
     ASSERT_TRUE(ExecuteJavascript(ss.str()));

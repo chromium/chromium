@@ -42,6 +42,7 @@ class PeerConnectionRecord {
   constructor() {
     /** @private */
     this.record_ = {
+      pid: -1,
       constraints: {},
       rtcConfiguration: [],
       stats: {},
@@ -57,11 +58,13 @@ class PeerConnectionRecord {
 
   /**
    * Adds the initialization info of the peer connection.
+   * @param {number} pid The pid of the process hosting the peer connection.
    * @param {string} url The URL of the web page owning the peer connection.
    * @param {Array} rtcConfiguration
    * @param {!Object} constraints Media constraints.
    */
-  initialize(url, rtcConfiguration, constraints) {
+  initialize(pid, url, rtcConfiguration, constraints) {
+    this.record_.pid = pid;
     this.record_.url = url;
     this.record_.rtcConfiguration = rtcConfiguration;
     this.record_.constraints = constraints;
@@ -223,12 +226,12 @@ function changeToLegacyGetStats() {
 /**
  * A helper function for getting a peer connection element id.
  *
- * @param {!Object<number>} data The object containing the pid and lid of the
+ * @param {!Object<number>} data The object containing the rid and lid of the
  *     peer connection.
  * @return {string} The peer connection element id.
  */
 function getPeerConnectionId(data) {
-  return data.pid + '-' + data.lid;
+  return data.rid + '-' + data.lid;
 }
 
 
@@ -280,7 +283,7 @@ function addPeerConnectionUpdate(peerConnectionElement, update) {
 /**
  * Removes all information about a peer connection.
  *
- * @param {!Object<number>} data The object containing the pid and lid of a peer
+ * @param {!Object<number>} data The object containing the rid and lid of a peer
  *     connection.
  */
 function removePeerConnection(data) {
@@ -295,7 +298,7 @@ function removePeerConnection(data) {
 /**
  * Adds a peer connection.
  *
- * @param {!Object} data The object containing the pid, lid, url,
+ * @param {!Object} data The object containing the rid, lid, pid, url,
  *     rtcConfiguration, and constraints of a peer connection.
  */
 function addPeerConnection(data) {
@@ -305,11 +308,12 @@ function addPeerConnection(data) {
     peerConnectionDataStore[id] = new PeerConnectionRecord();
   }
   peerConnectionDataStore[id].initialize(
-      data.url, data.rtcConfiguration, data.constraints);
+      data.pid, data.url, data.rtcConfiguration, data.constraints);
 
   let peerConnectionElement = $(id);
   if (!peerConnectionElement) {
-    peerConnectionElement = tabView.addTab(id, data.url + ' [' + id + ']');
+    const details = `[ rid: ${data.rid}, lid: ${data.lid}, pid: ${data.pid} ]`;
+    peerConnectionElement = tabView.addTab(id, data.url + " " + details);
   }
 
   const p = document.createElement('p');
@@ -341,8 +345,8 @@ function updatePeerConnection(data) {
  * Adds the information of all peer connections created so far.
  *
  * @param {Array<!Object>} data An array of the information of all peer
- *     connections. Each array item contains pid, lid, url, rtcConfiguration,
- *     constraints, and an array of updates as the log.
+ *     connections. Each array item contains rid, lid, pid, url,
+ *     rtcConfiguration, constraints, and an array of updates as the log.
  */
 function updateAllPeerConnections(data) {
   for (let i = 0; i < data.length; ++i) {
@@ -362,7 +366,7 @@ function updateAllPeerConnections(data) {
 /**
  * Handles the report of stats originating from the standard getStats() API.
  *
- * @param {!Object} data The object containing pid, lid, and reports, where
+ * @param {!Object} data The object containing rid, lid, and reports, where
  *     reports is an array of stats reports. Each report contains id, type,
  *     and stats, where stats is the object containing timestamp and values,
  *     which is an array of strings, whose even index entry is the name of the
@@ -395,7 +399,7 @@ function addStandardStats(data) {
 /**
  * Handles the report of stats originating from the legacy getStats() API.
  *
- * @param {!Object} data The object containing pid, lid, and reports, where
+ * @param {!Object} data The object containing rid, lid, and reports, where
  *     reports is an array of stats reports. Each report contains id, type,
  *     and stats, where stats is the object containing timestamp and values,
  *     which is an array of strings, whose even index entry is the name of the

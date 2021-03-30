@@ -17,6 +17,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -55,49 +56,50 @@ class CONTENT_EXPORT WebRTCInternals : public RenderProcessHostObserver,
   ~WebRTCInternals() override;
 
   // This method is called when a PeerConnection is created.
-  // |render_process_id| is the id of the render process (not OS pid), which is
-  // needed because we might not be able to get the OS process id when the
-  // render process terminates and we want to clean up.
-  // |pid| is the renderer process id, |lid| is the renderer local id used to
-  // identify a PeerConnection, |url| is the url of the tab owning the
+  // |frame_id| is the ID of the RenderFrameHost and |lid| is the renderer local
+  // ID which, together with |frame_id|, is used to identify a PeerConnection.
+  // |pid| is the renderer process id, |url| is the url of the tab owning the
   // PeerConnection, |rtc_configuration| is the serialized RTCConfiguration,
   // |constraints| is the serialized legacy constraints used to initialize the
   // PeerConnection.
-  void OnPeerConnectionAdded(int render_process_id,
-                             base::ProcessId pid,
+  void OnPeerConnectionAdded(GlobalFrameRoutingId frame_id,
                              int lid,
+                             base::ProcessId pid,
                              const std::string& url,
                              const std::string& rtc_configuration,
                              const std::string& constraints);
 
-  // This method is called when a PeerConnection is destroyed.
-  // |pid| is the renderer process id, |lid| is the renderer local id.
-  void OnPeerConnectionRemoved(base::ProcessId pid, int lid);
+  // This method is called when PeerConnection is destroyed.
+  // |frame_id| is the ID of the RenderFrameHost and |lid| is the renderer local
+  // ID.
+  void OnPeerConnectionRemoved(GlobalFrameRoutingId frame_id, int lid);
 
   // This method is called when a PeerConnection is updated.
-  // |pid| is the renderer process id, |lid| is the renderer local id,
-  // |type| is the update type, |value| is the detail of the update.
-  void OnPeerConnectionUpdated(base::ProcessId pid,
+  // |frame_id| is the ID of the RenderFrameHost and |lid| is the renderer local
+  // ID. |type| is the update type, |value| is the detail of the update.
+  void OnPeerConnectionUpdated(GlobalFrameRoutingId frame_id,
                                int lid,
                                const std::string& type,
                                const std::string& value);
 
   // These methods are called when results from
   // PeerConnectionInterface::GetStats (legacy or standard API) are available.
-  // |pid| is the renderer process id, |lid| is the renderer local id, |value|
-  // is the list of stats reports.
-  void OnAddStandardStats(base::ProcessId pid, int lid, base::Value value);
-  void OnAddLegacyStats(base::ProcessId pid, int lid, base::Value value);
+  // |frame_id| is the ID of the RenderFrameHost and |lid| is the renderer local
+  // ID. |value| is the list of stats reports.
+  void OnAddStandardStats(GlobalFrameRoutingId frame_id,
+                          int lid,
+                          base::Value value);
+  void OnAddLegacyStats(GlobalFrameRoutingId frame_id,
+                        int lid,
+                        base::Value value);
 
-  // This method is called when getUserMedia is called. |render_process_id| is
-  // the id of the render process (not OS pid), which is needed because we might
-  // not be able to get the OS process id when the render process terminates and
-  // we want to clean up. |pid| is the renderer OS process id, |origin| is the
+  // This method is called when getUserMedia is called. |frame_id| is the ID of
+  // the RenderFrameHost. |pid| is the renderer OS process id, |origin| is the
   // security origin of the getUserMedia call, |audio| is true if audio stream
   // is requested, |video| is true if the video stream is requested,
   // |audio_constraints| is the constraints for the audio, |video_constraints|
   // is the constraints for the video.
-  void OnGetUserMedia(int render_process_id,
+  void OnGetUserMedia(GlobalFrameRoutingId frame_id,
                       base::ProcessId pid,
                       const std::string& origin,
                       bool audio,
@@ -196,7 +198,7 @@ class CONTENT_EXPORT WebRTCInternals : public RenderProcessHostObserver,
   // notifications.
   void ProcessPendingUpdates();
 
-  base::DictionaryValue* FindRecord(base::ProcessId pid,
+  base::DictionaryValue* FindRecord(GlobalFrameRoutingId frame_id,
                                     int lid,
                                     size_t* index = nullptr);
 

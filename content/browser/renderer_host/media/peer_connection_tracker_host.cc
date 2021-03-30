@@ -77,9 +77,9 @@ void PeerConnectionTrackerHost::AddPeerConnection(
 
   WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
   if (webrtc_internals) {
-    webrtc_internals->OnPeerConnectionAdded(
-        frame_id_.child_id, peer_pid_, info->lid, info->url,
-        info->rtc_configuration, info->constraints);
+    webrtc_internals->OnPeerConnectionAdded(frame_id_, info->lid, peer_pid_,
+                                            info->url, info->rtc_configuration,
+                                            info->constraints);
   }
 
   WebRtcEventLogger* logger = WebRtcEventLogger::Get();
@@ -93,7 +93,7 @@ void PeerConnectionTrackerHost::RemovePeerConnection(int lid) {
 
   WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
   if (webrtc_internals) {
-    webrtc_internals->OnPeerConnectionRemoved(peer_pid_, lid);
+    webrtc_internals->OnPeerConnectionRemoved(frame_id_, lid);
   }
 
   WebRtcEventLogger* logger = WebRtcEventLogger::Get();
@@ -117,7 +117,7 @@ void PeerConnectionTrackerHost::UpdatePeerConnection(int lid,
 
   WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
   if (webrtc_internals) {
-    webrtc_internals->OnPeerConnectionUpdated(peer_pid_, lid, type, value);
+    webrtc_internals->OnPeerConnectionUpdated(frame_id_, lid, type, value);
   }
 }
 
@@ -137,7 +137,7 @@ void PeerConnectionTrackerHost::AddStandardStats(int lid, base::Value value) {
 
   WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
   if (webrtc_internals) {
-    webrtc_internals->OnAddStandardStats(peer_pid_, lid, std::move(value));
+    webrtc_internals->OnAddStandardStats(frame_id_, lid, std::move(value));
   }
 }
 
@@ -146,7 +146,7 @@ void PeerConnectionTrackerHost::AddLegacyStats(int lid, base::Value value) {
 
   WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
   if (webrtc_internals) {
-    webrtc_internals->OnAddLegacyStats(peer_pid_, lid, std::move(value));
+    webrtc_internals->OnAddLegacyStats(frame_id_, lid, std::move(value));
   }
 }
 
@@ -160,9 +160,8 @@ void PeerConnectionTrackerHost::GetUserMedia(
 
   WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
   if (webrtc_internals) {
-    webrtc_internals->OnGetUserMedia(frame_id_.child_id, peer_pid_, origin,
-                                     audio, video, audio_constraints,
-                                     video_constraints);
+    webrtc_internals->OnGetUserMedia(frame_id_, peer_pid_, origin, audio, video,
+                                     audio_constraints, video_constraints);
   }
 }
 
