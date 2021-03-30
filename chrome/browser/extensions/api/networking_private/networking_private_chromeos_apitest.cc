@@ -23,13 +23,14 @@
 #include "chrome/browser/extensions/api/networking_private/networking_private_ui_delegate_chromeos.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
+#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_certificate_handler.h"
 #include "chromeos/network/network_handler.h"
@@ -77,13 +78,13 @@
 using testing::Return;
 using testing::_;
 
-using chromeos::CryptohomeClient;
 using chromeos::DBusThreadManager;
 using chromeos::ShillDeviceClient;
 using chromeos::ShillIPConfigClient;
 using chromeos::ShillManagerClient;
 using chromeos::ShillProfileClient;
 using chromeos::ShillServiceClient;
+using chromeos::UserDataAuthClient;
 
 using extensions::ChromeNetworkingCastPrivateDelegate;
 using extensions::NetworkingPrivateDelegate;
@@ -221,7 +222,7 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
     login_user.set_account_id(user_manager::CanonicalizeUserID(
         command_line->GetSwitchValueNative(chromeos::switches::kLoginUser)));
     const std::string sanitized_user =
-        CryptohomeClient::GetStubSanitizedUsername(login_user);
+        UserDataAuthClient::GetStubSanitizedUsername(login_user);
     command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile,
                                     sanitized_user);
   }
@@ -231,12 +232,18 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
     user_manager::User* user = user_manager->GetActiveUser();
     CHECK(user);
     std::string userhash;
-    CryptohomeClient::Get()->GetSanitizedUsername(
-        cryptohome::CreateAccountIdentifierFromAccountId(user->GetAccountId()),
+    ::user_data_auth::GetSanitizedUsernameRequest request;
+    request.set_username(
+        cryptohome::CreateAccountIdentifierFromAccountId(user->GetAccountId())
+            .account_id());
+    chromeos::CryptohomeMiscClient::Get()->GetSanitizedUsername(
+        request,
         base::BindOnce(
-            [](std::string* out, base::Optional<std::string> result) {
+            [](std::string* out,
+               base::Optional<::user_data_auth::GetSanitizedUsernameReply>
+                   result) {
               CHECK(result.has_value());
-              *out = std::move(result).value();
+              *out = result->sanitized_username();
             },
             &userhash_));
     content::RunAllPendingInMessageLoop();
