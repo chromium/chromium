@@ -2028,6 +2028,11 @@ const char kRawClipboardDescription[] =
     "Allows raw / unsanitized clipboard content to be read and written. "
     "See https://github.com/WICG/raw-clipboard-access.";
 
+const char kReadLaterNewBadgePromoName[] = "Reading list 'New' badge promo";
+const char kReadLaterNewBadgePromoDescription[] =
+    "Causes a 'New' badge to appear on the entry point for adding to the "
+    "reading list in the tab context menu.";
+
 const char kRecordWebAppDebugInfoName[] = "Record web app debug info";
 const char kRecordWebAppDebugInfoDescription[] =
     "Enables recording additional web app related debugging data to be "

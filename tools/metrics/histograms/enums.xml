@@ -44311,6 +44311,7 @@ from previous Chrome versions.
   <int value="-1662646099" label="NTPOfflinePageSuggestions:enabled"/>
   <int value="-1662447331" label="wake-on-packets"/>
   <int value="-1660972490" label="gpu-rasterization-msaa-sample-count"/>
+  <int value="-1660884825" label="ReadLaterNewBadgePromo:enabled"/>
   <int value="-1656179450" label="EnableOmniboxRichEntities:enabled"/>
   <int value="-1655535052" label="enable-pointer-events"/>
   <int value="-1654344175" label="disable-extension-info-dialog"/>
@@ -48300,6 +48301,7 @@ from previous Chrome versions.
   <int value="1927218315" label="ShelfNewUi:disabled"/>
   <int value="1927259098" label="TranslateLanguageByULP:enabled"/>
   <int value="1927374573" label="EnterpriseRealtimeExtensionRequest:enabled"/>
+  <int value="1928944156" label="ReadLaterNewBadgePromo:disabled"/>
   <int value="1929535031" label="LanguageSettingsUpdate2:enabled"/>
   <int value="1929603041" label="HideShelfControlsInTabletMode:disabled"/>
   <int value="1930185502"

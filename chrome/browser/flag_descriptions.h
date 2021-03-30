@@ -1182,6 +1182,9 @@ extern const char kReadLaterFlagId[];
 extern const char kReadLaterName[];
 extern const char kReadLaterDescription[];
 
+extern const char kReadLaterNewBadgePromoName[];
+extern const char kReadLaterNewBadgePromoDescription[];
+
 extern const char kRecordWebAppDebugInfoName[];
 extern const char kRecordWebAppDebugInfoDescription[];
 

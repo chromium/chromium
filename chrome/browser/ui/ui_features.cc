@@ -54,6 +54,11 @@ const base::Feature kNewTabstripAnimation{"NewTabstripAnimation",
 const base::Feature kProminentDarkModeActiveTabTitle{
     "ProminentDarkModeActiveTabTitle", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables a 'new' badge on the option to add to the reading list in the tab
+// context menu.
+const base::Feature kReadLaterNewBadgePromo{"ReadLaterNewBadgePromo",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables tabs to scroll in the tabstrip. https://crbug.com/951078
 const base::Feature kScrollableTabStrip{"ScrollableTabStrip",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

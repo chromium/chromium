@@ -52,6 +52,8 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
         l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_READ_LATER, num_tabs));
     SetEnabledAt(GetItemCount() - 1,
                  tab_strip->IsReadLaterSupportedForAny(indices));
+    if (base::FeatureList::IsEnabled(features::kReadLaterNewBadgePromo))
+      SetIsNewFeatureAt(GetItemCount() - 1, true);
   }
   if (ExistingTabGroupSubMenuModel::ShouldShowSubmenu(tab_strip, index)) {
     // Create submenu with existing groups

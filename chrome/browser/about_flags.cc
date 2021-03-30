@@ -4656,6 +4656,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadLaterDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(reading_list::switches::kReadLater)},
 
+    {"read-later-new-badge-promo",
+     flag_descriptions::kReadLaterNewBadgePromoName,
+     flag_descriptions::kReadLaterNewBadgePromoDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kReadLaterNewBadgePromo)},
+
 #ifdef OS_ANDROID
     {"read-later-reminder-notification",
      flag_descriptions::kReadLaterReminderNotificationName,
