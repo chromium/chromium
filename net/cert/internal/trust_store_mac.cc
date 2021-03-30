@@ -48,6 +48,12 @@ enum class TrustStatus {
   DISTRUSTED
 };
 
+enum class KnownRootStatus {
+  UNKNOWN,
+  IS_KNOWN_ROOT,
+  NOT_KNOWN_ROOT,
+};
+
 const void* kResultDebugDataKey = &kResultDebugDataKey;
 
 // Returns trust status of usage constraints dictionary |trust_dict| for a
@@ -260,10 +266,34 @@ TrustStatus IsCertificateTrustedForPolicyInDomain(
       cert_handle, is_self_issued, policy_oid, trust_domain, debug_info);
 }
 
-TrustStatus IsCertificateTrustedForPolicy(
-    const scoped_refptr<ParsedCertificate>& cert,
-    const CFStringRef policy_oid,
-    int* debug_info) {
+KnownRootStatus IsCertificateKnownRoot(const ParsedCertificate* cert) {
+  base::ScopedCFTypeRef<SecCertificateRef> cert_handle =
+      x509_util::CreateSecCertificateFromBytes(cert->der_cert().UnsafeData(),
+                                               cert->der_cert().Length());
+  if (!cert_handle)
+    return KnownRootStatus::NOT_KNOWN_ROOT;
+
+  base::ScopedCFTypeRef<CFArrayRef> trust_settings;
+  OSStatus err;
+  {
+    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+    err = SecTrustSettingsCopyTrustSettings(cert_handle,
+                                            kSecTrustSettingsDomainSystem,
+                                            trust_settings.InitializeInto());
+  }
+  return (err == errSecSuccess) ? KnownRootStatus::IS_KNOWN_ROOT
+                                : KnownRootStatus::NOT_KNOWN_ROOT;
+}
+
+TrustStatus IsCertificateTrustedForPolicy(const ParsedCertificate* cert,
+                                          const CFStringRef policy_oid,
+                                          int* debug_info,
+                                          KnownRootStatus* out_is_known_root) {
+  // |*out_is_known_root| is intentionally not cleared before starting, as
+  // there may have been a value already calculated and cached independently.
+  // The caller is expected to initialize |*out_is_known_root| to UNKNOWN if
+  // the value has not been calculated.
+
   base::ScopedCFTypeRef<SecCertificateRef> cert_handle =
       x509_util::CreateSecCertificateFromBytes(cert->der_cert().UnsafeData(),
                                                cert->der_cert().Length());
@@ -285,13 +315,23 @@ TrustStatus IsCertificateTrustedForPolicy(
       err = SecTrustSettingsCopyTrustSettings(cert_handle, trust_domain,
                                               trust_settings.InitializeInto());
     }
-    if (err == errSecItemNotFound) {
-      // No trust settings for that domain.. try the next.
-      continue;
-    }
-    if (err) {
+    if (err != errSecSuccess) {
+      if (out_is_known_root && trust_domain == kSecTrustSettingsDomainSystem) {
+        // If trust settings are not present for |cert| in the system domain,
+        // record it as not a known root.
+        *out_is_known_root = KnownRootStatus::NOT_KNOWN_ROOT;
+      }
+      if (err == errSecItemNotFound) {
+        // No trust settings for that domain.. try the next.
+        continue;
+      }
       OSSTATUS_LOG(ERROR, err) << "SecTrustSettingsCopyTrustSettings error";
       continue;
+    }
+    if (out_is_known_root && trust_domain == kSecTrustSettingsDomainSystem) {
+      // If trust settings are present for |cert| in the system domain, record
+      // it as a known root.
+      *out_is_known_root = KnownRootStatus::IS_KNOWN_ROOT;
     }
     TrustStatus trust = IsTrustSettingsTrustedForPolicy(
         trust_settings, is_self_issued, policy_oid, debug_info);
@@ -652,8 +692,8 @@ class TrustStoreMac::TrustImplNoCache : public TrustStoreMac::TrustImpl {
   TrustStatus IsCertTrusted(const scoped_refptr<ParsedCertificate>& cert,
                             base::SupportsUserData* debug_data) override {
     int debug_info = 0;
-    TrustStatus result =
-        IsCertificateTrustedForPolicy(cert, policy_oid_, &debug_info);
+    TrustStatus result = IsCertificateTrustedForPolicy(
+        cert.get(), policy_oid_, &debug_info, /*out_is_known_root=*/nullptr);
     UpdateUserData(debug_info, debug_data,
                    TrustStoreMac::TrustImplType::kSimple);
     return result;
@@ -684,45 +724,15 @@ class TrustStoreMac::TrustImplMRUCache : public TrustStoreMac::TrustImpl {
         FROM_HERE, std::move(keychain_observer_));
   }
 
-  // Returns true if |cert| is present in kSecTrustSettingsDomainSystem.
+  // Returns true if |cert| has trust settings in kSecTrustSettingsDomainSystem.
   bool IsKnownRoot(const ParsedCertificate* cert) override {
-    HashValue cert_hash(CalculateFingerprint256(cert->der_cert()));
-    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-    return net::IsKnownRoot(cert_hash);
+    return GetKnownRootStatus(cert) == KnownRootStatus::IS_KNOWN_ROOT;
   }
 
   // Returns the trust status for |cert|.
   TrustStatus IsCertTrusted(const scoped_refptr<ParsedCertificate>& cert,
                             base::SupportsUserData* debug_data) override {
-    SHA256HashValue cert_hash = CalculateFingerprint256(cert->der_cert());
-
-    int starting_cache_iteration = -1;
-    {
-      base::AutoLock lock(cache_lock_);
-      MaybeResetCache();
-      starting_cache_iteration = iteration_;
-      auto cache_iter = trust_status_cache_.Get(cert_hash);
-      if (cache_iter != trust_status_cache_.end()) {
-        UpdateUserData(cache_iter->second.debug_info, debug_data,
-                       TrustStoreMac::TrustImplType::kMruCache);
-        return cache_iter->second.trust_status;
-      }
-    }
-
-    TrustStatusDetails trust_details;
-    trust_details.trust_status = IsCertificateTrustedForPolicy(
-        cert, policy_oid_, &trust_details.debug_info);
-
-    {
-      base::AutoLock lock(cache_lock_);
-      MaybeResetCache();
-      // Only store in the cache if the keychain has not changed since trust
-      // evaluation started. If the keychain changed during evaluation, then
-      // it isn't clear whether the calculated result applies to the new or old
-      // trust settings, so don't put it in the cache.
-      if (iteration_ == starting_cache_iteration)
-        trust_status_cache_.Put(cert_hash, trust_details);
-    }
+    TrustStatusDetails trust_details = GetTrustStatus(cert.get());
     UpdateUserData(trust_details.debug_info, debug_data,
                    TrustStoreMac::TrustImplType::kMruCache);
     return trust_details.trust_status;
@@ -736,7 +746,78 @@ class TrustStoreMac::TrustImplMRUCache : public TrustStoreMac::TrustImpl {
   struct TrustStatusDetails {
     TrustStatus trust_status = TrustStatus::UNKNOWN;
     int debug_info = 0;
+    KnownRootStatus is_known_root = KnownRootStatus::UNKNOWN;
   };
+
+  KnownRootStatus GetKnownRootStatus(const ParsedCertificate* cert) {
+    SHA256HashValue cert_hash = CalculateFingerprint256(cert->der_cert());
+
+    int starting_cache_iteration = -1;
+    {
+      base::AutoLock lock(cache_lock_);
+      MaybeResetCache();
+      starting_cache_iteration = iteration_;
+      auto cache_iter = trust_status_cache_.Get(cert_hash);
+      if (cache_iter != trust_status_cache_.end() &&
+          cache_iter->second.is_known_root != KnownRootStatus::UNKNOWN) {
+        return cache_iter->second.is_known_root;
+      }
+    }
+
+    KnownRootStatus is_known_root = IsCertificateKnownRoot(cert);
+
+    {
+      base::AutoLock lock(cache_lock_);
+      MaybeResetCache();
+      if (iteration_ != starting_cache_iteration)
+        return is_known_root;
+
+      auto cache_iter = trust_status_cache_.Get(cert_hash);
+      // Update |is_known_root| on existing cache entry if there is one,
+      // otherwise create a new cache entry.
+      if (cache_iter != trust_status_cache_.end()) {
+        cache_iter->second.is_known_root = is_known_root;
+      } else {
+        TrustStatusDetails trust_details;
+        trust_details.is_known_root = is_known_root;
+        trust_status_cache_.Put(cert_hash, trust_details);
+      }
+    }
+    return is_known_root;
+  }
+
+  TrustStatusDetails GetTrustStatus(const ParsedCertificate* cert) {
+    SHA256HashValue cert_hash = CalculateFingerprint256(cert->der_cert());
+    TrustStatusDetails trust_details;
+
+    int starting_cache_iteration = -1;
+    {
+      base::AutoLock lock(cache_lock_);
+      MaybeResetCache();
+      starting_cache_iteration = iteration_;
+      auto cache_iter = trust_status_cache_.Get(cert_hash);
+      if (cache_iter != trust_status_cache_.end()) {
+        if (cache_iter->second.trust_status != TrustStatus::UNKNOWN)
+          return cache_iter->second;
+        // If there was a cache entry but the trust status was not initialized,
+        // copy the existing values. (|is_known_root| might already be cached.)
+        trust_details = cache_iter->second;
+      }
+    }
+
+    trust_details.trust_status = IsCertificateTrustedForPolicy(
+        cert, policy_oid_, &trust_details.debug_info,
+        &trust_details.is_known_root);
+
+    {
+      base::AutoLock lock(cache_lock_);
+      MaybeResetCache();
+      if (iteration_ != starting_cache_iteration)
+        return trust_details;
+      trust_status_cache_.Put(cert_hash, trust_details);
+    }
+    return trust_details;
+  }
 
   void MaybeResetCache() {
     cache_lock_.AssertAcquired();
@@ -753,6 +834,12 @@ class TrustStoreMac::TrustImplMRUCache : public TrustStoreMac::TrustImpl {
   base::Lock cache_lock_;
   // |cache_lock_| must be held while accessing any following members.
   base::MRUCache<SHA256HashValue, TrustStatusDetails> trust_status_cache_;
+  // Tracks the number of keychain changes that have been observed. If the
+  // keychain observer has noted a change, MaybeResetCache will update
+  // |iteration_| and the cache will be cleared. Any in-flight trust
+  // resolutions that started before the keychain update was observed should
+  // not cache their results, as it isn't clear whether the calculated result
+  // applies to the new or old trust settings.
   int64_t iteration_ = -1;
 
   DISALLOW_COPY_AND_ASSIGN(TrustImplMRUCache);
