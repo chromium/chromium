@@ -596,6 +596,15 @@ TEST_F(ArcVmClientAdapterTest, SetUserInfo) {
   SetUserInfo(kUserIdHash, kSerialNumber);
 }
 
+// Tests that SetUserInfo() doesn't crash even when empty strings are passed.
+// Currently, ArcSessionRunner's tests call SetUserInfo() that way.
+// TODO(yusukes): Once ASR's tests are fixed, remove this test and use DCHECKs
+// in SetUserInfo().
+TEST_F(ArcVmClientAdapterTest, SetUserInfoEmpty) {
+  adapter()->SetUserInfo(cryptohome::Identification(), std::string(),
+                         std::string());
+}
+
 // Tests that StartMiniArc() succeeds by default.
 TEST_F(ArcVmClientAdapterTest, StartMiniArc) {
   StartMiniArc();
