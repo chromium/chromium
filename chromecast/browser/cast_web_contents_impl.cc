@@ -332,11 +332,6 @@ CastWebContentsImpl::script_injector() {
   return &script_injector_;
 }
 
-void CastWebContentsImpl::InjectScriptsIntoMainFrame() {
-  script_injector_.InjectScriptsForURL(web_contents_->GetURL(),
-                                       web_contents_->GetMainFrame());
-}
-
 void CastWebContentsImpl::PostMessageToMainFrame(
     const std::string& target_origin,
     const std::string& data,
@@ -563,8 +558,17 @@ void CastWebContentsImpl::DidStartNavigation(
   DCHECK(navigation_handle);
   if (!web_contents_ || closing_ || stopped_)
     return;
-  if (!navigation_handle->IsInMainFrame())
+
+  if (!navigation_handle->IsInMainFrame() ||
+      navigation_handle->IsSameDocument()) {
     return;
+  }
+
+  // Main frame has an ongoing navigation. This might overwrite a
+  // previously active navigation. We only care about tracking
+  // the most recent main frame navigation.
+  active_navigation_ = navigation_handle;
+
   // Main frame has begun navigating/loading.
   OnPageLoading();
   start_loading_ticks_ = base::TimeTicks::Now();
@@ -605,29 +609,28 @@ void CastWebContentsImpl::ReadyToCommitNavigation(
   auto autoplay_origin = url::Origin::Create(navigation_handle->GetURL());
   client->AddAutoplayFlags(autoplay_origin, autoplay_flags);
 
-  if (!navigation_handle->IsInMainFrame())
+  // Skip injecting bindings scripts if |navigation_handle| is not
+  // 'current' main frame navigation, e.g. another DidStartNavigation is
+  // emitted. Also skip injecting for same document navigation and error page.
+  if (navigation_handle != active_navigation_ ||
+      navigation_handle->IsErrorPage()) {
     return;
-
-  // Main frame has begun navigating/loading.
-  OnPageLoading();
-  start_loading_ticks_ = base::TimeTicks::Now();
-  GURL loading_url;
-  content::NavigationEntry* nav_entry =
-      web_contents()->GetController().GetVisibleEntry();
-  if (nav_entry) {
-    loading_url = nav_entry->GetVirtualURL();
   }
-  TracePageLoadBegin(loading_url);
-  UpdatePageState();
-  DCHECK_EQ(page_state_, PageState::LOADING);
-  NotifyPageState();
+
+  // Injects registered bindings script into the main frame.
+  script_injector_.InjectScriptsForURL(navigation_handle->GetURL(),
+                                       navigation_handle->GetRenderFrameHost());
 }
 
 void CastWebContentsImpl::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const net::Error error_code = navigation_handle->GetNetErrorCode();
+  // Ignore sub-frame and non-current main frame navigation.
+  if (navigation_handle != active_navigation_) {
+    return;
+  }
+  active_navigation_ = nullptr;
 
   // If the navigation was not committed, it means either the page was a
   // download or error 204/205, or the navigation never left the previous
@@ -638,36 +641,21 @@ void CastWebContentsImpl::DidFinishNavigation(
     return;
   }
 
-  // Notifies observers that the navigation of the main frame has finished.
-  if (!navigation_handle->IsErrorPage() && navigation_handle->IsInMainFrame()) {
-    for (Observer& observer : observer_list_) {
-      observer.MainFrameFinishedNavigation();
-    }
-  }
-
-  // Return early if we didn't navigate to an error page. Note that even if we
-  // haven't navigated to an error page, there could still be errors in loading
-  // the desired content: e.g. if the server returned HTTP 404, or if there is
-  // an error with the content itself.
-  if (!navigation_handle->IsErrorPage())
-    return;
-
-  // If we abort errors in an iframe, it can create a really confusing
-  // and fragile user experience.  Rather than create a list of errors
-  // that are most likely to occur, we ignore all of them for now.
-  if (!navigation_handle->IsInMainFrame()) {
-    LOG(ERROR) << "Got error on sub-iframe: url=" << navigation_handle->GetURL()
-               << ", error=" << error_code
+  if (navigation_handle->IsErrorPage()) {
+    const net::Error error_code = navigation_handle->GetNetErrorCode();
+    LOG(ERROR) << "Got error on navigation: url=" << navigation_handle->GetURL()
+               << ", error_code=" << error_code
                << ", description=" << net::ErrorToShortString(error_code);
-    return;
+
+    Stop(error_code);
+    DCHECK_EQ(page_state_, PageState::ERROR);
   }
 
-  LOG(ERROR) << "Got error on navigation: url=" << navigation_handle->GetURL()
-             << ", error_code=" << error_code
-             << ", description=" << net::ErrorToShortString(error_code);
-
-  Stop(error_code);
-  DCHECK_EQ(page_state_, PageState::ERROR);
+  // Notifies observers that the navigation of the main frame has finished
+  // with no errors.
+  for (Observer& observer : observer_list_) {
+    observer.MainFrameFinishedNavigation();
+  }
 }
 
 void CastWebContentsImpl::DidFinishLoad(
@@ -678,6 +666,13 @@ void CastWebContentsImpl::DidFinishLoad(
       render_frame_host != web_contents_->GetMainFrame()) {
     return;
   }
+
+  // Don't process load completion on the current document if the WebContents
+  // is already in the process of navigating to a different page.
+  if (active_navigation_) {
+    return;
+  }
+
   // The main frame finished loading. Before proceeding, we need to verify that
   // the loaded page is the one that was requested.
   TracePageLoadEnd(validated_url);

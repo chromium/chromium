@@ -34,7 +34,8 @@ class NamedMessagePortConnectorCast
   void operator=(const NamedMessagePortConnectorCast&) = delete;
 
   // Sends a connection message to |cast_web_contents_|.
-  // Should be invoked when |cast_web_contents| has finished loading a page.
+  // Should be invoked when |cast_web_contents| has finished loading a page,
+  // and its main frame finished loading with no further pending navigations.
   void OnPageLoaded();
 
  private:

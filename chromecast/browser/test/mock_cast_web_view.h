@@ -41,7 +41,6 @@ class MockCastWebContents : public CastWebContents {
               script_injector,
               (),
               (override));
-  MOCK_METHOD(void, InjectScriptsIntoMainFrame, (), (override));
   MOCK_METHOD(void,
               PostMessageToMainFrame,
               (const std::string&,

@@ -61,10 +61,10 @@ struct RendererFeature {
 // sub-frame errors.
 //
 // We consider the CastWebContents to be in a LOADED state when the content of
-// the main frame is fully loaded and running (all resources fetched, JS is
-// running). Iframes might still be loading in this case, but in general we
-// consider the page to be in a presentable state at this stage, so it is
-// appropriate to display the WebContents to the user.
+// the main frame is fully loaded and running (all resources fetched,
+// redirection finished, JS is running). Iframes might still be loading in this
+// case, but in general we consider the page to be in a presentable state at
+// this stage, so it is appropriate to display the WebContents to the user.
 //
 // During or after the page is loaded, there are multiple error conditions that
 // can occur. The following events will cause the page to enter an ERROR state:
@@ -336,9 +336,6 @@ class CastWebContents {
   // time.
   virtual on_load_script_injector::OnLoadScriptInjectorHost<std::string>*
   script_injector() = 0;
-
-  // Injects on-load scripts into the WebContents' main frame.
-  virtual void InjectScriptsIntoMainFrame() = 0;
 
   // Posts a message to the frame's onMessage handler.
   //

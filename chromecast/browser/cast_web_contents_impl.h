@@ -31,6 +31,10 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 
+namespace content {
+class NavigationHandle;
+}  // namespace content
+
 namespace chromecast {
 
 namespace shell {
@@ -69,7 +73,6 @@ class CastWebContentsImpl : public CastWebContents,
   void EnableBackgroundVideoPlayback(bool enabled) override;
   on_load_script_injector::OnLoadScriptInjectorHost<std::string>*
   script_injector() override;
-  void InjectScriptsIntoMainFrame() override;
   void PostMessageToMainFrame(
       const std::string& target_origin,
       const std::string& data,
@@ -164,7 +167,12 @@ class CastWebContentsImpl : public CastWebContents,
   bool is_websql_enabled_;
   bool is_mixer_audio_enabled_;
   base::TimeTicks start_loading_ticks_;
+
+  // True once the main frame finishes loading and there are no outstanding
+  // navigations.
   bool main_frame_loaded_;
+  content::NavigationHandle* active_navigation_ = nullptr;
+
   bool closing_;
   bool stopped_;
   bool stop_notified_;
