@@ -6,14 +6,16 @@
 
 #include <stddef.h>
 
+#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/containers/flat_map.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-
+#include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/jni_headers/GamepadList_jni.h"
 
 using base::android::AttachCurrentThread;
@@ -25,8 +27,61 @@ using base::android::ScopedJavaLocalRef;
 
 namespace device {
 
-GamepadPlatformDataFetcherAndroid::GamepadPlatformDataFetcherAndroid() {
+namespace {
+
+// Returns true if |gamepad_id| identifies a gamepad known to be mapped
+// correctly on this version of Android. |x_input_type| identifies the flavor of
+// XInput used by the gamepad, or kXInputTypeNone if the gamepad is not XInput.
+
+bool HasStandardMappingOnAndroid(GamepadId gamepad_id,
+                                 XInputType x_input_type) {
+  // Gamepads that are mapped correctly on Android do not require a mapping
+  // function to comply with the Standard Gamepad. Entries in this map
+  // represent gamepads that have been manually tested and are known to
+  // work correctly on recent versions of Android. The key is a GamepadId to
+  // identify the gamepad and the value is the earliest
+  // base::android::SdkVersion where the gamepad is known to be mapped
+  // correctly.
+  const base::flat_map<GamepadId, base::android::SdkVersion>
+      kManualAssessmentResult = {
+          // Xbox One USB
+          {GamepadId::kMicrosoftProduct028e,
+           base::android::SdkVersion::SDK_VERSION_R},
+          // Xbox 360 wireless
+          {GamepadId::kMicrosoftProduct02a1,
+           base::android::SdkVersion::SDK_VERSION_R},
+          // Xbox One USB
+          {GamepadId::kMicrosoftProduct02dd,
+           base::android::SdkVersion::SDK_VERSION_R},
+          // Xbox One S USB
+          {GamepadId::kMicrosoftProduct02ea,
+           base::android::SdkVersion::SDK_VERSION_Q},
+          // Xbox One S Bluetooth
+          {GamepadId::kMicrosoftProduct02fd,
+           base::android::SdkVersion::SDK_VERSION_R},
+          // Xbox Series X USB
+          {GamepadId::kMicrosoftProduct0b12,
+           base::android::SdkVersion::SDK_VERSION_R},
+          // Xbox Series X Bluetooth
+          {GamepadId::kMicrosoftProduct0b13,
+           base::android::SdkVersion::SDK_VERSION_Q},
+      };
+
+  auto find_it = kManualAssessmentResult.find(gamepad_id);
+
+  if (find_it != kManualAssessmentResult.end()) {
+    return find_it->second <=
+           base::android::BuildInfo::GetInstance()->sdk_int();
+  }
+  // Assume XInput gamepads are always correctly mapped.
+  return x_input_type == kXInputTypeXbox360 ||
+         x_input_type == kXInputTypeXboxOne;
 }
+
+}  // namespace
+
+GamepadPlatformDataFetcherAndroid::GamepadPlatformDataFetcherAndroid() =
+    default;
 
 GamepadPlatformDataFetcherAndroid::~GamepadPlatformDataFetcherAndroid() {
   PauseHint(true);
@@ -89,18 +144,25 @@ static void JNI_GamepadList_SetGamepadData(
     return;
 
   Gamepad& pad = state->data;
-
   // Is this the first time we've seen this device?
   if (!state->is_initialized) {
     state->is_initialized = true;
-    // Map the Gamepad DeviceName String to the Gamepad Id. Ideally it should
-    // be mapped to vendor and product information but it is only available at
-    // kernel level and it can not be queried using class
-    // android.hardware.input.InputManager.
-    std::string gamepad_id =
+
+    std::string product_name =
         base::android::ConvertJavaStringToUTF8(env, devicename);
-    GamepadDataFetcher::UpdateGamepadStrings(gamepad_id, vendor_id, product_id,
-                                             mapping, pad);
+
+    if (!mapping) {
+      // The gamepad was assigned the default mapping function. Check if it is
+      // known to be mapped correctly with the default mapping function on this
+      // version of Android.
+      auto gamepad_id = GamepadIdList::Get().GetGamepadId(
+          product_name, vendor_id, product_id);
+      auto x_input_type =
+          GamepadIdList::Get().GetXInputType(vendor_id, product_id);
+      mapping = HasStandardMappingOnAndroid(gamepad_id, x_input_type);
+    }
+    GamepadDataFetcher::UpdateGamepadStrings(product_name, vendor_id,
+                                             product_id, mapping, pad);
   }
 
   pad.connected = true;
