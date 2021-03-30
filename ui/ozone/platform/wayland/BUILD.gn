@@ -200,6 +200,7 @@ source_set("wayland") {
     "//ui/base/ime/linux",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
+    "//ui/events/devices",
     "//ui/events/keycodes:xkb",
     "//ui/events/ozone",
     "//ui/events/ozone/evdev",

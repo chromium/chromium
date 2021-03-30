@@ -18,6 +18,7 @@
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/ime/linux/input_method_auralinux.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/gfx/linux/client_native_pixmap_dmabuf.h"
 #include "ui/gfx/native_widget_types.h"
@@ -156,6 +157,9 @@ class OzonePlatformWayland : public OzonePlatform {
   }
 
   void InitializeUI(const InitParams& args) override {
+    // Initialize DeviceDataManager early as devices are set during
+    // WaylandConnection::Initialize().
+    DeviceDataManager::CreateInstance();
 #if BUILDFLAG(USE_XKBCOMMON)
     keyboard_layout_engine_ =
         std::make_unique<XkbKeyboardLayoutEngine>(xkb_evdev_code_converter_);

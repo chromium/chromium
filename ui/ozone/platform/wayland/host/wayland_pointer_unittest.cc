@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -40,6 +41,12 @@ class WaylandPointerTest : public WaylandTest {
                               WL_SEAT_CAPABILITY_POINTER);
 
     Sync();
+
+    EXPECT_EQ(1u, DeviceDataManager::GetInstance()->GetMouseDevices().size());
+    // Wayland doesn't expose touchpad devices separately. They are all
+    // WaylandPointers.
+    EXPECT_EQ(0u,
+              DeviceDataManager::GetInstance()->GetTouchpadDevices().size());
 
     pointer_ = server_.seat()->pointer();
     ASSERT_TRUE(pointer_);

@@ -28,6 +28,7 @@ class WaylandProxy;
 
 namespace ui {
 
+class DeviceHotplugEventObserver;
 class WaylandBufferManagerHost;
 class WaylandCursor;
 class WaylandCursorBufferListener;
@@ -160,7 +161,8 @@ class WaylandConnection {
     return gtk_primary_selection_device_manager_.get();
   }
 
-  ZwpPrimarySelectionDeviceManager* zwp_primary_selection_device_manager() const {
+  ZwpPrimarySelectionDeviceManager* zwp_primary_selection_device_manager()
+      const {
     return zwp_primary_selection_device_manager_.get();
   }
 
@@ -193,6 +195,8 @@ class WaylandConnection {
   // Creates WaylandKeyboard with the currently acquired protocol objects, if
   // possible. Returns true iff WaylandKeyboard was created.
   bool CreateKeyboard();
+
+  DeviceHotplugEventObserver* GetHotplugEventObserver();
 
   // wl_registry_listener
   static void Global(void* data,

@@ -7,6 +7,8 @@
 
 #include <keyboard-extension-unstable-v1-client-protocol.h>
 
+#include <cstdint>
+
 #include "base/time/time.h"
 #include "ui/base/buildflags.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -35,6 +37,7 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
                   Delegate* delegate);
   virtual ~WaylandKeyboard();
 
+  uint32_t id() const { return obj_.id(); }
   int device_id() const { return obj_.id(); }
 
  private:

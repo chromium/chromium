@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/scoped_keyboard_layout_engine.h"
 #include "ui/ozone/common/features.h"
@@ -58,6 +59,13 @@ void WaylandTest::SetUp() {
       {features::kUseOzonePlatform, ui::kWaylandOverlayDelegation}, {});
   ASSERT_TRUE(features::IsUsingOzonePlatform());
 
+  if (DeviceDataManager::HasInstance()) {
+    // Another instance may have already been set before.
+    DeviceDataManager::GetInstance()->ResetDeviceListsForTest();
+  } else {
+    DeviceDataManager::CreateInstance();
+  }
+
   ASSERT_TRUE(server_.Start(GetParam()));
   ASSERT_TRUE(connection_->Initialize());
   screen_ = connection_->wayland_output_manager()->CreateWaylandScreen();
@@ -87,6 +95,12 @@ void WaylandTest::SetUp() {
   ActivateSurface(server_.GetObject<wl::MockSurface>(id)->xdg_surface());
 
   Sync();
+
+  EXPECT_EQ(0u,
+            DeviceDataManager::GetInstance()->GetTouchscreenDevices().size());
+  EXPECT_EQ(0u, DeviceDataManager::GetInstance()->GetKeyboardDevices().size());
+  EXPECT_EQ(0u, DeviceDataManager::GetInstance()->GetMouseDevices().size());
+  EXPECT_EQ(0u, DeviceDataManager::GetInstance()->GetTouchpadDevices().size());
 
   initialized_ = true;
 }

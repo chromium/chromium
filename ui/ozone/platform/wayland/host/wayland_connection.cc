@@ -18,6 +18,8 @@
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/input_device.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -236,6 +238,9 @@ void WaylandConnection::UpdateInputDevices(wl_seat* seat,
   auto has_keyboard = capabilities & WL_SEAT_CAPABILITY_KEYBOARD;
   auto has_touch = capabilities & WL_SEAT_CAPABILITY_TOUCH;
 
+  // Container for devices. Can be empty.
+  std::vector<InputDevice> devices;
+
   if (!has_pointer) {
     pointer_.reset();
     cursor_.reset();
@@ -247,19 +252,38 @@ void WaylandConnection::UpdateInputDevices(wl_seat* seat,
       cursor_ = std::make_unique<WaylandCursor>(pointer_.get(), this);
       cursor_->set_listener(listener_);
       wayland_cursor_position_ = std::make_unique<WaylandCursorPosition>();
+
+      // Wayland doesn't expose InputDeviceType.
+      devices.emplace_back(InputDevice(
+          pointer_->id(), InputDeviceType::INPUT_DEVICE_UNKNOWN, "pointer"));
     } else {
       LOG(ERROR) << "Failed to get wl_pointer from seat";
     }
   }
 
+  // Notify about mouse changes.
+  GetHotplugEventObserver()->OnMouseDevicesUpdated(devices);
+
+  // Clear the local container to store a keyboard device now.
+  devices.clear();
   if (!has_keyboard) {
     keyboard_.reset();
   } else if (!keyboard_) {
     if (!CreateKeyboard()) {
       LOG(ERROR) << "Failed to create WaylandKeyboard";
+    } else {
+      // Wayland doesn't expose InputDeviceType.
+      devices.emplace_back(InputDevice(
+          keyboard_->id(), InputDeviceType::INPUT_DEVICE_UNKNOWN, "keyboard"));
     }
   }
 
+  // Notify about mouse changes.
+  GetHotplugEventObserver()->OnKeyboardDevicesUpdated(devices);
+
+  // TODO(msisov): wl_touch doesn't expose the display it belongs to. Thus, it's
+  // impossible to figure out the size of the touchscreen for TouchscreenDevice
+  // struct that should be passed to a DeviceDataManager instance.
   if (!has_touch) {
     touch_.reset();
   } else if (!touch_) {
@@ -269,6 +293,9 @@ void WaylandConnection::UpdateInputDevices(wl_seat* seat,
       LOG(ERROR) << "Failed to get wl_touch from seat";
     }
   }
+
+  // Notify update completed.
+  GetHotplugEventObserver()->OnDeviceListsComplete();
 }
 
 bool WaylandConnection::CreateKeyboard() {
@@ -283,6 +310,10 @@ bool WaylandConnection::CreateKeyboard() {
   keyboard_.reset(new WaylandKeyboard(keyboard, keyboard_extension_v1_.get(),
                                       this, layout_engine, event_source()));
   return true;
+}
+
+DeviceHotplugEventObserver* WaylandConnection::GetHotplugEventObserver() {
+  return DeviceDataManager::GetInstance();
 }
 
 void WaylandConnection::CreateDataObjectsIfReady() {
@@ -417,7 +448,7 @@ void WaylandConnection::Global(void* data,
             std::min(version, kMaxGtkPrimarySelectionDeviceManagerVersion));
     connection->zwp_primary_selection_device_manager_ =
         std::make_unique<ZwpPrimarySelectionDeviceManager>(manager.release(),
-                                                        connection);
+                                                           connection);
   } else if (!connection->linux_explicit_synchronization_ &&
              (strcmp(interface, "zwp_linux_explicit_synchronization_v1") ==
               0)) {

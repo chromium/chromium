@@ -5,6 +5,8 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_POINTER_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_POINTER_H_
 
+#include <cstdint>
+
 #include "base/macros.h"
 #include "ui/events/types/event_type.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -30,6 +32,7 @@ class WaylandPointer {
                  Delegate* delegate);
   virtual ~WaylandPointer();
 
+  uint32_t id() const { return obj_.id(); }
   wl_pointer* wl_object() const { return obj_.get(); }
 
  private:
