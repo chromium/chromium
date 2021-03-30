@@ -77,12 +77,15 @@ bool AllowColorSpaceCombination(
   if (!source_color_space.IsValid())
     return true;
 
-  // Always allow color space mismatches as long as both the source and
-  // destination color spaces are in the same "bucket" (color usage); that way,
-  // we don't reject a negligible mismatch that may occur if, e.g., the content
-  // is SDR and the display primaries are very close (yet not equal) to SDR.
+  // Allow color space mismatches as long as either a) the source color space is
+  // SRGB; or b) both the source and destination color spaces have the same
+  // color usage. It is possible that case (a) still allows for visible color
+  // inconsistency between overlays and composition, but we'll address that case
+  // if it comes up.
   return source_color_space.GetContentColorUsage() ==
-         destination_color_space.GetContentColorUsage();
+             gfx::ContentColorUsage::kSRGB ||
+         source_color_space.GetContentColorUsage() ==
+             destination_color_space.GetContentColorUsage();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -180,12 +183,13 @@ void OverlayProcessorOzone::CheckOverlaySupport(
       ConvertToOzoneOverlaySurface(*surface_iterator,
                                    &(*ozone_surface_iterator));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      // On Chrome OS, skip the candidate if a color space conversion might be
-      // needed; the reason is that on Chrome OS, we don't yet have an API to
-      // set up color space conversion per plane. Note however that we should
-      // only do this if the candidate does not require an overlay (e.g., for
-      // protected content, it's better to display it with an incorrect color
-      // space than to not display it at all).
+      // On Chrome OS, skip the candidate if we think a color space combination
+      // might cause visible color differences between compositing and overlays.
+      // The reason is that on Chrome OS, we don't yet have an API to set up
+      // color space conversion per plane. Note however that we should only do
+      // this if the candidate does not require an overlay (e.g., for protected
+      // content, it's better to display it with an incorrect color space than
+      // to not display it at all).
       // TODO(b/181974042): plumb the color space all the way to the ozone DRM
       // backend when we get an API for per-plane color management.
       DCHECK(primary_plane);
