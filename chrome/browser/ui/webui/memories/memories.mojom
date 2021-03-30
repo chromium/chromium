@@ -4,7 +4,7 @@
 
 module memories.mojom;
 
-import "components/memories/core/memories.mojom";
+import "components/history_clusters/core/memories.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 

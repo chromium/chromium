@@ -10,7 +10,7 @@
 
 #include "chrome/browser/history_clusters/memories_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/memories/core/memories_service.h"
+#include "components/history_clusters/core/memories_service.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 

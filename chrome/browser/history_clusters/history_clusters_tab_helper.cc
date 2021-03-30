@@ -13,8 +13,8 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/memories_service.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/memories/core/memories_service.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "content/public/browser/navigation_handle.h"
 

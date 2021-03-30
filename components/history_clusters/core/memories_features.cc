@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/memories/core/memories_features.h"
+#include "components/history_clusters/core/memories_features.h"
 
 #include "build/build_config.h"
 

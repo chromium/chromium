@@ -6,7 +6,7 @@ import './page_favicon.js';
 import './shared_vars.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
-import {Visit} from '/components/memories/core/memories.mojom-webui.js';
+import {Visit} from '/components/history_clusters/core/memories.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_MEMORIES_CORE_MEMORIES_SERVICE_H_
-#define COMPONENTS_MEMORIES_CORE_MEMORIES_SERVICE_H_
+#ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_SERVICE_H_
+#define COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_SERVICE_H_
 
 #include <memory>
 #include <vector>
@@ -13,9 +13,9 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_context.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history_clusters/core/memories_remote_model_helper.h"
+#include "components/history_clusters/core/visit_data.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/memories/core/memories_remote_model_helper.h"
-#include "components/memories/core/visit_data.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -55,4 +55,4 @@ class MemoriesService : public KeyedService {
 
 }  // namespace memories
 
-#endif  // COMPONENTS_MEMORIES_CORE_MEMORIES_SERVICE_H_
+#endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_SERVICE_H_

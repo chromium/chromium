@@ -1,4 +1,4 @@
-# //components/memories
+# //components/history_clusters
 
 Service implementation for Chrome Memories history clustering feature.
 

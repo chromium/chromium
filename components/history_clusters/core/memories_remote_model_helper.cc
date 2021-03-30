@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/memories/core/memories_remote_model_helper.h"
+#include "components/history_clusters/core/memories_remote_model_helper.h"
 
 #include <algorithm>
 #include <utility>
@@ -12,7 +12,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/optional.h"
 #include "base/values.h"
-#include "components/memories/core/memories_features.h"
+#include "components/history_clusters/core/memories_features.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace {

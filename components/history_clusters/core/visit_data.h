@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_MEMORIES_CORE_VISIT_DATA_H_
-#define COMPONENTS_MEMORIES_CORE_VISIT_DATA_H_
+#ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_VISIT_DATA_H_
+#define COMPONENTS_HISTORY_CLUSTERS_CORE_VISIT_DATA_H_
 
 #include "base/macros.h"
 #include "base/time/time.h"
@@ -83,4 +83,4 @@ struct MemoriesVisit {
 
 }  // namespace memories
 
-#endif  // COMPONENTS_MEMORIES_CORE_VISIT_DATA_H_
+#endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_VISIT_DATA_H_

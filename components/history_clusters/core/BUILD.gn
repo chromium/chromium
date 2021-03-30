@@ -27,7 +27,7 @@ static_library("core") {
 
 mojom("mojo_bindings") {
   sources = [ "memories.mojom" ]
-  webui_module_path = "/components/memories/core"
+  webui_module_path = "/components/history_clusters/core"
   public_deps = [
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",

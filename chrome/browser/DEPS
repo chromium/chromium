@@ -173,7 +173,7 @@ include_rules = [
   "+components/login",
   "+components/media_message_center",
   "+components/media_router/browser",
-  "+components/memories/core",
+  "+components/history_clusters/core",
   "+components/messages/android",
   "+components/metal_util",
   "+components/metrics",

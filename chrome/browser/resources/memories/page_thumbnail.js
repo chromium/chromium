@@ -4,7 +4,7 @@
 
 import './shared_vars.js';
 
-import {WebPage} from '/components/memories/core/memories.mojom-webui.js';
+import {WebPage} from '/components/history_clusters/core/memories.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

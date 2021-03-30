@@ -6,9 +6,9 @@
 
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/history_clusters/core/memories_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/memories/core/memories_service.h"
 #include "content/public/browser/storage_partition.h"
 
 // static

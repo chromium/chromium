@@ -1,3 +1,3 @@
 # //chrome/browser/history_clusters
 
-Please see //components/memories/README.md.
+Please see //components/history_clusters/README.md.

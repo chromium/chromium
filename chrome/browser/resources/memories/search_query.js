@@ -4,7 +4,7 @@
 
 import './shared_vars.js';
 
-import {SearchQuery} from '/components/memories/core/memories.mojom-webui.js';
+import {SearchQuery} from '/components/history_clusters/core/memories.mojom-webui.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MojomConversionMixinBase} from './mojom_conversion_mixin.js';

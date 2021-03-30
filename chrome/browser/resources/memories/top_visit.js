@@ -7,7 +7,7 @@ import './visit_row.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 
-import {Visit} from '/components/memories/core/memories.mojom-webui.js';
+import {Visit} from '/components/history_clusters/core/memories.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**

@@ -11,7 +11,7 @@
 #include "base/optional.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/memories/core/visit_data.h"
+#include "components/history_clusters/core/visit_data.h"
 #include "components/page_load_metrics/common/page_end_reason.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"

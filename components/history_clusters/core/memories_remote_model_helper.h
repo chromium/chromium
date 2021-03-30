@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_MEMORIES_CORE_MEMORIES_REMOTE_MODEL_HELPER_H_
-#define COMPONENTS_MEMORIES_CORE_MEMORIES_REMOTE_MODEL_HELPER_H_
+#ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_REMOTE_MODEL_HELPER_H_
+#define COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_REMOTE_MODEL_HELPER_H_
 
 #include <memory>
 #include <string>
@@ -11,8 +11,8 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/memories/core/memories.mojom.h"
-#include "components/memories/core/visit_data.h"
+#include "components/history_clusters/core/memories.mojom.h"
+#include "components/history_clusters/core/visit_data.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -56,4 +56,4 @@ class MemoriesRemoteModelHelper {
 
 }  // namespace memories
 
-#endif  // COMPONENTS_MEMORIES_CORE_MEMORIES_REMOTE_MODEL_HELPER_H_
+#endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_REMOTE_MODEL_HELPER_H_

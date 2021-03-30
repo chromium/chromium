@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/memories/core/memories_service.h"
+#include "components/history_clusters/core/memories_service.h"
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
@@ -11,7 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/memories/core/memories_features.h"
+#include "components/history_clusters/core/memories_features.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request_body.h"

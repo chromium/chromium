@@ -5,8 +5,8 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "components/memories/core/memories_features.h"
-#include "components/memories/core/memories_service.h"
+#include "components/history_clusters/core/memories_features.h"
+#include "components/history_clusters/core/memories_service.h"
 
 namespace memories {
 
