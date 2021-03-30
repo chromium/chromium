@@ -15,11 +15,13 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/settings/cros_settings_names.h"
 #include "components/arc/arc_features.h"
 #include "components/prefs/pref_service.h"
 #include "dbus/bus.h"
@@ -125,6 +127,14 @@ void ChromeFeaturesServiceProvider::Start(
           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ChromeFeaturesServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
+  exported_object->ExportMethod(
+      kChromeFeaturesServiceInterface,
+      kChromeFeaturesServiceIsPeripheralDataAccessEnabledMethod,
+      base::BindRepeating(
+          &ChromeFeaturesServiceProvider::IsPeripheralDataAccessEnabled,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&ChromeFeaturesServiceProvider::OnExported,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ChromeFeaturesServiceProvider::OnExported(
@@ -235,6 +245,16 @@ void ChromeFeaturesServiceProvider::IsVmManagementCliAllowed(
   SendResponse(method_call, std::move(response_sender),
                profile->GetPrefs()->GetBoolean(
                    crostini::prefs::kVmManagementCliAllowedByPolicy));
+}
+
+void ChromeFeaturesServiceProvider::IsPeripheralDataAccessEnabled(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  bool peripheral_data_access_enabled = false;
+  CrosSettings::Get()->GetBoolean(chromeos::kDevicePeripheralDataAccessEnabled,
+                                  &peripheral_data_access_enabled);
+  SendResponse(method_call, std::move(response_sender),
+               peripheral_data_access_enabled);
 }
 
 }  // namespace chromeos

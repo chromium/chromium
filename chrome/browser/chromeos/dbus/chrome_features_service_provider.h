@@ -79,6 +79,9 @@ class ChromeFeaturesServiceProvider
   void IsVmManagementCliAllowed(
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender);
+  void IsPeripheralDataAccessEnabled(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender);
 
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
