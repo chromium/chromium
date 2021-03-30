@@ -251,8 +251,12 @@ void ToolbarButton::UpdateColorsAndInsets() {
     SetBackground(views::CreateBackgroundFromPainter(
         views::Painter::CreateSolidRoundRectPainter(
             *background_color, highlight_radius, paint_insets)));
+    label()->SetBackgroundColor(*background_color);
   } else {
     SetBackground(nullptr);
+    const auto* tp = GetThemeProvider();
+    if (tp)
+      label()->SetBackgroundColor(tp->GetColor(ThemeProperties::COLOR_TOOLBAR));
   }
 
   // Apply new border with target insets.
