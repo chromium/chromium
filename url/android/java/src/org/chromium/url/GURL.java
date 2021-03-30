@@ -23,7 +23,7 @@ import org.chromium.base.task.TaskTraits;
 import java.util.Random;
 
 /**
- * A Java wrapper for GURL, Chromium's URL parsing library.
+ * An immutable Java wrapper for GURL, Chromium's URL parsing library.
  *
  * This class is safe to use during startup, but will block on the native library being sufficiently
  * loaded to use native GURL (and will not wait for content initialization). In practice it's very
