@@ -20,6 +20,7 @@ namespace protocol {
 
 class Capabilities;
 class ExtensionMessage;
+class OpenUrlRequest;
 class PairingResponse;
 class TransportInfo;
 class VideoLayout;
@@ -45,6 +46,9 @@ class ClientStub : public ClipboardStub,
 
   // Passes the host's transport info to the client.
   virtual void SetTransportInfo(const TransportInfo& transport_info) = 0;
+
+  // Opens an URL on the client.
+  virtual void OpenUrl(const OpenUrlRequest& open_url_request) = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ClientStub);

@@ -208,6 +208,7 @@ class FakeConnectionEventLogger::CounterClientStub
   void SetVideoLayout(const protocol::VideoLayout& video_layout) override {}
   void SetTransportInfo(
       const protocol::TransportInfo& transport_info) override {}
+  void OpenUrl(const protocol::OpenUrlRequest& open_url_request) override {}
 };
 
 FakeConnectionEventLogger::CounterClientStub::CounterClientStub()

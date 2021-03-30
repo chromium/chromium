@@ -156,6 +156,7 @@ class MockClientStub : public ClientStub {
   MOCK_METHOD1(DeliverHostMessage, void(const ExtensionMessage& message));
   MOCK_METHOD1(SetVideoLayout, void(const VideoLayout& layout));
   MOCK_METHOD1(SetTransportInfo, void(const TransportInfo& transport_info));
+  MOCK_METHOD1(OpenUrl, void(const OpenUrlRequest& open_url_request));
 
   // ClipboardStub mock implementation.
   MOCK_METHOD1(InjectClipboardEvent, void(const ClipboardEvent& event));

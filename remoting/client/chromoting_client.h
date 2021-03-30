@@ -92,6 +92,7 @@ class ChromotingClient : public SignalStrategy::Listener,
   void DeliverHostMessage(const protocol::ExtensionMessage& message) override;
   void SetVideoLayout(const protocol::VideoLayout& layout) override;
   void SetTransportInfo(const protocol::TransportInfo& transport_info) override;
+  void OpenUrl(const protocol::OpenUrlRequest& open_url_request) override;
 
   // ClipboardStub implementation for receiving clipboard data from host.
   void InjectClipboardEvent(const protocol::ClipboardEvent& event) override;
