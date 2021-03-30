@@ -808,7 +808,8 @@ class RenderWidgetHostViewAuraOverscrollTest
                                  ->GetDisplayNearestView(view_->GetNativeView())
                                  .size();
     overscroll_delegate_.reset(new TestOverscrollDelegate(display_size));
-    view_->overscroll_controller()->set_delegate(overscroll_delegate_.get());
+    view_->overscroll_controller()->set_delegate(
+        overscroll_delegate_->GetWeakPtr());
 
     InitViewForFrame(nullptr);
     view_->SetBounds(gfx::Rect(0, 0, 400, 200));

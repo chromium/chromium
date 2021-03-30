@@ -765,8 +765,10 @@ void WebContentsViewAura::InstallOverscrollControllerDelegate(
 
   if (!gesture_nav_simple_)
     gesture_nav_simple_ = std::make_unique<GestureNavSimple>(web_contents_);
-  if (view)
-    view->overscroll_controller()->set_delegate(gesture_nav_simple_.get());
+  if (view) {
+    view->overscroll_controller()->set_delegate(
+        gesture_nav_simple_->GetWeakPtr());
+  }
 }
 
 ui::TouchSelectionController* WebContentsViewAura::GetSelectionController()

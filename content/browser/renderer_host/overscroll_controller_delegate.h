@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
 #include "content/common/content_export.h"
@@ -19,8 +20,8 @@ namespace content {
 // overscroll deltas maintained and reported by the controller.
 class CONTENT_EXPORT OverscrollControllerDelegate {
  public:
-  OverscrollControllerDelegate() {}
-  virtual ~OverscrollControllerDelegate() {}
+  OverscrollControllerDelegate();
+  virtual ~OverscrollControllerDelegate();
 
   // Get the size of the display containing the view corresponding to the
   // delegate.
@@ -47,7 +48,10 @@ class CONTENT_EXPORT OverscrollControllerDelegate {
   // overscroll delta corresponding to the current overscroll mode.
   virtual base::Optional<float> GetMaxOverscrollDelta() const = 0;
 
+  base::WeakPtr<OverscrollControllerDelegate> GetWeakPtr();
+
  private:
+  base::WeakPtrFactory<OverscrollControllerDelegate> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(OverscrollControllerDelegate);
 };
 
