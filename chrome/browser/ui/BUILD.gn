@@ -1368,6 +1368,7 @@ static_library("ui") {
       "webui/download_shelf/download_shelf_page_handler.h",
       "webui/download_shelf/download_shelf_ui.cc",
       "webui/download_shelf/download_shelf_ui.h",
+      "webui/download_shelf/download_shelf_ui_embedder.h",
       "webui/downloads/downloads_dom_handler.cc",
       "webui/downloads/downloads_dom_handler.h",
       "webui/downloads/downloads_list_tracker.cc",

@@ -141,7 +141,8 @@ export class DownloadListElement extends CustomElement {
    * @private
    */
   onItemClick_(e) {
-    // TODO: access download item from e.currentTarget.item.
+    this.apiProxy_.showContextMenu(
+        e.currentTarget.item.id, e.clientX, e.clientY);
   }
 }
 

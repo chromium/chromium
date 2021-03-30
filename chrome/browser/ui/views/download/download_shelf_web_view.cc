@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/views/download/download_shelf_web_view.h"
 
+#include <memory>
+
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/webui/download_shelf/download_shelf_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/views/border.h"
@@ -29,6 +32,10 @@ DownloadShelfWebView::DownloadShelfWebView(Browser* browser,
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
       web_contents());
   task_manager::WebContentsTags::CreateForTabContents(web_contents());
+
+  content::WebUI* web_ui = GetWebContents()->GetWebUI();
+  if (web_ui)
+    web_ui->GetController()->GetAs<DownloadShelfUI>()->set_embedder(this);
 }
 
 DownloadShelfWebView::~DownloadShelfWebView() = default;
@@ -91,6 +98,17 @@ void DownloadShelfWebView::AnimationEnded(const gfx::Animation* animation) {
 
 views::View* DownloadShelfWebView::GetView() {
   return this;
+}
+
+void DownloadShelfWebView::ShowDownloadContextMenu(DownloadUIModel* download,
+                                                   const gfx::Point& position) {
+  gfx::Point screen_position = position;
+  ConvertPointToScreen(this, &screen_position);
+  context_menu_view_ = std::make_unique<DownloadShelfContextMenuView>(download);
+  context_menu_view_->Run(
+      GetWidget(), gfx::Rect(screen_position, gfx::Size()),
+      /* TODO(kerenzhu): Investigate if we need other MenuSourceTypes. */
+      ui::MenuSourceType::MENU_SOURCE_MOUSE, base::RepeatingClosure());
 }
 
 bool DownloadShelfWebView::IsShowing() const {

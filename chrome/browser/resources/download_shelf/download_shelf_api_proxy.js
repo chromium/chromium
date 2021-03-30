@@ -42,6 +42,13 @@ export class DownloadShelfApiProxy {
    * @param {function(number)} callback
    */
   onErased(callback) {}
+
+  /**
+   * @param {number} downloadId
+   * @param {number} clientX
+   * @param {number} clientY
+   */
+  showContextMenu(downloadId, clientX, clientY) {}
 }
 
 /** @implements {DownloadShelfApiProxy} */
@@ -107,6 +114,11 @@ export class DownloadShelfApiProxyImpl {
   /** @override */
   onErased(callback) {
     chrome.downloads.onErased.addListener(callback);
+  }
+
+  /** @override */
+  showContextMenu(downloadId, clientX, clientY) {
+    this.handler.showContextMenu(downloadId, clientX, clientY);
   }
 }
 

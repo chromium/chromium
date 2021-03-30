@@ -13,6 +13,10 @@ interface PageHandlerFactory {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
+  // Show the context menu for a download item at a given position.
+  // TODO(kerenzhu): Use gfx::Point from geometry.mojom. It's not
+  // supported in WebUI yet.
+  ShowContextMenu(uint32 download_id, int32 client_x, int32 client_y);
 };
 
 // WebUI-side handler for requests from the browser.

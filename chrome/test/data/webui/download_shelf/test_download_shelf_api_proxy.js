@@ -10,12 +10,8 @@ import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 export class TestDownloadShelfApiProxy extends TestBrowserProxy {
   constructor() {
     super([
-      'getDownloads',
-      'getDownloadById',
-      'getFileIcon',
-      'onCreated',
-      'onChanged',
-      'onErased',
+      'getDownloads', 'getDownloadById', 'getFileIcon', 'onCreated',
+      'onChanged', 'onErased', 'showContextMenu'
     ]);
 
     /** @type {!PageCallbackRouter} */
@@ -73,6 +69,11 @@ export class TestDownloadShelfApiProxy extends TestBrowserProxy {
   onErased(callback) {
     this.methodCalled('onErased', [callback]);
     this.onErasedCallback_ = callback;
+  }
+
+  /** @override */
+  showContextMenu(downloadId, clientX, clientY) {
+    this.methodCalled('showContextMenu', [downloadId, clientX, clientY]);
   }
 
   /** @override */
