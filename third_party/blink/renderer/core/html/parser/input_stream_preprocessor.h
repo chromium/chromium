@@ -64,6 +64,11 @@ class InputStreamPreprocessor {
     return ProcessNextInputCharacter(source);
   }
 
+  ALWAYS_INLINE bool AdvancePastNonNewline(SegmentedString& source) {
+    next_input_character_ = source.AdvancePastNonNewline();
+    return ProcessNextInputCharacter(source);
+  }
+
   bool SkipNextNewLine() const { return skip_next_new_line_; }
 
   void Reset(bool skip_next_new_line = false) {
