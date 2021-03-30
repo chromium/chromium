@@ -71,14 +71,20 @@ bool VerifyFileHash256(const base::FilePath& filepath,
     return false;
   }
 
-  base::MemoryMappedFile mmfile;
-  if (!mmfile.Initialize(filepath))
-    return false;
-
-  uint8_t actual_hash[crypto::kSHA256Length] = {0};
   std::unique_ptr<crypto::SecureHash> hasher(
       crypto::SecureHash::Create(crypto::SecureHash::SHA256));
-  hasher->Update(mmfile.data(), mmfile.length());
+
+  int64_t file_size = 0;
+  if (!base::GetFileSize(filepath, &file_size))
+    return false;
+  if (file_size > 0) {
+    base::MemoryMappedFile mmfile;
+    if (!mmfile.Initialize(filepath))
+      return false;
+    hasher->Update(mmfile.data(), mmfile.length());
+  }
+
+  uint8_t actual_hash[crypto::kSHA256Length] = {0};
   hasher->Finish(actual_hash, sizeof(actual_hash));
 
   return memcmp(actual_hash, &expected_hash[0], sizeof(actual_hash)) == 0;
