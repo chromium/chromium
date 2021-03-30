@@ -3103,19 +3103,14 @@
     "expiry_milestone": 90
   },
   {
-    "name": "help-app",
-    "owners": [ "//chromeos/components/help_app_ui/OWNERS" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "help-app-launcher-search",
     "owners": [ "//chromeos/components/help_app_ui/OWNERS" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 97
   },
   {
     "name": "help-app-search-service-integration",
     "owners": [ "//chromeos/components/help_app_ui/OWNERS" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 94
   },
   {
     "name": "homepage-promo-card",
