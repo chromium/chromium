@@ -519,7 +519,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "MessagesForAndroidInfrastructure",
                         "MessagesForAndroidPasswords"
                     ]
                 }
