@@ -2828,7 +2828,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.LoadUrl.UrlScheme" enum="WebViewUrlScheme"
-    expires_after="2021-05-05">
+    expires_after="2022-03-29">
   <owner>ntfschr@chromium.org</owner>
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
