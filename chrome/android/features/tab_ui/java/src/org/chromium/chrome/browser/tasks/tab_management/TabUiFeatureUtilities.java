@@ -83,6 +83,14 @@ public class TabUiFeatureUtilities {
             new IntCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_TO_GTS_ANIMATION, MIN_MEMORY_MB_PARAM, 2048);
 
+    // Field trial parameter for removing tab group auto creation from target-blank links and adding
+    // both "Open in new tab" and "Open in new tab in group" as context menu items.
+    private static final String TAB_GROUP_AUTO_CREATION_PARAM = "enable_tab_group_auto_creation";
+
+    public static final BooleanCachedFieldTrialParameter ENABLE_TAB_GROUP_AUTO_CREATION =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, TAB_GROUP_AUTO_CREATION_PARAM, true);
+
     private static Boolean sTabManagementModuleSupportedForTesting;
 
     /**

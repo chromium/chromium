@@ -135,6 +135,7 @@ public class ChromeCachedFlags {
                 TabUiFeatureUtilities.ENABLE_SEARCH_CHIP,
                 TabUiFeatureUtilities.ENABLE_PRICE_TRACKING,
                 TabUiFeatureUtilities.ENABLE_SEARCH_CHIP_ADAPTIVE,
+                TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION,
                 TabUiFeatureUtilities.ZOOMING_MIN_MEMORY,
                 TabUiFeatureUtilities.ZOOMING_MIN_SDK,
                 TabUiFeatureUtilities.SKIP_SLOW_ZOOMING,
