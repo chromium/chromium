@@ -24,6 +24,7 @@ external/wpt/infrastructure/reftest/reftest_match_fail.html [ Failure ]
 external/wpt/infrastructure/reftest/reftest_mismatch_fail.html [ Failure ]
 external/wpt/infrastructure/reftest/reftest_multiple_mismatch-0.html [ Failure ]
 external/wpt/infrastructure/reftest/reftest_multiple_mismatch-1.html [ Failure ]
+accessibility/slot-poison.html [ Failure ]
 
 # Expected to time out.
 external/wpt/infrastructure/expected-fail/timeout.html [ Timeout ]
