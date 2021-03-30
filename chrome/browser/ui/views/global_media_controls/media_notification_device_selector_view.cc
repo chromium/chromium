@@ -351,8 +351,13 @@ DeviceEntryUI* MediaNotificationDeviceSelectorView::GetDeviceEntryUI(
 void MediaNotificationDeviceSelectorView::OnModelUpdated(
     const media_router::CastDialogModel& model) {
   RemoveDevicesOfType(DeviceEntryUIType::kCast);
-  has_cast_device_ = !model.media_sinks().empty();
+  has_cast_device_ = false;
   for (auto sink : model.media_sinks()) {
+    if (!base::Contains(sink.cast_modes,
+                        media_router::MediaCastMode::PRESENTATION)) {
+      continue;
+    }
+    has_cast_device_ = true;
     auto device_entry_view = std::make_unique<CastDeviceEntryView>(
         base::BindRepeating(
             &MediaNotificationDeviceSelectorView::StartCastSession,

@@ -174,6 +174,15 @@ SkColor CastDeviceEntryView::GetInkDropBaseColor() const {
   return views::Button::GetInkDropBaseColor();
 }
 
+void CastDeviceEntryView::OnFocus() {
+  // CastDialogSinkButton::OnFocus() changes the button's status text to "Stop
+  // Casting" if the sink is connected. This status text may cause confusion to
+  // users when the button is shown in the Zenith dialog, where clicking on the
+  // sink button will automatically stop the sink's connected route and start a
+  // new one.
+  HoverButton::OnFocus();
+}
+
 BEGIN_METADATA(AudioDeviceEntryView, HoverButton)
 ADD_PROPERTY_METADATA(bool, Highlighted)
 END_METADATA

@@ -81,6 +81,9 @@ class CastDeviceEntryView : public DeviceEntryUI,
 
   // HoverButton
   SkColor GetInkDropBaseColor() const override;
+
+  // media_router::CastDialogSinkButton
+  void OnFocus() override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_ENTRY_UI_H_
