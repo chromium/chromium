@@ -1744,7 +1744,7 @@
         },
         'args': [
           '--sizes-path',
-          'fuchsia/release/size_tests/fyi_sizes.json',
+          'fuchsia/release/size_tests/fyi_sizes_smoketest.json',
         ],
       },
     },
