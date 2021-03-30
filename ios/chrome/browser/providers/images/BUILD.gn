@@ -8,6 +8,8 @@ source_set("images") {
     "chromium_branded_image_provider.mm",
   ]
   deps = [
+    "resources:chromium_ios_made",
+    "resources:chromium_stay_safe",
     "resources:download_drivium",
     "//base",
     "//ios/chrome/app/theme",

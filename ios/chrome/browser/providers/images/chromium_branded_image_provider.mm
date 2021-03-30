@@ -53,3 +53,11 @@ UIImage* ChromiumBrandedImageProvider::GetWhatsNewIconImage(WhatsNewIcon type) {
 UIImage* ChromiumBrandedImageProvider::GetDownloadGoogleDriveImage() {
   return [UIImage imageNamed:@"download_drivium"];
 }
+
+UIImage* ChromiumBrandedImageProvider::GetAllTabsPromoImage() {
+  return [UIImage imageNamed:@"chromium_all_tabs"];
+}
+
+UIImage* ChromiumBrandedImageProvider::GetMadeForIOSPromoImage() {
+  return [UIImage imageNamed:@"chromium_ios_made"];
+}

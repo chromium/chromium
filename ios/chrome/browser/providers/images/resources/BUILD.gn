@@ -4,6 +4,27 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
+imageset("chromium_stay_safe") {
+  sources = [
+    "chromium_stay_safe.imageset/Contents.json",
+    "chromium_stay_safe.imageset/chromium_stay_safe.png",
+    "chromium_stay_safe.imageset/chromium_stay_safe@2x.png",
+    "chromium_stay_safe.imageset/chromium_stay_safe@3x.png",
+  ]
+}
+
+imageset("chromium_ios_made") {
+  sources = [
+    "chromium_ios_made.imageset/Contents.json",
+    "chromium_ios_made.imageset/chromium_ios_made.png",
+    "chromium_ios_made.imageset/chromium_ios_made@2x.png",
+    "chromium_ios_made.imageset/chromium_ios_made@3x.png",
+    "chromium_ios_made.imageset/chromium_ios_made_dark.png",
+    "chromium_ios_made.imageset/chromium_ios_made_dark@2x.png",
+    "chromium_ios_made.imageset/chromium_ios_made_dark@3x.png",
+  ]
+}
+
 imageset("download_drivium") {
   sources = [
     "download_drivium.imageset/Contents.json",
