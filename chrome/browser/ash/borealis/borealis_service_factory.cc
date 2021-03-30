@@ -33,4 +33,8 @@ KeyedService* BorealisServiceFactory::BuildServiceInstanceFor(
   return new BorealisServiceImpl(Profile::FromBrowserContext(context));
 }
 
+bool BorealisServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}
+
 }  // namespace borealis
