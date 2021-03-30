@@ -2148,13 +2148,9 @@ class BookmarkBarViewTest24 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-#if defined(OS_WIN)  // Fails on latest versions of Windows.
-                     // https://crbug.com/1108551.
-#define MAYBE_ContextMenusKeyboardEscape DISABLED_ContextMenusKeyboardEscape
-#else
-#define MAYBE_ContextMenusKeyboardEscape ContextMenusKeyboardEscape
-#endif
-VIEW_TEST(BookmarkBarViewTest24, MAYBE_ContextMenusKeyboardEscape)
+// Fails on latest versions of Windows. (https://crbug.com/1108551).
+// Flaky on Linux (https://crbug.com/1193137).
+VIEW_TEST(BookmarkBarViewTest24, DISABLED_ContextMenusKeyboardEscape)
 
 #if defined(OS_WIN)
 // Tests that pressing the key KEYCODE closes the menu.
