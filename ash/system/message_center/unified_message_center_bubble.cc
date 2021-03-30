@@ -135,6 +135,7 @@ UnifiedMessageCenterBubble::~UnifiedMessageCenterBubble() {
 int UnifiedMessageCenterBubble::CalculateAvailableHeight() {
   return tray_->bubble()->CalculateMaxHeight() -
          tray_->bubble()->GetCurrentTrayHeight() -
+         GetBubbleInsetHotseatCompensation() -
          kUnifiedMessageCenterBubbleSpacing;
 }
 
