@@ -76,6 +76,9 @@ sk_sp<SkData> SerializeTypeface(SkTypeface* typeface, void* ctx) {
 sk_sp<SkData> SerializeImage(SkImage* image, void* ctx) {
   ImageSerializationContext* context =
       reinterpret_cast<ImageSerializationContext*>(ctx);
+  if (image->isTextureBacked()) {
+    return SkData::MakeEmpty();
+  }
 
   const SkImageInfo& image_info = image->imageInfo();
   // If decoding/encoding the image would result in it exceeding the allowable
