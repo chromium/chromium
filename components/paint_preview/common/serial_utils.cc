@@ -76,7 +76,7 @@ sk_sp<SkData> SerializeTypeface(SkTypeface* typeface, void* ctx) {
 sk_sp<SkData> SerializeImage(SkImage* image, void* ctx) {
   ImageSerializationContext* context =
       reinterpret_cast<ImageSerializationContext*>(ctx);
-  if (image->isTextureBacked()) {
+  if (context->skip_texture_backed && image->isTextureBacked()) {
     return SkData::MakeEmpty();
   }
 

@@ -62,6 +62,10 @@ struct ImageSerializationContext {
   // bitmap larger than this are skipped to avoid OOMs. If this value is 0 image
   // procs are skipped and the default behavior is used.
   uint64_t max_representation_size{0};
+
+  // Skip texture backed images. Must be true if serialized off the main
+  // thread.
+  bool skip_texture_backed{false};
 };
 
 // Maps a content ID to a clip rect.

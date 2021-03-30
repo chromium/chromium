@@ -73,6 +73,7 @@ void RecordToFileOnThreadPool(sk_sp<const SkPicture> skp,
                               CapturePaintPreviewCallback callback) {
   TRACE_EVENT0("paint_preview", "RecordToFileOnThreadPool");
   size_t serialized_size = 0;
+  tracker->GetImageSerializationContext()->skip_texture_backed = true;
   bool success = RecordToFile(std::move(skp_file), skp, tracker.get(),
                               max_capture_size, &serialized_size);
   out.status = success ? mojom::PaintPreviewStatus::kOk
