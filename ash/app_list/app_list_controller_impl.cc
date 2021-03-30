@@ -82,6 +82,26 @@ namespace {
 constexpr char kHomescreenAnimationHistogram[] =
     "Ash.Homescreen.AnimationSmoothness";
 
+// The target scale to which (or from which) the home launcher will animate when
+// overview is being shown (or hidden) using fade transitions while home
+// launcher is shown.
+constexpr float kOverviewFadeAnimationScale = 0.92f;
+
+// The home launcher animation duration for transitions that accompany overview
+// fading transitions.
+constexpr base::TimeDelta kOverviewFadeAnimationDuration =
+    base::TimeDelta::FromMilliseconds(350);
+
+// Update layer animation settings for launcher scale and opacity animation that
+// runs on overview mode change.
+void UpdateOverviewSettings(base::TimeDelta duration,
+                            ui::ScopedLayerAnimationSettings* settings) {
+  settings->SetTransitionDuration(kOverviewFadeAnimationDuration);
+  settings->SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
+  settings->SetPreemptionStrategy(
+      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+}
+
 // Layer animation observer that waits for layer animator to schedule, and
 // complete animations. When all animations complete, it fires |callback| and
 // deletes itself.
@@ -867,8 +887,7 @@ void AppListControllerImpl::OnOverviewModeStarting() {
       IsHomeScreenVisible() &&
       overview_enter_type == OverviewEnterExitType::kFadeInEnter;
 
-  home_screen_presenter_.ScheduleOverviewModeAnimation(
-      HomeScreenPresenter::TransitionType::kScaleHomeOut, animate);
+  UpdateForOverviewModeChange(/*show_home_launcher=*/false, animate);
 
   if (IsTabletMode()) {
     const int64_t display_id = last_visible_display_id_;
@@ -900,13 +919,12 @@ void AppListControllerImpl::OnOverviewModeEnding(OverviewSession* session) {
   overview_exit_type_ =
       base::make_optional(session->enter_exit_overview_type());
 
-  // If the overview is fading out, start the home screen animation in parallel.
-  // Otherwise the transition will be initiated in
+  // If the overview is fading out, start the home launcher animation in
+  // parallel. Otherwise the transition will be initiated in
   // OnOverviewModeEndingAnimationComplete().
   if (session->enter_exit_overview_type() ==
       OverviewEnterExitType::kFadeOutExit) {
-    home_screen_presenter_.ScheduleOverviewModeAnimation(
-        HomeScreenPresenter::TransitionType::kScaleHomeIn, true /*animate*/);
+    UpdateForOverviewModeChange(/*show_home_launcher=*/true, /*animate=*/true);
 
     // Make sure the window visibility is updated, in case it was previously
     // hidden due to overview being shown.
@@ -950,8 +968,7 @@ void AppListControllerImpl::OnOverviewModeEndingAnimationComplete(
       *overview_exit_type_ == OverviewEnterExitType::kFadeOutExit;
   overview_exit_type_ = base::nullopt;
 
-  home_screen_presenter_.ScheduleOverviewModeAnimation(
-      HomeScreenPresenter::TransitionType::kScaleHomeIn, animate);
+  UpdateForOverviewModeChange(/*show_home_launcher=*/true, animate);
 
   // Make sure the window visibility is updated, in case it was previously
   // hidden due to overview being shown.
@@ -1858,6 +1875,51 @@ bool AppListControllerImpl::ShouldShowHomeScreen() const {
   return !SplitViewController::Get(window)->InSplitViewMode();
 }
 
+void AppListControllerImpl::UpdateForOverviewModeChange(bool show_home_launcher,
+                                                        bool animate) {
+  // Force the home view into the expected initial state without animation,
+  // except when transitioning out from home launcher. Gesture handling for the
+  // gesture to move to overview can update the scale before triggering
+  // transition to overview - undoing these changes here would make the UI
+  // jump during the transition.
+  if (animate && show_home_launcher) {
+    UpdateScaleAndOpacityForHomeLauncher(
+        kOverviewFadeAnimationScale,
+        /*opacity=*/0.0f, /*animation_info=*/base::nullopt,
+        /*animation_settings_updater=*/base::NullCallback());
+  }
+
+  // Hide all transient child windows in the app list (e.g. uninstall dialog)
+  // before starting the overview mode transition, and restore them when
+  // reshowing the app list.
+  aura::Window* app_list_window =
+      Shell::Get()->app_list_controller()->GetHomeScreenWindow();
+  if (app_list_window) {
+    for (auto* child : wm::GetTransientChildren(app_list_window)) {
+      if (show_home_launcher)
+        child->Show();
+      else
+        child->Hide();
+    }
+  }
+
+  base::Optional<HomeLauncherAnimationInfo> animation_info =
+      animate ? base::make_optional<HomeLauncherAnimationInfo>(
+                    HomeLauncherAnimationTrigger::kOverviewModeFade,
+                    show_home_launcher)
+              : base::nullopt;
+  UpdateAnimationSettingsCallback animation_settings_updater =
+      animate ? base::BindRepeating(&UpdateOverviewSettings,
+                                    kOverviewFadeAnimationDuration)
+              : base::NullCallback();
+  const float target_scale =
+      show_home_launcher ? 1.0f : kOverviewFadeAnimationScale;
+  const float target_opacity = show_home_launcher ? 1.0f : 0.0f;
+  UpdateScaleAndOpacityForHomeLauncher(target_scale, target_opacity,
+                                       std::move(animation_info),
+                                       animation_settings_updater);
+}
+
 void AppListControllerImpl::UpdateLauncherContainer(
     base::Optional<int64_t> display_id) {
   aura::Window* window = presenter_.GetWindow();
@@ -1950,10 +2012,8 @@ void AppListControllerImpl::OnWindowDragStarted() {
 void AppListControllerImpl::OnWindowDragEnded(bool animate) {
   in_window_dragging_ = false;
   UpdateHomeScreenVisibility();
-  if (ShouldShowHomeScreen()) {
-    home_screen_presenter_.ScheduleOverviewModeAnimation(
-        HomeScreenPresenter::TransitionType::kScaleHomeIn, animate);
-  }
+  if (ShouldShowHomeScreen())
+    UpdateForOverviewModeChange(/*show_home_launcher=*/true, animate);
 }
 
 void AppListControllerImpl::OnAppUpdate(const apps::AppUpdate& update) {

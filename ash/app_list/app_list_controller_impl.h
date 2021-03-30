@@ -21,7 +21,6 @@
 #include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "ash/home_screen/home_screen_presenter.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
@@ -414,6 +413,11 @@ class ASH_EXPORT AppListControllerImpl
   // configuration.
   bool ShouldShowHomeScreen() const;
 
+  // Updates home launcher scale and opacity when the overview mode state
+  // changes. `show_home_launcher` - whether the home launcher should be shown.
+  // `animate` - whether the transition should be animated.
+  void UpdateForOverviewModeChange(bool show_home_launcher, bool animate);
+
   // Returns the length of the most recent query.
   int GetLastQueryLength();
 
@@ -543,9 +547,6 @@ class ASH_EXPORT AppListControllerImpl
 
   // Whether we're currently in a window dragging process.
   bool in_window_dragging_ = false;
-
-  // Presenter that manages home screen animations.
-  HomeScreenPresenter home_screen_presenter_;
 
   // The last overview mode exit type - cached when the overview exit starts, so
   // it can be used to decide how to update home screen when overview mode exit
