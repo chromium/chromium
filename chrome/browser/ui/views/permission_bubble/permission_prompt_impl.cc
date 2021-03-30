@@ -98,10 +98,13 @@ void PermissionPromptImpl::UpdateAnchor() {
   const bool is_location_bar_drawn = lbv && lbv->IsDrawn();
   switch (prompt_style_) {
     case PermissionPromptStyle::kBubbleOnly:
-      // TODO(olesiamarukhno): CHECK is temporary to see if this is the reason
-      // of the crash (crbug.com/1175231).
-      CHECK(prompt_bubble_);
       DCHECK(!permission_chip_);
+      // TODO(crbug.com/1175231): Investigate why prompt_bubble_ can be null
+      // here. Early return is preventing the crash from happening but we still
+      // don't know the reason why it is null here and cannot reproduce it.
+      if (!prompt_bubble_)
+        return;
+
       if (ShouldCurrentRequestUseChipUI() && is_location_bar_drawn) {
         // Change prompt style to chip to avoid dismissing request while
         // switching UI style.
