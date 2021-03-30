@@ -837,9 +837,7 @@ bool AVIFImageDecoder::UpdateDemuxer() {
       GetColorSpace(container).ToSkYUVColorSpace(container->depth,
                                                  &yuv_color_space_) &&
       // TODO(crbug.com/911246): Support color space transforms for YUV decodes.
-      !ColorTransform() &&
-      // TODO(crbug.com/943519): Support incremental YUV decoding.
-      IsAllDataReceived();
+      !ColorTransform();
   return SetSize(container->width, container->height);
 }
 
