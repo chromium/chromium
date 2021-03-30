@@ -152,7 +152,7 @@ public class StatusProperties {
                                         mIsIncognito ? R.color.default_icon_color_blue_light
                                                      : R.color.default_icon_color_blue),
                     PorterDuff.Mode.SRC_IN);
-            Bitmap circleCopy = createCircleBackground(resources);
+            Bitmap circleCopy = createCircleBackground(resources, icon.getIntrinsicWidth());
             Canvas canvas = new Canvas(circleCopy);
             float radius = 0.5f * canvas.getWidth();
             Bitmap iconBitmap = createScaledIcon(icon, 0.9f);
@@ -179,9 +179,8 @@ public class StatusProperties {
         }
 
         /** Returns a bitmap of the circle icon to be used for the Drawable. */
-        private Bitmap createCircleBackground(Resources resources) {
+        private Bitmap createCircleBackground(Resources resources, int width) {
             // Recreate circle every time due to changing dpi and light/dark themes.
-            int width = resources.getDimensionPixelSize(R.dimen.location_bar_status_icon_width);
             float radius = 0.5f * width;
             Bitmap circleBackground = Bitmap.createBitmap(width, width, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(circleBackground);
