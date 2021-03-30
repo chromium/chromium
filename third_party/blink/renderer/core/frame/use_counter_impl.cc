@@ -23,7 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/core/frame/use_counter_helper.h"
+#include "third_party/blink/renderer/core/frame/use_counter_impl.h"
 
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
@@ -46,27 +46,27 @@ namespace blink {
 UseCounterMuteScope::UseCounterMuteScope(const Element& element)
     : loader_(element.GetDocument().Loader()) {
   if (loader_)
-    loader_->GetUseCounterHelper().MuteForInspector();
+    loader_->GetUseCounter().MuteForInspector();
 }
 
 UseCounterMuteScope::~UseCounterMuteScope() {
   if (loader_)
-    loader_->GetUseCounterHelper().UnmuteForInspector();
+    loader_->GetUseCounter().UnmuteForInspector();
 }
 
-UseCounterHelper::UseCounterHelper(Context context, CommitState commit_state)
+UseCounterImpl::UseCounterImpl(Context context, CommitState commit_state)
     : mute_count_(0), context_(context), commit_state_(commit_state) {}
 
-void UseCounterHelper::MuteForInspector() {
+void UseCounterImpl::MuteForInspector() {
   mute_count_++;
 }
 
-void UseCounterHelper::UnmuteForInspector() {
+void UseCounterImpl::UnmuteForInspector() {
   mute_count_--;
 }
 
-void UseCounterHelper::RecordMeasurement(WebFeature feature,
-                                         const LocalFrame& source_frame) {
+void UseCounterImpl::RecordMeasurement(WebFeature feature,
+                                       const LocalFrame& source_frame) {
   if (mute_count_)
     return;
 
@@ -84,7 +84,7 @@ void UseCounterHelper::RecordMeasurement(WebFeature feature,
   features_recorded_.set(feature_id);
 }
 
-void UseCounterHelper::ReportAndTraceMeasurementByFeatureId(
+void UseCounterImpl::ReportAndTraceMeasurementByFeatureId(
     WebFeature feature,
     const LocalFrame& source_frame) {
   if (context_ != kDisabledContext) {
@@ -100,7 +100,7 @@ void UseCounterHelper::ReportAndTraceMeasurementByFeatureId(
   }
 }
 
-bool UseCounterHelper::HasRecordedMeasurement(WebFeature feature) const {
+bool UseCounterImpl::HasRecordedMeasurement(WebFeature feature) const {
   if (mute_count_)
     return false;
 
@@ -112,15 +112,15 @@ bool UseCounterHelper::HasRecordedMeasurement(WebFeature feature) const {
   return features_recorded_[static_cast<size_t>(feature)];
 }
 
-void UseCounterHelper::ClearMeasurementForTesting(WebFeature feature) {
+void UseCounterImpl::ClearMeasurementForTesting(WebFeature feature) {
   features_recorded_.reset(static_cast<size_t>(feature));
 }
 
-void UseCounterHelper::Trace(Visitor* visitor) const {
+void UseCounterImpl::Trace(Visitor* visitor) const {
   visitor->Trace(observers_);
 }
 
-void UseCounterHelper::DidCommitLoad(const LocalFrame* frame) {
+void UseCounterImpl::DidCommitLoad(const LocalFrame* frame) {
   const KURL url = frame->GetDocument()->Url();
   if (url.ProtocolIs("chrome-extension"))
     context_ = kExtensionContext;
@@ -154,8 +154,8 @@ void UseCounterHelper::DidCommitLoad(const LocalFrame* frame) {
   }
 }
 
-bool UseCounterHelper::IsCounted(CSSPropertyID unresolved_property,
-                                 CSSPropertyType type) const {
+bool UseCounterImpl::IsCounted(CSSPropertyID unresolved_property,
+                               CSSPropertyType type) const {
   if (unresolved_property == CSSPropertyID::kInvalid) {
     return false;
   }
@@ -168,12 +168,12 @@ bool UseCounterHelper::IsCounted(CSSPropertyID unresolved_property,
   }
 }
 
-void UseCounterHelper::AddObserver(Observer* observer) {
+void UseCounterImpl::AddObserver(Observer* observer) {
   DCHECK(!observers_.Contains(observer));
   observers_.insert(observer);
 }
 
-void UseCounterHelper::ReportAndTraceMeasurementByCSSSampleId(
+void UseCounterImpl::ReportAndTraceMeasurementByCSSSampleId(
     int sample_id,
     const LocalFrame* frame,
     bool is_animated) {
@@ -185,14 +185,14 @@ void UseCounterHelper::ReportAndTraceMeasurementByCSSSampleId(
                  "feature", sample_id);
     if (frame && frame->Client()) {
       frame->Client()->DidObserveNewCssPropertyUsage(
-          static_cast<mojom::CSSSampleId>(sample_id), is_animated);
+          static_cast<mojom::blink::CSSSampleId>(sample_id), is_animated);
     }
   }
 }
 
-void UseCounterHelper::Count(CSSPropertyID property,
-                             CSSPropertyType type,
-                             const LocalFrame* source_frame) {
+void UseCounterImpl::Count(CSSPropertyID property,
+                           CSSPropertyType type,
+                           const LocalFrame* source_frame) {
   DCHECK(IsCSSPropertyIDWithName(property) ||
          property == CSSPropertyID::kVariable);
 
@@ -220,14 +220,13 @@ void UseCounterHelper::Count(CSSPropertyID property,
   }
 }
 
-void UseCounterHelper::Count(WebFeature feature,
-                             const LocalFrame* source_frame) {
+void UseCounterImpl::Count(WebFeature feature, const LocalFrame* source_frame) {
   if (!source_frame)
     return;
   RecordMeasurement(feature, *source_frame);
 }
 
-void UseCounterHelper::NotifyFeatureCounted(WebFeature feature) {
+void UseCounterImpl::NotifyFeatureCounted(WebFeature feature) {
   DCHECK(!mute_count_);
   DCHECK_NE(kDisabledContext, context_);
   HeapHashSet<Member<Observer>> to_be_removed;
@@ -238,7 +237,7 @@ void UseCounterHelper::NotifyFeatureCounted(WebFeature feature) {
   observers_.RemoveAll(to_be_removed);
 }
 
-void UseCounterHelper::CountFeature(WebFeature feature) const {
+void UseCounterImpl::CountFeature(WebFeature feature) const {
   switch (context_) {
     case kDefaultContext:
       // Feature usage for the default context is recorded on the browser side.

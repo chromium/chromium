@@ -151,7 +151,7 @@ bool ContentSecurityPolicy::IsNonceableElement(const Element* element) {
   return nonceable;
 }
 
-static WebFeature GetUseCounterHelperType(ContentSecurityPolicyType type) {
+static WebFeature GetUseCounterType(ContentSecurityPolicyType type) {
   switch (type) {
     case ContentSecurityPolicyType::kEnforce:
       return WebFeature::kContentSecurityPolicy;
@@ -219,7 +219,7 @@ void ContentSecurityPolicy::ApplyPolicySideEffectsToDelegate() {
 void ContentSecurityPolicy::ReportUseCounters(
     const Vector<network::mojom::blink::ContentSecurityPolicyPtr>& policies) {
   for (const auto& policy : policies) {
-    Count(GetUseCounterHelperType(policy->header->type));
+    Count(GetUseCounterType(policy->header->type));
     if (CSPDirectiveListAllowDynamic(*policy,
                                      CSPDirectiveName::ScriptSrcAttr) ||
         CSPDirectiveListAllowDynamic(*policy,

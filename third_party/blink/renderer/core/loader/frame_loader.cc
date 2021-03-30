@@ -1615,7 +1615,7 @@ void FrameLoader::ModifyRequestForCSP(
 void FrameLoader::ReportLegacyTLSVersion(const KURL& url,
                                          bool is_subresource,
                                          bool is_ad_resource) {
-  document_loader_->GetUseCounterHelper().Count(
+  document_loader_->GetUseCounter().Count(
       is_subresource
           ? WebFeature::kLegacyTLSVersionInSubresource
           : (frame_->Tree().Parent()

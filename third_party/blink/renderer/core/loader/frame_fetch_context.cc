@@ -597,7 +597,7 @@ bool FrameFetchContext::IsSVGImageChromeClient() const {
 void FrameFetchContext::CountUsage(WebFeature feature) const {
   if (GetResourceFetcherProperties().IsDetached())
     return;
-  document_loader_->GetUseCounterHelper().Count(feature, GetFrame());
+  document_loader_->GetUseCounter().Count(feature, GetFrame());
 }
 
 void FrameFetchContext::CountDeprecation(WebFeature feature) const {

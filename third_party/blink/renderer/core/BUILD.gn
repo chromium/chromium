@@ -1309,7 +1309,7 @@ source_set("unit_tests") {
     "frame/reporting_context_test.cc",
     "frame/root_frame_viewport_test.cc",
     "frame/rotation_viewport_anchor_test.cc",
-    "frame/use_counter_helper_test.cc",
+    "frame/use_counter_impl_test.cc",
     "frame/visual_viewport_test.cc",
     "frame/web_frame_test.cc",
     "frame/web_frame_widget_test.cc",

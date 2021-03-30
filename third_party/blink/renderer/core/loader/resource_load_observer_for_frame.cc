@@ -289,7 +289,7 @@ CoreProbeSink* ResourceLoadObserverForFrame::GetProbe() {
 }
 
 void ResourceLoadObserverForFrame::CountUsage(WebFeature feature) {
-  document_loader_->GetUseCounterHelper().Count(feature, document_->GetFrame());
+  document_loader_->GetUseCounter().Count(feature, document_->GetFrame());
 }
 
 }  // namespace blink

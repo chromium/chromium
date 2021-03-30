@@ -58,7 +58,7 @@
 #include "third_party/blink/renderer/core/frame/dactyloscoper.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
 #include "third_party/blink/renderer/core/frame/policy_container.h"
-#include "third_party/blink/renderer/core/frame/use_counter_helper.h"
+#include "third_party/blink/renderer/core/frame/use_counter_impl.h"
 #include "third_party/blink/renderer/core/html/parser/parser_synchronization_policy.h"
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
@@ -280,7 +280,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   bool IsListingFtpDirectory() const { return listing_ftp_directory_; }
 
-  UseCounterHelper& GetUseCounterHelper() { return use_counter_; }
+  UseCounterImpl& GetUseCounter() { return use_counter_; }
   Dactyloscoper& GetDactyloscoper() { return dactyloscoper_; }
 
   PrefetchedSignedExchangeManager* GetPrefetchedSignedExchangeManager() const;
@@ -584,12 +584,12 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   const KURL web_bundle_claimed_url_;
   ukm::SourceId ukm_source_id_;
 
-  // This UseCounterHelper tracks feature usage associated with the lifetime of
+  // This UseCounter tracks feature usage associated with the lifetime of
   // the document load. Features recorded prior to commit will be recorded
   // locally. Once committed, feature usage will be piped to the browser side
   // page load metrics that aggregates usage from frames to one page load and
   // report feature usage to UMA histograms per page load.
-  UseCounterHelper use_counter_;
+  UseCounterImpl use_counter_;
 
   Dactyloscoper dactyloscoper_;
 

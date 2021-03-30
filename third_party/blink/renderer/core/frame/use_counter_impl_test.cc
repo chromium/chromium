@@ -38,9 +38,9 @@ int GetPageVisitsBucketforHistogram(const std::string& histogram_name) {
 namespace blink {
 using WebFeature = mojom::WebFeature;
 
-class UseCounterHelperTest : public testing::Test {
+class UseCounterImplTest : public testing::Test {
  public:
-  UseCounterHelperTest() : dummy_(std::make_unique<DummyPageHolder>()) {
+  UseCounterImplTest() : dummy_(std::make_unique<DummyPageHolder>()) {
     Page::InsertOrdinaryPageForTesting(&dummy_->GetPage());
   }
 
@@ -66,15 +66,15 @@ class UseCounterHelperTest : public testing::Test {
   }
 };
 
-TEST_F(UseCounterHelperTest, RecordingExtensions) {
+TEST_F(UseCounterImplTest, RecordingExtensions) {
   const std::string histogram = kExtensionFeaturesHistogramName;
   constexpr auto item = mojom::WebFeature::kFetch;
   constexpr auto second_item = WebFeature::kFetchBodyStream;
   const std::string url = kExtensionUrl;
-  UseCounterHelper::Context context = UseCounterHelper::kExtensionContext;
+  UseCounterImpl::Context context = UseCounterImpl::kExtensionContext;
   int page_visits_bucket = GetPageVisitsBucketforHistogram(histogram);
 
-  UseCounterHelper use_counter0(context, UseCounterHelper::kCommited);
+  UseCounterImpl use_counter0(context, UseCounterImpl::kCommited);
 
   // Test recording a single (arbitrary) counter
   EXPECT_FALSE(use_counter0.HasRecordedMeasurement(item));
@@ -96,7 +96,7 @@ TEST_F(UseCounterHelperTest, RecordingExtensions) {
 
   // After a page load, the histograms will be updated, even when the URL
   // scheme is internal
-  UseCounterHelper use_counter1(context);
+  UseCounterImpl use_counter1(context);
   SetURL(url_test_helpers::ToKURL(url));
   use_counter1.DidCommitLoad(GetFrame());
   histogram_tester_.ExpectBucketCount(histogram, static_cast<int>(item), 1);
@@ -114,7 +114,7 @@ TEST_F(UseCounterHelperTest, RecordingExtensions) {
   histogram_tester_.ExpectTotalCount(histogram, 4);
 }
 
-TEST_F(UseCounterHelperTest, CSSSelectorPseudoWhere) {
+TEST_F(UseCounterImplTest, CSSSelectorPseudoWhere) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   Document& document = dummy_page_holder->GetDocument();
@@ -137,7 +137,7 @@ TEST_F(UseCounterHelperTest, CSSSelectorPseudoWhere) {
  * won't find in unit testing anyway.
  */
 
-TEST_F(UseCounterHelperTest, CSSSelectorPseudoAnyLink) {
+TEST_F(UseCounterImplTest, CSSSelectorPseudoAnyLink) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   Document& document = dummy_page_holder->GetDocument();
@@ -148,7 +148,7 @@ TEST_F(UseCounterHelperTest, CSSSelectorPseudoAnyLink) {
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
 
-TEST_F(UseCounterHelperTest, CSSSelectorPseudoWebkitAnyLink) {
+TEST_F(UseCounterImplTest, CSSSelectorPseudoWebkitAnyLink) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   Document& document = dummy_page_holder->GetDocument();
@@ -159,15 +159,15 @@ TEST_F(UseCounterHelperTest, CSSSelectorPseudoWebkitAnyLink) {
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
 
-TEST_F(UseCounterHelperTest, CSSTypedOMStylePropertyMap) {
-  UseCounterHelper use_counter;
+TEST_F(UseCounterImplTest, CSSTypedOMStylePropertyMap) {
+  UseCounterImpl use_counter;
   WebFeature feature = WebFeature::kCSSTypedOMStylePropertyMap;
   EXPECT_FALSE(GetDocument().IsUseCounted(feature));
   GetDocument().CountUse(feature);
   EXPECT_TRUE(GetDocument().IsUseCounted(feature));
 }
 
-TEST_F(UseCounterHelperTest, CSSSelectorPseudoIs) {
+TEST_F(UseCounterImplTest, CSSSelectorPseudoIs) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   Document& document = dummy_page_holder->GetDocument();
@@ -179,7 +179,7 @@ TEST_F(UseCounterHelperTest, CSSSelectorPseudoIs) {
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSSelectorPseudoWhere));
 }
 
-TEST_F(UseCounterHelperTest, CSSSelectorPseudoDir) {
+TEST_F(UseCounterImplTest, CSSSelectorPseudoDir) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   Document& document = dummy_page_holder->GetDocument();
@@ -190,7 +190,7 @@ TEST_F(UseCounterHelperTest, CSSSelectorPseudoDir) {
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
 
-TEST_F(UseCounterHelperTest, CSSGridLayoutPercentageColumnIndefiniteWidth) {
+TEST_F(UseCounterImplTest, CSSGridLayoutPercentageColumnIndefiniteWidth) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   Document& document = dummy_page_holder->GetDocument();
@@ -203,7 +203,7 @@ TEST_F(UseCounterHelperTest, CSSGridLayoutPercentageColumnIndefiniteWidth) {
   EXPECT_FALSE(document.IsUseCounted(feature));
 }
 
-TEST_F(UseCounterHelperTest, CSSGridLayoutPercentageRowIndefiniteHeight1) {
+TEST_F(UseCounterImplTest, CSSGridLayoutPercentageRowIndefiniteHeight1) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   Document& document = dummy_page_holder->GetDocument();
@@ -216,7 +216,7 @@ TEST_F(UseCounterHelperTest, CSSGridLayoutPercentageRowIndefiniteHeight1) {
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
 
-TEST_F(UseCounterHelperTest, CSSGridLayoutPercentageRowIndefiniteHeight2) {
+TEST_F(UseCounterImplTest, CSSGridLayoutPercentageRowIndefiniteHeight2) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   Document& document = dummy_page_holder->GetDocument();
@@ -229,7 +229,7 @@ TEST_F(UseCounterHelperTest, CSSGridLayoutPercentageRowIndefiniteHeight2) {
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
 
-TEST_F(UseCounterHelperTest, CSSGridLayoutPercentageRowIndefiniteHeight3) {
+TEST_F(UseCounterImplTest, CSSGridLayoutPercentageRowIndefiniteHeight3) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   Document& document = dummy_page_holder->GetDocument();
@@ -242,7 +242,7 @@ TEST_F(UseCounterHelperTest, CSSGridLayoutPercentageRowIndefiniteHeight3) {
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
 
-TEST_F(UseCounterHelperTest, CSSGridLayoutPercentageRowIndefiniteHeight4) {
+TEST_F(UseCounterImplTest, CSSGridLayoutPercentageRowIndefiniteHeight4) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   Document& document = dummy_page_holder->GetDocument();
@@ -256,7 +256,7 @@ TEST_F(UseCounterHelperTest, CSSGridLayoutPercentageRowIndefiniteHeight4) {
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
 
-TEST_F(UseCounterHelperTest, CSSGridLayoutPercentageRowIndefiniteHeight5) {
+TEST_F(UseCounterImplTest, CSSGridLayoutPercentageRowIndefiniteHeight5) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   Document& document = dummy_page_holder->GetDocument();
@@ -270,7 +270,7 @@ TEST_F(UseCounterHelperTest, CSSGridLayoutPercentageRowIndefiniteHeight5) {
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
 
-TEST_F(UseCounterHelperTest, CSSGridLayoutPercentageRowIndefiniteHeight6) {
+TEST_F(UseCounterImplTest, CSSGridLayoutPercentageRowIndefiniteHeight6) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   Document& document = dummy_page_holder->GetDocument();
@@ -283,7 +283,7 @@ TEST_F(UseCounterHelperTest, CSSGridLayoutPercentageRowIndefiniteHeight6) {
   EXPECT_FALSE(document.IsUseCounted(feature));
 }
 
-TEST_F(UseCounterHelperTest, CSSGridLayoutPercentageRowIndefiniteHeight7) {
+TEST_F(UseCounterImplTest, CSSGridLayoutPercentageRowIndefiniteHeight7) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   Document& document = dummy_page_holder->GetDocument();
@@ -297,7 +297,7 @@ TEST_F(UseCounterHelperTest, CSSGridLayoutPercentageRowIndefiniteHeight7) {
   EXPECT_FALSE(document.IsUseCounted(feature));
 }
 
-TEST_F(UseCounterHelperTest, CSSFlexibleBox) {
+TEST_F(UseCounterImplTest, CSSFlexibleBox) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   Document& document = dummy_page_holder->GetDocument();
@@ -309,7 +309,7 @@ TEST_F(UseCounterHelperTest, CSSFlexibleBox) {
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
 
-TEST_F(UseCounterHelperTest, CSSFlexibleBoxInline) {
+TEST_F(UseCounterImplTest, CSSFlexibleBoxInline) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   Document& document = dummy_page_holder->GetDocument();
@@ -321,7 +321,7 @@ TEST_F(UseCounterHelperTest, CSSFlexibleBoxInline) {
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
 
-TEST_F(UseCounterHelperTest, CSSFlexibleBoxButton) {
+TEST_F(UseCounterImplTest, CSSFlexibleBoxButton) {
   // LayoutButton is a subclass of LayoutFlexibleBox, however we don't want it
   // to be counted as usage of flexboxes as it's an implementation detail.
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
@@ -339,7 +339,7 @@ class DeprecationTest : public testing::Test {
   DeprecationTest()
       : dummy_(std::make_unique<DummyPageHolder>()),
         deprecation_(dummy_->GetPage().GetDeprecation()),
-        use_counter_(dummy_->GetDocument().Loader()->GetUseCounterHelper()) {
+        use_counter_(dummy_->GetDocument().Loader()->GetUseCounter()) {
     Page::InsertOrdinaryPageForTesting(&dummy_->GetPage());
   }
 
@@ -348,7 +348,7 @@ class DeprecationTest : public testing::Test {
 
   std::unique_ptr<DummyPageHolder> dummy_;
   Deprecation& deprecation_;
-  UseCounterHelper& use_counter_;
+  UseCounterImpl& use_counter_;
 };
 
 TEST_F(DeprecationTest, InspectorDisablesDeprecation) {
@@ -385,7 +385,7 @@ TEST_F(DeprecationTest, InspectorDisablesDeprecation) {
   EXPECT_TRUE(use_counter_.HasRecordedMeasurement(feature));
 }
 
-TEST_F(UseCounterHelperTest, CSSUnknownNamespacePrefixInSelector) {
+TEST_F(UseCounterImplTest, CSSUnknownNamespacePrefixInSelector) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   Document& document = dummy_page_holder->GetDocument();
@@ -407,7 +407,7 @@ TEST_F(UseCounterHelperTest, CSSUnknownNamespacePrefixInSelector) {
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
 
-TEST_F(UseCounterHelperTest, CSSSelectorHostContextInLiveProfile) {
+TEST_F(UseCounterImplTest, CSSSelectorHostContextInLiveProfile) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   Document& document = dummy_page_holder->GetDocument();
@@ -439,7 +439,7 @@ TEST_F(UseCounterHelperTest, CSSSelectorHostContextInLiveProfile) {
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
 
-TEST_F(UseCounterHelperTest, CSSSelectorHostContextInSnapshotProfile) {
+TEST_F(UseCounterImplTest, CSSSelectorHostContextInSnapshotProfile) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   Document& document = dummy_page_holder->GetDocument();
@@ -467,7 +467,7 @@ TEST_F(UseCounterHelperTest, CSSSelectorHostContextInSnapshotProfile) {
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
 
-TEST_F(UseCounterHelperTest, UniqueCSSSampleIds) {
+TEST_F(UseCounterImplTest, UniqueCSSSampleIds) {
   HashSet<int> ids;
 
   for (CSSPropertyID property : CSSPropertyIDList()) {
@@ -483,7 +483,7 @@ TEST_F(UseCounterHelperTest, UniqueCSSSampleIds) {
   }
 }
 
-TEST_F(UseCounterHelperTest, MaximumCSSSampleId) {
+TEST_F(UseCounterImplTest, MaximumCSSSampleId) {
   int max_sample_id = 0;
 
   for (CSSPropertyID property : CSSPropertyIDList()) {
@@ -499,7 +499,7 @@ TEST_F(UseCounterHelperTest, MaximumCSSSampleId) {
             max_sample_id);
 }
 
-TEST_F(UseCounterHelperTest, CSSMarkerPseudoElementUA) {
+TEST_F(UseCounterImplTest, CSSMarkerPseudoElementUA) {
   // Check that UA styles for list markers are not counted.
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
@@ -530,7 +530,7 @@ TEST_F(UseCounterHelperTest, CSSMarkerPseudoElementUA) {
   EXPECT_FALSE(document.IsUseCounted(feature));
 }
 
-TEST_F(UseCounterHelperTest, CSSMarkerPseudoElementAuthor) {
+TEST_F(UseCounterImplTest, CSSMarkerPseudoElementAuthor) {
   // Check that author styles for list markers are counted.
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());

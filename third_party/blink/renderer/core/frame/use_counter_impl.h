@@ -23,8 +23,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_USE_COUNTER_HELPER_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_USE_COUNTER_HELPER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_USE_COUNTER_IMPL_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_USE_COUNTER_IMPL_H_
 
 #include <bitset>
 #include "base/macros.h"
@@ -61,8 +61,8 @@ class UseCounterMuteScope {
 
 // This class provides an implementation of UseCounter - see the class comment
 // of blink::UseCounter for the feature.
-// Changes on UseCounterHelper are observable by UseCounterHelper::Observer.
-class CORE_EXPORT UseCounterHelper final {
+// Changes on UseCounterImpl are observable by UseCounterImpl::Observer.
+class CORE_EXPORT UseCounterImpl final {
   DISALLOW_NEW();
 
  public:
@@ -87,10 +87,9 @@ class CORE_EXPORT UseCounterHelper final {
   // distinguish them.
   enum class CSSPropertyType { kDefault, kAnimation };
 
-  explicit UseCounterHelper(Context = kDefaultContext,
-                            CommitState = kPreCommit);
+  explicit UseCounterImpl(Context = kDefaultContext, CommitState = kPreCommit);
 
-  // An interface to observe UseCounterHelper changes. Note that this is never
+  // An interface to observe UseCounterImpl changes. Note that this is never
   // notified when the counter is disabled by |m_muteCount| or when |m_context|
   // is kDisabledContext.
   class Observer : public GarbageCollected<Observer> {
@@ -110,7 +109,7 @@ class CORE_EXPORT UseCounterHelper final {
 
   bool IsCounted(CSSPropertyID unresolved_property, CSSPropertyType) const;
 
-  // Retains a reference to the observer to notify of UseCounterHelper changes.
+  // Retains a reference to the observer to notify of UseCounterImpl changes.
   void AddObserver(Observer*);
 
   // Invoked when a new document is loaded into the main frame of the page.
@@ -136,7 +135,7 @@ class CORE_EXPORT UseCounterHelper final {
   void Trace(Visitor*) const;
 
  private:
-  friend class UseCounterHelperTest;
+  friend class UseCounterImplTest;
 
   // Notifies that a feature is newly counted to |m_observers|. This shouldn't
   // be called when the counter is disabled by |m_muteCount| or when |m_context|
@@ -148,7 +147,7 @@ class CORE_EXPORT UseCounterHelper final {
   // If non-zero, ignore all 'count' calls completely.
   unsigned mute_count_;
 
-  // The scope represented by this UseCounterHelper instance, which must be
+  // The scope represented by this UseCounterImpl instance, which must be
   // fixed for the duration of a page but can change when a new page is loaded.
   Context context_;
   // CommitState tracks whether navigation has commited. Prior to commit,
@@ -162,15 +161,15 @@ class CORE_EXPORT UseCounterHelper final {
       features_recorded_;
 
   static constexpr size_t kMaxSample =
-      static_cast<size_t>(mojom::CSSSampleId::kMaxValue) + 1;
+      static_cast<size_t>(mojom::blink::CSSSampleId::kMaxValue) + 1;
   std::bitset<kMaxSample> css_recorded_;
   std::bitset<kMaxSample> animated_css_recorded_;
 
   HeapHashSet<Member<Observer>> observers_;
 
-  DISALLOW_COPY_AND_ASSIGN(UseCounterHelper);
+  DISALLOW_COPY_AND_ASSIGN(UseCounterImpl);
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_USE_COUNTER_HELPER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_USE_COUNTER_IMPL_H_

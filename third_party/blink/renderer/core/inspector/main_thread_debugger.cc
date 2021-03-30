@@ -261,7 +261,7 @@ void MainThreadDebugger::muteMetrics(int context_group_id) {
   if (!frame)
     return;
   if (frame->GetDocument() && frame->GetDocument()->Loader())
-    frame->GetDocument()->Loader()->GetUseCounterHelper().MuteForInspector();
+    frame->GetDocument()->Loader()->GetUseCounter().MuteForInspector();
   if (frame->GetPage())
     frame->GetPage()->GetDeprecation().MuteForInspector();
 }
@@ -271,7 +271,7 @@ void MainThreadDebugger::unmuteMetrics(int context_group_id) {
   if (!frame)
     return;
   if (frame->GetDocument() && frame->GetDocument()->Loader())
-    frame->GetDocument()->Loader()->GetUseCounterHelper().UnmuteForInspector();
+    frame->GetDocument()->Loader()->GetUseCounter().UnmuteForInspector();
   if (frame->GetPage())
     frame->GetPage()->GetDeprecation().UnmuteForInspector();
 }

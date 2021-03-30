@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
-#include "third_party/blink/renderer/core/frame/use_counter_helper.h"
+#include "third_party/blink/renderer/core/frame/use_counter_impl.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_field_elements.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_fields_state.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"

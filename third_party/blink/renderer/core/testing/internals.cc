@@ -211,10 +211,10 @@ namespace {
 
 std::unique_ptr<ScopedMockOverlayScrollbars> g_mock_overlay_scrollbars;
 
-class UseCounterHelperObserverImpl final : public UseCounterHelper::Observer {
+class UseCounterImplObserverImpl final : public UseCounterImpl::Observer {
  public:
-  UseCounterHelperObserverImpl(ScriptPromiseResolver* resolver,
-                               WebFeature feature)
+  UseCounterImplObserverImpl(ScriptPromiseResolver* resolver,
+                             WebFeature feature)
       : resolver_(resolver), feature_(feature) {}
 
   bool OnCountFeature(WebFeature feature) final {
@@ -225,14 +225,14 @@ class UseCounterHelperObserverImpl final : public UseCounterHelper::Observer {
   }
 
   void Trace(Visitor* visitor) const override {
-    UseCounterHelper::Observer::Trace(visitor);
+    UseCounterImpl::Observer::Trace(visitor);
     visitor->Trace(resolver_);
   }
 
  private:
   Member<ScriptPromiseResolver> resolver_;
   WebFeature feature_;
-  DISALLOW_COPY_AND_ASSIGN(UseCounterHelperObserverImpl);
+  DISALLOW_COPY_AND_ASSIGN(UseCounterImplObserverImpl);
 };
 
 class TestReadableStreamSource : public UnderlyingSourceBase {
@@ -3613,8 +3613,8 @@ ScriptPromise Internals::observeUseCounter(ScriptState* script_state,
     return promise;
   }
 
-  loader->GetUseCounterHelper().AddObserver(
-      MakeGarbageCollected<UseCounterHelperObserverImpl>(
+  loader->GetUseCounter().AddObserver(
+      MakeGarbageCollected<UseCounterImplObserverImpl>(
           resolver, static_cast<WebFeature>(use_counter_feature)));
   return promise;
 }

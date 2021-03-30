@@ -8374,44 +8374,44 @@ void Document::CountUse(mojom::WebFeature feature) {
 
 void Document::CountProperty(CSSPropertyID property) const {
   if (DocumentLoader* loader = Loader()) {
-    loader->GetUseCounterHelper().Count(
-        property, UseCounterHelper::CSSPropertyType::kDefault, GetFrame());
+    loader->GetUseCounter().Count(
+        property, UseCounterImpl::CSSPropertyType::kDefault, GetFrame());
   }
 }
 
 void Document::CountAnimatedProperty(CSSPropertyID property) const {
   if (DocumentLoader* loader = Loader()) {
-    loader->GetUseCounterHelper().Count(
-        property, UseCounterHelper::CSSPropertyType::kAnimation, GetFrame());
+    loader->GetUseCounter().Count(
+        property, UseCounterImpl::CSSPropertyType::kAnimation, GetFrame());
   }
 }
 
 bool Document::IsUseCounted(mojom::WebFeature feature) const {
   if (DocumentLoader* loader = Loader()) {
-    return loader->GetUseCounterHelper().HasRecordedMeasurement(feature);
+    return loader->GetUseCounter().HasRecordedMeasurement(feature);
   }
   return false;
 }
 
 bool Document::IsPropertyCounted(CSSPropertyID property) const {
   if (DocumentLoader* loader = Loader()) {
-    return loader->GetUseCounterHelper().IsCounted(
-        property, UseCounterHelper::CSSPropertyType::kDefault);
+    return loader->GetUseCounter().IsCounted(
+        property, UseCounterImpl::CSSPropertyType::kDefault);
   }
   return false;
 }
 
 bool Document::IsAnimatedPropertyCounted(CSSPropertyID property) const {
   if (DocumentLoader* loader = Loader()) {
-    return loader->GetUseCounterHelper().IsCounted(
-        property, UseCounterHelper::CSSPropertyType::kAnimation);
+    return loader->GetUseCounter().IsCounted(
+        property, UseCounterImpl::CSSPropertyType::kAnimation);
   }
   return false;
 }
 
 void Document::ClearUseCounterForTesting(mojom::WebFeature feature) {
   if (DocumentLoader* loader = Loader())
-    loader->GetUseCounterHelper().ClearMeasurementForTesting(feature);
+    loader->GetUseCounter().ClearMeasurementForTesting(feature);
 }
 
 void Document::FontPreloadingFinishedOrTimedOut() {
