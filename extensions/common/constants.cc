@@ -143,7 +143,7 @@ const char kScreensaverAppId[] = "mnoijifedipmbjaoekhadjcijipaijjc";
 const char kScreensaverEveAppId[] = "gdobaoeekhiklaljmhladjfdfkigampc";
 const char kScreensaverNocturneAppId[] = "lminefdanffajachfahfpmphfkhahcnj";
 const char kScreensaverAtlasAppId[] = "bnabjkecnachpogjlfilfcnlpcmacglh";
-const char kScreensaverKukuiAppId[] = "fafhbhdboeiciklpkminlncemohljlkj";
+const char kScreensaverKraneZdksAppId[] = "fafhbhdboeiciklpkminlncemohljlkj";
 const char kSigninProfileTestExtensionId[] = "mecfefiddjlmabpeilblgegnbioikfmp";
 const char kGuestModeTestExtensionId[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 
