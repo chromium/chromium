@@ -801,7 +801,14 @@ void NativeWidgetMacNSWindowHost::OnScrollEvent(
 
 void NativeWidgetMacNSWindowHost::OnMouseEvent(
     std::unique_ptr<ui::Event> event) {
-  root_view_->GetWidget()->OnMouseEvent(event->AsMouseEvent());
+  ui::MouseEvent* mouse_event = event->AsMouseEvent();
+  if (scoped_cg_window_id_) {
+    scoped_cg_window_id_->OnMouseMoved(mouse_event->location_f(),
+                                       window_bounds_in_screen_.size());
+  }
+  root_view_->GetWidget()->OnMouseEvent(mouse_event);
+  // Note that |this| may be destroyed by the above call to OnMouseEvent.
+  // https://crbug.com/1193454
 }
 
 void NativeWidgetMacNSWindowHost::OnGestureEvent(
