@@ -4,6 +4,8 @@
 
 #include "content/browser/mojo_binder_policy_applier.h"
 
+#include "mojo/public/cpp/bindings/message.h"
+
 namespace content {
 
 MojoBinderPolicyApplier::MojoBinderPolicyApplier(
@@ -60,8 +62,9 @@ void MojoBinderPolicyApplier::ApplyPolicyToBinder(
       deferred_binders_.push_back(std::move(binder_callback));
       break;
     case MojoBinderPolicy::kUnexpected:
-      // TODO(crbug.com/1141364): Report a metric to understand the unexpected
-      // case.
+      mojo::ReportBadMessage("MBPA_BAD_INTERFACE: " + interface_name);
+      if (cancel_closure_)
+        std::move(cancel_closure_).Run();
       break;
   }
 }

@@ -17,3 +17,6 @@ interface TestInterfaceForGrant {};
 
 // An interface whose MojoBinderPolicy is kCancel.
 interface TestInterfaceForCancel {};
+
+// An interface whose MojoBinderPolicy is kUnexpected.
+interface TestInterfaceForUnexpected {};

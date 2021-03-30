@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
@@ -1015,7 +1016,8 @@ class MojoCapabilityControlTestContentBrowserClient
     : public TestContentBrowserClient,
       mojom::TestInterfaceForDefer,
       mojom::TestInterfaceForGrant,
-      mojom::TestInterfaceForCancel {
+      mojom::TestInterfaceForCancel,
+      mojom::TestInterfaceForUnexpected {
  public:
   void RegisterBrowserInterfaceBindersForFrame(
       RenderFrameHost* render_frame_host,
@@ -1029,6 +1031,9 @@ class MojoCapabilityControlTestContentBrowserClient
     map->Add<mojom::TestInterfaceForCancel>(base::BindRepeating(
         &MojoCapabilityControlTestContentBrowserClient::BindCancelInterface,
         base::Unretained(this)));
+    map->Add<mojom::TestInterfaceForUnexpected>(base::BindRepeating(
+        &MojoCapabilityControlTestContentBrowserClient::BindUnexpectedInterface,
+        base::Unretained(this)));
   }
 
   void RegisterMojoBinderPoliciesForSameOriginPrerendering(
@@ -1037,6 +1042,8 @@ class MojoCapabilityControlTestContentBrowserClient
         MojoBinderPolicy::kGrant);
     policy_map.SetPolicy<mojom::TestInterfaceForCancel>(
         MojoBinderPolicy::kCancel);
+    policy_map.SetPolicy<mojom::TestInterfaceForUnexpected>(
+        MojoBinderPolicy::kUnexpected);
   }
 
   void BindDeferInterface(
@@ -1057,6 +1064,12 @@ class MojoCapabilityControlTestContentBrowserClient
     cancel_receiver_.Bind(std::move(receiver));
   }
 
+  void BindUnexpectedInterface(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<mojom::TestInterfaceForUnexpected> receiver) {
+    unexpected_receiver_.Bind(std::move(receiver));
+  }
+
   // mojom::TestInterfaceForDefer implementation.
   void Ping(PingCallback callback) override { std::move(callback).Run(); }
 
@@ -1068,6 +1081,7 @@ class MojoCapabilityControlTestContentBrowserClient
   mojo::ReceiverSet<mojom::TestInterfaceForDefer> defer_receiver_set_;
   mojo::ReceiverSet<mojom::TestInterfaceForGrant> grant_receiver_set_;
   mojo::Receiver<mojom::TestInterfaceForCancel> cancel_receiver_{this};
+  mojo::Receiver<mojom::TestInterfaceForUnexpected> unexpected_receiver_{this};
 };
 
 // Tests that binding requests are handled according to MojoBinderPolicyMap
@@ -1215,6 +1229,67 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
   mojo::Remote<mojom::TestInterfaceForCancel> remote;
   prerender_broker->GetInterface(remote.BindNewPipeAndPassReceiver());
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+
+  SetBrowserClientForTesting(old_browser_client);
+}
+
+// Tests that mojo capability control will crash the prerender if the browser
+// process receives a kUnexpected interface.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
+                       MojoCapabilityControl_HandleUnexpected) {
+  MojoCapabilityControlTestContentBrowserClient test_browser_client;
+  auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
+
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+
+  // Set up the error handler for bad mojo messages.
+  std::string bad_message_error;
+  mojo::SetDefaultProcessErrorHandler(
+      base::BindLambdaForTesting([&](const std::string& error) {
+        EXPECT_FALSE(error.empty());
+        EXPECT_TRUE(bad_message_error.empty());
+        bad_message_error = error;
+      }));
+
+  // Start a prerender.
+  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHost();
+
+  // Rebind a receiver for testing.
+  // mojo::ReportBadMessage must be called within the stack frame derived from
+  // mojo IPC calls, so this browser test should call the
+  // remote<blink::mojom::BrowserInterfaceBroker>::GetInterface() to test
+  // unexpected interfaces. But its remote end is in renderer processes and
+  // inaccessible, so the test code has to create another BrowserInterfaceBroker
+  // pipe and rebind the receiver end so as to send the request from the remote.
+  mojo::Receiver<blink::mojom::BrowserInterfaceBroker>& bib =
+      prerendered_render_frame_host
+          ->browser_interface_broker_receiver_for_testing();
+  auto broker_receiver_of_previous_document = bib.Unbind();
+  ASSERT_TRUE(broker_receiver_of_previous_document);
+  mojo::Remote<blink::mojom::BrowserInterfaceBroker> remote_broker;
+  mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> fake_receiver =
+      remote_broker.BindNewPipeAndPassReceiver();
+  prerendered_render_frame_host->BindBrowserInterfaceBrokerReceiver(
+      std::move(fake_receiver));
+
+  // Send a kUnexpected request.
+  EXPECT_NE(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+  mojo::Remote<mojom::TestInterfaceForUnexpected> remote;
+  remote_broker->GetInterface(remote.BindNewPipeAndPassReceiver());
+  remote_broker.FlushForTesting();
+  EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+  EXPECT_EQ(bad_message_error,
+            "MBPA_BAD_INTERFACE: content.mojom.TestInterfaceForUnexpected");
 
   SetBrowserClientForTesting(old_browser_client);
 }
