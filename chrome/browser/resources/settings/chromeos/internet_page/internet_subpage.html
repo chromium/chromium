@@ -22,6 +22,7 @@
 <link rel="import" href="../localized_link/localized_link.html">
 <link rel="import" href="../metrics_recorder.html">
 <link rel="import" href="../os_route.html">
+<link rel="import" href="./cellular_banner.html">
 <link rel="import" href="./cellular_networks_list.html">
 <link rel="import" href="../route_origin_behavior.html">
 <link rel="import" href="internet_page_browser_proxy.html">
@@ -96,7 +97,10 @@
         padding-inline-start: 0;
       }
     </style>
-
+    <template is="dom-if" restamp
+        if="[[isDeviceInhibited_(deviceState, deviceState.inhibitReason)]]">
+      <cellular-banner device-state="[[deviceState]]"></cellular-banner>
+    </template>
     <template is="dom-if" if="[[enableToggleIsVisible_(deviceState)]]">
       <div class="settings-box first">
         <div id="onOff" class="start" on$="[[deviceIsEnabled_(deviceState)]]"

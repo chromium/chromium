@@ -358,7 +358,8 @@ suite('InternetPage', function() {
     const mojom = chromeos.networkConfig.mojom;
     mojoApi_.setDeviceStateForTest({
       type: mojom.NetworkType.kCellular,
-      deviceState: mojom.DeviceStateType.kEnabled
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kNotInhibited
     });
 
     const params = new URLSearchParams;

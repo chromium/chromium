@@ -217,6 +217,10 @@ suite('InternetSubpage', function() {
       };
 
       return flushAsync().then(async () => {
+        // Banner should not exist if device is not inhibited.
+        const cellularBanner = internetSubpage.$$('cellular-banner');
+        assertFalse(!!cellularBanner);
+
         const addCellularButton = internetSubpage.$$('#addCellularButton');
         assertTrue(!!addCellularButton);
 
@@ -228,7 +232,7 @@ suite('InternetSubpage', function() {
     });
 
     test(
-        'Device inhibited disables toggle and add cellular network',
+        'Device inhibited disables toggle, add cellular and shows banner',
         async () => {
           initSubpage(true);
           const mojom = chromeos.networkConfig.mojom;
@@ -255,6 +259,9 @@ suite('InternetSubpage', function() {
               internetSubpage.$$('#deviceEnabledButton');
           assertTrue(!!deviceEnabledButton);
           assertTrue(deviceEnabledButton.disabled);
+
+          const cellularBanner = internetSubpage.$$('cellular-banner');
+          assertTrue(!!cellularBanner);
         });
 
     test(
