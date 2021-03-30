@@ -241,8 +241,10 @@ void SecurePaymentConfirmationAppFactory::OnAppIconDecoded(
     std::unique_ptr<Request> request,
     const SkBitmap& decoded_icon) {
   DCHECK(request);
-  if (!request->delegate || !request->web_contents() ||
-      !request->delegate->GetSpec() || !request->authenticator ||
+  if (!request->delegate || !request->web_contents())
+    return;
+
+  if (!request->delegate->GetSpec() || !request->authenticator ||
       request->authenticator->GetRenderFrameHost() !=
           request->web_contents()->GetMainFrame()) {
     request->delegate->OnDoneCreatingPaymentApps();
