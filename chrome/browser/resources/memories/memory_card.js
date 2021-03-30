@@ -11,17 +11,18 @@ import './top_visit.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
 import {Memory} from '/components/memories/core/memories.mojom-webui.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {decodeMojoString16, getHostnameFromUrl} from './utils.js';
+import {MojomConversionMixinBase} from './mojom_conversion_mixin.js';
+import {getHostnameFromUrl} from './utils.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a Memory.
  */
 
-class MemoryCardElement extends PolymerElement {
+/** @polymer */
+class MemoryCardElement extends MojomConversionMixinBase {
   static get is() {
     return 'memory-card';
   }
@@ -65,16 +66,6 @@ class MemoryCardElement extends PolymerElement {
   computeHasRelatedTabGroupsOrBookmarks_() {
     return this.memory.relatedTabGroups.length > 0 ||
         this.memory.bookmarks.length > 0;
-  }
-
-  /**
-   * Converts a Mojo String16 to a JS string.
-   * @param {String16} str
-   * @return {string}
-   * @private
-   */
-  decodeMojoString16_(str) {
-    return decodeMojoString16(str);
   }
 
   /**

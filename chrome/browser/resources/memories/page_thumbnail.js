@@ -5,18 +5,18 @@
 import './shared_vars.js';
 
 import {WebPage} from '/components/memories/core/memories.mojom-webui.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {decodeMojoString16} from './utils.js';
+import {MojomConversionMixinBase} from './mojom_conversion_mixin.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a page
  * thumbnail.
  */
 
-class PageThumbnailElement extends PolymerElement {
+/** @polymer */
+class PageThumbnailElement extends MojomConversionMixinBase {
   static get is() {
     return 'page-thumbnail';
   }
@@ -50,16 +50,6 @@ class PageThumbnailElement extends PolymerElement {
    */
   getThumbnailSrc_(thumbnailUrl) {
     return thumbnailUrl ? `chrome://image?${thumbnailUrl.url}` : '';
-  }
-
-  /**
-   * Converts a Mojo String16 to a JS string.
-   * @param {String16} str
-   * @return {string}
-   * @private
-   */
-  decodeMojoString16_(str) {
-    return decodeMojoString16(str);
   }
 }
 

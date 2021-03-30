@@ -19,10 +19,9 @@ js_library("app") {
   deps = [
     ":browser_proxy",
     ":memory_card",
+    ":mojom_conversion_mixin",
     ":page_thumbnail",
-    ":utils",
     "//chrome/browser/ui/webui/memories:mojo_bindings_webui_js",
-    "//mojo/public/mojom/base:base_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//url/mojom:url_mojom_origin_webui_js",
   ]
@@ -42,13 +41,13 @@ js_library("memories") {
 js_library("memory_card") {
   deps = [
     ":memory_tile",
+    ":mojom_conversion_mixin",
     ":page_favicon",
     ":page_thumbnail",
     ":search_query",
     ":top_visit",
     ":utils",
     "//components/memories/core:mojo_bindings_webui_js",
-    "//mojo/public/mojom/base:base_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//url/mojom:url_mojom_origin_webui_js",
   ]
@@ -58,6 +57,13 @@ js_library("memory_tile") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//url/mojom:url_mojom_origin_webui_js",
+  ]
+}
+
+js_library("mojom_conversion_mixin") {
+  deps = [
+    "//mojo/public/mojom/base:base_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
@@ -71,9 +77,8 @@ js_library("page_favicon") {
 
 js_library("page_thumbnail") {
   deps = [
-    ":utils",
+    ":mojom_conversion_mixin",
     "//components/memories/core:mojo_bindings_webui_js",
-    "//mojo/public/mojom/base:base_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//url/mojom:url_mojom_origin_webui_js",
   ]
@@ -81,9 +86,8 @@ js_library("page_thumbnail") {
 
 js_library("search_query") {
   deps = [
-    ":utils",
+    ":mojom_conversion_mixin",
     "//components/memories/core:mojo_bindings_webui_js",
-    "//mojo/public/mojom/base:base_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -99,18 +103,15 @@ js_library("top_visit") {
 }
 
 js_library("utils") {
-  deps = [
-    "//mojo/public/mojom/base:base_webui_js",
-    "//url/mojom:url_mojom_origin_webui_js",
-  ]
+  deps = [ "//url/mojom:url_mojom_origin_webui_js" ]
 }
 
 js_library("visit_row") {
   deps = [
+    ":mojom_conversion_mixin",
     ":page_favicon",
     ":utils",
     "//components/memories/core:mojo_bindings_webui_js",
-    "//mojo/public/mojom/base:base_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//url/mojom:url_mojom_origin_webui_js",
   ]
@@ -147,6 +148,7 @@ preprocess_if_expr("preprocess") {
   in_files = [
     "browser_proxy.js",
     "memories.js",
+    "mojom_conversion_mixin.js",
     "utils.js",
   ]
 }

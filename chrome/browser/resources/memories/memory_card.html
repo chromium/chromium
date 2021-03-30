@@ -112,7 +112,7 @@
             <page-thumbnail is-clickable page="[[item]]"></page-thumbnail>
           </template>
         </div>
-        <div slot="primaryCaption">[[decodeMojoString16_(tabGroup.title)]]</div>
+        <div slot="primaryCaption">[[decodeMojoString16(tabGroup.title)]]</div>
         <div slot="secondaryCaption">$i18n{tabGroupTileCaption}</div>
       </memory-tile>
     </template>
@@ -120,7 +120,7 @@
       <memory-tile url="[[item.url]]" class="bookmark">
         <page-thumbnail slot="main" is-bookmark page="[[item]]" tabindex="-1">
         </page-thumbnail>
-        <div slot="primaryCaption">[[decodeMojoString16_(item.title)]]</div>
+        <div slot="primaryCaption">[[decodeMojoString16(item.title)]]</div>
         <div slot="secondaryCaption">
           <page-favicon url="[[item.url]]"></page-favicon>
           <span class="hostname">[[getHostnameFromUrl_(item.url)]]</span>

@@ -8,19 +8,19 @@ import './shared_vars.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
 import {MemoriesResult, PageCallbackRouter, PageHandlerRemote} from '/chrome/browser/ui/webui/memories/memories.mojom-webui.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {decodeMojoString16} from './utils.js';
+import {MojomConversionMixinBase} from './mojom_conversion_mixin.js';
 
 /**
  * @fileoverview This file provides the root custom element for the Memories
  * landing page.
  */
 
-class MemoriesAppElement extends PolymerElement {
+/** @polymer */
+class MemoriesAppElement extends MojomConversionMixinBase {
   static get is() {
     return 'memories-app';
   }
@@ -77,16 +77,6 @@ class MemoriesAppElement extends PolymerElement {
    */
   createPageWithThumbnail_(thumbnailUrl) {
     return {thumbnailUrl};
-  }
-
-  /**
-   * Converts a Mojo String16 to a JS string.
-   * @param {String16} str
-   * @return {string}
-   * @private
-   */
-  decodeMojoString16_(str) {
-    return decodeMojoString16(str);
   }
 
   /**

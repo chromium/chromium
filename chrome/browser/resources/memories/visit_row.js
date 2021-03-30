@@ -7,11 +7,11 @@ import './shared_vars.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
 import {Visit} from '/components/memories/core/memories.mojom-webui.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {decodeMojoString16, getHostnameFromUrl} from './utils.js';
+import {MojomConversionMixinBase} from './mojom_conversion_mixin.js';
+import {getHostnameFromUrl} from './utils.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a visit to a
@@ -19,7 +19,8 @@ import {decodeMojoString16, getHostnameFromUrl} from './utils.js';
  * as well as an action menu.
  */
 
-class VisitRowElement extends PolymerElement {
+/** @polymer */
+class VisitRowElement extends MojomConversionMixinBase {
   static get is() {
     return 'visit-row';
   }
@@ -78,16 +79,6 @@ class VisitRowElement extends PolymerElement {
   //============================================================================
 
   /**
-   * Converts a Mojo String16 to a JS string.
-   * @param {String16} str
-   * @return {string}
-   * @private
-   */
-  decodeMojoString16_(str) {
-    return decodeMojoString16(str);
-  }
-
-  /**
    * @param {!Url} url
    * @return {string} The domain name of the URL without the leading 'www.'.
    * @private
@@ -103,7 +94,7 @@ class VisitRowElement extends PolymerElement {
    * @private
    */
   getTimeOfVisit_(visit) {
-    return decodeMojoString16(
+    return this.decodeMojoString16(
         this.isTopVisit ? visit.relativeDate : visit.timeOfDay);
   }
 }

@@ -5,16 +5,16 @@
 import './shared_vars.js';
 
 import {SearchQuery} from '/components/memories/core/memories.mojom-webui.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {decodeMojoString16} from './utils.js';
+import {MojomConversionMixinBase} from './mojom_conversion_mixin.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a search query.
  */
 
-class SearchQueryElement extends PolymerElement {
+/** @polymer */
+class SearchQueryElement extends MojomConversionMixinBase {
   static get is() {
     return 'search-query';
   }
@@ -35,20 +35,6 @@ class SearchQueryElement extends PolymerElement {
        */
       searchQuery: Object,
     };
-  }
-
-  //============================================================================
-  // Helper methods
-  //============================================================================
-
-  /**
-   * Converts a Mojo String16 to a JS string.
-   * @param {String16} str
-   * @return {string}
-   * @private
-   */
-  decodeMojoString16_(str) {
-    return decodeMojoString16(str);
   }
 }
 
