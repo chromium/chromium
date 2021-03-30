@@ -93,7 +93,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) FakeAssistantManagerServiceImpl
   // transitioning from a prior state to a later state.
   void MaybeSendStateChange(State state, State old_state, State target_state);
 
-  State state_ = State::STOPPED;
+  State state_ = State::kStopped;
   base::Optional<std::string> gaia_id_;
   base::Optional<std::string> access_token_;
   FakeAssistantSettingsImpl assistant_settings_;

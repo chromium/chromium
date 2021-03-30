@@ -232,10 +232,7 @@ AssistantManagerServiceImpl::~AssistantManagerServiceImpl() {
 void AssistantManagerServiceImpl::Start(const base::Optional<UserInfo>& user,
                                         bool enable_hotword) {
   DCHECK(!IsServiceStarted());
-  DCHECK_EQ(GetState(), State::STOPPED);
-
-  // Set the flag to avoid starting the service multiple times.
-  SetStateAndInformObservers(State::STARTING);
+  DCHECK_EQ(GetState(), State::kStopped);
 
   started_time_ = base::TimeTicks::Now();
 
@@ -245,11 +242,6 @@ void AssistantManagerServiceImpl::Start(const base::Optional<UserInfo>& user,
 }
 
 void AssistantManagerServiceImpl::Stop() {
-  // We cannot cleanly stop the service if it is in the process of starting up.
-  DCHECK_NE(GetState(), State::STARTING);
-
-  SetStateAndInformObservers(State::STOPPED);
-
   media_host_->Stop();
   scoped_app_list_event_subscriber_.Reset();
 
@@ -282,13 +274,13 @@ void AssistantManagerServiceImpl::EnableHotword(bool enable) {
 }
 
 void AssistantManagerServiceImpl::SetArcPlayStoreEnabled(bool enable) {
-  DCHECK(GetState() == State::RUNNING);
+  DCHECK(GetState() == State::kRunning);
   if (assistant::features::IsAppSupportEnabled())
     display_controller().SetArcPlayStoreEnabled(enable);
 }
 
 void AssistantManagerServiceImpl::SetAssistantContextEnabled(bool enable) {
-  DCHECK(GetState() == State::RUNNING);
+  DCHECK(GetState() == State::kRunning);
 
   media_host_->SetRelatedInfoEnabled(enable);
   display_controller().SetRelatedInfoEnabled(enable);
@@ -443,6 +435,7 @@ void AssistantManagerServiceImpl::OnStateChanged(
       OnServiceRunning();
       break;
     case ServiceState::kStopped:
+      OnServiceStopped();
       break;
   }
 }
@@ -467,13 +460,11 @@ base::Thread& AssistantManagerServiceImpl::GetBackgroundThreadForTesting() {
 }
 
 void AssistantManagerServiceImpl::OnServiceStarted() {
-  DCHECK_EQ(GetState(), State::STARTING);
-
   const base::TimeDelta time_since_started =
       base::TimeTicks::Now() - started_time_;
   UMA_HISTOGRAM_TIMES("Assistant.ServiceStartTime", time_since_started);
 
-  SetStateAndInformObservers(State::STARTED);
+  SetStateAndInformObservers(State::kStarted);
 
   if (base::FeatureList::IsEnabled(assistant::features::kAssistantAppSupport))
     scoped_app_list_event_subscriber_.Observe(device_actions());
@@ -481,11 +472,10 @@ void AssistantManagerServiceImpl::OnServiceStarted() {
 
 bool AssistantManagerServiceImpl::IsServiceStarted() const {
   switch (state_) {
-    case State::STOPPED:
-    case State::STARTING:
+    case State::kStopped:
       return false;
-    case State::STARTED:
-    case State::RUNNING:
+    case State::kStarted:
+    case State::kRunning:
       return true;
   }
 }
@@ -499,10 +489,10 @@ AssistantManagerServiceImpl::BindURLLoaderFactory() {
 
 void AssistantManagerServiceImpl::OnServiceRunning() {
   // Try to avoid double run by checking |GetState()|.
-  if (GetState() == State::RUNNING)
+  if (GetState() == State::kRunning)
     return;
 
-  SetStateAndInformObservers(State::RUNNING);
+  SetStateAndInformObservers(State::kRunning);
 
   if (is_first_init) {
     is_first_init = false;
@@ -521,6 +511,10 @@ void AssistantManagerServiceImpl::OnServiceRunning() {
 
   if (assistant_state()->arc_play_store_enabled().has_value())
     SetArcPlayStoreEnabled(assistant_state()->arc_play_store_enabled().value());
+}
+
+void AssistantManagerServiceImpl::OnServiceStopped() {
+  SetStateAndInformObservers(State::kStopped);
 }
 
 void AssistantManagerServiceImpl::OnAndroidAppListRefreshed(
@@ -552,7 +546,7 @@ void AssistantManagerServiceImpl::OnAccessibilityStatusChanged(
 void AssistantManagerServiceImpl::OnDeviceAppsEnabled(bool enabled) {
   // The device apps state sync should only be sent after service is running.
   // Check state here to prevent timing issue when the service is restarting.
-  if (GetState() != State::RUNNING)
+  if (GetState() != State::kRunning)
     return;
 
   display_controller().SetDeviceAppsEnabled(enabled);
@@ -677,6 +671,9 @@ base::Thread& AssistantManagerServiceImpl::background_thread() {
 }
 
 void AssistantManagerServiceImpl::SetStateAndInformObservers(State new_state) {
+  if (state_ == new_state)
+    return;
+
   state_ = new_state;
 
   for (auto& observer : state_observers_)

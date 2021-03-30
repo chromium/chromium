@@ -195,9 +195,9 @@ class AssistantManagerServiceImplTest : public testing::Test {
   // Start Libassistant, and wait until it is running.
   void StartAndWaitForRunning() {
     Start();
-    WaitForState(AssistantManagerService::STARTED);
+    WaitForState(AssistantManagerService::State::kStarted);
     mojom_service_controller().SetState(ServiceState::kRunning);
-    WaitForState(AssistantManagerService::RUNNING);
+    WaitForState(AssistantManagerService::State::kRunning);
   }
 
   void RunUntilIdle() {
@@ -315,62 +315,55 @@ class SpeakerIdEnrollmentClientMock : public SpeakerIdEnrollmentClient {
 }  // namespace
 
 TEST_F(AssistantManagerServiceImplTest, StateShouldStartAsStopped) {
-  EXPECT_STATE(AssistantManagerService::STOPPED);
+  EXPECT_STATE(AssistantManagerService::State::kStopped);
 }
 
 TEST_F(AssistantManagerServiceImplTest,
-       StateShouldChangeToStartingAfterCallingStart) {
-  Start();
-
-  EXPECT_STATE(AssistantManagerService::STARTING);
-}
-
-TEST_F(AssistantManagerServiceImplTest,
-       StateShouldRemainStartingUntilLibassistantServiceIsStarted) {
+       StateShouldRemainStoppedUntilLibassistantServiceIsStarted) {
   mojom_service_controller().BlockStartCalls();
 
   Start();
-  WaitForState(AssistantManagerService::STARTING);
+  WaitForState(AssistantManagerService::State::kStopped);
 
   mojom_service_controller().UnblockStartCalls();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 }
 
 TEST_F(AssistantManagerServiceImplTest,
        StateShouldBecomeRunningAfterLibassistantSignalsRunningState) {
   Start();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 
   mojom_service_controller().SetState(ServiceState::kRunning);
 
-  WaitForState(AssistantManagerService::RUNNING);
+  WaitForState(AssistantManagerService::State::kRunning);
 }
 
 TEST_F(AssistantManagerServiceImplTest, ShouldSetStateToStoppedAfterStopping) {
   Start();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 
   assistant_manager_service()->Stop();
-  WaitForState(AssistantManagerService::STOPPED);
+  WaitForState(AssistantManagerService::State::kStopped);
 }
 
 TEST_F(AssistantManagerServiceImplTest, ShouldAllowRestartingAfterStopping) {
   Start();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 
   assistant_manager_service()->Stop();
-  WaitForState(AssistantManagerService::STOPPED);
+  WaitForState(AssistantManagerService::State::kStopped);
 
   Start();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 }
 
 TEST_F(AssistantManagerServiceImplTest, ShouldNotResetDataWhenStopping) {
   Start();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 
   assistant_manager_service()->Stop();
-  WaitForState(AssistantManagerService::STOPPED);
+  WaitForState(AssistantManagerService::State::kStopped);
   RunUntilIdle();
 
   EXPECT_EQ(false, mojom_service_controller().has_data_been_reset());
@@ -379,11 +372,11 @@ TEST_F(AssistantManagerServiceImplTest, ShouldNotResetDataWhenStopping) {
 TEST_F(AssistantManagerServiceImplTest,
        ShouldResetDataWhenAssistantIsDisabled) {
   Start();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 
   assistant_state().SetAssistantEnabled(false);
   assistant_manager_service()->Stop();
-  WaitForState(AssistantManagerService::STOPPED);
+  WaitForState(AssistantManagerService::State::kStopped);
   RunUntilIdle();
 
   EXPECT_EQ(true, mojom_service_controller().has_data_been_reset());
@@ -394,7 +387,7 @@ TEST_F(AssistantManagerServiceImplTest,
   assistant_manager_service()->Start(UserInfo("<user-id>", "<access-token>"),
                                      /*enable_hotword=*/false);
 
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 
   EXPECT_EQ("<user-id>", mojom_service_controller().gaia_id());
   EXPECT_EQ("<access-token>", mojom_service_controller().access_token());
@@ -402,7 +395,7 @@ TEST_F(AssistantManagerServiceImplTest,
 
 TEST_F(AssistantManagerServiceImplTest, ShouldPassUserInfoToAssistantManager) {
   Start();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 
   assistant_manager_service()->SetUser(
       UserInfo("<new-user-id>", "<new-access-token>"));
@@ -415,7 +408,7 @@ TEST_F(AssistantManagerServiceImplTest, ShouldPassUserInfoToAssistantManager) {
 TEST_F(AssistantManagerServiceImplTest,
        ShouldPassEmptyUserInfoToAssistantManager) {
   Start();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 
   assistant_manager_service()->SetUser(base::nullopt);
   RunUntilIdle();
@@ -426,11 +419,11 @@ TEST_F(AssistantManagerServiceImplTest,
 
 TEST_F(AssistantManagerServiceImplTest,
        ShouldNotCrashWhenSettingUserInfoBeforeStartIsFinished) {
-  EXPECT_STATE(AssistantManagerService::STOPPED);
+  EXPECT_STATE(AssistantManagerService::State::kStopped);
   assistant_manager_service()->SetUser(UserInfo("<user-id>", "<access-token>"));
 
   Start();
-  EXPECT_STATE(AssistantManagerService::STARTING);
+  EXPECT_STATE(AssistantManagerService::State::kStopped);
   assistant_manager_service()->SetUser(UserInfo("<user-id>", "<access-token>"));
 }
 
@@ -439,7 +432,7 @@ TEST_F(AssistantManagerServiceImplTest,
   CreateAssistantManagerServiceImpl("the-uri-override");
 
   Start();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 
   EXPECT_EQ(mojom_service_controller()
                 .libassistant_config()
@@ -453,7 +446,7 @@ TEST_F(AssistantManagerServiceImplTest,
       /*s3_server_uri_override=*/base::nullopt, "the-device-id-override");
 
   Start();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 
   EXPECT_EQ(mojom_service_controller()
                 .libassistant_config()
@@ -514,7 +507,7 @@ TEST_F(AssistantManagerServiceImplTest, ShouldIgnoreOtherMediaManagerActions) {
 TEST_F(AssistantManagerServiceImplTest,
        ShouldNotCrashWhenMediaManagerIsAbsent) {
   Start();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 
   assistant_manager_service()->UpdateInternalMediaPlayerStatus(
       media_session::mojom::MediaSessionAction::kPlay);
@@ -523,25 +516,11 @@ TEST_F(AssistantManagerServiceImplTest,
 TEST_F(AssistantManagerServiceImplTest, ShouldFireStateObserverWhenAddingIt) {
   StrictMock<StateObserverMock> observer;
   EXPECT_CALL(observer,
-              OnStateChanged(AssistantManagerService::State::STOPPED));
+              OnStateChanged(AssistantManagerService::State::kStopped));
 
   assistant_manager_service()->AddAndFireStateObserver(&observer);
 
   assistant_manager_service()->RemoveStateObserver(&observer);
-}
-
-TEST_F(AssistantManagerServiceImplTest, ShouldFireStateObserverWhenStarting) {
-  StrictMock<StateObserverMock> observer;
-  AddStateObserver(&observer);
-
-  mojom_service_controller().BlockStartCalls();
-
-  EXPECT_CALL(observer,
-              OnStateChanged(AssistantManagerService::State::STARTING));
-  Start();
-
-  assistant_manager_service()->RemoveStateObserver(&observer);
-  mojom_service_controller().UnblockStartCalls();
 }
 
 TEST_F(AssistantManagerServiceImplTest, ShouldFireStateObserverWhenStarted) {
@@ -549,11 +528,9 @@ TEST_F(AssistantManagerServiceImplTest, ShouldFireStateObserverWhenStarted) {
   AddStateObserver(&observer);
 
   EXPECT_CALL(observer,
-              OnStateChanged(AssistantManagerService::State::STARTING));
-  EXPECT_CALL(observer,
-              OnStateChanged(AssistantManagerService::State::STARTED));
+              OnStateChanged(AssistantManagerService::State::kStarted));
   Start();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 
   assistant_manager_service()->RemoveStateObserver(&observer);
 }
@@ -561,29 +538,30 @@ TEST_F(AssistantManagerServiceImplTest, ShouldFireStateObserverWhenStarted) {
 TEST_F(AssistantManagerServiceImplTest,
        ShouldFireStateObserverWhenLibAssistantServiceIsRunning) {
   Start();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 
   StrictMock<StateObserverMock> observer;
   AddStateObserver(&observer);
   EXPECT_CALL(observer,
-              OnStateChanged(AssistantManagerService::State::RUNNING));
+              OnStateChanged(AssistantManagerService::State::kRunning));
 
   mojom_service_controller().SetState(ServiceState::kRunning);
-  WaitForState(AssistantManagerService::RUNNING);
+  WaitForState(AssistantManagerService::State::kRunning);
 
   assistant_manager_service()->RemoveStateObserver(&observer);
 }
 
 TEST_F(AssistantManagerServiceImplTest, ShouldFireStateObserverWhenStopping) {
   Start();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 
   StrictMock<StateObserverMock> observer;
   AddStateObserver(&observer);
   EXPECT_CALL(observer,
-              OnStateChanged(AssistantManagerService::State::STOPPED));
+              OnStateChanged(AssistantManagerService::State::kStopped));
 
   assistant_manager_service()->Stop();
+  WaitForState(AssistantManagerService::State::kStopped);
 
   assistant_manager_service()->RemoveStateObserver(&observer);
 }
@@ -603,7 +581,7 @@ TEST_F(AssistantManagerServiceImplTest,
        ShouldStartSpeakerIdEnrollmentWhenRequested) {
   NiceMock<SpeakerIdEnrollmentClientMock> client_mock;
   Start();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 
   StrictMock<SpeakerIdEnrollmentControllerMock> mojom_mock;
   mojom_mock.Bind(mojom_libassistant_service());
@@ -621,7 +599,7 @@ TEST_F(AssistantManagerServiceImplTest,
   NiceMock<SpeakerIdEnrollmentClientMock> client_mock;
   fake_service_context()->set_primary_account_gaia_id("gaia user id");
   Start();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 
   StrictMock<SpeakerIdEnrollmentControllerMock> mojom_mock;
   mojom_mock.Bind(mojom_libassistant_service());
@@ -637,7 +615,7 @@ TEST_F(AssistantManagerServiceImplTest,
 TEST_F(AssistantManagerServiceImplTest,
        ShouldSendSkipCloudEnrollmentDuringSpeakerIdEnrollment) {
   Start();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 
   StrictMock<SpeakerIdEnrollmentControllerMock> mojom_mock;
   mojom_mock.Bind(mojom_libassistant_service());
@@ -666,7 +644,7 @@ TEST_F(AssistantManagerServiceImplTest,
 TEST_F(AssistantManagerServiceImplTest, ShouldSendStopSpeakerIdEnrollment) {
   NiceMock<SpeakerIdEnrollmentClientMock> client_mock;
   Start();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 
   StrictMock<SpeakerIdEnrollmentControllerMock> mojom_mock;
   mojom_mock.Bind(mojom_libassistant_service());
@@ -680,7 +658,7 @@ TEST_F(AssistantManagerServiceImplTest, ShouldSendStopSpeakerIdEnrollment) {
 TEST_F(AssistantManagerServiceImplTest, ShouldSyncSpeakerIdEnrollmentStatus) {
   StrictMock<SpeakerIdEnrollmentClientMock> client_mock;
   Start();
-  WaitForState(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::State::kStarted);
 
   StrictMock<SpeakerIdEnrollmentControllerMock> mojom_mock;
   mojom_mock.Bind(mojom_libassistant_service());

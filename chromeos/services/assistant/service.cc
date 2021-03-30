@@ -67,11 +67,10 @@ AssistantStatus ToAssistantStatus(AssistantManagerService::State state) {
   using State = AssistantManagerService::State;
 
   switch (state) {
-    case State::STOPPED:
-    case State::STARTING:
-    case State::STARTED:
+    case State::kStopped:
+    case State::kStarted:
       return AssistantStatus::NOT_READY;
-    case State::RUNNING:
+    case State::kRunning:
       return AssistantStatus::READY;
   }
 }
@@ -282,7 +281,7 @@ void Service::OnAssistantConsentStatusChanged(int consent_status) {
   // Notify device apps status when user accepts activity control.
   if (assistant_manager_service_ &&
       assistant_manager_service_->GetState() ==
-          AssistantManagerService::State::RUNNING) {
+          AssistantManagerService::State::kRunning) {
     assistant_manager_service_->SyncDeviceAppsStatus();
   }
 }
@@ -327,9 +326,9 @@ void Service::OnAuthenticationError() {
 void Service::OnStateChanged(AssistantManagerService::State new_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (new_state == AssistantManagerService::State::STARTED)
+  if (new_state == AssistantManagerService::State::kStarted)
     FinalizeAssistantManagerService();
-  if (new_state == AssistantManagerService::State::RUNNING)
+  if (new_state == AssistantManagerService::State::kRunning)
     DVLOG(1) << "Assistant is running";
 
   AssistantClient::Get()->OnAssistantStatusChanged(
@@ -361,14 +360,13 @@ void Service::UpdateAssistantManagerState() {
 
   auto state = assistant_manager_service_->GetState();
   switch (state) {
-    case AssistantManagerService::State::STOPPED:
+    case AssistantManagerService::State::kStopped:
       if (assistant_state->settings_enabled().value()) {
         assistant_manager_service_->Start(GetUserInfo(), ShouldEnableHotword());
         DVLOG(1) << "Request Assistant start";
       }
       break;
-    case AssistantManagerService::State::STARTING:
-    case AssistantManagerService::State::STARTED:
+    case AssistantManagerService::State::kStarted:
       // If the Assistant is disabled by domain policy, the libassistant will
       // never becomes ready. Stop waiting for the state change and stop the
       // service.
@@ -386,7 +384,7 @@ void Service::UpdateAssistantManagerState() {
           FROM_HERE, update_assistant_manager_callback_.callback(),
           kUpdateAssistantManagerDelay);
       break;
-    case AssistantManagerService::State::RUNNING:
+    case AssistantManagerService::State::kRunning:
       if (assistant_state->settings_enabled().value()) {
         assistant_manager_service_->SetUser(GetUserInfo());
         assistant_manager_service_->EnableHotword(ShouldEnableHotword());
@@ -505,9 +503,9 @@ Service::CreateAndReturnAssistantManagerService() {
 void Service::FinalizeAssistantManagerService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(assistant_manager_service_->GetState() ==
-             AssistantManagerService::STARTED ||
+             AssistantManagerService::State::kStarted ||
          assistant_manager_service_->GetState() ==
-             AssistantManagerService::RUNNING);
+             AssistantManagerService::State::kRunning);
 
   // Ensure one-time mojom initialization.
   if (is_assistant_manager_service_finalized_)
