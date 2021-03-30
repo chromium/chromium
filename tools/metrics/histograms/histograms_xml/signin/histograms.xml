@@ -83,6 +83,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Signin.AccountFetcher.AccountAvatarFetchTime" units="ms"
+    expires_after="2021-08-16">
+  <owner>triploblastic@chromium.org</owner>
+  <owner>aliceywang@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    The time it takes to fetch the account avatar for one account in
+    AccountFetcherService. This is recorded every time a User Avatar fetch
+    request from AccountFetcherService succeeds.
+
+    This histogram, along with Signin.AccountFetcher.AccountUserInfoFetchTime,
+    will be used to decide whether to use OneGoogle library.
+  </summary>
+</histogram>
+
+<histogram name="Signin.AccountFetcher.AccountUserInfoFetchTime" units="ms"
+    expires_after="2021-08-16">
+  <owner>triploblastic@chromium.org</owner>
+  <owner>aliceywang@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    The time it takes to fetch the account information (except avatar) for one
+    account in AccountFetcherService. This is recorded every time a User Info
+    fetch request from AccountFetcherService succeeds.
+
+    This histogram, along with Signin.AccountFetcher.AccountAvatarFetchTime,
+    will be used to decide whether to use OneGoogle library.
+  </summary>
+</histogram>
+
 <histogram name="Signin.AccountReconcilorState.OnGaiaResponse"
     enum="SigninAccountReconcilorState" expires_after="2022-04-01">
   <owner>jlebel@chromium.org</owner>
