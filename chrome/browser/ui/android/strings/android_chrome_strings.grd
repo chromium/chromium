@@ -1224,6 +1224,21 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_LANGUAGES_EXPLICIT_ASK_TITLE" desc="Title of the dialog that explicitly asks the user which languages they can read.">
         What languages do you read?
       </message>
+      <message name="IDS_LANGUAGES_SRP_TITLE" desc="Title of the dialog that explicitly asks the user what language they want Chrome on Android to be in.">
+        Pick Chrome’s language
+      </message>
+      <message name="IDS_LANGUAGES_SRP_SUBTITLE" desc="Subtitle warning a user that the language of their keyboard will not change if they change the application language of Chrome on Android.">
+        Your keyboard won’t change
+      </message>
+      <message name="IDS_LANGUAGES_SRP_CANCEL_TITLE" desc="Text on button to cancel the language picker dialog and not change the application language of Chrome on Android.">
+        No thanks
+      </message>
+      <message name="IDS_LANGUAGES_SRP_ACCEPT_TITLE" desc="Text on button to confirm changing the application language of Chrome on Android.">
+        Change language
+      </message>
+      <message name="IDS_LANGUAGES_SRP_LOADING_TEXT" desc="Text to display while a language pack is being downloaded.">
+        Loading <ph name="LANG">%1$s<ex>Hindi</ex></ph>
+      </message>
       <message name="IDS_LANGUAGES_SPLIT_DOWNLOADING" desc="Text to display next to a language when it is being downloaded to use as Chrome's UI. [CHAR-LIMIT=32]">
         Downloading…
       </message>
