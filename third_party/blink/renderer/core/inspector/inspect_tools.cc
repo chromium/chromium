@@ -433,20 +433,20 @@ String PersistentTool::GetOverlayName() {
 }
 
 bool PersistentTool::IsEmpty() {
-  return !grid_node_highlights_.size() && !flex_container_configs_.size() &&
-         !scroll_snap_configs_.size();
+  return !grid_node_highlights_.size() && !flex_container_configs_.size();
 }
 
-void PersistentTool::SetGridConfigs(GridConfigs configs) {
+void PersistentTool::SetGridConfigs(
+    Vector<std::pair<Member<Node>,
+                     std::unique_ptr<InspectorGridHighlightConfig>>> configs) {
   grid_node_highlights_ = std::move(configs);
 }
 
-void PersistentTool::SetFlexContainerConfigs(FlexContainerConfigs configs) {
+void PersistentTool::SetFlexContainerConfigs(
+    Vector<std::pair<Member<Node>,
+                     std::unique_ptr<InspectorFlexContainerHighlightConfig>>>
+        configs) {
   flex_container_configs_ = std::move(configs);
-}
-
-void PersistentTool::SetScrollSnapConfigs(ScrollSnapConfigs configs) {
-  scroll_snap_configs_ = std::move(configs);
 }
 
 bool PersistentTool::ForwardEventsToOverlay() {
@@ -475,14 +475,6 @@ void PersistentTool::Draw(float scale) {
     if (!highlight)
       continue;
     overlay_->EvaluateInOverlay("drawFlexContainerHighlight",
-                                std::move(highlight));
-  }
-  for (auto& entry : scroll_snap_configs_) {
-    std::unique_ptr<protocol::Value> highlight =
-        InspectorScrollSnapHighlight(entry.first.Get(), *(entry.second));
-    if (!highlight)
-      continue;
-    overlay_->EvaluateInOverlay("drawScrollSnapHighlight",
                                 std::move(highlight));
   }
 }

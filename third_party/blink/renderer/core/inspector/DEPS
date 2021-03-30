@@ -23,9 +23,6 @@ specific_include_rules = {
   "inspector_emulation_agent_test.cc": [
     "+media/media_buildflags.h",
   ],
-  "inspector_highlight_test.cc": [
-    "+base/test/values_test_util.h",
-  ],
   "inspector_contrast.cc": [
     "+ui/gfx/color_utils.h",
   ],

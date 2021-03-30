@@ -5995,24 +5995,6 @@ experimental domain Overlay
       # Identifier of the node to highlight.
       DOM.NodeId nodeId
 
-  type ScrollSnapContainerHighlightConfig extends object
-    properties
-      # The style of the snapport border (default: transparent)
-      optional LineStyle snapportBorder
-      # The style of the snap area border (default: transparent)
-      optional LineStyle snapAreaBorder
-      # The margin highlight fill color (default: transparent).
-      optional DOM.RGBA scrollMarginColor
-      # The padding highlight fill color (default: transparent).
-      optional DOM.RGBA scrollPaddingColor
-
-  type ScrollSnapHighlightConfig extends object
-    properties
-      # A descriptor for the highlight appearance of scroll snap containers.
-      ScrollSnapContainerHighlightConfig scrollSnapContainerHighlightConfig
-      # Identifier of the node to highlight.
-      DOM.NodeId nodeId
-
   # Configuration for dual screen hinge
   type HingeConfig extends object
     properties
@@ -6182,11 +6164,6 @@ experimental domain Overlay
     parameters
       # An array of node identifiers and descriptors for the highlight appearance.
       array of FlexNodeHighlightConfig flexNodeHighlightConfigs
-
-  command setShowScrollSnapOverlays
-    parameters
-      # An array of node identifiers and descriptors for the highlight appearance.
-      array of ScrollSnapHighlightConfig scrollSnapHighlightConfigs
 
   # Requests that backend shows paint rectangles
   command setShowPaintRects
