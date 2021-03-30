@@ -84,6 +84,8 @@ export class EmojiSearch extends PolymerElement {
     if (!isUp && !isDown)
       return;
 
+    ev.preventDefault();
+    ev.stopPropagation();
     // get emoji-button which has focus.
     /** @type {Element} */
     const focusedResult = this.shadowRoot.querySelector('.result:focus-within');
