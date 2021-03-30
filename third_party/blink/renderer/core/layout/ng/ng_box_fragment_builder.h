@@ -29,7 +29,7 @@ class NGPhysicalFragment;
 
 class CORE_EXPORT NGBoxFragmentBuilder final
     : public NGContainerFragmentBuilder {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
   NGBoxFragmentBuilder(NGLayoutInputNode node,
@@ -216,8 +216,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   // Manually add a break token to the builder. Note that we're assuming that
   // this break token is for content in the same flow as this parent.
-  void AddBreakToken(scoped_refptr<const NGBreakToken>,
-                     bool is_in_parallel_flow = false);
+  void AddBreakToken(const NGBreakToken*, bool is_in_parallel_flow = false);
 
   void AddOutOfFlowLegacyCandidate(NGBlockNode,
                                    const NGLogicalStaticPosition&,
@@ -251,12 +250,11 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   void SetDidBreakSelf() { did_break_self_ = true; }
 
   // Store the previous break token, if one exists.
-  void SetPreviousBreakToken(
-      scoped_refptr<const NGBlockBreakToken> break_token) {
-    previous_break_token_ = std::move(break_token);
+  void SetPreviousBreakToken(const NGBlockBreakToken* break_token) {
+    previous_break_token_ = break_token;
   }
   const NGBlockBreakToken* PreviousBreakToken() const {
-    return previous_break_token_.get();
+    return previous_break_token_;
   }
 
   // Return true if we need to break before or inside any child, doesn't matter
@@ -269,7 +267,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
       return true;
     // Inline nodes produce a "finished" trailing break token even if we don't
     // need to block-fragment.
-    return last_inline_break_token_.get();
+    return last_inline_break_token_;
   }
 
   // Return true if we need to break before or inside any in-flow child that
@@ -505,7 +503,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   }
 
   void SetTableColumnGeometries(
-      const NGTableFragmentData::ColumnGeometries& table_column_geometries) {
+      const NGTableFragmentData::ColumnGeometries* table_column_geometries) {
     table_column_geometries_ = table_column_geometries;
   }
 
@@ -634,9 +632,9 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   // Table specific types.
   base::Optional<PhysicalRect> table_grid_rect_;
-  base::Optional<NGTableFragmentData::ColumnGeometries>
-      table_column_geometries_;
-  Persistent<const NGTableBorders> table_collapsed_borders_;
+  const NGTableFragmentData::ColumnGeometries* table_column_geometries_ =
+      nullptr;
+  const NGTableBorders* table_collapsed_borders_ = nullptr;
   std::unique_ptr<NGTableFragmentData::CollapsedBordersGeometry>
       table_collapsed_borders_geometry_;
   base::Optional<wtf_size_t> table_column_count_;
@@ -655,7 +653,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   std::unique_ptr<NGMathMLPaintInfo> mathml_paint_info_;
   base::Optional<NGLayoutResult::MathData> math_data_;
 
-  scoped_refptr<const NGBlockBreakToken> previous_break_token_;
+  const NGBlockBreakToken* previous_break_token_;
 
 #if DCHECK_IS_ON()
   // Describes what size_.block_size represents; either the size of a single

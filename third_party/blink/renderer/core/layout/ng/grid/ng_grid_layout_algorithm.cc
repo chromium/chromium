@@ -75,7 +75,7 @@ const NGLayoutResult* NGGridLayoutAlgorithm::Layout() {
 
   // Measure items.
   GridItems grid_items;
-  Vector<GridItemData> out_of_flow_items;
+  HeapVector<GridItemData> out_of_flow_items;
   ConstructAndAppendGridItems(&grid_items, &out_of_flow_items);
 
   const auto& container_style = Style();
@@ -538,6 +538,10 @@ NGGridLayoutAlgorithm::GridItemData::SetIndices(
   return set_indices;
 }
 
+void NGGridLayoutAlgorithm::GridItemData::Trace(Visitor* visitor) const {
+  visitor->Trace(node);
+}
+
 NGGridLayoutAlgorithm::GridItems::Iterator
 NGGridLayoutAlgorithm::GridItems::begin() {
   return Iterator(&item_data, reordered_item_indices.begin());
@@ -880,7 +884,7 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
 
 void NGGridLayoutAlgorithm::ConstructAndAppendGridItems(
     GridItems* grid_items,
-    Vector<GridItemData>* out_of_flow_items) const {
+    HeapVector<GridItemData>* out_of_flow_items) const {
   DCHECK(grid_items);
   NGGridChildIterator iterator(Node());
   for (NGBlockNode child = iterator.NextChild(); child;
@@ -2808,7 +2812,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
 }
 
 void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
-    const Vector<GridItemData>& out_of_flow_items,
+    const HeapVector<GridItemData>& out_of_flow_items,
     const GridGeometry& grid_geometry,
     LayoutUnit block_size) {
   for (const GridItemData& out_of_flow_item : out_of_flow_items) {
@@ -2840,7 +2844,7 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowDescendants(
   // At this point, we'll have a list of OOF candidates from any inflow children
   // of the grid (which have been propagated up). These might have an assigned
   // 'grid-area', so we need to assign their correct 'containing block rect'.
-  Vector<NGLogicalOutOfFlowPositionedNode>* out_of_flow_descendants =
+  HeapVector<NGLogicalOutOfFlowPositionedNode>* out_of_flow_descendants =
       container_builder_.MutableOutOfFlowPositionedCandidates();
   DCHECK(out_of_flow_descendants);
 

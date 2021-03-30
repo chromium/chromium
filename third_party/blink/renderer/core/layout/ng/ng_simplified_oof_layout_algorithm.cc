@@ -76,9 +76,10 @@ void NGSimplifiedOOFLayoutAlgorithm::AppendOutOfFlowResult(
           incoming_break_token_->ChildBreakTokens().end()) {
     DCHECK_EQ(result->PhysicalFragment().GetLayoutObject(),
               (*break_token_iterator_)->InputNode().GetLayoutBox());
-    DCHECK(!To<NGPhysicalBoxFragment>(result->PhysicalFragment())
-                .IsFirstForNode() ||
-           To<NGBlockBreakToken>(*break_token_iterator_)->IsBreakBefore());
+    DCHECK(
+        !To<NGPhysicalBoxFragment>(result->PhysicalFragment())
+             .IsFirstForNode() ||
+        To<NGBlockBreakToken>(break_token_iterator_->Get())->IsBreakBefore());
     break_token_iterator_++;
     AdvanceChildIterator();
   }
@@ -107,11 +108,11 @@ void NGSimplifiedOOFLayoutAlgorithm::AdvanceChildIterator() {
         break_token_iterator_ !=
             incoming_break_token_->ChildBreakTokens().end()) {
       // Add the current child if it matches the incoming child break token.
-      const auto* break_token = *break_token_iterator_;
+      const auto& break_token = *break_token_iterator_;
       if (child_link.fragment->GetLayoutObject() ==
           break_token->InputNode().GetLayoutBox()) {
         DCHECK(!To<NGPhysicalBoxFragment>(child_link.get())->IsFirstForNode() ||
-               To<NGBlockBreakToken>(break_token)->IsBreakBefore());
+               To<NGBlockBreakToken>(break_token.Get())->IsBreakBefore());
         AddChildFragment(child_link);
         child_iterator_++;
         break_token_iterator_++;

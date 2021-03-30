@@ -284,6 +284,7 @@ void FlexItem::ComputeStretchedSize() {
 void FlexItem::Trace(Visitor* visitor) const {
   visitor->Trace(box_);
   visitor->Trace(style_);
+  visitor->Trace(ng_input_node_);
   visitor->Trace(layout_result_);
 }
 

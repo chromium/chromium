@@ -262,7 +262,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, TextFloatsAroundFloatsBefore) {
   )HTML");
   // ** Run LayoutNG algorithm **
   NGConstraintSpace space;
-  scoped_refptr<const NGPhysicalBoxFragment> html_fragment;
+  const NGPhysicalBoxFragment* html_fragment = nullptr;
   std::tie(html_fragment, space) = RunBlockLayoutAlgorithmForElement(
       GetDocument().getElementsByTagName("html")->item(0));
   auto* body_fragment =

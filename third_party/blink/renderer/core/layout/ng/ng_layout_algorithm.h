@@ -117,7 +117,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
 
   NGInputNodeType Node() const { return node_; }
 
-  const NGBreakTokenType* BreakToken() const { return break_token_.get(); }
+  const NGBreakTokenType* BreakToken() const { return break_token_; }
 
   const NGBoxStrut& BorderPadding() const {
     return container_builder_.BorderPadding();
@@ -160,7 +160,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
   const NGEarlyBreak* early_break_ = nullptr;
 
   // The break token from which we are currently resuming layout.
-  scoped_refptr<const NGBreakTokenType> break_token_;
+  const NGBreakTokenType* break_token_;
 
   NGBoxFragmentBuilderType container_builder_;
 };

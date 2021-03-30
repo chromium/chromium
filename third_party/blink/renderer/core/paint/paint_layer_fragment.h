@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_FRAGMENT_H_
 
 #include "third_party/blink/renderer/core/paint/clip_rect.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -86,11 +87,15 @@ struct PaintLayerFragment {
   // The corresponding FragmentData of this structure.
   const FragmentData* fragment_data = nullptr;
 
-  const NGPhysicalBoxFragment* physical_fragment = nullptr;
+  Member<const NGPhysicalBoxFragment> physical_fragment;
+
+  void Trace(Visitor*) const;
 };
 
-typedef Vector<PaintLayerFragment, 1> PaintLayerFragments;
+typedef HeapVector<PaintLayerFragment, 1> PaintLayerFragments;
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::PaintLayerFragment)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_FRAGMENT_H_

@@ -86,7 +86,7 @@ class CORE_EXPORT NGFragmentBuilder {
   NGStyleVariant style_variant_;
   LogicalSize size_;
   LayoutObject* layout_object_ = nullptr;
-  scoped_refptr<NGBreakToken> break_token_;
+  const NGBreakToken* break_token_ = nullptr;
   bool is_hidden_for_paint_ = false;
   bool has_collapsed_borders_ = false;
   friend class NGPhysicalFragment;

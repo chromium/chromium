@@ -211,8 +211,7 @@ NGFragmentItemsBuilder::AddPreviousItems(
   }
 
   DCHECK(items_.IsEmpty());
-  const NGFragmentItems::Span source_items = items.Items();
-  const wtf_size_t estimated_size = source_items.size();
+  const wtf_size_t estimated_size = items.Items().size();
   items_.ReserveCapacity(estimated_size);
 
   // Convert offsets to logical. The logic is opposite to |ConvertToPhysical|.

@@ -66,7 +66,8 @@ const NGLayoutResult* NGMathRadicalLayoutAlgorithm::Layout() {
   DCHECK(IsValidMathMLRadical(Node()));
 
   auto vertical = GetRadicalVerticalParameters(Style(), Node().HasIndex());
-  scoped_refptr<const NGPhysicalBoxFragment> index_fragment, base_fragment;
+  const NGPhysicalBoxFragment* index_fragment = nullptr;
+  const NGPhysicalBoxFragment* base_fragment = nullptr;
   LayoutUnit index_inline_size, index_ascent, index_descent, base_ascent,
       base_descent;
   RadicalHorizontalParameters horizontal;

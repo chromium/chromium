@@ -1813,7 +1813,7 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
       // We broke before the float, and there's no fragment. Create a break
       // token and propagate it all the way to the block container layout
       // algorithm. The float will start in the next fragmentainer.
-      auto break_before = NGBlockBreakToken::CreateBreakBefore(
+      auto* break_before = NGBlockBreakToken::CreateBreakBefore(
           unpositioned_float.node, /* is_forced_break */ false);
       RemoveLastItem(line_info);
       PropagateBreakToken(break_before);
@@ -1822,9 +1822,9 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
     // If we broke inside the float, we also need to propagate a break token to
     // the block container. Layout of the float will resume in the next
     // fragmentainer.
-    if (scoped_refptr<const NGBreakToken> token =
+    if (const NGBreakToken* token =
             positioned_float->layout_result->PhysicalFragment().BreakToken())
-      PropagateBreakToken(std::move(To<NGBlockBreakToken>(token.get())));
+      PropagateBreakToken(To<NGBlockBreakToken>(token));
   }
 
   item_result->positioned_float = positioned_float;
@@ -2450,7 +2450,7 @@ void NGLineBreaker::MoveToNextOf(const NGInlineItemResult& item_result) {
     item_index_++;
 }
 
-scoped_refptr<NGInlineBreakToken> NGLineBreaker::CreateBreakToken(
+const NGInlineBreakToken* NGLineBreaker::CreateBreakToken(
     const NGLineInfo& line_info) const {
   DCHECK(current_style_);
   const HeapVector<NGInlineItem>& items = Items();
@@ -2467,9 +2467,8 @@ scoped_refptr<NGInlineBreakToken> NGLineBreaker::CreateBreakToken(
             : 0)));
 }
 
-void NGLineBreaker::PropagateBreakToken(
-    scoped_refptr<const NGBlockBreakToken> token) {
-  propagated_break_tokens_.push_back(std::move(token));
+void NGLineBreaker::PropagateBreakToken(const NGBlockBreakToken* token) {
+  propagated_break_tokens_.push_back(token);
 }
 
 }  // namespace blink

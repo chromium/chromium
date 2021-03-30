@@ -72,7 +72,7 @@ const NGLayoutResult* NGMathPaddedLayoutAlgorithm::Layout() {
   GatherChildren(&content, &container_builder_);
   LayoutUnit content_ascent, content_descent;
   NGBoxStrut content_margins;
-  scoped_refptr<const NGPhysicalBoxFragment> content_fragment;
+  const NGPhysicalBoxFragment* content_fragment = nullptr;
   if (content) {
     NGConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
         Node(), ChildAvailableSize(), ConstraintSpace(), content);

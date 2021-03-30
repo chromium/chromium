@@ -24,8 +24,7 @@
 namespace blink {
 namespace {
 
-struct SameSizeAsNGPhysicalFragment
-    : RefCounted<const NGPhysicalFragment, NGPhysicalFragmentTraits> {
+struct SameSizeAsNGPhysicalFragment : GarbageCollected<NGPhysicalFragment> {
   // |flags_for_free_maybe| is used to support an additional increase in size
   // needed for DCHECK and 32-bit builds.
   unsigned flags_for_free_maybe;
@@ -316,7 +315,7 @@ NGPhysicalFragment::NGPhysicalFragment(LayoutObject* layout_object,
     : has_floating_descendants_for_paint_(false),
       has_layout_overflow_(false),
       has_inflow_bounds_(false),
-      has_rare_data_(false),
+      const_has_rare_data_(false),
       layout_object_(layout_object),
       size_(size),
       type_(type),
@@ -345,7 +344,7 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
       has_propagated_descendants_(other.has_propagated_descendants_),
       has_hanging_(other.has_hanging_),
       is_inline_formatting_context_(other.is_inline_formatting_context_),
-      has_fragment_items_(other.has_fragment_items_),
+      const_has_fragment_items_(other.const_has_fragment_items_),
       include_border_top_(other.include_border_top_),
       include_border_right_(other.include_border_right_),
       include_border_bottom_(other.include_border_bottom_),
@@ -355,7 +354,7 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
       has_borders_(other.has_borders_),
       has_padding_(other.has_padding_),
       has_inflow_bounds_(other.has_inflow_bounds_),
-      has_rare_data_(other.has_rare_data_),
+      const_has_rare_data_(other.const_has_rare_data_),
       is_first_for_node_(other.is_first_for_node_),
       layout_object_(other.layout_object_),
       size_(other.size_),
@@ -676,6 +675,23 @@ void NGPhysicalFragment::ShowFragmentTree(const LayoutObject& root) {
   LOG(INFO) << "\n" << DumpFragmentTree(root, dump_flags).Utf8();
 }
 #endif
+
+void NGPhysicalFragment::Trace(Visitor* visitor) const {
+  switch (Type()) {
+    case kFragmentBox:
+      static_cast<const NGPhysicalBoxFragment*>(this)->TraceAfterDispatch(
+          visitor);
+      break;
+    case kFragmentLineBox:
+      static_cast<const NGPhysicalLineBoxFragment*>(this)->TraceAfterDispatch(
+          visitor);
+      break;
+  }
+}
+
+void NGPhysicalFragment::TraceAfterDispatch(Visitor* visitor) const {
+  visitor->Trace(layout_object_);
+}
 
 PhysicalRect NGPhysicalFragmentWithOffset::RectInContainerBox() const {
   return {offset_to_container_box, fragment->Size()};
