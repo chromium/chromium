@@ -29,11 +29,6 @@ This file specifies browser resources for developer-facing chrome:// pages
       <include name="IDR_DOMAIN_RELIABILITY_INTERNALS_HTML" file="resources\domain_reliability_internals\domain_reliability_internals.html" type="BINDATA" />
       <include name="IDR_DOMAIN_RELIABILITY_INTERNALS_CSS" file="resources\domain_reliability_internals\domain_reliability_internals.css" type="BINDATA" />
       <include name="IDR_DOMAIN_RELIABILITY_INTERNALS_JS" file="resources\domain_reliability_internals\domain_reliability_internals.js" type="BINDATA" />
-      <include name="IDR_DOWNLOAD_INTERNALS_HTML" file="resources\download_internals\download_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-      <include name="IDR_DOWNLOAD_INTERNALS_CSS" file="resources\download_internals\download_internals.css" type="BINDATA" />
-      <include name="IDR_DOWNLOAD_INTERNALS_JS" file="resources\download_internals\download_internals.js" type="BINDATA" />
-      <include name="IDR_DOWNLOAD_INTERNALS_BROWSER_PROXY_JS" file="resources\download_internals\download_internals_browser_proxy.js" type="BINDATA" />
-      <include name="IDR_DOWNLOAD_INTERNALS_VISUALS_JS" file="resources\download_internals\download_internals_visuals.js" type="BINDATA" />
       <include name="IDR_LOCAL_STATE_HTML" file="resources\local_state\local_state.html" type="BINDATA" />
       <include name="IDR_LOCAL_STATE_JS" file="resources\local_state\local_state.js" type="BINDATA" />
       <include name="IDR_MEDIA_DATA_TABLE_JS" file="resources\media\media_data_table.js" type="BINDATA" />

@@ -378,6 +378,7 @@ static_library("ui") {
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiling_host",
+    "//chrome/browser/resources/download_internals:resources",
     "//chrome/browser/resources/invalidations:resources",
     "//chrome/browser/resources/media:webrtc_logs_resources",
     "//chrome/browser/resources/net_internals:resources",

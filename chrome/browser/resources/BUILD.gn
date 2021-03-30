@@ -314,6 +314,7 @@ repack("dev_ui_paks") {
   sources = [
     "$root_gen_dir/chrome/bluetooth_internals_resources.pak",
     "$root_gen_dir/chrome/dev_ui_browser_resources.pak",
+    "$root_gen_dir/chrome/download_internals_resources.pak",
     "$root_gen_dir/chrome/invalidations_resources.pak",
     "$root_gen_dir/chrome/net_internals_resources.pak",
     "$root_gen_dir/chrome/omnibox_resources.pak",
@@ -329,6 +330,7 @@ repack("dev_ui_paks") {
   deps = [
     "//chrome/browser:dev_ui_browser_resources",
     "//chrome/browser/resources/bluetooth_internals:resources",
+    "//chrome/browser/resources/download_internals:resources",
     "//chrome/browser/resources/invalidations:resources",
     "//chrome/browser/resources/media:webrtc_logs_resources",
     "//chrome/browser/resources/net_internals:resources",
