@@ -49,23 +49,29 @@ def parse_emoji_metadata(metadata_file):
 
 
 def transform_emoji_data(metadata, names, keywords):
-    def transform(codepoints):
+    def transform(codepoints, emoticons):
         # transform array of codepoint values into unicode string.
         string = u''.join(_chr(x) for x in codepoints)
 
         # keyword data has U+FE0F emoji presentation characters removed.
         if string not in names:
             string = string.replace(u'\ufe0f', u'')
-
-        name = names[string]
-        keyword_list = keywords[string]
+        # TODO(b/183440310): Better handle search for non-standard emoji.
+        if string in names:
+          name = names[string]
+          keyword_list = keywords[string] + emoticons
+        else:
+          name = ''
+          keyword_list = emoticons
 
         return {'string': string, 'name': name, 'keywords': keyword_list}
 
     for group in metadata:
         for emoji in group['emoji']:
-            emoji['base'] = transform(emoji['base'])
-            emoji['alternates'] = [transform(e) for e in emoji['alternates']]
+            emoji['base'] = transform(emoji['base'], emoji['emoticons'])
+            emoji['alternates'] = [
+                transform(e, []) for e in emoji['alternates']
+            ]
 
 
 def main(args):

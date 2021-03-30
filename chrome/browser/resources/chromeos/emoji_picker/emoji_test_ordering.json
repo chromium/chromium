@@ -6,7 +6,8 @@
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
@@ -28,7 +29,8 @@
             9794,
             65039
           ]
-        ]
+        ],
+        "emoticons": []
       },
       {
         "base": [
@@ -58,7 +60,8 @@
             128079,
             127999
           ]
-        ]
+        ],
+        "emoticons": []
       },
       {
         "base": [
@@ -134,7 +137,8 @@
             128104,
             127999
           ]
-        ]
+        ],
+        "emoticons": []
       },
       {
         "base": [
@@ -344,7 +348,8 @@
             128107,
             127999
           ]
-        ]
+        ],
+        "emoticons": []
       },
       {
         "base": [
@@ -539,163 +544,190 @@
             8205,
             128103
           ]
-        ]
+        ],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       }
     ]
   },
@@ -707,81 +739,99 @@
           128075
         ],
         "alternates": [
-          [128075],
-          [128075, 127995]
-        ]
+          [
+            128075
+          ],
+          [
+            128075,
+            127995
+          ]
+        ],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       }
     ]
   },
@@ -792,169 +842,197 @@
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       }
     ]
   },
@@ -965,169 +1043,197 @@
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       }
     ]
   },
@@ -1138,169 +1244,197 @@
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       }
     ]
   },
@@ -1312,81 +1446,99 @@
           128075
         ],
         "alternates": [
-          [128075],
-          [128075, 127995]
-        ]
+          [
+            128075
+          ],
+          [
+            128075,
+            127995
+          ]
+        ],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       }
     ]
   },
@@ -1397,169 +1549,197 @@
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       }
     ]
   },
@@ -1570,169 +1750,197 @@
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       },
       {
         "base": [
           128512
         ],
-        "alternates": []
+        "alternates": [],
+        "emoticons": []
       }
     ]
   }
