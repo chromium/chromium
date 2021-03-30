@@ -11,6 +11,7 @@
 #include "base/critical_closure.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/record_replay.h"
 #include "base/task/task_features.h"
 #include "base/time/time.h"
 
@@ -91,6 +92,7 @@ Task Sequence::TakeTask(TaskSource::Transaction* transaction) {
 }
 
 bool Sequence::DidProcessTask(TaskSource::Transaction* transaction) {
+  recordreplay::Assert("Sequence::DidProcessTask Start");
   CheckedAutoLockMaybe auto_lock(transaction ? nullptr : &lock_);
   // There should never be a call to DidProcessTask without an associated
   // WillRunTask().
@@ -99,11 +101,13 @@ bool Sequence::DidProcessTask(TaskSource::Transaction* transaction) {
   // See comment on TaskSource::task_runner_ for lifetime management details.
   if (queue_.empty()) {
     ReleaseTaskRunner();
+    recordreplay::Assert("Sequence::DidProcessTask #1");
     return false;
   }
   // Let the caller re-enqueue this non-empty Sequence regardless of
   // |run_result| so it can continue churning through this Sequence's tasks and
   // skip/delete them in the proper scope.
+  recordreplay::Assert("Sequence::DidProcessTask #2");
   return true;
 }
 

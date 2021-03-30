@@ -360,6 +360,7 @@ size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables, size_t count) {
 
 // static
 bool WaitableEvent::PeekPort(mach_port_t port, bool dequeue) {
+  recordreplay::Assert("WaitableEvent::PeekPort %d %d", port, dequeue);
   if (dequeue) {
     mach_msg_empty_rcv_t msg{};
     msg.header.msgh_local_port = port;

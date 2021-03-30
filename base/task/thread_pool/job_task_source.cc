@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/record_replay.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/task_features.h"
 #include "base/task/thread_pool/pooled_task_runner_delegate.h"
@@ -327,6 +328,7 @@ Task JobTaskSource::TakeTask(TaskSource::Transaction* transaction) {
 bool JobTaskSource::DidProcessTask(TaskSource::Transaction* /*transaction*/) {
   // Lock is needed to access |join_flag_| below and signal
   // |worker_released_condition_|.
+  recordreplay::Assert("JobTaskSource::DidProcessTask Start");
   CheckedAutoLock auto_lock(worker_lock_);
   const auto state_before_sub = state_.DecrementWorkerCount();
 
@@ -334,16 +336,20 @@ bool JobTaskSource::DidProcessTask(TaskSource::Transaction* /*transaction*/) {
     worker_released_condition_->Signal();
 
   // A canceled task source should never get re-enqueued.
-  if (state_before_sub.is_canceled())
+  if (state_before_sub.is_canceled()) {
+    recordreplay::Assert("JobTaskSource::DidProcessTask #1");
     return false;
+  }
 
   DCHECK_GT(state_before_sub.worker_count(), 0U);
 
   // Re-enqueue the TaskSource if the task ran and the worker count is below the
   // max concurrency.
   // |worker_count - 1| to exclude the returning thread.
-  return state_before_sub.worker_count() <=
-         GetMaxConcurrency(state_before_sub.worker_count() - 1);
+  bool rv = state_before_sub.worker_count() <=
+            GetMaxConcurrency(state_before_sub.worker_count() - 1);
+  recordreplay::Assert("JobTaskSource::DidProcessTask #2 %d", rv);
+  return rv;
 }
 
 TaskSourceSortKey JobTaskSource::GetSortKey(
