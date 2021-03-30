@@ -41,22 +41,29 @@ struct WidgetEventPair {
 
 WidgetEventPair GetParentWidgetAndEvent(views::View* this_view,
                                         const ui::MouseEvent* this_event) {
+  // Note that the floating results view is a top-level widget, so hop up a
+  // level before looking for the parent's top-level widget for event
+  // forwarding.
   views::Widget* this_widget = this_view->GetWidget();
-  views::Widget* parent_widget =
-      this_widget->GetTopLevelWidgetForNativeView(this_widget->GetNativeView());
-  DCHECK_NE(this_widget, parent_widget);
+  views::Widget* parent_widget = this_widget->parent();
   if (!parent_widget)
+    return {nullptr, *this_event};
+
+  views::Widget* top_level = parent_widget->GetTopLevelWidgetForNativeView(
+      parent_widget->GetNativeView());
+  DCHECK_NE(this_widget, top_level);
+  if (!top_level)
     return {nullptr, *this_event};
 
   gfx::Point event_location = this_event->location();
   views::View::ConvertPointToScreen(this_view, &event_location);
-  views::View::ConvertPointFromScreen(parent_widget->GetRootView(),
+  views::View::ConvertPointFromScreen(top_level->GetRootView(),
                                       &event_location);
 
-  ui::MouseEvent parent_event(*this_event);
-  parent_event.set_location(event_location);
+  ui::MouseEvent top_level_event(*this_event);
+  top_level_event.set_location(event_location);
 
-  return {parent_widget, parent_event};
+  return {top_level, top_level_event};
 }
 
 #endif  // !USE_AURA
