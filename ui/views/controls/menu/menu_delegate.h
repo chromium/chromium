@@ -216,18 +216,6 @@ class VIEWS_EXPORT MenuDelegate {
   // Invoked prior to a menu being hidden.
   virtual void WillHideMenu(MenuItemView* menu);
 
-  // Returns additional horizontal spacing for the icon of the given item.
-  // The |command_id| specifies the item of interest, the |icon_size| tells the
-  // function the size of the icon and it will then return |left_margin|
-  // and |right_margin| accordingly. Note: Negative values can be returned.
-  virtual void GetHorizontalIconMargins(int command_id,
-                                        int icon_size,
-                                        int* left_margin,
-                                        int* right_margin) const;
-  // Returns true if the labels should reserve additional spacing for e.g.
-  // submenu indicators at the end of the line.
-  virtual bool ShouldReserveSpaceForSubmenuIndicator() const;
-
   // Returns true if menus should fall back to positioning beside the anchor,
   // rather than directly above or below it, when the menu is too tall to fit
   // within the screen.

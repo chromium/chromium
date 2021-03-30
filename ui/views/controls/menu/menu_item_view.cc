@@ -710,7 +710,7 @@ void MenuItemView::Layout() {
     if (icon_view_) {
       icon_view_->SizeToPreferredSize();
       gfx::Size size = icon_view_->GetPreferredSize();
-      int x = config.item_horizontal_padding + left_icon_margin_ +
+      int x = config.item_horizontal_padding +
               (icon_area_width_ - size.width()) / 2;
       if (config.icons_in_label || type_ == Type::kCheckbox ||
           type_ == Type::kRadio)
@@ -724,7 +724,7 @@ void MenuItemView::Layout() {
     }
 
     if (radio_check_image_view_) {
-      int x = config.item_horizontal_padding + left_icon_margin_;
+      int x = config.item_horizontal_padding;
       if (GetMenuController() && GetMenuController()->use_touchable_layout())
         x = config.touchable_item_horizontal_padding;
       int y =
@@ -971,7 +971,6 @@ void MenuItemView::AdjustBoundsForRTLUI(gfx::Rect* rect) const {
 }
 
 void MenuItemView::PaintButton(gfx::Canvas* canvas, PaintButtonMode mode) {
-  const MenuConfig& config = MenuConfig::instance();
   bool render_selection =
       (mode == PaintButtonMode::kNormal && IsSelected() &&
        parent_menu_item_->GetSubmenu()->GetShowSelection(this) &&
@@ -1020,10 +1019,7 @@ void MenuItemView::PaintButton(gfx::Canvas* canvas, PaintButtonMode mode) {
   int accel_width = parent_menu_item_->GetSubmenu()->max_minor_text_width();
   int label_start = GetLabelStartForThisItem();
 
-  int width = this->width() - label_start - accel_width -
-              (!delegate || delegate->ShouldReserveSpaceForSubmenuIndicator()
-                   ? item_right_margin_
-                   : config.arrow_to_edge_padding);
+  int width = this->width() - label_start - accel_width - item_right_margin_;
   gfx::Rect text_bounds(label_start, top_margin, width, text_height);
   text_bounds.set_x(GetMirroredXForRect(text_bounds));
   int flags = GetDrawStringFlags();
@@ -1295,20 +1291,10 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
 
   dimensions.height += GetBottomMargin() + GetTopMargin();
 
-  // Get Icon margin overrides for this particular item.
-  const MenuDelegate* delegate = GetDelegate();
-  if (delegate) {
-    delegate->GetHorizontalIconMargins(command_, icon_area_width_,
-                                       &left_icon_margin_, &right_icon_margin_);
-  } else {
-    left_icon_margin_ = 0;
-    right_icon_margin_ = 0;
-  }
-  int label_start = GetLabelStartForThisItem();
-
-  // Determine the length of the label text.
   int string_width = gfx::GetStringWidth(title_, style.font_list);
+  int label_start = GetLabelStartForThisItem();
   dimensions.standard_width = string_width + label_start + item_right_margin_;
+
   // Determine the length of the right-side text.
   dimensions.minor_text_width =
       (minor_text.empty() ? 0
@@ -1365,7 +1351,7 @@ int MenuItemView::GetLabelStartForThisItem() const {
            icon_view_->GetPreferredSize().width();
   }
 
-  int label_start = label_start_ + left_icon_margin_ + right_icon_margin_;
+  int label_start = label_start_;
   if ((config.icons_in_label || type_ == Type::kCheckbox ||
        type_ == Type::kRadio) &&
       icon_view_) {

@@ -142,18 +142,6 @@ void MenuDelegate::WillShowMenu(MenuItemView* menu) {}
 
 void MenuDelegate::WillHideMenu(MenuItemView* menu) {}
 
-void MenuDelegate::GetHorizontalIconMargins(int command_id,
-                                            int icon_size,
-                                            int* left_margin,
-                                            int* right_margin) const {
-  *left_margin = 0;
-  *right_margin = 0;
-}
-
-bool MenuDelegate::ShouldReserveSpaceForSubmenuIndicator() const {
-  return true;
-}
-
 bool MenuDelegate::ShouldTryPositioningBesideAnchor() const {
   return true;
 }

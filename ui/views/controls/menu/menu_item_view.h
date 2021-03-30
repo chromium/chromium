@@ -594,11 +594,6 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Corner radius in pixels, for HIGHLIGHTED items placed at the end of a menu.
   int corner_radius_ = 0;
 
-  // Horizontal icon margins in pixels, which can differ between MenuItems.
-  // These values will be set in the layout process.
-  mutable int left_icon_margin_ = 0;
-  mutable int right_icon_margin_ = 0;
-
   // |menu_position_| is the requested position with respect to the bounds.
   // |actual_menu_position_| is used by the controller to cache the
   // position of the menu being shown.
