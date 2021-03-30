@@ -1958,7 +1958,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         // only initialized if there is at least one actual service or if Autofill is enabled,
         // there is no need to check that Autofill is enabled here.
         //
-        // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/view/autofill/AutofillManager.java;l=2817;drc=dd7d52f9632a0dbb8b14b69520c5ea31e0b3b4a2
+        // https://cs.android.com/android/platform/superproject/+/HEAD:frameworks/base/core/java/android/view/autofill/AutofillManager.java;l=2817;drc=dd7d52f9632a0dbb8b14b69520c5ea31e0b3b4a2
         String activeServices = Settings.Secure.getString(
                 mContext.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
         if (activeServices != null && !activeServices.isEmpty()) {
