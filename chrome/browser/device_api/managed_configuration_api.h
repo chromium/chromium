@@ -29,6 +29,7 @@ class ManagedConfigurationAPI : public KeyedService {
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnManagedConfigurationChanged() = 0;
+    virtual const url::Origin& GetOrigin() = 0;
   };
 
   static const char kOriginKey[];
@@ -48,8 +49,12 @@ class ManagedConfigurationAPI : public KeyedService {
       base::OnceCallback<void(std::unique_ptr<base::DictionaryValue>)>
           callback);
 
-  void AddObserver(const url::Origin& origin, Observer* observer);
-  void RemoveObserver(const url::Origin& origin, Observer* observer);
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+  // Whether this application can have managed configuration set. essentially,
+  // this checks whether the application is managed.
+  bool CanHaveManagedStore(const url::Origin& origin);
 
  private:
   class ManagedConfigurationDownloader;
@@ -84,6 +89,13 @@ class ManagedConfigurationAPI : public KeyedService {
   ManagedConfigurationStore* GetOrLoadStoreForOrigin(const url::Origin& origin);
   base::FilePath GetStoreLocation(const url::Origin& origin);
 
+  // Assigns observers from |unmanaged_observers_| to a particular store if
+  // their origin has a configuration. There is no need to unassign those
+  // observers when the origin becomes unmanaged, since the managed data is
+  // cleared in the ManagedConfigurationStore, without destroying the actual
+  // store object.
+  void PromoteObservers();
+
   Profile* const profile_;
 
   const base::FilePath stores_path_;
@@ -91,6 +103,12 @@ class ManagedConfigurationAPI : public KeyedService {
   // Stores current configuration downloading managers.
   std::map<url::Origin, std::unique_ptr<ManagedConfigurationDownloader>>
       downloaders_;
+
+  // Stores the list of orrigins which have a managed configuration(may not yet
+  // loaded).
+  std::set<url::Origin> managed_origins_;
+
+  std::set<Observer*> unmanaged_observers_;
 
   // Blocking task runner for IO related tasks.
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;

@@ -81,10 +81,16 @@ class MODULES_EXPORT DeviceService final
   // Lazily binds mojo interface.
   mojom::blink::DeviceAPIService* GetService();
 
+  // Lazily binds mojo interface.
+  mojom::blink::ManagedConfigurationService* GetManagedConfigurationService();
+
   void OnServiceConnectionError();
   void StopObserving();
 
   HeapMojoRemote<mojom::blink::DeviceAPIService> device_api_service_;
+  HeapMojoRemote<mojom::blink::ManagedConfigurationService>
+      managed_configuration_service_;
+
   HeapMojoReceiver<mojom::blink::ManagedConfigurationObserver, DeviceService>
       configuration_observer_;
   HeapHashSet<Member<ScriptPromiseResolver>> pending_promises_;

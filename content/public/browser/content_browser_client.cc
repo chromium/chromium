@@ -887,6 +887,11 @@ void ContentBrowserClient::CreateDeviceInfoService(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver) {}
 
+void ContentBrowserClient::CreateManagedConfigurationService(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::mojom::ManagedConfigurationService> receiver) {
+}
+
 #if !defined(OS_ANDROID)
 SerialDelegate* ContentBrowserClient::GetSerialDelegate() {
   return nullptr;

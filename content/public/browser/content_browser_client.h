@@ -90,6 +90,7 @@ namespace blink {
 namespace mojom {
 class DeviceAPIService;
 class BadgeService;
+class ManagedConfigurationService;
 class RendererPreferenceWatcher;
 class WebUsbService;
 class WindowFeatures;
@@ -1621,6 +1622,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void CreateDeviceInfoService(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver);
+
+  virtual void CreateManagedConfigurationService(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::mojom::ManagedConfigurationService>
+          receiver);
 
 #if !defined(OS_ANDROID)
   // Allows the embedder to provide an implementation of the Serial API.

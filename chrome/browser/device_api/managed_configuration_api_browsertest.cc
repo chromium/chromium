@@ -7,6 +7,7 @@
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/web_applications/components/policy/web_app_policy_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
@@ -78,6 +79,7 @@ bool DictValueEquals(std::unique_ptr<base::DictionaryValue> value,
       return false;
     actual.insert({entry.first, entry.second.GetString()});
   }
+
   return actual == expected;
 }
 
@@ -89,11 +91,11 @@ class ManagedConfigurationAPITest : public InProcessBrowserTest,
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     origin_ = url::Origin::Create(GURL(kOrigin));
-    api()->AddObserver(origin_, this);
+    api()->AddObserver(this);
   }
 
   void TearDownOnMainThread() override {
-    api()->RemoveObserver(origin_, this);
+    api()->RemoveObserver(this);
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -132,17 +134,23 @@ class ManagedConfigurationAPITest : public InProcessBrowserTest,
 
   std::unique_ptr<base::DictionaryValue> GetValues(
       const std::vector<std::string>& keys) {
+    updated_ = false;
     api()->GetOriginPolicyConfiguration(
         origin_, keys,
         base::BindOnce(&ManagedConfigurationAPITest::OnResultObtained,
                        base::Unretained(this)));
 
-    loop_get_ = std::make_unique<base::RunLoop>();
-    loop_get_->Run();
+    // We could receive a failure asynchrounously.
+    if (!updated_) {
+      loop_get_ = std::make_unique<base::RunLoop>();
+      loop_get_->Run();
+      updated_ = false;
+    }
     return std::move(result_);
   }
 
   void OnResultObtained(std::unique_ptr<base::DictionaryValue> result) {
+    updated_ = true;
     result_ = std::move(result);
     loop_get_->Quit();
   }
@@ -156,12 +164,14 @@ class ManagedConfigurationAPITest : public InProcessBrowserTest,
     }
   }
 
+  const url::Origin& GetOrigin() override { return origin(); }
+
   ManagedConfigurationAPI* api() {
     return ManagedConfigurationAPIFactory::GetForProfile(profile());
   }
 
   Profile* profile() { return browser()->profile(); }
-  url::Origin origin() { return origin_; }
+  const url::Origin& origin() { return origin_; }
 
  private:
   url::Origin origin_;

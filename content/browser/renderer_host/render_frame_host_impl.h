@@ -184,6 +184,7 @@ namespace mojom {
 class CacheStorage;
 class DeviceAPIService;
 class GeolocationService;
+class ManagedConfigurationService;
 class WebUsbService;
 }  // namespace mojom
 }  // namespace blink
@@ -1444,6 +1445,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void GetDeviceInfoService(
       mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver);
+
+  void GetManagedConfigurationService(
+      mojo::PendingReceiver<blink::mojom::ManagedConfigurationService>
+          receiver);
 
   void GetFontAccessManager(
       mojo::PendingReceiver<blink::mojom::FontAccessManager> receiver);

@@ -653,6 +653,9 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 #if !defined(OS_ANDROID)
   map->Add<blink::mojom::DeviceAPIService>(base::BindRepeating(
       &RenderFrameHostImpl::GetDeviceInfoService, base::Unretained(host)));
+  map->Add<blink::mojom::ManagedConfigurationService>(
+      base::BindRepeating(&RenderFrameHostImpl::GetManagedConfigurationService,
+                          base::Unretained(host)));
 #endif  // !defined(OS_ANDROID)
 
   map->Add<blink::mojom::ScreenEnumeration>(

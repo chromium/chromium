@@ -18,7 +18,7 @@ namespace blink {
 namespace {
 
 const char kNotHighTrustedAppExceptionMessage[] =
-    "This API is available only for high trusted apps.";
+    "This API is available only for managed apps.";
 
 }  // namespace
 
@@ -40,6 +40,7 @@ DeviceService* DeviceService::managed(Navigator& navigator) {
 DeviceService::DeviceService(Navigator& navigator)
     : Supplement<Navigator>(navigator),
       device_api_service_(navigator.DomWindow()),
+      managed_configuration_service_(navigator.DomWindow()),
       configuration_observer_(this, navigator.DomWindow()) {}
 
 const AtomicString& DeviceService::InterfaceName() const {
@@ -62,6 +63,7 @@ void DeviceService::Trace(Visitor* visitor) const {
   Supplement<Navigator>::Trace(visitor);
 
   visitor->Trace(device_api_service_);
+  visitor->Trace(managed_configuration_service_);
   visitor->Trace(pending_promises_);
   visitor->Trace(configuration_observer_);
 }
@@ -80,6 +82,21 @@ mojom::blink::DeviceAPIService* DeviceService::GetService() {
   return device_api_service_.get();
 }
 
+mojom::blink::ManagedConfigurationService*
+DeviceService::GetManagedConfigurationService() {
+  if (!managed_configuration_service_.is_bound()) {
+    GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
+        managed_configuration_service_.BindNewPipeAndPassReceiver(
+            GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+    // The access status of Device API can change dynamically. Hence, we have to
+    // properly handle cases when we are losing this access.
+    managed_configuration_service_.set_disconnect_handler(WTF::Bind(
+        &DeviceService::OnServiceConnectionError, WrapWeakPersistent(this)));
+  }
+
+  return managed_configuration_service_.get();
+}
+
 void DeviceService::OnServiceConnectionError() {
   device_api_service_.reset();
   // Resolve all pending promises with a failure.
@@ -96,9 +113,9 @@ ScriptPromise DeviceService::getManagedConfiguration(ScriptState* script_state,
   pending_promises_.insert(resolver);
 
   ScriptPromise promise = resolver->Promise();
-  GetService()->GetManagedConfiguration(
-      keys, Bind(&DeviceService::OnConfigurationReceived,
-                 WrapWeakPersistent(this), WrapPersistent(resolver)));
+  GetManagedConfigurationService()->GetManagedConfiguration(
+      keys, WTF::Bind(&DeviceService::OnConfigurationReceived,
+                      WrapWeakPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -204,7 +221,7 @@ void DeviceService::AddedEventListener(
                                                 registered_listener);
   if (event_type == event_type_names::kManagedconfigurationchange) {
     if (!configuration_observer_.is_bound()) {
-      GetService()->SubscribeToManagedConfiguration(
+      GetManagedConfigurationService()->SubscribeToManagedConfiguration(
           configuration_observer_.BindNewPipeAndPassRemote(
               GetExecutionContext()->GetTaskRunner(
                   TaskType::kMiscPlatformAPI)));

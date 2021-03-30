@@ -543,6 +543,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void CreateDeviceInfoService(
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver) override;
+  void CreateManagedConfigurationService(
+      content::RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::mojom::ManagedConfigurationService> receiver)
+      override;
   content::SerialDelegate* GetSerialDelegate() override;
   content::HidDelegate* GetHidDelegate() override;
   content::FontAccessDelegate* GetFontAccessDelegate() override;

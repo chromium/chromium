@@ -3477,6 +3477,8 @@ static_library("browser") {
       "device_api/managed_configuration_api.h",
       "device_api/managed_configuration_api_factory.cc",
       "device_api/managed_configuration_api_factory.h",
+      "device_api/managed_configuration_service.cc",
+      "device_api/managed_configuration_service.h",
       "device_api/managed_configuration_store.cc",
       "device_api/managed_configuration_store.h",
       "device_identity/device_identity_provider.cc",

@@ -8323,6 +8323,12 @@ void RenderFrameHostImpl::GetDeviceInfoService(
                                                          std::move(receiver));
 }
 
+void RenderFrameHostImpl::GetManagedConfigurationService(
+    mojo::PendingReceiver<blink::mojom::ManagedConfigurationService> receiver) {
+  GetContentClient()->browser()->CreateManagedConfigurationService(
+      this, std::move(receiver));
+}
+
 void RenderFrameHostImpl::GetFontAccessManager(
     mojo::PendingReceiver<blink::mojom::FontAccessManager> receiver) {
   static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition())
