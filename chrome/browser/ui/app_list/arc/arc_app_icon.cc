@@ -16,6 +16,7 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
@@ -26,6 +27,7 @@
 #include "chrome/grit/component_extension_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/grit/extensions_browser_resources.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
@@ -35,6 +37,11 @@
 namespace {
 
 bool disable_safe_decoding_for_testing = false;
+
+data_decoder::DataDecoder& GetDataDecoder() {
+  static base::NoDestructor<data_decoder::DataDecoder> data_decoder;
+  return *data_decoder;
+}
 
 }  // namespace
 
@@ -168,7 +175,8 @@ ArcAppIcon::DecodeRequest::DecodeRequest(
     bool retain_padding,
     gfx::ImageSkia& image_skia,
     std::map<ui::ScaleFactor, base::Time>& incomplete_scale_factors)
-    : host_(host),
+    : ImageRequest(&GetDataDecoder()),
+      host_(host),
       descriptor_(descriptor),
       resize_allowed_(resize_allowed),
       retain_padding_(retain_padding),
