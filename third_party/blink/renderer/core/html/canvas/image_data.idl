@@ -43,6 +43,5 @@ typedef (Uint8ClampedArray or Uint16Array or Float32Array) ImageDataArray;
 
     readonly attribute unsigned long width;
     readonly attribute unsigned long height;
-    // Apply [SameObject, SaveSameObject] in order to improve the performance.
-    [SameObject, SaveSameObject] readonly attribute ImageDataArray data;
+    readonly attribute ImageDataArray data;
 };
