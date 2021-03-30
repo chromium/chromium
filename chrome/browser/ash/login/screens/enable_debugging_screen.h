@@ -43,7 +43,7 @@ class EnableDebuggingScreen : public BaseScreen {
   // Wait for cryptohomed before checking debugd. See http://crbug.com/440506
   void WaitForCryptohome();
 
-  // Callback for CryptohomeClient::WaitForServiceToBeAvailable
+  // Callback for UserDataAuthClient::WaitForServiceToBeAvailable
   void OnCryptohomeDaemonAvailabilityChecked(bool service_is_available);
 
   // Callback for DebugDaemonClient::WaitForServiceToBeAvailable

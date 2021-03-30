@@ -12,10 +12,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -115,7 +115,7 @@ void EnableDebuggingScreen::OnRemoveRootfsVerification(bool success) {
 
 void EnableDebuggingScreen::WaitForCryptohome() {
   UpdateUIState(EnableDebuggingScreenView::UI_STATE_WAIT);
-  chromeos::CryptohomeClient* client = chromeos::CryptohomeClient::Get();
+  chromeos::UserDataAuthClient* client = chromeos::UserDataAuthClient::Get();
   client->WaitForServiceToBeAvailable(base::BindOnce(
       &EnableDebuggingScreen::OnCryptohomeDaemonAvailabilityChecked,
       weak_ptr_factory_.GetWeakPtr()));
