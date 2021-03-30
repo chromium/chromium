@@ -39,11 +39,25 @@ void ImageBitmapRenderingContextBase::Stop() {
   image_layer_bridge_->Dispose();
 }
 
+void ImageBitmapRenderingContextBase::ResetInternalBitmapToBlackTransparent(
+    int width,
+    int height) {
+  SkBitmap black_bitmap;
+  black_bitmap.allocN32Pixels(width, height);
+  black_bitmap.eraseARGB(0, 0, 0, 0);
+  image_layer_bridge_->SetImage(UnacceleratedStaticBitmapImage::Create(
+      SkImage::MakeFromBitmap(black_bitmap)));
+}
+
 void ImageBitmapRenderingContextBase::SetImage(ImageBitmap* image_bitmap) {
   DCHECK(!image_bitmap || !image_bitmap->IsNeutered());
 
-  image_layer_bridge_->SetImage(image_bitmap ? image_bitmap->BitmapImage()
-                                             : nullptr);
+  // According to the standard TransferFromImageBitmap(null) has to reset the
+  // internal bitmap and create a black transparent one.
+  if (image_bitmap)
+    image_layer_bridge_->SetImage(image_bitmap->BitmapImage());
+  else
+    ResetInternalBitmapToBlackTransparent(Host()->width(), Host()->height());
 
   DidDraw();
 
@@ -61,11 +75,8 @@ ImageBitmapRenderingContextBase::GetImageAndResetInternal() {
     return nullptr;
   scoped_refptr<StaticBitmapImage> copy_image = image_layer_bridge_->GetImage();
 
-  SkBitmap black_bitmap;
-  black_bitmap.allocN32Pixels(copy_image->width(), copy_image->height());
-  black_bitmap.eraseARGB(0, 0, 0, 0);
-  image_layer_bridge_->SetImage(UnacceleratedStaticBitmapImage::Create(
-      SkImage::MakeFromBitmap(black_bitmap)));
+  ResetInternalBitmapToBlackTransparent(copy_image->width(),
+                                        copy_image->height());
 
   return copy_image;
 }

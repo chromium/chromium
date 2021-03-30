@@ -25,9 +25,9 @@ promise_test(function() {
         bitmapCanvas.width = width;
         bitmapCanvas.height = height;
         var bitmapCtx = bitmapCanvas.getContext('bitmaprenderer');
-        bitmapCtx.transferFromImageBitmap(greenImage);
 
         // Make sure the bitmap renderer canvas is filled correctly.
+        bitmapCtx.transferFromImageBitmap(greenImage);
         testCanvas(bitmapCanvas, 0, 255, 0, 255);
 
         // Test if passing null resets the bitmap renderer canvas.
