@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 
@@ -23,7 +24,7 @@ namespace ui {
 // A singleton that owns global objects related to the desktop and listens for
 // X11 events on the X11 root window. Destroys itself when the browser
 // shuts down.
-class X11MenuRegistrar : public x11::EventObserver {
+class COMPONENT_EXPORT(UI_BASE_X) X11MenuRegistrar : public x11::EventObserver {
  public:
   // Returns the singleton handler.  Creates one if one has not
   // already been created.

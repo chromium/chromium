@@ -81,6 +81,8 @@ source_set("hit_test") {
       "hit_test_x11.h",
     ]
   }
+
+  deps = [ "//base" ]
 }
 
 component("base") {
