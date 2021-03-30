@@ -1730,7 +1730,7 @@ bool AcceleratorControllerImpl::Process(const ui::Accelerator& accelerator) {
 
 bool AcceleratorControllerImpl::IsDeprecated(
     const ui::Accelerator& accelerator) const {
-  return deprecated_accelerators_.count(accelerator) != 0;
+  return base::Contains(deprecated_accelerators_, accelerator);
 }
 
 bool AcceleratorControllerImpl::PerformActionIfEnabled(
@@ -1752,7 +1752,7 @@ bool AcceleratorControllerImpl::OnMenuAccelerator(
     return false;  // Menu shouldn't be closed for an invalid accelerator.
 
   AcceleratorAction action = itr->second;
-  return actions_keeping_menu_open_.count(action) == 0;
+  return !base::Contains(actions_keeping_menu_open_, action);
 }
 
 bool AcceleratorControllerImpl::IsRegistered(
@@ -1770,7 +1770,7 @@ bool AcceleratorControllerImpl::IsPreferred(
   if (iter == accelerators_.end())
     return false;  // not an accelerator.
 
-  return preferred_actions_.find(iter->second) != preferred_actions_.end();
+  return base::Contains(preferred_actions_, iter->second);
 }
 
 bool AcceleratorControllerImpl::IsReserved(
@@ -1779,7 +1779,7 @@ bool AcceleratorControllerImpl::IsReserved(
   if (iter == accelerators_.end())
     return false;  // not an accelerator.
 
-  return reserved_actions_.find(iter->second) != reserved_actions_.end();
+  return base::Contains(reserved_actions_, iter->second);
 }
 
 AcceleratorControllerImpl::AcceleratorProcessingRestriction
@@ -1916,7 +1916,7 @@ void AcceleratorControllerImpl::RegisterDeprecatedAccelerators() {
 bool AcceleratorControllerImpl::CanPerformAction(
     AcceleratorAction action,
     const ui::Accelerator& accelerator) const {
-  if (accelerator.IsRepeat() && !repeatable_actions_.count(action))
+  if (accelerator.IsRepeat() && !base::Contains(repeatable_actions_, action))
     return false;
 
   AcceleratorProcessingRestriction restriction =
@@ -2485,18 +2485,15 @@ AcceleratorControllerImpl::AcceleratorProcessingRestriction
 AcceleratorControllerImpl::GetAcceleratorProcessingRestriction(
     int action) const {
   if (Shell::Get()->screen_pinning_controller()->IsPinned() &&
-      actions_allowed_in_pinned_mode_.find(action) ==
-          actions_allowed_in_pinned_mode_.end()) {
+      !base::Contains(actions_allowed_in_pinned_mode_, action)) {
     return RESTRICTION_PREVENT_PROCESSING_AND_PROPAGATION;
   }
   if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted() &&
-      actions_allowed_at_login_screen_.find(action) ==
-          actions_allowed_at_login_screen_.end()) {
+      !base::Contains(actions_allowed_at_login_screen_, action)) {
     return RESTRICTION_PREVENT_PROCESSING;
   }
   if (Shell::Get()->session_controller()->IsScreenLocked() &&
-      actions_allowed_at_lock_screen_.find(action) ==
-          actions_allowed_at_lock_screen_.end()) {
+      !base::Contains(actions_allowed_at_lock_screen_, action)) {
     return RESTRICTION_PREVENT_PROCESSING;
   }
   if (Shell::Get()->power_button_controller()->IsMenuOpened() &&
@@ -2504,13 +2501,11 @@ AcceleratorControllerImpl::GetAcceleratorProcessingRestriction(
     return RESTRICTION_PREVENT_PROCESSING;
   }
   if (Shell::Get()->session_controller()->IsRunningInAppMode() &&
-      actions_allowed_in_app_mode_.find(action) ==
-          actions_allowed_in_app_mode_.end()) {
+      !base::Contains(actions_allowed_in_app_mode_, action)) {
     return RESTRICTION_PREVENT_PROCESSING;
   }
   if (Shell::IsSystemModalWindowOpen() &&
-      actions_allowed_at_modal_window_.find(action) ==
-          actions_allowed_at_modal_window_.end()) {
+      !base::Contains(actions_allowed_at_modal_window_, action)) {
     // Note we prevent the shortcut from propagating so it will not
     // be passed to the modal window. This is important for things like
     // Alt+Tab that would cause an undesired effect in the modal window by
@@ -2543,7 +2538,7 @@ AcceleratorControllerImpl::MaybeDeprecatedAcceleratorPressed(
   // This action is associated with new and deprecated accelerators, find which
   // one is |accelerator|.
   const DeprecatedAcceleratorData* data = itr->second;
-  if (!deprecated_accelerators_.count(accelerator)) {
+  if (!base::Contains(deprecated_accelerators_, accelerator)) {
     // This is a new accelerator replacing the old deprecated one.
     // Record UMA stats and proceed normally to perform it.
     RecordUmaHistogram(data->uma_histogram_name, NEW_USED);
