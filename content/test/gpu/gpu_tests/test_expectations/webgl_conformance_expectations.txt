@@ -191,6 +191,7 @@ crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/text
 
 # Extensions not available on angle-vulkan
 crbug.com/1187260 [ angle-vulkan passthrough ] WebglExtension_WEBGL_debug_shaders [ Skip ]
+crbug.com/1187260 [ angle-swiftshader passthrough ] WebglExtension_WEBGL_debug_shaders [ Skip ]
 
 # Extensions not available on angle-metal
 crbug.com/angleproject/4846 [ mac angle-metal passthrough ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
