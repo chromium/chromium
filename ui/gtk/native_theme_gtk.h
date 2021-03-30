@@ -5,6 +5,7 @@
 #ifndef UI_GTK_NATIVE_THEME_GTK_H_
 #define UI_GTK_NATIVE_THEME_GTK_H_
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
@@ -21,7 +22,7 @@ namespace gtk {
 using ScopedCssProvider = ScopedGObject<GtkCssProvider>;
 
 // A version of NativeTheme that uses GTK-rendered widgets.
-class NativeThemeGtk : public ui::NativeThemeBase {
+class COMPONENT_EXPORT(GTK) NativeThemeGtk : public ui::NativeThemeBase {
  public:
   static NativeThemeGtk* instance();
 

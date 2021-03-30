@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/gtk/gtk_buildflags.h"
 #include "ui/gtk/gtk_compat.h"
@@ -35,6 +36,7 @@ class KeyEvent;
 
 namespace gtk {
 
+COMPONENT_EXPORT(GTK)
 void GtkInitFromCommandLine(const base::CommandLine& command_line);
 
 // Sets |dialog| as transient for |parent|, which will keep it on top and center

@@ -9,6 +9,7 @@ import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//testing/test.gni")
 import("//tools/generate_stubs/rules.gni")
 
 assert(is_linux || is_chromeos_lacros || is_chromeos,
@@ -55,6 +56,9 @@ component("gtk_ui_delegate") {
 
 component("gtk") {
   public = [ "gtk_ui.h" ]
+
+  friend = [ ":gtk_unittests" ]
+
   sources = [
     "gtk_compat.cc",
     "gtk_compat.h",
@@ -143,4 +147,21 @@ component("gtk") {
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
+}
+
+test("gtk_unittests") {
+  sources = [ "native_theme_gtk_unittest.cc" ]
+
+  deps = [
+    ":gtk",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+
+    # Required so that including gtk_util.h can resolve <gtk/gtk.h>.
+    "//build/config/linux/gtk",
+    "//testing/gtest",
+    "//ui/base:features",
+    "//ui/native_theme",
+    "//ui/native_theme:test_support",
+  ]
 }

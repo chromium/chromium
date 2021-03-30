@@ -758,6 +758,10 @@ group("gn_all") {
     }
   }
 
+  if (is_linux && !is_chromecast) {
+    deps += [ "//ui/gtk:gtk_unittests" ]
+  }
+
   if (((is_linux || is_chromeos) && !is_chromecast) ||
       (is_win && use_libfuzzer) || (use_libfuzzer && is_mac)) {
     deps += [
