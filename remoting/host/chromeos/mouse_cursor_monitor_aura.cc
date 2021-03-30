@@ -83,22 +83,6 @@ void MouseCursorMonitorAura::NotifyCursorChanged(const ui::Cursor& cursor) {
     return;
   }
 
-  // There is a bug (crbug.com/436993) in aura::GetCursorBitmap() such that it
-  // it would return a scale-factor-100 bitmap with a scale-factor-200 hotspot.
-  // This causes the hotspot to go out of range.  As a result, we would need to
-  // manually downscale the hotspot.
-  float scale_factor = cursor.image_scale_factor();
-  cursor_hotspot.SetPoint(cursor_hotspot.x() / scale_factor,
-                          cursor_hotspot.y() / scale_factor);
-
-  if (cursor_hotspot.x() >= cursor_bitmap->width() ||
-      cursor_hotspot.y() >= cursor_bitmap->height()) {
-    LOG(WARNING) << "Cursor hotspot is out of bounds for type: "
-                 << static_cast<int>(cursor.type())
-                 << ".  Setting to (0,0) instead";
-    cursor_hotspot.SetPoint(0, 0);
-  }
-
   std::unique_ptr<webrtc::DesktopFrame> image(
       SkiaBitmapDesktopFrame::Create(std::move(cursor_bitmap)));
   std::unique_ptr<webrtc::MouseCursor> cursor_shape(new webrtc::MouseCursor(

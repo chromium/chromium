@@ -309,9 +309,10 @@ SkBitmap GetDefaultBitmap(const Cursor& cursor) {
                         cursor.image_scale_factor(), &resource_id, &hotspot)) {
     return SkBitmap();
   }
-  return *ResourceBundle::GetSharedInstance()
-              .GetImageSkiaNamed(resource_id)
-              ->bitmap();
+  return ResourceBundle::GetSharedInstance()
+      .GetImageSkiaNamed(resource_id)
+      ->GetRepresentation(cursor.image_scale_factor())
+      .GetBitmap();
 #endif
 }
 

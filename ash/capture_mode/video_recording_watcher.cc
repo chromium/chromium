@@ -79,23 +79,6 @@ gfx::PointF GetEventLocationInWindow(aura::Window* window,
   return location;
 }
 
-// Returns the hotspot location of the given |cursor|.
-gfx::PointF GetCursorHotspot(const ui::Cursor& cursor,
-                             float cursor_scale_factor) {
-  DCHECK_GE(cursor_scale_factor, 1.f);
-
-  // ui::GetCursorHotspot() returns a scale-factor-200 hotspot for a
-  // scale-factor-100 bitmap when the scale factor is not 1.f, causing the
-  // hotspot to be out of bounds of the bitmap dimensions. See
-  // https://crbug.com/436993.
-  gfx::PointF hotspot(ui::GetCursorHotspot(cursor));
-  if (cursor_scale_factor > 1.f &&
-      cursor.type() != ui::mojom::CursorType::kCustom) {
-    hotspot.Scale(1.f / cursor_scale_factor);
-  }
-  return hotspot;
-}
-
 // Returns the cursor overlay bounds as defined by the documentation of the
 // FrameSinkVideoCaptureOverlay. The bounds should be relative within the bounds
 // of the recorded frame sink (i.e. in the range [0.f, 1.f) for both cursor
@@ -657,11 +640,10 @@ void VideoRecordingWatcher::UpdateCursorOverlayNow(
   const gfx::NativeCursor cursor = GetCurrentCursor();
   DCHECK_NE(cursor.type(), ui::mojom::CursorType::kNull);
 
-  const float cursor_scale_factor = std::max(1.f, cursor.image_scale_factor());
   const SkBitmap cursor_image = ui::GetCursorBitmap(cursor);
   const gfx::RectF cursor_overlay_bounds = GetCursorOverlayBounds(
       window_being_recorded_, location,
-      GetCursorHotspot(cursor, cursor_scale_factor), cursor_image);
+      gfx::PointF(ui::GetCursorHotspot(cursor)), cursor_image);
 
   if (cursor != last_cursor_) {
     if (cursor_image.drawsNothing()) {
