@@ -398,11 +398,6 @@ gpu_win_builder(
 )
 
 gpu_win_builder(
-    name = "gpu-fyi-try-win7-amd-dqp-32",
-    pool = "luci.chromium.gpu.win7.amd.try",
-)
-
-gpu_win_builder(
     name = "gpu-fyi-try-win7-amd-rel-32",
     pool = "luci.chromium.gpu.win7.amd.try",
 )

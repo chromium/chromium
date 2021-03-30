@@ -4753,15 +4753,6 @@ ci.gpu_fyi_thin_tester(
 )
 
 ci.gpu_fyi_thin_tester(
-    name = "Win7 FYI dEQP Release (AMD)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|7|x86|AMD",
-        short_name = "dqp",
-    ),
-    triggered_by = ["GPU FYI Win dEQP Builder"],
-)
-
-ci.gpu_fyi_thin_tester(
     name = "Win7 FYI x64 Release (NVIDIA)",
     console_view_entry = consoles.console_view_entry(
         category = "Windows|7|x64|Nvidia",
@@ -4782,14 +4773,6 @@ ci.gpu_fyi_windows_builder(
     name = "GPU FYI Win Builder (dbg)",
     console_view_entry = consoles.console_view_entry(
         category = "Windows|Builder|Debug",
-        short_name = "x86",
-    ),
-)
-
-ci.gpu_fyi_windows_builder(
-    name = "GPU FYI Win dEQP Builder",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|Builder|dEQP",
         short_name = "x86",
     ),
 )

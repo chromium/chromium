@@ -163,17 +163,6 @@
       "use_goma": true
     }
   },
-  "gpu-fyi-try-win7-amd-dqp-32": {
-    "gn_args": {
-      "build_angle_deqp_tests": true,
-      "dcheck_always_on": true,
-      "is_component_build": true,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
   "gpu-fyi-try-win7-amd-rel-32": {
     "gn_args": {
       "build_angle_gles1_conform_tests": true,
