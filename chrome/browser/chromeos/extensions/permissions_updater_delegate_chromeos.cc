@@ -25,7 +25,7 @@ void PermissionsUpdaterDelegateChromeOS::InitializePermissions(
       chromeos::DeviceLocalAccountManagementPolicyProvider::IsWhitelisted(
           extension->id()) ||
       !(*granted_permissions)
-           ->HasAPIPermission(APIPermission::kClipboardRead)) {
+           ->HasAPIPermission(mojom::APIPermissionID::kClipboardRead)) {
     return;
   }
   // Revoke kClipboardRead permission (used in Public Sessions to secure

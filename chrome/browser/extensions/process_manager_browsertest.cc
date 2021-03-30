@@ -1183,7 +1183,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
             .AppendASCII("simple");
   const Extension* app = LoadAndLaunchApp(dir);
   EXPECT_TRUE(app->permissions_data()->HasAPIPermission(
-      extensions::APIPermission::kWebView));
+      extensions::mojom::APIPermissionID::kWebView));
 
   auto app_windows = AppWindowRegistry::Get(browser()->profile())
                          ->GetAppWindowsForApp(app->id());

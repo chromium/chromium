@@ -166,8 +166,7 @@ bool PermissionSet::IsEmpty() const {
   return apis().empty() && manifest_permissions().empty();
 }
 
-bool PermissionSet::HasAPIPermission(
-    APIPermission::ID id) const {
+bool PermissionSet::HasAPIPermission(APIPermissionID id) const {
   return apis().find(id) != apis().end();
 }
 
@@ -186,8 +185,7 @@ bool PermissionSet::CheckAPIPermission(APIPermissionID permission) const {
 bool PermissionSet::CheckAPIPermissionWithParam(
     APIPermissionID permission,
     const APIPermission::CheckParam* param) const {
-  APIPermissionSet::const_iterator iter =
-      apis().find(static_cast<APIPermission::ID>(permission));
+  APIPermissionSet::const_iterator iter = apis().find(permission);
   if (iter == apis().end())
     return false;
   return iter->Check(param);
@@ -242,11 +240,11 @@ PermissionSet::PermissionSet(const PermissionSet& other)
 
 void PermissionSet::InitImplicitPermissions() {
   // The downloads permission implies the internal version as well.
-  if (apis_.find(APIPermission::kDownloads) != apis_.end())
+  if (apis_.find(APIPermissionID::kDownloads) != apis_.end())
     apis_.insert(APIPermissionID::kDownloadsInternal);
 
   // The fileBrowserHandler permission implies the internal version as well.
-  if (apis_.find(APIPermission::kFileBrowserHandler) != apis_.end())
+  if (apis_.find(APIPermissionID::kFileBrowserHandler) != apis_.end())
     apis_.insert(APIPermissionID::kFileBrowserHandlerInternal);
 }
 

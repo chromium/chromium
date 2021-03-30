@@ -16,5 +16,5 @@ TEST_F(ChromeManifestTest, OldUnlimitedStoragePermission) {
                            extensions::mojom::ManifestLocation::kInternal,
                            extensions::Extension::NO_FLAGS);
   EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
-      extensions::APIPermission::kUnlimitedStorage));
+      extensions::mojom::APIPermissionID::kUnlimitedStorage));
 }

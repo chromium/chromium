@@ -368,7 +368,7 @@ TEST_F(RulesRegistryWithCacheTest, RulesPreservedAcrossRestart) {
                   ->enabled_extensions()
                   .Contains(extension->id()));
   EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
-      APIPermission::kDeclarativeWebRequest));
+      mojom::APIPermissionID::kDeclarativeWebRequest));
   env_.GetExtensionSystem()->SetReady();
 
   // 2. First run, adding a rule for the extension.

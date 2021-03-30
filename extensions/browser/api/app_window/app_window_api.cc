@@ -240,7 +240,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
       // Whitelisted IME extensions are allowed to use this API to create IME
       // specific windows to show accented characters or suggestions.
       if (!extension()->permissions_data()->HasAPIPermission(
-              APIPermission::kImeWindowEnabled)) {
+              mojom::APIPermissionID::kImeWindowEnabled)) {
         return RespondNow(
             Error(app_window_constants::kImeWindowMissingPermission));
       }
@@ -292,7 +292,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
             Error(app_window_constants::kAlphaEnabledWrongChannel));
       }
       if (!extension()->permissions_data()->HasAPIPermission(
-              APIPermission::kAlphaEnabled)) {
+              mojom::APIPermissionID::kAlphaEnabled)) {
         return RespondNow(
             Error(app_window_constants::kAlphaEnabledMissingPermission));
       }
@@ -319,7 +319,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
 
       if (create_params.always_on_top &&
           !extension()->permissions_data()->HasAPIPermission(
-              APIPermission::kAlwaysOnTopWindows)) {
+              mojom::APIPermissionID::kAlwaysOnTopWindows)) {
         return RespondNow(Error(app_window_constants::kAlwaysOnTopPermission));
       }
     }
@@ -377,7 +377,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
     }
 
     if (!extension()->permissions_data()->HasAPIPermission(
-            APIPermission::kLockScreen)) {
+            mojom::APIPermissionID::kLockScreen)) {
       return RespondNow(Error(
           app_window_constants::kLockScreenActionRequiresLockScreenPermission));
     }

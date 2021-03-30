@@ -451,7 +451,7 @@ void LaunchPlatformAppWithAction(
   CHECK(!action_data || !action_data->is_lock_screen_action ||
         !*action_data->is_lock_screen_action ||
         app->permissions_data()->HasAPIPermission(
-            extensions::APIPermission::kLockScreen))
+            extensions::mojom::APIPermissionID::kLockScreen))
       << "Launching lock screen action handler requires lockScreen permission.";
 
   scoped_refptr<PlatformAppPathLauncher> launcher =

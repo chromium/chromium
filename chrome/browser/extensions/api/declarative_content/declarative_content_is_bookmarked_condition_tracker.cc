@@ -25,7 +25,7 @@ const char kIsBookmarkedRequiresBookmarkPermission[] =
 
 bool HasBookmarkAPIPermission(const Extension* extension) {
   return extension->permissions_data()->HasAPIPermission(
-      APIPermission::kBookmark);
+      mojom::APIPermissionID::kBookmark);
 }
 
 }  // namespace

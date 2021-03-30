@@ -100,7 +100,7 @@ int NumberExtensionsUsingMediaGalleries(Profile* profile) {
     const extensions::PermissionsData* permissions_data =
         extension->permissions_data();
     if (permissions_data->HasAPIPermission(
-            extensions::APIPermission::kMediaGalleries)) {
+            extensions::mojom::APIPermissionID::kMediaGalleries)) {
       count++;
     }
   }

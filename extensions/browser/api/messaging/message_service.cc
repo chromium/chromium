@@ -395,7 +395,7 @@ void MessageService::OpenChannelToNativeApp(
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
   bool has_permission = extension->permissions_data()->HasAPIPermission(
-      APIPermission::kNativeMessaging);
+      mojom::APIPermissionID::kNativeMessaging);
   if (!has_permission) {
     opener_port->DispatchOnDisconnect(kMissingPermissionError);
     return;

@@ -488,7 +488,7 @@ bool ExtensionActionViewController::PageActionWantsToRun(
 bool ExtensionActionViewController::HasActiveTabAndCanAccess(
     const GURL& url) const {
   return extension_->permissions_data()->HasAPIPermission(
-             extensions::APIPermission::kActiveTab) &&
+             extensions::mojom::APIPermissionID::kActiveTab) &&
          !extension_->permissions_data()->IsRestrictedUrl(url,
                                                           /*error=*/nullptr) &&
          (!url.SchemeIsFile() || extensions::util::AllowFileAccess(

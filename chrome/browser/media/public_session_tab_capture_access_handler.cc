@@ -62,8 +62,8 @@ void PublicSessionTabCaptureAccessHandler::HandleRequest(
                      std::move(callback), base::RetainedRef(extension));
 
   extensions::permission_helper::HandlePermissionRequest(
-      *extension, {extensions::APIPermission::kTabCapture}, web_contents,
-      std::move(prompt_resolved_callback),
+      *extension, {extensions::mojom::APIPermissionID::kTabCapture},
+      web_contents, std::move(prompt_resolved_callback),
       extensions::permission_helper::PromptFactory());
 }
 

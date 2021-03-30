@@ -137,7 +137,7 @@ ContentSetting NotificationPermissionContext::GetPermissionStatusForExtension(
           .GetByID(origin.host());
 
   if (!extension || !extension->permissions_data()->HasAPIPermission(
-                        extensions::APIPermission::kNotifications)) {
+                        extensions::mojom::APIPermissionID::kNotifications)) {
     // The |extension| doesn't exist, or doesn't have the "notifications"
     // permission declared in their manifest
     return kDefaultSetting;

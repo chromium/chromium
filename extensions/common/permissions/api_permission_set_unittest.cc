@@ -22,15 +22,15 @@ TEST(APIPermissionSetTest, General) {
   apis.insert(APIPermissionID::kPower);
   apis.insert(APIPermissionID::kSerial);
 
-  EXPECT_EQ(apis.find(APIPermission::kPower)->id(), APIPermission::kPower);
-  EXPECT_TRUE(apis.find(APIPermission::kSocket) == apis.end());
+  EXPECT_EQ(apis.find(APIPermissionID::kPower)->id(), APIPermissionID::kPower);
+  EXPECT_TRUE(apis.find(APIPermissionID::kSocket) == apis.end());
 
   EXPECT_EQ(apis.size(), 5u);
 
-  EXPECT_EQ(apis.erase(APIPermission::kAudioCapture), 1u);
+  EXPECT_EQ(apis.erase(APIPermissionID::kAudioCapture), 1u);
   EXPECT_EQ(apis.size(), 4u);
 
-  EXPECT_EQ(apis.erase(APIPermission::kAudioCapture), 0u);
+  EXPECT_EQ(apis.erase(APIPermissionID::kAudioCapture), 0u);
   EXPECT_EQ(apis.size(), 4u);
 }
 

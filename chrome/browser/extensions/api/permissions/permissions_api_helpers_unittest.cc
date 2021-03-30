@@ -96,7 +96,8 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
     ASSERT_TRUE(unpack_result);
     EXPECT_TRUE(error.empty());
     EXPECT_EQ(1u, unpack_result->optional_apis.size());
-    EXPECT_TRUE(unpack_result->optional_apis.count(APIPermission::kTab));
+    EXPECT_TRUE(
+        unpack_result->optional_apis.count(mojom::APIPermissionID::kTab));
   }
 
   // The api permissions don't need to be present either.
@@ -303,14 +304,11 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_APISeparation) {
   EXPECT_TRUE(error.empty()) << error;
 
   EXPECT_EQ(1u, unpack_result->required_apis.size());
-  EXPECT_TRUE(unpack_result->required_apis.count(
-      static_cast<APIPermission::ID>(kRequired1)));
+  EXPECT_TRUE(unpack_result->required_apis.count(kRequired1));
   EXPECT_EQ(1u, unpack_result->optional_apis.size());
-  EXPECT_TRUE(unpack_result->optional_apis.count(
-      static_cast<APIPermission::ID>(kOptional1)));
+  EXPECT_TRUE(unpack_result->optional_apis.count(kOptional1));
   EXPECT_EQ(1u, unpack_result->unlisted_apis.size());
-  EXPECT_TRUE(unpack_result->unlisted_apis.count(
-      static_cast<APIPermission::ID>(kUnlisted1)));
+  EXPECT_TRUE(unpack_result->unlisted_apis.count(kUnlisted1));
 }
 
 // Tests that unpacking works correctly with wildcard schemes (which are
@@ -504,7 +502,7 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_UsbDevicePermission) {
   ASSERT_TRUE(unpack_result) << error;
 
   ASSERT_EQ(1U, unpack_result->optional_apis.size());
-  EXPECT_EQ(APIPermission::ID::kUsbDevice,
+  EXPECT_EQ(mojom::APIPermissionID::kUsbDevice,
             unpack_result->optional_apis.begin()->id());
   EXPECT_TRUE(unpack_result->optional_apis.begin()->Contains(
       usb_device_permission.get()));

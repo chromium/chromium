@@ -139,7 +139,7 @@ class PermissionsUpdaterTestDelegate : public PermissionsUpdater::Delegate {
     // Remove the cookie permission.
     APIPermissionSet api_permission_set =
         (*granted_permissions)->apis().Clone();
-    api_permission_set.erase(APIPermission::kCookie);
+    api_permission_set.erase(APIPermissionID::kCookie);
     granted_permissions->reset(new PermissionSet(
         std::move(api_permission_set), ManifestPermissionSet(), URLPatternSet(),
         URLPatternSet()));
@@ -225,7 +225,7 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
   {
     // In the second part of the test, we'll remove the permissions that we
     // just added except for 'notifications'.
-    apis.erase(APIPermission::kNotifications);
+    apis.erase(APIPermissionID::kNotifications);
     PermissionSet delta(apis.Clone(), ManifestPermissionSet(), hosts.Clone(),
                         URLPatternSet());
 
@@ -300,21 +300,22 @@ TEST_F(PermissionsUpdaterTest, RevokingPermissions) {
     // The extension should have the permission in its active permissions and
     // its granted permissions (stored in prefs). And, the permission should
     // be revokable.
-    EXPECT_TRUE(permissions->HasAPIPermission(APIPermission::kCookie));
+    EXPECT_TRUE(permissions->HasAPIPermission(APIPermissionID::kCookie));
     std::unique_ptr<const PermissionSet> granted_permissions =
         prefs->GetGrantedPermissions(extension->id());
-    EXPECT_TRUE(granted_permissions->HasAPIPermission(APIPermission::kCookie));
+    EXPECT_TRUE(
+        granted_permissions->HasAPIPermission(APIPermissionID::kCookie));
     EXPECT_TRUE(updater.GetRevokablePermissions(extension.get())
-                    ->HasAPIPermission(APIPermission::kCookie));
+                    ->HasAPIPermission(APIPermissionID::kCookie));
 
     // Repeat with "tabs".
     permissions_test_util::GrantOptionalPermissionsAndWaitForCompletion(
         profile(), *extension, *api_permission_set(APIPermissionID::kTab));
-    EXPECT_TRUE(permissions->HasAPIPermission(APIPermission::kTab));
+    EXPECT_TRUE(permissions->HasAPIPermission(APIPermissionID::kTab));
     granted_permissions = prefs->GetGrantedPermissions(extension->id());
-    EXPECT_TRUE(granted_permissions->HasAPIPermission(APIPermission::kTab));
+    EXPECT_TRUE(granted_permissions->HasAPIPermission(APIPermissionID::kTab));
     EXPECT_TRUE(updater.GetRevokablePermissions(extension.get())
-                    ->HasAPIPermission(APIPermission::kTab));
+                    ->HasAPIPermission(APIPermissionID::kTab));
 
     // Remove the "tabs" permission. The extension should no longer have it
     // in its active or granted permissions, and it shouldn't be revokable.
@@ -322,16 +323,17 @@ TEST_F(PermissionsUpdaterTest, RevokingPermissions) {
     permissions_test_util::RevokeOptionalPermissionsAndWaitForCompletion(
         profile(), *extension, *api_permission_set(APIPermissionID::kTab),
         PermissionsUpdater::REMOVE_HARD);
-    EXPECT_FALSE(permissions->HasAPIPermission(APIPermission::kTab));
+    EXPECT_FALSE(permissions->HasAPIPermission(APIPermissionID::kTab));
     granted_permissions = prefs->GetGrantedPermissions(extension->id());
-    EXPECT_FALSE(granted_permissions->HasAPIPermission(APIPermission::kTab));
+    EXPECT_FALSE(granted_permissions->HasAPIPermission(APIPermissionID::kTab));
     EXPECT_FALSE(updater.GetRevokablePermissions(extension.get())
-                     ->HasAPIPermission(APIPermission::kTab));
-    EXPECT_TRUE(permissions->HasAPIPermission(APIPermission::kCookie));
+                     ->HasAPIPermission(APIPermissionID::kTab));
+    EXPECT_TRUE(permissions->HasAPIPermission(APIPermissionID::kCookie));
     granted_permissions = prefs->GetGrantedPermissions(extension->id());
-    EXPECT_TRUE(granted_permissions->HasAPIPermission(APIPermission::kCookie));
+    EXPECT_TRUE(
+        granted_permissions->HasAPIPermission(APIPermissionID::kCookie));
     EXPECT_TRUE(updater.GetRevokablePermissions(extension.get())
-                    ->HasAPIPermission(APIPermission::kCookie));
+                    ->HasAPIPermission(APIPermissionID::kCookie));
   }
 
   {
@@ -450,12 +452,12 @@ TEST_F(PermissionsUpdaterTest, Delegate) {
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(extension.get());
 
+  EXPECT_TRUE(
+      extension->permissions_data()->HasAPIPermission(APIPermissionID::kTab));
   EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
-      APIPermission::kTab));
-  EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
-      APIPermission::kManagement));
+      APIPermissionID::kManagement));
   EXPECT_FALSE(extension->permissions_data()->HasAPIPermission(
-      APIPermission::kCookie));
+      APIPermissionID::kCookie));
 
   // Unset the delegate.
   PermissionsUpdater::SetPlatformDelegate(nullptr);

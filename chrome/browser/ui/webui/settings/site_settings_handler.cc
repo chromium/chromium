@@ -136,10 +136,7 @@ void AddExceptionsGrantedByHostedApps(content::BrowserContext* context,
   for (extensions::ExtensionSet::const_iterator extension = extensions.begin();
        extension != extensions.end(); ++extension) {
     if (!(*extension)->is_hosted_app() ||
-        !(*extension)
-             ->permissions_data()
-             ->HasAPIPermission(
-                 static_cast<extensions::APIPermission::ID>(permission))) {
+        !(*extension)->permissions_data()->HasAPIPermission(permission)) {
       continue;
     }
 

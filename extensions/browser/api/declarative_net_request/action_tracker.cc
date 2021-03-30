@@ -53,10 +53,10 @@ bool ShouldRecordMatchedRule(content::BrowserContext* browser_context,
   const PermissionsData* permissions_data = extension->permissions_data();
 
   const bool has_feedback_permission = permissions_data->HasAPIPermission(
-      APIPermission::kDeclarativeNetRequestFeedback);
+      mojom::APIPermissionID::kDeclarativeNetRequestFeedback);
 
   const bool has_active_tab_permission =
-      permissions_data->HasAPIPermission(APIPermission::kActiveTab);
+      permissions_data->HasAPIPermission(mojom::APIPermissionID::kActiveTab);
 
   // Always record a matched rule if |extension| has the feedback permission or
   // the request is associated with a tab and |extension| has the activeTab

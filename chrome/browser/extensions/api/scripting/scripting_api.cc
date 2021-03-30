@@ -94,7 +94,7 @@ bool HasPermissionToInjectIntoFrame(const PermissionsData& permissions,
     const url::SchemeHostPort& tuple_or_precursor_tuple =
         origin.GetTupleOrPrecursorTupleIfOpaque();
     if (!tuple_or_precursor_tuple.IsValid()) {
-      if (permissions.HasAPIPermission(APIPermission::kTab)) {
+      if (permissions.HasAPIPermission(mojom::APIPermissionID::kTab)) {
         *error = ErrorUtils::FormatErrorMessage(
             manifest_errors::kCannotAccessPageWithUrl, url.spec());
       } else {

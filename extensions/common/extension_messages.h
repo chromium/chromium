@@ -34,6 +34,7 @@
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/message_bundle.h"
 #include "extensions/common/mojom/action_type.mojom-shared.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
@@ -402,8 +403,8 @@ struct ParamTraits<extensions::URLPatternSet> {
 };
 
 template <>
-struct ParamTraits<extensions::APIPermission::ID> {
-  typedef extensions::APIPermission::ID param_type;
+struct ParamTraits<extensions::mojom::APIPermissionID> {
+  typedef extensions::mojom::APIPermissionID param_type;
   static void Write(base::Pickle* m, const param_type& p);
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,

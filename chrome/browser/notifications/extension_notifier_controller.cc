@@ -39,7 +39,7 @@ std::vector<ash::NotifierMetadata> ExtensionNotifierController::GetNotifierList(
        iter != extension_set.end(); ++iter) {
     const extensions::Extension* extension = iter->get();
     if (!extension->permissions_data()->HasAPIPermission(
-            extensions::APIPermission::kNotifications)) {
+            extensions::mojom::APIPermissionID::kNotifications)) {
       continue;
     }
 

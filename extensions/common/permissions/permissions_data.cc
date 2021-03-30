@@ -22,6 +22,8 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace extensions {
 
 namespace {
@@ -119,7 +121,7 @@ bool PermissionsData::IsRestrictedUrl(const GURL& document_url,
       document_url.spec() != url::kAboutBlankURL &&
       document_url.spec() != url::kAboutSrcdocURL) {
     if (error) {
-      if (active_permissions().HasAPIPermission(APIPermission::kTab)) {
+      if (active_permissions().HasAPIPermission(APIPermissionID::kTab)) {
         *error = ErrorUtils::FormatErrorMessage(
             manifest_errors::kCannotAccessPageWithUrl, document_url.spec());
       } else {
@@ -253,7 +255,7 @@ void PermissionsData::ClearTabSpecificPermissions(int tab_id) const {
   tab_specific_permissions_.erase(tab_id);
 }
 
-bool PermissionsData::HasAPIPermission(APIPermission::ID permission) const {
+bool PermissionsData::HasAPIPermission(APIPermissionID permission) const {
   base::AutoLock auto_lock(runtime_lock_);
   return active_permissions_unsafe_->HasAPIPermission(permission);
 }
@@ -264,9 +266,8 @@ bool PermissionsData::HasAPIPermission(
   return active_permissions_unsafe_->HasAPIPermission(permission_name);
 }
 
-bool PermissionsData::HasAPIPermissionForTab(
-    int tab_id,
-    APIPermission::ID permission) const {
+bool PermissionsData::HasAPIPermissionForTab(int tab_id,
+                                             APIPermissionID permission) const {
   base::AutoLock auto_lock(runtime_lock_);
   if (active_permissions_unsafe_->HasAPIPermission(permission))
     return true;
@@ -276,7 +277,7 @@ bool PermissionsData::HasAPIPermissionForTab(
 }
 
 bool PermissionsData::CheckAPIPermissionWithParam(
-    mojom::APIPermissionID permission,
+    APIPermissionID permission,
     const APIPermission::CheckParam* param) const {
   base::AutoLock auto_lock(runtime_lock_);
   return active_permissions_unsafe_->CheckAPIPermissionWithParam(permission,
@@ -399,7 +400,7 @@ bool PermissionsData::CanCaptureVisiblePage(
 
     const PermissionSet* tab_permissions = GetTabSpecificPermissions(tab_id);
     has_active_tab = tab_permissions &&
-                     tab_permissions->HasAPIPermission(APIPermission::kTab);
+                     tab_permissions->HasAPIPermission(APIPermissionID::kTab);
 
     // Check if any of the host permissions match all urls. We don't use
     // URLPatternSet::ContainsPattern() here because a) the schemes may be
@@ -412,7 +413,7 @@ bool PermissionsData::CanCaptureVisiblePage(
     }
 
     has_page_capture = active_permissions_unsafe_->HasAPIPermission(
-        APIPermission::kPageCapture);
+        APIPermissionID::kPageCapture);
   }
   std::string access_error;
   if (capture_requirement == CaptureRequirement::kActiveTabOrAllUrls) {
@@ -547,7 +548,7 @@ PermissionsData::PageAccess PermissionsData::CanRunOnPage(
     return PageAccess::kWithheld;
 
   if (error) {
-    if (active_permissions_unsafe_->HasAPIPermission(APIPermission::kTab)) {
+    if (active_permissions_unsafe_->HasAPIPermission(APIPermissionID::kTab)) {
       *error = ErrorUtils::FormatErrorMessage(
           manifest_errors::kCannotAccessPageWithUrl, document_url.spec());
     } else {

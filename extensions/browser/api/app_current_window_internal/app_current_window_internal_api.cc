@@ -354,7 +354,7 @@ ExtensionFunction::ResponseAction
 AppCurrentWindowInternalSetAlwaysOnTopFunction::Run() {
   // TODO(devlin): Can't this be done with the feature files?
   if (!extension()->permissions_data()->HasAPIPermission(
-          extensions::APIPermission::kAlwaysOnTopWindows)) {
+          extensions::mojom::APIPermissionID::kAlwaysOnTopWindows)) {
     return RespondNow(Error(kAlwaysOnTopPermission));
   }
 

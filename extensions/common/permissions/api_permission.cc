@@ -22,7 +22,7 @@ class SimpleAPIPermission : public APIPermission {
 
   extensions::PermissionIDSet GetPermissions() const override {
     extensions::PermissionIDSet permissions;
-    permissions.insert(static_cast<extensions::mojom::APIPermissionID>(id()));
+    permissions.insert(id());
     return permissions;
   }
 
@@ -333,7 +333,7 @@ APIPermission::APIPermission(const APIPermissionInfo* info)
 
 APIPermission::~APIPermission() { }
 
-APIPermission::ID APIPermission::id() const {
+mojom::APIPermissionID APIPermission::id() const {
   return info()->id();
 }
 

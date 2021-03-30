@@ -418,12 +418,12 @@ void InstalledLoader::RecordExtensionsMetrics() {
     }
 
     if (extension->permissions_data()->HasAPIPermission(
-            APIPermission::kWebRequestBlocking)) {
+            mojom::APIPermissionID::kWebRequestBlocking)) {
       web_request_blocking_count++;
     }
 
     if (extension->permissions_data()->HasAPIPermission(
-            APIPermission::kWebRequest)) {
+            mojom::APIPermissionID::kWebRequest)) {
       web_request_count++;
     }
 

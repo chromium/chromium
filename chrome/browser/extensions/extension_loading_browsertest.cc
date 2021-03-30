@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
   ASSERT_TRUE(new_tab_extension);
 
   EXPECT_FALSE(new_tab_extension->permissions_data()->HasAPIPermission(
-      APIPermission::kNewTabPageOverride));
+      mojom::APIPermissionID::kNewTabPageOverride));
 
   // Navigate that tab to a non-extension URL to swap out the extension's
   // renderer.
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
   ASSERT_NE(nullptr, new_tab_extension);
 
   EXPECT_TRUE(new_tab_extension->permissions_data()->HasAPIPermission(
-      APIPermission::kNewTabPageOverride));
+      mojom::APIPermissionID::kNewTabPageOverride));
   EXPECT_THAT(new_tab_extension->version().components(),
               testing::ElementsAre(2));
 }

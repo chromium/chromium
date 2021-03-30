@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/pickle.h"
 #include "base/values.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 
 namespace extensions {
 
@@ -286,7 +287,7 @@ class APIPermission {
   virtual ~APIPermission();
 
   // Returns the id of this permission.
-  ID id() const;
+  mojom::APIPermissionID id() const;
 
   // Returns the name of this permission.
   const char* name() const;
@@ -412,14 +413,14 @@ class APIPermissionInfo {
   using APIPermissionConstructor =
       std::unique_ptr<APIPermission> (*)(const APIPermissionInfo*);
 
-  typedef std::set<APIPermission::ID> IDSet;
+  typedef std::set<mojom::APIPermissionID> IDSet;
 
   // This exists to allow aggregate initialization, so that default values
   // for flags, etc. can be omitted.
   // TODO(yoz): Simplify the way initialization is done. APIPermissionInfo
   // should be the simple data struct.
   struct InitInfo {
-    APIPermission::ID id;
+    mojom::APIPermissionID id;
     const char* name;
     int flags;
     APIPermissionInfo::APIPermissionConstructor constructor;
@@ -432,7 +433,7 @@ class APIPermissionInfo {
 
   int flags() const { return flags_; }
 
-  APIPermission::ID id() const { return id_; }
+  mojom::APIPermissionID id() const { return id_; }
 
   // Returns the name of this permission.
   const char* name() const { return name_; }
@@ -482,7 +483,7 @@ class APIPermissionInfo {
   explicit APIPermissionInfo(const InitInfo& info);
 
   const char* const name_;
-  const APIPermission::ID id_;
+  const mojom::APIPermissionID id_;
   const int flags_;
   const APIPermissionConstructor api_permission_constructor_;
 };

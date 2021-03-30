@@ -1088,14 +1088,8 @@ void ExtensionService::RecordPermissionMessagesHistogram(
 
   std::string permissions_histogram_name =
       base::StringPrintf("Extensions.Permissions_%s3", histogram_basename);
-  for (const PermissionID& id : permissions) {
-    // NOTE: APIPermission::kEnumBoundary is equivalent to
-    // "last_valid_value + 1", so we need to not use the two-argument version
-    // of UmaHistogramEnumeration (in addition to kEnumBoundary not being named
-    // kMaxValue).
-    base::UmaHistogramEnumeration(permissions_histogram_name, id.id(),
-                                  APIPermission::kEnumBoundary);
-  }
+  for (const PermissionID& id : permissions)
+    base::UmaHistogramEnumeration(permissions_histogram_name, id.id());
 }
 
 // TODO(michaelpg): Group with other ExtensionRegistrar::Delegate overrides

@@ -82,7 +82,7 @@ arc::mojom::IntentInfoPtr CreateIntentInfo(const GURL& clip_data_uri) {
 // lock screen.
 bool IsLockScreenEnabled(const extensions::Extension* app) {
   if (!app->permissions_data()->HasAPIPermission(
-          extensions::APIPermission::kLockScreen)) {
+          extensions::mojom::APIPermissionID::kLockScreen)) {
     return false;
   }
 

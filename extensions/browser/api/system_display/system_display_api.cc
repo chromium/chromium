@@ -152,7 +152,7 @@ bool OverscanTracker::RemoveObserverImpl(content::WebContents* web_contents) {
 bool HasAutotestPrivate(const ExtensionFunction& function) {
   return function.extension() &&
          function.extension()->permissions_data()->HasAPIPermission(
-             APIPermission::kAutoTestPrivate);
+             mojom::APIPermissionID::kAutoTestPrivate);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

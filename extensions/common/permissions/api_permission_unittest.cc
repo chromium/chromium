@@ -20,14 +20,15 @@
 namespace extensions {
 
 // Tests that the ExtensionPermission3 enum in enums.xml exactly matches the
-// APIPermission::ID enum in C++.
+// mojom::APIPermissionID enum in Mojom.
 TEST(ExtensionAPIPermissionTest, CheckEnums) {
   base::Optional<base::HistogramEnumEntryMap> enums =
       base::ReadEnumFromEnumsXml("ExtensionPermission3");
   ASSERT_TRUE(enums);
   // The number of enums in the histogram entry should be equal to the number of
   // enums in the C++ file.
-  EXPECT_EQ(enums->size(), APIPermission::kEnumBoundary);
+  EXPECT_EQ(enums->size(),
+            static_cast<size_t>(mojom::APIPermissionID::kMaxValue) + 1);
 
   base::FilePath src_root;
   ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root));
@@ -58,7 +59,7 @@ TEST(ExtensionAPIPermissionTest, ManagedSessionLoginWarningFlag) {
   PermissionsInfo* info = PermissionsInfo::GetInstance();
 
   constexpr APIPermissionInfo::InitInfo init_info[] = {
-      {APIPermission::kUnknown, "test permission",
+      {mojom::APIPermissionID::kUnknown, "test permission",
        APIPermissionInfo::kFlagImpliesFullURLAccess |
            APIPermissionInfo::
                kFlagDoesNotRequireManagedSessionFullLoginWarning}};

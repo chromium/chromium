@@ -152,7 +152,7 @@ ExtensionFunction::ResponseAction RulesFunction::Run() {
   // <webview> embedders use the declarativeWebRequest API via
   // <webview>.onRequest.
   if (web_view_instance_id && !extension_->permissions_data()->HasAPIPermission(
-                                  APIPermission::kWebView)) {
+                                  mojom::APIPermissionID::kWebView)) {
     return RespondNow(Error("Missing webview permission"));
   }
 

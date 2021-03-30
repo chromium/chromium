@@ -275,7 +275,7 @@ bool IsValidStateForWindowsCreateFunction(
 
 bool ExtensionHasLockedFullscreenPermission(const Extension* extension) {
   return extension->permissions_data()->HasAPIPermission(
-      APIPermission::kLockWindowFullscreenPrivate);
+      mojom::APIPermissionID::kLockWindowFullscreenPrivate);
 }
 
 std::unique_ptr<api::tabs::Tab> CreateTabObjectHelper(
@@ -1115,7 +1115,7 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
         // not matched.
         if (!extension_->permissions_data()->HasAPIPermissionForTab(
                 ExtensionTabUtil::GetTabId(web_contents),
-                APIPermission::kTab) &&
+                mojom::APIPermissionID::kTab) &&
             !extension_->permissions_data()->HasHostPermission(
                 web_contents->GetURL())) {
           continue;
@@ -2206,7 +2206,7 @@ bool ExecuteCodeInTabFunction::CanExecuteScriptOnPage(std::string* error) {
                                                       execute_tab_id_, error)) {
     if (is_about_url &&
         extension()->permissions_data()->active_permissions().HasAPIPermission(
-            APIPermission::kTab)) {
+            mojom::APIPermissionID::kTab)) {
       *error = ErrorUtils::FormatErrorMessage(
           manifest_errors::kCannotAccessAboutUrl,
           rfh->GetLastCommittedURL().spec(),

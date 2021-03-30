@@ -69,10 +69,10 @@ void UpdateJobFileInfo(std::unique_ptr<extensions::PrinterProviderPrintJob> job,
 
 bool HasUsbPrinterProviderPermissions(const Extension* extension) {
   return extension->permissions_data() &&
-        extension->permissions_data()->HasAPIPermission(
-            extensions::APIPermission::kPrinterProvider) &&
-        extension->permissions_data()->HasAPIPermission(
-            extensions::APIPermission::kUsb);
+         extension->permissions_data()->HasAPIPermission(
+             extensions::mojom::APIPermissionID::kPrinterProvider) &&
+         extension->permissions_data()->HasAPIPermission(
+             extensions::mojom::APIPermissionID::kUsb);
 }
 
 std::string GenerateProvisionalUsbPrinterId(

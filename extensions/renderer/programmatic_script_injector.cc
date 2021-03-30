@@ -181,7 +181,7 @@ bool ProgrammaticScriptInjector::CanShowUrlInError() const {
   if (!extension)
     return false;
   return extension->permissions_data()->active_permissions().HasAPIPermission(
-      APIPermission::kTab);
+      mojom::APIPermissionID::kTab);
 }
 
 void ProgrammaticScriptInjector::Finish(const std::string& error) {

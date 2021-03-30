@@ -8,6 +8,8 @@
 
 #include "chrome/common/apps/platform_apps/media_galleries_permission.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace chrome_apps_api_permissions {
 namespace {
 
@@ -21,22 +23,22 @@ std::unique_ptr<extensions::APIPermission> CreateAPIPermission(
 // add the corresponding permission message rule to
 // ChromePermissionMessageProvider::GetPermissionMessages as well.
 constexpr extensions::APIPermissionInfo::InitInfo permissions_to_register[] = {
-    {extensions::APIPermission::kArcAppsPrivate, "arcAppsPrivate"},
-    {extensions::APIPermission::kBrowser, "browser",
+    {APIPermissionID::kArcAppsPrivate, "arcAppsPrivate"},
+    {APIPermissionID::kBrowser, "browser",
      extensions::APIPermissionInfo::
          kFlagDoesNotRequireManagedSessionFullLoginWarning},
-    {extensions::APIPermission::kFirstRunPrivate, "firstRunPrivate",
+    {APIPermissionID::kFirstRunPrivate, "firstRunPrivate",
      extensions::APIPermissionInfo::kFlagCannotBeOptional},
-    {extensions::APIPermission::kMusicManagerPrivate, "musicManagerPrivate",
+    {APIPermissionID::kMusicManagerPrivate, "musicManagerPrivate",
      extensions::APIPermissionInfo::kFlagCannotBeOptional},
-    {extensions::APIPermission::kMediaGalleries, "mediaGalleries",
+    {APIPermissionID::kMediaGalleries, "mediaGalleries",
      extensions::APIPermissionInfo::kFlagNone,
      &CreateAPIPermission<chrome_apps::MediaGalleriesPermission>},
-    {extensions::APIPermission::kPointerLock, "pointerLock",
+    {APIPermissionID::kPointerLock, "pointerLock",
      extensions::APIPermissionInfo::
          kFlagDoesNotRequireManagedSessionFullLoginWarning},
-    {extensions::APIPermission::kSyncFileSystem, "syncFileSystem"},
-    {extensions::APIPermission::kWebstoreWidgetPrivate, "webstoreWidgetPrivate",
+    {APIPermissionID::kSyncFileSystem, "syncFileSystem"},
+    {APIPermissionID::kWebstoreWidgetPrivate, "webstoreWidgetPrivate",
      extensions::APIPermissionInfo::kFlagCannotBeOptional},
 };
 

@@ -1071,8 +1071,7 @@ bool URLHasExtensionPermission(extensions::ProcessMap* process_map,
   const Extension* extension =
       registry->enabled_extensions().GetExtensionOrAppByURL(url);
   return extension &&
-         extension->permissions_data()->HasAPIPermission(
-             static_cast<APIPermission::ID>(permission)) &&
+         extension->permissions_data()->HasAPIPermission(permission) &&
          process_map->Contains(extension->id(), render_process_id);
 }
 

@@ -117,7 +117,7 @@ ExtensionFunction::ResponseAction PageCaptureSaveAsMHTMLFunction::Run() {
     // This Unretained is safe because this object is Released() in
     // OnMessageReceived which gets called at some point after callback is run.
     permission_helper::HandlePermissionRequest(
-        *extension(), {APIPermission::kPageCapture}, web_contents,
+        *extension(), {mojom::APIPermissionID::kPageCapture}, web_contents,
         base::BindOnce(
             &PageCaptureSaveAsMHTMLFunction::ResolvePermissionRequest,
             base::Unretained(this)),

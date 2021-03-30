@@ -34,8 +34,9 @@ bool GetProvidingExtensionInfo(const extensions::ExtensionId& extension_id,
 
   const extensions::Extension* const extension = registry->GetExtensionById(
       extension_id, extensions::ExtensionRegistry::ENABLED);
-  if (!extension || !extension->permissions_data()->HasAPIPermission(
-                        extensions::APIPermission::kFileSystemProvider)) {
+  if (!extension ||
+      !extension->permissions_data()->HasAPIPermission(
+          extensions::mojom::APIPermissionID::kFileSystemProvider)) {
     return false;
   }
 

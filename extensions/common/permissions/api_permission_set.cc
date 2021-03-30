@@ -22,10 +22,9 @@ namespace errors = manifest_errors;
 namespace {
 
 // Helper object that is implicitly constructible from both a PermissionID and
-// from an APIPermission::ID.
+// from an mojom::APIPermissionID.
 struct PermissionIDCompareHelper {
-  PermissionIDCompareHelper(const PermissionID& id)
-      : id(static_cast<APIPermissionID>(id.id())) {}
+  PermissionIDCompareHelper(const PermissionID& id) : id(id.id()) {}
   PermissionIDCompareHelper(const APIPermissionID id) : id(id) {}
 
   APIPermissionID id;
@@ -196,12 +195,11 @@ bool APIPermissionSet::ParseFromJSON(
   return true;
 }
 
-PermissionID::PermissionID(APIPermission::ID id)
-    : std::pair<APIPermission::ID, std::u16string>(id, std::u16string()) {}
+PermissionID::PermissionID(APIPermissionID id)
+    : std::pair<APIPermissionID, std::u16string>(id, std::u16string()) {}
 
-PermissionID::PermissionID(APIPermission::ID id,
-                           const std::u16string& parameter)
-    : std::pair<APIPermission::ID, std::u16string>(id, parameter) {}
+PermissionID::PermissionID(APIPermissionID id, const std::u16string& parameter)
+    : std::pair<APIPermissionID, std::u16string>(id, parameter) {}
 
 PermissionID::~PermissionID() {
 }
@@ -210,7 +208,7 @@ PermissionIDSet::PermissionIDSet() {
 }
 
 PermissionIDSet::PermissionIDSet(
-    std::initializer_list<APIPermission::ID> permissions) {
+    std::initializer_list<APIPermissionID> permissions) {
   for (auto permission : permissions) {
     permissions_.insert(PermissionID(permission));
   }
@@ -227,8 +225,7 @@ void PermissionIDSet::insert(APIPermissionID permission_id) {
 
 void PermissionIDSet::insert(APIPermissionID permission_id,
                              const std::u16string& permission_detail) {
-  permissions_.insert(PermissionID(
-      static_cast<APIPermission::ID>(permission_id), permission_detail));
+  permissions_.insert(PermissionID(permission_id, permission_detail));
 }
 
 void PermissionIDSet::InsertAll(const PermissionIDSet& permission_set) {
@@ -238,11 +235,10 @@ void PermissionIDSet::InsertAll(const PermissionIDSet& permission_set) {
 }
 
 void PermissionIDSet::erase(APIPermissionID permission_id) {
-  auto lower_bound = permissions_.lower_bound(
-      PermissionID(static_cast<APIPermission::ID>(permission_id)));
+  auto lower_bound = permissions_.lower_bound(PermissionID(permission_id));
   auto upper_bound = lower_bound;
   while (upper_bound != permissions_.end() &&
-         upper_bound->id() == static_cast<APIPermission::ID>(permission_id)) {
+         upper_bound->id() == permission_id) {
     ++upper_bound;
   }
   permissions_.erase(lower_bound, upper_bound);
@@ -263,8 +259,7 @@ bool PermissionIDSet::ContainsID(PermissionID permission_id) const {
 }
 
 bool PermissionIDSet::ContainsID(APIPermissionID permission_id) const {
-  return ContainsID(
-      PermissionID(static_cast<APIPermission::ID>(permission_id)));
+  return ContainsID(PermissionID(permission_id));
 }
 
 bool PermissionIDSet::ContainsAllIDs(
@@ -297,10 +292,8 @@ bool PermissionIDSet::ContainsAnyID(const PermissionIDSet& other) const {
 PermissionIDSet PermissionIDSet::GetAllPermissionsWithID(
     APIPermissionID permission_id) const {
   PermissionIDSet subset;
-  auto it = permissions_.lower_bound(
-      PermissionID(static_cast<APIPermission::ID>(permission_id)));
-  while (it != permissions_.end() &&
-         it->id() == static_cast<APIPermission::ID>(permission_id)) {
+  auto it = permissions_.lower_bound(PermissionID(permission_id));
+  while (it != permissions_.end() && it->id() == permission_id) {
     subset.permissions_.insert(*it);
     ++it;
   }
@@ -311,8 +304,7 @@ PermissionIDSet PermissionIDSet::GetAllPermissionsWithIDs(
     const std::set<APIPermissionID>& permission_ids) const {
   PermissionIDSet subset;
   for (const auto& permission : permissions_) {
-    if (base::Contains(permission_ids,
-                       static_cast<APIPermissionID>(permission.id()))) {
+    if (base::Contains(permission_ids, permission.id())) {
       subset.permissions_.insert(permission);
     }
   }

@@ -13,6 +13,8 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace {
 
 // This is a short-term solution to grant camera and/or microphone access to
@@ -61,8 +63,8 @@ bool ExtensionMediaAccessHandler::CheckMediaAccessPermission(
     const extensions::Extension* extension) {
   return extension->permissions_data()->HasAPIPermission(
       type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE
-          ? extensions::APIPermission::kAudioCapture
-          : extensions::APIPermission::kVideoCapture);
+          ? APIPermissionID::kAudioCapture
+          : APIPermissionID::kVideoCapture);
 }
 
 void ExtensionMediaAccessHandler::HandleRequest(
@@ -76,14 +78,14 @@ void ExtensionMediaAccessHandler::HandleRequest(
       request.audio_type ==
           blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
       extension->permissions_data()->HasAPIPermission(
-          extensions::APIPermission::kAudioCapture) &&
+          APIPermissionID::kAudioCapture) &&
       GetDevicePolicy(profile, extension->url(), prefs::kAudioCaptureAllowed,
                       prefs::kAudioCaptureAllowedUrls) != ALWAYS_DENY;
   bool video_allowed =
       request.video_type ==
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE &&
       extension->permissions_data()->HasAPIPermission(
-          extensions::APIPermission::kVideoCapture) &&
+          APIPermissionID::kVideoCapture) &&
       GetDevicePolicy(profile, extension->url(), prefs::kVideoCaptureAllowed,
                       prefs::kVideoCaptureAllowedUrls) != ALWAYS_DENY;
 

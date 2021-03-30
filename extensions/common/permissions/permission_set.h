@@ -80,7 +80,7 @@ class PermissionSet {
   bool IsEmpty() const;
 
   // Returns true if the set has the specified API permission.
-  bool HasAPIPermission(APIPermission::ID permission) const;
+  bool HasAPIPermission(mojom::APIPermissionID permission) const;
 
   // Returns true if the |extension| explicitly requests access to the given
   // |permission_name|. Note this does not include APIs without no corresponding

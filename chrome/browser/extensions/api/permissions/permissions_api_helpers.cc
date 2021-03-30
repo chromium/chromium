@@ -108,8 +108,7 @@ bool UnpackAPIPermissions(const std::vector<std::string>& permissions_input,
                                                 permission_str);
         return false;
       }
-      apis.insert(static_cast<extensions::mojom::APIPermissionID>(
-          permission_info->id()));
+      apis.insert(permission_info->id());
     }
   }
 

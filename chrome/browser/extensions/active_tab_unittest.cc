@@ -70,6 +70,7 @@ using base::DictionaryValue;
 using base::ListValue;
 using content::BrowserThread;
 using content::NavigationController;
+using extensions::mojom::APIPermissionID;
 
 namespace extensions {
 namespace {
@@ -218,14 +219,14 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
   bool HasTabsPermission(const scoped_refptr<const Extension>& extension,
                          int tab_id) {
     return extension->permissions_data()->HasAPIPermissionForTab(
-        tab_id, APIPermission::kTab);
+        tab_id, APIPermissionID::kTab);
   }
 
   bool IsGrantedForTab(const Extension* extension,
                        const content::WebContents* web_contents) {
     return extension->permissions_data()->HasAPIPermissionForTab(
         sessions::SessionTabHelper::IdForTab(web_contents).id(),
-        APIPermission::kTab);
+        APIPermissionID::kTab);
   }
 
   // TODO(justinlin): Remove when tabCapture is moved to stable.
@@ -473,11 +474,11 @@ TEST_F(ActiveTabTest, ChromeUrlGrants) {
   const PermissionsData* permissions_data =
       extension_with_tab_capture->permissions_data();
   EXPECT_TRUE(permissions_data->HasAPIPermissionForTab(
-      tab_id(), APIPermission::kTabCaptureForTab));
+      tab_id(), APIPermissionID::kTabCaptureForTab));
 
   EXPECT_TRUE(IsBlocked(extension_with_tab_capture, internal, tab_id() + 1));
   EXPECT_FALSE(permissions_data->HasAPIPermissionForTab(
-      tab_id() + 1, APIPermission::kTabCaptureForTab));
+      tab_id() + 1, APIPermissionID::kTabCaptureForTab));
 }
 
 class ActiveTabDelegateTest : public ActiveTabTest {

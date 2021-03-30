@@ -61,22 +61,22 @@ size_t IndexOf(const PermissionMessages& warnings, const std::string& warning) {
 
 PermissionIDSet MakePermissionIDSet(APIPermissionID id1, APIPermissionID id2) {
   PermissionIDSet set;
-  set.insert(static_cast<APIPermissionID>(id1));
-  set.insert(static_cast<APIPermissionID>(id2));
+  set.insert(id1);
+  set.insert(id2);
   return set;
 }
 
 PermissionIDSet MakePermissionIDSet(const APIPermissionSet& permissions) {
   PermissionIDSet set;
   for (const APIPermission* permission : permissions)
-    set.insert(static_cast<APIPermissionID>(permission->id()));
+    set.insert(permission->id());
   return set;
 }
 
 std::string PermissionIDsToString(const PermissionIDSet& ids) {
   std::vector<std::string> strs;
   for (const PermissionID& id : ids)
-    strs.push_back(base::NumberToString(id.id()));
+    strs.push_back(base::NumberToString(static_cast<int>(id.id())));
   return base::StringPrintf("[ %s ]", base::JoinString(strs, ", ").c_str());
 }
 
@@ -125,9 +125,8 @@ TEST(PermissionsTest, GetByID) {
 // Tests that GetByName works with normal permission names and aliases.
 TEST(PermissionsTest, GetByName) {
   PermissionsInfo* info = PermissionsInfo::GetInstance();
-  EXPECT_EQ(APIPermission::kTab, info->GetByName("tabs")->id());
-  EXPECT_EQ(APIPermission::kManagement,
-            info->GetByName("management")->id());
+  EXPECT_EQ(APIPermissionID::kTab, info->GetByName("tabs")->id());
+  EXPECT_EQ(APIPermissionID::kManagement, info->GetByName("management")->id());
   EXPECT_FALSE(info->GetByName("alsdkfjasldkfj"));
 }
 
@@ -137,8 +136,8 @@ TEST(PermissionsTest, GetAll) {
   APIPermissionSet apis = info->GetAll();
   for (const auto* api : apis) {
     // Make sure only the valid permission IDs get returned.
-    EXPECT_NE(APIPermission::kInvalid, api->id());
-    EXPECT_NE(APIPermission::kUnknown, api->id());
+    EXPECT_NE(APIPermissionID::kInvalid, api->id());
+    EXPECT_NE(APIPermissionID::kUnknown, api->id());
     count++;
   }
   EXPECT_EQ(count, info->get_permission_count());
@@ -170,16 +169,16 @@ TEST(PermissionsTest, Aliases) {
   // tabs: tabs, windows
   std::string tabs_name = "tabs";
   EXPECT_EQ(tabs_name, info->GetByID(APIPermissionID::kTab)->name());
-  EXPECT_EQ(APIPermission::kTab, info->GetByName("tabs")->id());
-  EXPECT_EQ(APIPermission::kTab, info->GetByName("windows")->id());
+  EXPECT_EQ(APIPermissionID::kTab, info->GetByName("tabs")->id());
+  EXPECT_EQ(APIPermissionID::kTab, info->GetByName("windows")->id());
 
   // unlimitedStorage: unlimitedStorage, unlimited_storage
   std::string storage_name = "unlimitedStorage";
   EXPECT_EQ(storage_name,
             info->GetByID(APIPermissionID::kUnlimitedStorage)->name());
-  EXPECT_EQ(APIPermission::kUnlimitedStorage,
+  EXPECT_EQ(APIPermissionID::kUnlimitedStorage,
             info->GetByName("unlimitedStorage")->id());
-  EXPECT_EQ(APIPermission::kUnlimitedStorage,
+  EXPECT_EQ(APIPermissionID::kUnlimitedStorage,
             info->GetByName("unlimited_storage")->id());
 }
 
@@ -889,7 +888,7 @@ TEST(PermissionsTest, PermissionMessages) {
     EXPECT_TRUE(permission_info);
 
     PermissionIDSet id;
-    id.insert(static_cast<APIPermissionID>(permission_info->id()));
+    id.insert(permission_info->id());
     bool has_message = !provider->GetPermissionMessages(id).empty();
     bool should_have_message = !skip.count(permission->id());
     EXPECT_EQ(should_have_message, has_message) << permission_info->name();
@@ -1131,7 +1130,7 @@ TEST(PermissionsTest, GetWarningMessages_AudioVideo) {
   size_t combined_size = warnings.size();
 
   // Just audio present.
-  set.apis_.erase(APIPermission::kVideoCapture);
+  set.apis_.erase(APIPermissionID::kVideoCapture);
   EXPECT_TRUE(VerifyHasPermissionMessage(set, extension->GetType(), kAudio));
   EXPECT_FALSE(VerifyHasPermissionMessage(set, extension->GetType(), kVideo));
   EXPECT_FALSE(VerifyHasPermissionMessage(set, extension->GetType(), kBoth));
@@ -1141,7 +1140,7 @@ TEST(PermissionsTest, GetWarningMessages_AudioVideo) {
   EXPECT_EQ(combined_index, IndexOf(warnings2, kAudio));
 
   // Just video present.
-  set.apis_.erase(APIPermission::kAudioCapture);
+  set.apis_.erase(APIPermissionID::kAudioCapture);
   set.apis_.insert(APIPermissionID::kVideoCapture);
   EXPECT_FALSE(VerifyHasPermissionMessage(set, extension->GetType(), kAudio));
   EXPECT_TRUE(VerifyHasPermissionMessage(set, extension->GetType(), kVideo));
@@ -1230,8 +1229,8 @@ TEST(PermissionsTest, GetWarningMessages_Serial) {
       LoadManifest("permissions", "serial.json");
 
   EXPECT_TRUE(extension->is_platform_app());
-  EXPECT_TRUE(
-      extension->permissions_data()->HasAPIPermission(APIPermission::kSerial));
+  EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
+      APIPermissionID::kSerial));
   EXPECT_TRUE(VerifyOnePermissionMessage(extension->permissions_data(),
                                          "Access your serial devices"));
 }
@@ -1242,8 +1241,8 @@ TEST(PermissionsTest, GetWarningMessages_Socket_AnyHost) {
   scoped_refptr<Extension> extension =
       LoadManifest("permissions", "socket_any_host.json");
   EXPECT_TRUE(extension->is_platform_app());
-  EXPECT_TRUE(
-      extension->permissions_data()->HasAPIPermission(APIPermission::kSocket));
+  EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
+      APIPermissionID::kSocket));
   EXPECT_TRUE(VerifyOnePermissionMessage(
       extension->permissions_data(),
       "Exchange data with any device on the local network or internet"));
@@ -1255,8 +1254,8 @@ TEST(PermissionsTest, GetWarningMessages_Socket_OneDomainTwoHostnames) {
   scoped_refptr<Extension> extension =
       LoadManifest("permissions", "socket_one_domain_two_hostnames.json");
   EXPECT_TRUE(extension->is_platform_app());
-  EXPECT_TRUE(
-      extension->permissions_data()->HasAPIPermission(APIPermission::kSocket));
+  EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
+      APIPermissionID::kSocket));
 
   // Verify the warnings, including support for unicode characters, the fact
   // that domain host warnings come before specific host warnings, and the fact
@@ -1277,8 +1276,8 @@ TEST(PermissionsTest, GetWarningMessages_Socket_TwoDomainsOneHostname) {
   scoped_refptr<Extension> extension =
       LoadManifest("permissions", "socket_two_domains_one_hostname.json");
   EXPECT_TRUE(extension->is_platform_app());
-  EXPECT_TRUE(
-      extension->permissions_data()->HasAPIPermission(APIPermission::kSocket));
+  EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
+      APIPermissionID::kSocket));
 
   // Verify the warnings, including the fact that domain host warnings come
   // before specific host warnings and the fact that domains and hostnames are
@@ -1767,7 +1766,7 @@ TEST(PermissionsTest, SyncFileSystemPermission) {
   apis.insert(APIPermissionID::kSyncFileSystem);
   EXPECT_TRUE(extension->is_platform_app());
   EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
-      APIPermission::kSyncFileSystem));
+      APIPermissionID::kSyncFileSystem));
   EXPECT_TRUE(
       VerifyOnePermissionMessage(extension->permissions_data(),
                                  "Store data in your Google Drive account"));

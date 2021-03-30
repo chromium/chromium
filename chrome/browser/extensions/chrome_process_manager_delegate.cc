@@ -99,7 +99,7 @@ bool ChromeProcessManagerDelegate::IsExtensionBackgroundPageAllowed(
   if (chromeos::ProfileHelper::IsLockScreenAppProfile(profile) &&
       !profile->IsOffTheRecord()) {
     return extension.permissions_data()->HasAPIPermission(
-        APIPermission::kLockScreen);
+        mojom::APIPermissionID::kLockScreen);
   }
 #endif
 

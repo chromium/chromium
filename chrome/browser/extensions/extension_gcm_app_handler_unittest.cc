@@ -312,8 +312,8 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
             .SetPath(temp_dir_.GetPath())
             .SetID("ldnnhddmnhbkjipkidpdiheffobcpfmf")
             .Build();
-    EXPECT_TRUE(
-        extension->permissions_data()->HasAPIPermission(APIPermission::kGcm));
+    EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
+        mojom::APIPermissionID::kGcm));
 
     return extension;
   }

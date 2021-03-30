@@ -171,9 +171,9 @@ void RulesCacheDelegate::ReadRulesForInstalledExtensions() {
          ++i) {
       bool needs_apis_storing_rules =
           (*i)->permissions_data()->HasAPIPermission(
-              APIPermission::kDeclarativeContent) ||
+              mojom::APIPermissionID::kDeclarativeContent) ||
           (*i)->permissions_data()->HasAPIPermission(
-              APIPermission::kDeclarativeWebRequest);
+              mojom::APIPermissionID::kDeclarativeWebRequest);
       bool respects_off_the_record =
           !(browser_context_->IsOffTheRecord()) ||
           extension_prefs->IsIncognitoEnabled((*i)->id());

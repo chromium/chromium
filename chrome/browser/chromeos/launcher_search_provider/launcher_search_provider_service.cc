@@ -184,7 +184,7 @@ void Service::CacheListenerExtensionIds() {
     const extensions::PermissionsData* permission_data =
         extension->permissions_data();
     const bool has_permission = permission_data->HasAPIPermission(
-        extensions::APIPermission::kLauncherSearchProvider);
+        extensions::mojom::APIPermissionID::kLauncherSearchProvider);
     if (has_permission)
       cached_listener_extension_ids_->insert(extension->id());
   }

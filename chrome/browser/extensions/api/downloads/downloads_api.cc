@@ -79,6 +79,7 @@ using content::BrowserThread;
 using content::DownloadManager;
 using download::DownloadItem;
 using download::DownloadPathReservationTracker;
+using extensions::mojom::APIPermissionID;
 
 namespace download_extension_errors {
 
@@ -1432,7 +1433,7 @@ ExtensionFunction::ResponseAction DownloadsOpenFunction::Run() {
       Fault(download_item->GetState() != DownloadItem::COMPLETE,
             download_extension_errors::kNotComplete, &error) ||
       Fault(!extension()->permissions_data()->HasAPIPermission(
-                APIPermission::kDownloadsOpen),
+                APIPermissionID::kDownloadsOpen),
             download_extension_errors::kOpenPermission, &error)) {
     return RespondNow(Error(std::move(error)));
   }
@@ -1449,7 +1450,7 @@ ExtensionFunction::ResponseAction DownloadsOpenFunction::Run() {
   if (GetSenderWebContents() &&
       GetSenderWebContents()->HasRecentInteractiveInputEvent() &&
       !extension()->permissions_data()->HasAPIPermission(
-          APIPermission::kDebugger)) {
+          APIPermissionID::kDebugger)) {
     download_item->OpenDownload();
     return RespondNow(NoArguments());
   }
@@ -1496,7 +1497,7 @@ ExtensionFunction::ResponseAction DownloadsSetShelfEnabledFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
   // TODO(devlin): Solve this with the feature system.
   if (!extension()->permissions_data()->HasAPIPermission(
-          APIPermission::kDownloadsShelf)) {
+          APIPermissionID::kDownloadsShelf)) {
     return RespondNow(Error(download_extension_errors::kShelfPermission));
   }
 

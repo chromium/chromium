@@ -50,8 +50,7 @@ bool IsExtensionWithPermissionOrSuggestInConsole(
     mojom::APIPermissionID permission,
     const Extension* extension,
     content::RenderFrameHost* render_frame_host) {
-  if (extension && extension->permissions_data()->HasAPIPermission(
-                       static_cast<APIPermission::ID>(permission)))
+  if (extension && extension->permissions_data()->HasAPIPermission(permission))
     return true;
 
   if (extension && render_frame_host) {

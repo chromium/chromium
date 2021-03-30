@@ -71,7 +71,7 @@ void LogLoadRulesetResult(LoadRulesetResult result) {
 
 bool HasAPIPermission(const Extension& extension) {
   return extension.permissions_data()->HasAPIPermission(
-      APIPermission::kDeclarativeNetRequest);
+      mojom::APIPermissionID::kDeclarativeNetRequest);
 }
 
 // Returns whether the extension's allocation should be released. This would

@@ -210,16 +210,16 @@ class USBDevicesFormatter : public ChromePermissionMessageFormatter {
     const PermissionID& permission = *permissions.begin();
     std::u16string msg;
     switch (permission.id()) {
-      case APIPermission::kUsbDevice:
+      case APIPermissionID::kUsbDevice:
         msg = l10n_util::GetStringFUTF16(
             IDS_EXTENSION_PROMPT_WARNING_USB_DEVICE, permission.parameter());
         break;
-      case APIPermission::kUsbDeviceUnknownProduct:
+      case APIPermissionID::kUsbDeviceUnknownProduct:
         msg = l10n_util::GetStringFUTF16(
             IDS_EXTENSION_PROMPT_WARNING_USB_DEVICE_UNKNOWN_PRODUCT,
             permission.parameter());
         break;
-      case APIPermission::kUsbDeviceUnknownVendor:
+      case APIPermissionID::kUsbDeviceUnknownVendor:
         msg = l10n_util::GetStringUTF16(
             IDS_EXTENSION_PROMPT_WARNING_USB_DEVICE_UNKNOWN_VENDOR);
         break;

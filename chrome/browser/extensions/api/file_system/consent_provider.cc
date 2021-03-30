@@ -257,7 +257,7 @@ bool ConsentProviderDelegate::IsAllowlistedComponent(
 bool ConsentProviderDelegate::HasRequestDownloadsPermission(
     const Extension& extension) {
   return extension.permissions_data()->HasAPIPermission(
-      APIPermission::kFileSystemRequestDownloads);
+      mojom::APIPermissionID::kFileSystemRequestDownloads);
 }
 
 }  // namespace file_system_api

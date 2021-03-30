@@ -59,6 +59,7 @@
 
 using content::NavigationEntry;
 using content::WebContents;
+using extensions::mojom::APIPermissionID;
 
 namespace extensions {
 
@@ -151,11 +152,11 @@ ExtensionTabUtil::ScrubTabBehaviorType GetScrubTabBehaviorImpl(
   if (extension) {
     bool api_permission = false;
     if (tab_id == api::tabs::TAB_ID_NONE) {
-      api_permission =
-          extension->permissions_data()->HasAPIPermission(APIPermission::kTab);
+      api_permission = extension->permissions_data()->HasAPIPermission(
+          APIPermissionID::kTab);
     } else {
       api_permission = extension->permissions_data()->HasAPIPermissionForTab(
-          tab_id, APIPermission::kTab);
+          tab_id, APIPermissionID::kTab);
     }
 
     bool host_permission = extension->permissions_data()
@@ -824,9 +825,9 @@ bool ExtensionTabUtil::PrepareURLForNavigation(const std::string& url_string,
   // they have applicable permissions.
   if (url.SchemeIs(content::kChromeDevToolsScheme) &&
       !(extension->permissions_data()->HasAPIPermission(
-            APIPermission::kDevtools) ||
+            APIPermissionID::kDevtools) ||
         extension->permissions_data()->HasAPIPermission(
-            APIPermission::kDebugger))) {
+            APIPermissionID::kDebugger))) {
     *error = tabs_constants::kCannotNavigateToDevtools;
     return false;
   }

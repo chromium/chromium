@@ -54,7 +54,7 @@ void ShowPermissionsDialogHelper::ShowPermissionsDialog(
   prompt_.reset(new ExtensionInstallPrompt(web_contents));
   std::vector<base::FilePath> retained_file_paths;
   if (extension->permissions_data()->HasAPIPermission(
-          APIPermission::kFileSystem)) {
+          mojom::APIPermissionID::kFileSystem)) {
     std::vector<SavedFileEntry> retained_file_entries =
         apps::SavedFilesService::Get(profile_)->GetAllFileEntries(
             extension_id_);
@@ -62,7 +62,8 @@ void ShowPermissionsDialogHelper::ShowPermissionsDialog(
       retained_file_paths.push_back(entry.path);
   }
   std::vector<std::u16string> retained_device_messages;
-  if (extension->permissions_data()->HasAPIPermission(APIPermission::kUsb)) {
+  if (extension->permissions_data()->HasAPIPermission(
+          mojom::APIPermissionID::kUsb)) {
     retained_device_messages =
         DevicePermissionsManager::Get(profile_)
             ->GetPermissionMessageStrings(extension_id_);

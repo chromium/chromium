@@ -106,7 +106,7 @@ void ExtensionEventObserver::OnBackgroundHostCreated(
   // We only care about ExtensionHosts for extensions that use GCM and have a
   // lazy background page.
   if (!host->extension()->permissions_data()->HasAPIPermission(
-          extensions::APIPermission::kGcm) ||
+          extensions::mojom::APIPermissionID::kGcm) ||
       !extensions::BackgroundInfo::HasLazyBackgroundPage(host->extension()))
     return;
 

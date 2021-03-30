@@ -456,7 +456,7 @@ void PrepareFilesForWritableApp(
 
 bool HasFileSystemWritePermission(const Extension* extension) {
   return extension->permissions_data()->HasAPIPermission(
-      APIPermission::kFileSystemWrite);
+      mojom::APIPermissionID::kFileSystemWrite);
 }
 
 bool ValidateFileEntryAndGetPath(const std::string& filesystem_name,

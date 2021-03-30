@@ -350,9 +350,10 @@ bool HasDNRFeedbackPermission(const Extension* extension,
   const PermissionsData* permissions_data = extension->permissions_data();
   return tab_id.has_value()
              ? permissions_data->HasAPIPermissionForTab(
-                   *tab_id, APIPermission::kDeclarativeNetRequestFeedback)
+                   *tab_id,
+                   mojom::APIPermissionID::kDeclarativeNetRequestFeedback)
              : permissions_data->HasAPIPermission(
-                   APIPermission::kDeclarativeNetRequestFeedback);
+                   mojom::APIPermissionID::kDeclarativeNetRequestFeedback);
 }
 
 }  // namespace declarative_net_request

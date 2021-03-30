@@ -61,7 +61,7 @@ bool CanUseLoginScreenUiApi(const extensions::Extension* extension) {
              ->enabled_extensions()
              .Contains(extension->id()) &&
          extension->permissions_data()->HasAPIPermission(
-             extensions::APIPermission::kLoginScreenUi) &&
+             extensions::mojom::APIPermissionID::kLoginScreenUi) &&
          InstallAttributes::Get()->IsEnterpriseManaged();
 }
 

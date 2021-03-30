@@ -118,7 +118,7 @@ void PopulateChromeFrameBindersForExtension(
   auto* context = render_frame_host->GetProcess()->GetBrowserContext();
   if (media_router::MediaRouterEnabled(context) &&
       extension->permissions_data()->HasAPIPermission(
-          APIPermission::kMediaRouterPrivate)) {
+          mojom::APIPermissionID::kMediaRouterPrivate)) {
     binder_map->Add<media_router::mojom::MediaRouter>(
         base::BindRepeating(&media_router::MediaRouterDesktop::BindToReceiver,
                             base::RetainedRef(extension), context));
@@ -154,7 +154,7 @@ void PopulateChromeFrameBindersForExtension(
 #endif  // BUILDFLAG(PLATFORM_CFM)
 
   if (extension->permissions_data()->HasAPIPermission(
-          APIPermission::kMediaPerceptionPrivate)) {
+          mojom::APIPermissionID::kMediaPerceptionPrivate)) {
     extensions::ExtensionsAPIClient* client =
         extensions::ExtensionsAPIClient::Get();
     extensions::MediaPerceptionAPIDelegate* delegate = nullptr;

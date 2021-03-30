@@ -666,8 +666,7 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(
       PrefMapping::GetInstance()->FindBrowserPrefForExtensionPref(
       pref_key, &browser_pref, &read_permission, &write_permission));
-  if (!extension()->permissions_data()->HasAPIPermission(
-          static_cast<APIPermission::ID>(read_permission)))
+  if (!extension()->permissions_data()->HasAPIPermission(read_permission))
     return RespondNow(
         Error(extensions::preference_api_constants::kPermissionErrorMessage,
               pref_key));
@@ -770,8 +769,7 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(
       PrefMapping::GetInstance()->FindBrowserPrefForExtensionPref(
       pref_key, &browser_pref, &read_permission, &write_permission));
-  if (!extension()->permissions_data()->HasAPIPermission(
-          static_cast<APIPermission::ID>(write_permission)))
+  if (!extension()->permissions_data()->HasAPIPermission(write_permission))
     return RespondNow(
         Error(extensions::preference_api_constants::kPermissionErrorMessage,
               pref_key));
@@ -872,8 +870,7 @@ ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(
       PrefMapping::GetInstance()->FindBrowserPrefForExtensionPref(
       pref_key, &browser_pref, &read_permission, &write_permission));
-  if (!extension()->permissions_data()->HasAPIPermission(
-          static_cast<APIPermission::ID>(write_permission)))
+  if (!extension()->permissions_data()->HasAPIPermission(write_permission))
     return RespondNow(
         Error(extensions::preference_api_constants::kPermissionErrorMessage,
               pref_key));

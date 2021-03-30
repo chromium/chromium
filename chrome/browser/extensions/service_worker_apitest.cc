@@ -2361,8 +2361,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, PermissionsAPI) {
 
   // "storage" permission is optional in |extension|, and isn't available right
   // away.
-  EXPECT_FALSE(
-      extension->permissions_data()->HasAPIPermission(APIPermission::kStorage));
+  EXPECT_FALSE(extension->permissions_data()->HasAPIPermission(
+      mojom::APIPermissionID::kStorage));
 
   PermissionsRequestFunction::SetAutoConfirmForTests(true);
 
@@ -2379,8 +2379,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, PermissionsAPI) {
   EXPECT_TRUE(catcher.GetNextResult()) << message_;
 
   // Expect the permission ("storage") to be available now.
-  EXPECT_TRUE(
-      extension->permissions_data()->HasAPIPermission(APIPermission::kStorage));
+  EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
+      mojom::APIPermissionID::kStorage));
 }
 
 // Tests that console messages logged by extension service workers, both via

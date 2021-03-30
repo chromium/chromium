@@ -640,7 +640,7 @@ void LogPermissionUmaStats(const std::string& permission_string) {
   if (!permission_info) return;
 
   base::UmaHistogramSparse("Enterprise.PublicSession.ExtensionPermissions",
-                           permission_info->id());
+                           static_cast<int>(permission_info->id()));
 }
 
 // Returns true for extensions that are considered safe for Public Sessions,

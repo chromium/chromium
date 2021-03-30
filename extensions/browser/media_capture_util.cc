@@ -19,6 +19,7 @@ using blink::MediaStreamDevice;
 using blink::MediaStreamDevices;
 using content::MediaCaptureDevices;
 using content::MediaStreamUI;
+using extensions::mojom::APIPermissionID;
 
 namespace extensions {
 
@@ -94,11 +95,11 @@ void VerifyMediaAccessPermission(blink::mojom::MediaStreamType type,
   if (type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
     // app_shell has no UI surface to show an error, and on an embedded device
     // it's better to crash than to have a feature not work.
-    CHECK(permissions_data->HasAPIPermission(APIPermission::kAudioCapture))
+    CHECK(permissions_data->HasAPIPermission(APIPermissionID::kAudioCapture))
         << "Audio capture request but no audioCapture permission in manifest.";
   } else {
     DCHECK(type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
-    CHECK(permissions_data->HasAPIPermission(APIPermission::kVideoCapture))
+    CHECK(permissions_data->HasAPIPermission(APIPermissionID::kVideoCapture))
         << "Video capture request but no videoCapture permission in manifest.";
   }
 }
@@ -107,10 +108,10 @@ bool CheckMediaAccessPermission(blink::mojom::MediaStreamType type,
                                 const Extension* extension) {
   const PermissionsData* permissions_data = extension->permissions_data();
   if (type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
-    return permissions_data->HasAPIPermission(APIPermission::kAudioCapture);
+    return permissions_data->HasAPIPermission(APIPermissionID::kAudioCapture);
   }
   DCHECK(type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
-  return permissions_data->HasAPIPermission(APIPermission::kVideoCapture);
+  return permissions_data->HasAPIPermission(APIPermissionID::kVideoCapture);
 }
 
 }  // namespace media_capture_util

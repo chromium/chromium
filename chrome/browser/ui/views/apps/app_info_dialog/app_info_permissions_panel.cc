@@ -256,7 +256,7 @@ AppInfoPermissionsPanel::GetActivePermissionMessages() const {
 
 int AppInfoPermissionsPanel::GetRetainedFileCount() const {
   if (app_->permissions_data()->HasAPIPermission(
-          extensions::APIPermission::kFileSystem)) {
+          extensions::mojom::APIPermissionID::kFileSystem)) {
     apps::SavedFilesService* service = apps::SavedFilesService::Get(profile_);
     // The SavedFilesService can be null for incognito profiles. See
     // http://crbug.com/467795.
@@ -275,7 +275,7 @@ const std::vector<std::u16string>
 AppInfoPermissionsPanel::GetRetainedFilePaths() const {
   std::vector<std::u16string> retained_file_paths;
   if (app_->permissions_data()->HasAPIPermission(
-          extensions::APIPermission::kFileSystem)) {
+          extensions::mojom::APIPermissionID::kFileSystem)) {
     apps::SavedFilesService* service = apps::SavedFilesService::Get(profile_);
     // The SavedFilesService can be null for incognito profiles.
     if (service) {

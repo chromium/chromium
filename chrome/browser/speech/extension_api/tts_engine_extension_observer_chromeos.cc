@@ -206,7 +206,7 @@ void TtsEngineExtensionObserverChromeOS::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension) {
   if (extension->permissions_data()->HasAPIPermission(
-          extensions::APIPermission::kTtsEngine)) {
+          extensions::mojom::APIPermissionID::kTtsEngine)) {
     engine_extension_ids_.insert(extension->id());
 
     if (extension->id() == extension_misc::kGoogleSpeechSynthesisExtensionId)

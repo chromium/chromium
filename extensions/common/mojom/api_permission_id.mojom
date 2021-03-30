@@ -16,7 +16,7 @@ module extensions.mojom;
 // PermissionID.
 //
 // Additionally, this enum should be sync with APIPermission::ID enum until
-// are replaced with with mojom::APIPermissionID.
+// are replaced with mojom::APIPermissionID.
 enum APIPermissionID {
   // Error codes.
   kInvalid = 0,
@@ -255,7 +255,7 @@ enum APIPermissionID {
   kTabGroups = 229,
   kScripting = 230,
 
-  // Add new entries above and be sure to update the
+  // Add new entries at the end of the enum and be sure to update the
   // "ExtensionPermission3" enum in tools/metrics/histograms/enums.xml
   // (by running update_extension_permission.py).
   // TODO(crbug.com/1191916): Need to update update_extension_permission.py

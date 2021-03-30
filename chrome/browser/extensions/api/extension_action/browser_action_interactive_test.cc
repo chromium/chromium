@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
                        sessions::SessionTabHelper::IdForTab(
                            browser()->tab_strip_model()->GetActiveWebContents())
                            .id(),
-                       APIPermission::kTab));
+                       mojom::APIPermissionID::kTab));
   EXPECT_TRUE(ClosePopup());
 }
 

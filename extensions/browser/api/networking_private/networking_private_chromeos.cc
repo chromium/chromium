@@ -804,7 +804,7 @@ void NetworkingPrivateChromeOS::AppendThirdPartyProviderName(
       ExtensionRegistry::Get(browser_context_)->enabled_extensions();
   for (const auto& extension : extensions) {
     if (extension->permissions_data()->HasAPIPermission(
-            APIPermission::kVpnProvider) &&
+            mojom::APIPermissionID::kVpnProvider) &&
         extension->id() == extension_id) {
       third_party_vpn->SetKey(::onc::third_party_vpn::kProviderName,
                               base::Value(extension->name()));

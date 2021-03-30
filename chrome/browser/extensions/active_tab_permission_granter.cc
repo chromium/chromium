@@ -168,7 +168,7 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
   // request the activeTab permission.
   content::BrowserContext* browser_context =
       web_contents()->GetBrowserContext();
-  if ((permissions_data->HasAPIPermission(APIPermission::kActiveTab) ||
+  if ((permissions_data->HasAPIPermission(mojom::APIPermissionID::kActiveTab) ||
        permissions_data->withheld_permissions().effective_hosts().MatchesURL(
            url)) &&
       ShouldGrantActiveTabOrPrompt(extension, web_contents())) {
@@ -182,12 +182,12 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
     new_apis.insert(mojom::APIPermissionID::kTab);
 
     if (permissions_data->HasAPIPermission(
-            APIPermission::kDeclarativeNetRequest)) {
+            mojom::APIPermissionID::kDeclarativeNetRequest)) {
       new_apis.insert(mojom::APIPermissionID::kDeclarativeNetRequestFeedback);
     }
   }
 
-  if (permissions_data->HasAPIPermission(APIPermission::kTabCapture))
+  if (permissions_data->HasAPIPermission(mojom::APIPermissionID::kTabCapture))
     new_apis.insert(mojom::APIPermissionID::kTabCaptureForTab);
 
   if (!new_apis.empty() || !new_hosts.is_empty()) {

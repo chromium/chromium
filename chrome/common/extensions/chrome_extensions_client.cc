@@ -147,7 +147,7 @@ URLPatternSet ChromeExtensionsClient::GetPermittedChromeSchemeHosts(
   // See http://crbug.com/222856. A temporary hack is implemented here to
   // make chrome://thumbs available to NTP Russia extension as
   // non-experimental.
-  if ((api_permissions.find(APIPermission::kExperimental) !=
+  if ((api_permissions.find(mojom::APIPermissionID::kExperimental) !=
        api_permissions.end()) ||
       (extension->id() == kThumbsWhiteListedExtension &&
        extension->from_webstore())) {
@@ -243,7 +243,7 @@ void ChromeExtensionsClient::AddOriginAccessPermissions(
   // whitelist entries need to be updated when the kManagement permission
   // changes.
   if (is_extension_active && extension.permissions_data()->HasAPIPermission(
-                                 extensions::APIPermission::kManagement)) {
+                                 mojom::APIPermissionID::kManagement)) {
     origin_patterns->push_back(network::mojom::CorsOriginPattern::New(
         content::kChromeUIScheme, chrome::kChromeUIExtensionIconHost,
         /*port=*/0, network::mojom::CorsDomainMatchMode::kDisallowSubdomains,

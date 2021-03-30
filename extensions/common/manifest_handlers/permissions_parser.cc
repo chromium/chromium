@@ -30,6 +30,8 @@
 #include "extensions/common/url_pattern_set.h"
 #include "url/url_constants.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace extensions {
 
 namespace keys = manifest_keys;
@@ -124,7 +126,7 @@ void ParseHostPermissions(Extension* extension,
 
   // Users should be able to enable file access for extensions with activeTab.
   if (!can_execute_script_everywhere &&
-      base::Contains(api_permissions, APIPermission::kActiveTab)) {
+      base::Contains(api_permissions, APIPermissionID::kActiveTab)) {
     extension->set_wants_file_access(true);
   }
 
@@ -225,7 +227,7 @@ bool ParseHelper(Extension* extension,
   }
 
   // Verify feature availability of permissions.
-  std::vector<APIPermission::ID> to_remove;
+  std::vector<APIPermissionID> to_remove;
   const FeatureProvider* permission_features =
       FeatureProvider::GetPermissionFeatures();
   for (APIPermissionSet::const_iterator iter = api_permissions->begin();
@@ -247,7 +249,7 @@ bool ParseHelper(Extension* extension,
     // have access to experimental in just the store, and not have to push a
     // new version of the client. Otherwise, experimental goes through the
     // usual features check.
-    if (iter->id() == APIPermission::kExperimental &&
+    if (iter->id() == APIPermissionID::kExperimental &&
         extension->from_webstore()) {
       continue;
     }
@@ -266,9 +268,8 @@ bool ParseHelper(Extension* extension,
   }
 
   // Remove permissions that are not available to this extension.
-  for (std::vector<APIPermission::ID>::const_iterator iter = to_remove.begin();
-       iter != to_remove.end();
-       ++iter) {
+  for (std::vector<APIPermissionID>::const_iterator iter = to_remove.begin();
+       iter != to_remove.end(); ++iter) {
     api_permissions->erase(*iter);
   }
 
@@ -293,7 +294,7 @@ void RemoveNonAllowedOptionalPermissions(
     Extension* extension,
     APIPermissionSet* optional_api_permissions) {
   std::vector<InstallWarning> install_warnings;
-  std::set<APIPermission::ID> ids_to_erase;
+  std::set<APIPermissionID> ids_to_erase;
 
   for (const auto* api_permission : *optional_api_permissions) {
     if (api_permission->info()->supports_optional())
@@ -470,11 +471,10 @@ void PermissionsParser::Finalize(Extension* extension) {
 
 // static
 void PermissionsParser::AddAPIPermission(Extension* extension,
-                                         mojom::APIPermissionID permission) {
+                                         APIPermissionID permission) {
   DCHECK(extension->permissions_parser());
   extension->permissions_parser()
-      ->initial_required_permissions_->api_permissions.insert(
-          static_cast<mojom::APIPermissionID>(permission));
+      ->initial_required_permissions_->api_permissions.insert(permission);
 }
 
 // static
@@ -488,11 +488,11 @@ void PermissionsParser::AddAPIPermission(Extension* extension,
 
 // static
 bool PermissionsParser::HasAPIPermission(const Extension* extension,
-                                         mojom::APIPermissionID permission) {
+                                         APIPermissionID permission) {
   DCHECK(extension->permissions_parser());
   return extension->permissions_parser()
              ->initial_required_permissions_->api_permissions.count(
-                 static_cast<APIPermission::ID>(permission)) > 0;
+                 permission) > 0;
 }
 
 // static

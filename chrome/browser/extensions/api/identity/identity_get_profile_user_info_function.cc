@@ -55,7 +55,7 @@ ExtensionFunction::ResponseAction IdentityGetProfileUserInfoFunction::Run() {
   api::identity::ProfileUserInfo profile_user_info;
 
   if (extension()->permissions_data()->HasAPIPermission(
-          APIPermission::kIdentityEmail)) {
+          mojom::APIPermissionID::kIdentityEmail)) {
     signin::ConsentLevel consent_level =
         GetConsentLevelFromProfileDetails(params->details.get());
     auto account_info = IdentityManagerFactory::GetForProfile(

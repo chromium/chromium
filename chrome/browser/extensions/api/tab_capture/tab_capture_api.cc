@@ -248,7 +248,7 @@ ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
   // extension icon click or our extension is allowlisted.
   if (!extension()->permissions_data()->HasAPIPermissionForTab(
           sessions::SessionTabHelper::IdForTab(target_contents).id(),
-          APIPermission::kTabCaptureForTab) &&
+          mojom::APIPermissionID::kTabCaptureForTab) &&
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kAllowlistedExtensionID) != extension_id &&
       !SimpleFeature::IsIdInArray(extension_id, kMediaRouterExtensionIds,
@@ -439,7 +439,7 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
   // extension icon click or our extension is allowlisted.
   if (!extension()->permissions_data()->HasAPIPermissionForTab(
           sessions::SessionTabHelper::IdForTab(target_contents).id(),
-          APIPermission::kTabCaptureForTab) &&
+          mojom::APIPermissionID::kTabCaptureForTab) &&
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kAllowlistedExtensionID) != extension_id) {
     return RespondNow(Error(kGrantError));

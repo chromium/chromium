@@ -14,6 +14,8 @@
 #include "ipc/ipc_message.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace extensions {
 
 namespace {
@@ -66,11 +68,11 @@ TEST(ExtensionMessageTypesTest, TestLoadedParams) {
   const PermissionSet& required_permissions =
       PermissionsParser::GetRequiredPermissions(extension.get());
   LOG(WARNING) << required_permissions.apis().size();
-  EXPECT_TRUE(
-      extension->permissions_data()->HasAPIPermission(APIPermission::kAlarms));
+  EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
+      APIPermissionID::kAlarms));
   {
     APIPermissionSet tab_permissions;
-    tab_permissions.insert(mojom::APIPermissionID::kDns);
+    tab_permissions.insert(APIPermissionID::kDns);
     extension->permissions_data()->UpdateTabSpecificPermissions(
         1, PermissionSet(std::move(tab_permissions), ManifestPermissionSet(),
                          URLPatternSet(), URLPatternSet()));

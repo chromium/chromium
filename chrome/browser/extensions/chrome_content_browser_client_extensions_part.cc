@@ -278,7 +278,7 @@ bool ChromeContentBrowserClientExtensionsPart::ShouldUseProcessPerSite(
   // responsiveness.
   if (extension->GetType() == Manifest::TYPE_HOSTED_APP) {
     if (!extension->permissions_data()->HasAPIPermission(
-            APIPermission::kBackground) ||
+            mojom::APIPermissionID::kBackground) ||
         !BackgroundInfo::AllowJSAccess(extension)) {
       return false;
     }
@@ -418,7 +418,7 @@ bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
     DCHECK(found_owner);
     return extension->is_platform_app() &&
            extension->permissions_data()->HasAPIPermission(
-               extensions::APIPermission::kWebView) &&
+               extensions::mojom::APIPermissionID::kWebView) &&
            extension->id() == owner_extension_id;
   }
 

@@ -44,6 +44,7 @@ using extensions::APIPermission;
 using extensions::Extension;
 using extensions::ExtensionRegistry;
 using extensions::ExtensionSystem;
+using extensions::mojom::APIPermissionID;
 
 // For ExtensionService interface when it requires a path that is not used.
 base::FilePath bogus_file_pathname(const std::string& name) {
@@ -231,10 +232,10 @@ TEST_F(BackgroundApplicationListModelTest, AddRemovePermissionsTest) {
 
   scoped_refptr<Extension> ext = CreateExtension("extension", false);
   ASSERT_FALSE(
-      ext->permissions_data()->HasAPIPermission(APIPermission::kBackground));
+      ext->permissions_data()->HasAPIPermission(APIPermissionID::kBackground));
   scoped_refptr<Extension> bgapp = CreateExtension("application", true);
-  ASSERT_TRUE(
-      bgapp->permissions_data()->HasAPIPermission(APIPermission::kBackground));
+  ASSERT_TRUE(bgapp->permissions_data()->HasAPIPermission(
+      APIPermissionID::kBackground));
   ASSERT_EQ(0U, registry()->enabled_extensions().size());
   ASSERT_EQ(0U, model()->size());
 
@@ -251,22 +252,22 @@ TEST_F(BackgroundApplicationListModelTest, AddRemovePermissionsTest) {
   // Change permissions back and forth
   AddBackgroundPermission(service(), ext.get());
   ASSERT_TRUE(
-      ext->permissions_data()->HasAPIPermission(APIPermission::kBackground));
+      ext->permissions_data()->HasAPIPermission(APIPermissionID::kBackground));
   ASSERT_EQ(2U, registry()->enabled_extensions().size());
   ASSERT_EQ(2U, model()->size());
   RemoveBackgroundPermission(service(), bgapp.get());
-  ASSERT_FALSE(
-      bgapp->permissions_data()->HasAPIPermission(APIPermission::kBackground));
+  ASSERT_FALSE(bgapp->permissions_data()->HasAPIPermission(
+      APIPermissionID::kBackground));
   ASSERT_EQ(2U, registry()->enabled_extensions().size());
   ASSERT_EQ(1U, model()->size());
   RemoveBackgroundPermission(service(), ext.get());
   ASSERT_FALSE(
-      ext->permissions_data()->HasAPIPermission(APIPermission::kBackground));
+      ext->permissions_data()->HasAPIPermission(APIPermissionID::kBackground));
   ASSERT_EQ(2U, registry()->enabled_extensions().size());
   ASSERT_EQ(0U, model()->size());
   AddBackgroundPermission(service(), bgapp.get());
-  ASSERT_TRUE(
-      bgapp->permissions_data()->HasAPIPermission(APIPermission::kBackground));
+  ASSERT_TRUE(bgapp->permissions_data()->HasAPIPermission(
+      APIPermissionID::kBackground));
   ASSERT_EQ(2U, registry()->enabled_extensions().size());
   ASSERT_EQ(1U, model()->size());
 }
@@ -277,8 +278,8 @@ TEST_F(BackgroundApplicationListModelTest, ExtensionLoadAndUnload) {
   ASSERT_TRUE(ExtensionSystem::Get(profile())->is_ready());
   scoped_refptr<Extension> bgapp =
       CreateExtension("background_application", true);
-  ASSERT_TRUE(
-      bgapp->permissions_data()->HasAPIPermission(APIPermission::kBackground));
+  ASSERT_TRUE(bgapp->permissions_data()->HasAPIPermission(
+      APIPermissionID::kBackground));
   ASSERT_TRUE(registry()->enabled_extensions().is_empty());
   ASSERT_EQ(0U, model()->size());
 
@@ -306,8 +307,8 @@ TEST_F(BackgroundApplicationListModelTest, LateExtensionSystemReady) {
 
   scoped_refptr<Extension> bgapp =
       CreateExtension("background_application", true);
-  EXPECT_TRUE(
-      bgapp->permissions_data()->HasAPIPermission(APIPermission::kBackground));
+  EXPECT_TRUE(bgapp->permissions_data()->HasAPIPermission(
+      APIPermissionID::kBackground));
   EXPECT_TRUE(registry()->enabled_extensions().is_empty());
   EXPECT_EQ(0U, model()->size());
 

@@ -148,9 +148,10 @@ class PermissionsData {
   // Note this does not include APIs with no corresponding permission, like
   // "runtime" or "browserAction".
   // TODO(mpcomplete): drop the "API" from these names, it's confusing.
-  bool HasAPIPermission(APIPermission::ID permission) const;
+  bool HasAPIPermission(mojom::APIPermissionID permission) const;
   bool HasAPIPermission(const std::string& permission_name) const;
-  bool HasAPIPermissionForTab(int tab_id, APIPermission::ID permission) const;
+  bool HasAPIPermissionForTab(int tab_id,
+                              mojom::APIPermissionID permission) const;
   bool CheckAPIPermissionWithParam(
       mojom::APIPermissionID permission,
       const APIPermission::CheckParam* param) const;

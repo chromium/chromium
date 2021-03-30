@@ -485,7 +485,7 @@ bool CommandService::CanAutoAssign(const Command &command,
       return false;  // Browser and page actions are not global in nature.
 
     if (extension->permissions_data()->HasAPIPermission(
-            APIPermission::kCommandsAccessibility))
+            mojom::APIPermissionID::kCommandsAccessibility))
       return true;
 
     // Global shortcuts are restricted to (Ctrl|Command)+Shift+[0-9].

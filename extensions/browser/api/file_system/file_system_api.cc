@@ -347,7 +347,7 @@ ExtensionFunction::ResponseAction FileSystemGetWritableEntryFunction::Run() {
 void FileSystemGetWritableEntryFunction::CheckPermissionAndSendResponse() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (is_directory_ && !extension_->permissions_data()->HasAPIPermission(
-                           APIPermission::kFileSystemDirectory)) {
+                           mojom::APIPermissionID::kFileSystemDirectory)) {
     Respond(Error(kRequiresFileSystemDirectoryError));
     return;
   }
@@ -732,7 +732,7 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
     } else if (options->type == file_system::CHOOSE_ENTRY_TYPE_OPENDIRECTORY) {
       is_directory_ = true;
       if (!extension_->permissions_data()->HasAPIPermission(
-              APIPermission::kFileSystemDirectory)) {
+              mojom::APIPermissionID::kFileSystemDirectory)) {
         return RespondNow(Error(kRequiresFileSystemDirectoryError));
       }
       if (multiple_) {

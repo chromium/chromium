@@ -173,6 +173,7 @@ using content::BrowserContext;
 using content::BrowserThread;
 using content::DOMStorageContext;
 using content::PluginService;
+using extensions::mojom::APIPermissionID;
 using extensions::mojom::ManifestLocation;
 
 namespace extensions {
@@ -1528,7 +1529,7 @@ TEST_F(ExtensionServiceTest, GrantedPermissions) {
   EXPECT_EQ(permissions_crx, extension->id());
 
   // Verify that the valid API permissions have been recognized.
-  expected_api_perms.insert(mojom::APIPermissionID::kTab);
+  expected_api_perms.insert(APIPermissionID::kTab);
 
   AddPattern(&expected_host_perms, "http://*.google.com/*");
   AddPattern(&expected_host_perms, "https://*.google.com/*");
@@ -1575,7 +1576,7 @@ TEST_F(ExtensionServiceTest, GrantedPermissionsOnUpdate) {
 
   // Verify that the history permission has been recognized.
   APIPermissionSet expected_api_perms;
-  expected_api_perms.insert(mojom::APIPermissionID::kHistory);
+  expected_api_perms.insert(APIPermissionID::kHistory);
   {
     std::unique_ptr<const PermissionSet> known_perms =
         prefs->GetGrantedPermissions(id);
@@ -1592,7 +1593,7 @@ TEST_F(ExtensionServiceTest, GrantedPermissionsOnUpdate) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(id));
 
   // The extra permission should have been granted automatically.
-  expected_api_perms.insert(mojom::APIPermissionID::kTopSites);
+  expected_api_perms.insert(APIPermissionID::kTopSites);
   {
     std::unique_ptr<const PermissionSet> known_perms =
         prefs->GetGrantedPermissions(id);
@@ -1608,7 +1609,7 @@ TEST_F(ExtensionServiceTest, GrantedPermissionsOnUpdate) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(id));
 
   // The extra permission should have been granted automatically.
-  expected_api_perms.insert(mojom::APIPermissionID::kStorage);
+  expected_api_perms.insert(APIPermissionID::kStorage);
   {
     std::unique_ptr<const PermissionSet> known_perms =
         prefs->GetGrantedPermissions(id);
@@ -1841,7 +1842,7 @@ TEST_F(ExtensionServiceTest,
   };
 
   APIPermissionSet tabs_permission_set;
-  tabs_permission_set.insert(mojom::APIPermissionID::kTab);
+  tabs_permission_set.insert(APIPermissionID::kTab);
 
   EXPECT_EQ(tabs_permission_set, get_granted_permissions()->apis());
   EXPECT_EQ(tabs_permission_set, get_active_permissions()->apis());
@@ -1959,7 +1960,7 @@ TEST_F(ExtensionServiceTest, DefaultAppsGrantedPermissions) {
   EXPECT_EQ(permissions_crx, extension->id());
 
   // Verify that the valid API permissions have been recognized.
-  expected_api_perms.insert(mojom::APIPermissionID::kTab);
+  expected_api_perms.insert(APIPermissionID::kTab);
 
   std::unique_ptr<const PermissionSet> known_perms =
       prefs->GetGrantedPermissions(extension->id());
@@ -1991,7 +1992,7 @@ TEST_F(ExtensionServiceTest, GrantedAPIAndHostPermissions) {
   APIPermissionSet expected_api_permissions;
   URLPatternSet expected_host_permissions;
 
-  expected_api_permissions.insert(mojom::APIPermissionID::kTab);
+  expected_api_permissions.insert(APIPermissionID::kTab);
   AddPattern(&expected_host_permissions, "http://*.google.com/*");
   AddPattern(&expected_host_permissions, "https://*.google.com/*");
   AddPattern(&expected_host_permissions, "http://*.google.com.hk/*");
@@ -2724,7 +2725,7 @@ TEST_F(ExtensionServiceTest, InstallAppsWithUnlimitedStorage) {
   ASSERT_EQ(1u, registry()->enabled_extensions().size());
   const std::string id1 = extension->id();
   EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
-      APIPermission::kUnlimitedStorage));
+      APIPermissionID::kUnlimitedStorage));
   EXPECT_TRUE(extension->web_extent().MatchesURL(
       AppLaunchInfo::GetFullLaunchURL(extension)));
   const GURL origin1(AppLaunchInfo::GetFullLaunchURL(extension).GetOrigin());
@@ -2737,7 +2738,7 @@ TEST_F(ExtensionServiceTest, InstallAppsWithUnlimitedStorage) {
   ASSERT_EQ(2u, registry()->enabled_extensions().size());
   const std::string id2 = extension->id();
   EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
-      APIPermission::kUnlimitedStorage));
+      APIPermissionID::kUnlimitedStorage));
   EXPECT_TRUE(extension->web_extent().MatchesURL(
       AppLaunchInfo::GetFullLaunchURL(extension)));
   const GURL origin2(AppLaunchInfo::GetFullLaunchURL(extension).GetOrigin());
@@ -4082,7 +4083,7 @@ TEST_F(ExtensionServiceTest, ComponentExtensionAllowlistedPermission) {
                   .GetByID(good0)
                   ->permissions_data()
                   ->active_permissions()
-                  .HasAPIPermission(APIPermission::kTab));
+                  .HasAPIPermission(APIPermissionID::kTab));
 
   // Component should not lose permissions on policy change.
   {
@@ -4097,7 +4098,7 @@ TEST_F(ExtensionServiceTest, ComponentExtensionAllowlistedPermission) {
                   .GetByID(good0)
                   ->permissions_data()
                   ->active_permissions()
-                  .HasAPIPermission(APIPermission::kTab));
+                  .HasAPIPermission(APIPermissionID::kTab));
 }
 
 // Tests that policy-installed extensions are not blocklisted by policy.
@@ -4495,7 +4496,8 @@ TEST_F(ExtensionServiceTest, PolicyBlockedPermissionPolicyUpdate) {
 
   std::unique_ptr<const PermissionSet> active_permissions =
       ExtensionPrefs::Get(profile())->GetActivePermissions(ext1);
-  EXPECT_TRUE(active_permissions->HasAPIPermission(APIPermission::kDownloads));
+  EXPECT_TRUE(
+      active_permissions->HasAPIPermission(APIPermissionID::kDownloads));
 
   // Set policy to block 'downloads' permission.
   {
@@ -4509,7 +4511,8 @@ TEST_F(ExtensionServiceTest, PolicyBlockedPermissionPolicyUpdate) {
   EXPECT_TRUE(registry->enabled_extensions().GetByID(ext1));
   active_permissions =
       ExtensionPrefs::Get(profile())->GetActivePermissions(ext1);
-  EXPECT_FALSE(active_permissions->HasAPIPermission(APIPermission::kDownloads));
+  EXPECT_FALSE(
+      active_permissions->HasAPIPermission(APIPermissionID::kDownloads));
 
   // 'ext2' should be disabled because one of its required permissions is
   // blocked.
@@ -5348,7 +5351,7 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
   ASSERT_EQ(1u, registry()->enabled_extensions().size());
   const std::string id1 = extension->id();
   EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
-      APIPermission::kUnlimitedStorage));
+      APIPermissionID::kUnlimitedStorage));
   const GURL origin1(AppLaunchInfo::GetFullLaunchURL(extension).GetOrigin());
   EXPECT_TRUE(profile()->GetExtensionSpecialStoragePolicy()->IsStorageUnlimited(
       origin1));
@@ -5360,7 +5363,7 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
   ASSERT_EQ(2u, registry()->enabled_extensions().size());
   const std::string id2 = extension->id();
   EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
-      APIPermission::kUnlimitedStorage));
+      APIPermissionID::kUnlimitedStorage));
   EXPECT_TRUE(extension->web_extent().MatchesURL(
       AppLaunchInfo::GetFullLaunchURL(extension)));
   const GURL origin2(AppLaunchInfo::GetFullLaunchURL(extension).GetOrigin());

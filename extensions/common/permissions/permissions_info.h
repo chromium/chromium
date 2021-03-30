@@ -72,7 +72,7 @@ class PermissionsInfo {
   void RegisterPermission(std::unique_ptr<APIPermissionInfo> permission);
 
   // Maps permission ids to permissions. Owns the permissions.
-  typedef std::unordered_map<APIPermission::ID,
+  typedef std::unordered_map<mojom::APIPermissionID,
                              std::unique_ptr<APIPermissionInfo>>
       IDMap;
 

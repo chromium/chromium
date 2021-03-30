@@ -191,7 +191,7 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     // https://crbug.com/652077.
     bool has_webview_permission =
         target_extension->permissions_data()->HasAPIPermission(
-            APIPermission::kWebView);
+            mojom::APIPermissionID::kWebView);
     if (!has_webview_permission) {
       RecordExtensionResourceAccessResult(
           source_id, url, ExtensionResourceAccessResult::kCancel);

@@ -154,9 +154,8 @@ void RendererFreezer::OnRenderProcessCreated(content::RenderProcessHost* rph) {
        extensions::ProcessMap::Get(context)->GetExtensionsInProcess(rph_id)) {
     const extensions::Extension* extension = registry->GetExtensionById(
         extension_id, extensions::ExtensionRegistry::ENABLED);
-    if (!extension ||
-        !extension->permissions_data()->HasAPIPermission(
-            extensions::APIPermission::kGcm)) {
+    if (!extension || !extension->permissions_data()->HasAPIPermission(
+                          extensions::mojom::APIPermissionID::kGcm)) {
       continue;
     }
 

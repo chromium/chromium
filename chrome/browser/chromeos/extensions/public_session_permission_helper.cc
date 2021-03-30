@@ -140,9 +140,8 @@ bool PublicSessionPermissionHelper::HandlePermissionRequestImpl(
   // Some permissions need prompting, setup the prompt and show it.
   APIPermissionSet new_apis;
   for (const auto& permission : unprompted_permissions) {
-    prompted_permission_set_.insert(
-        static_cast<mojom::APIPermissionID>(permission.id()));
-    new_apis.insert(static_cast<mojom::APIPermissionID>(permission.id()));
+    prompted_permission_set_.insert(permission.id());
+    new_apis.insert(permission.id());
   }
   auto permission_set = std::make_unique<PermissionSet>(
       std::move(new_apis), ManifestPermissionSet(), URLPatternSet(),
@@ -191,9 +190,8 @@ void PublicSessionPermissionHelper::ResolvePermissionPrompt(
       prompt_result == ExtensionInstallPrompt::Result::ACCEPTED ?
           allowed_permission_set_ : denied_permission_set_;
   for (const auto& permission : unprompted_permissions) {
-    prompted_permission_set_.erase(
-        static_cast<mojom::APIPermissionID>(permission.id()));
-    add_to_set.insert(static_cast<mojom::APIPermissionID>(permission.id()));
+    prompted_permission_set_.erase(permission.id());
+    add_to_set.insert(permission.id());
   }
 
   // Here a list of callbacks to be invoked is created first from callbacks_,
@@ -227,8 +225,7 @@ PermissionIDSet PublicSessionPermissionHelper::FilterAllowedPermissions(
   PermissionIDSet allowed_permissions;
   for (auto iter = permissions.begin(); iter != permissions.end(); iter++) {
     if (allowed_permission_set_.ContainsID(*iter)) {
-      allowed_permissions.insert(
-          static_cast<mojom::APIPermissionID>(iter->id()));
+      allowed_permissions.insert(iter->id());
     }
   }
   return allowed_permissions;

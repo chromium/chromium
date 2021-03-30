@@ -34,7 +34,8 @@ base::LazyInstance<BrowserContextKeyedAPIFactory<ExtensionGCMAppHandler>>::
         LAZY_INSTANCE_INITIALIZER;
 
 bool IsGCMPermissionEnabled(const Extension* extension) {
-  return extension->permissions_data()->HasAPIPermission(APIPermission::kGcm);
+  return extension->permissions_data()->HasAPIPermission(
+      mojom::APIPermissionID::kGcm);
 }
 
 }  // namespace

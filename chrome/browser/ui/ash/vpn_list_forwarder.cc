@@ -58,7 +58,7 @@ namespace {
 
 bool IsVPNProvider(const extensions::Extension* extension) {
   return extension->permissions_data()->HasAPIPermission(
-      extensions::APIPermission::kVpnProvider);
+      extensions::mojom::APIPermissionID::kVpnProvider);
 }
 
 Profile* GetProfileForPrimaryUser() {

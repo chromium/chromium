@@ -74,8 +74,9 @@ ChromeContentSettingsAgentDelegate::AllowReadFromClipboard() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::ScriptContext* current_context =
       extension_dispatcher_->script_context_set().GetCurrent();
-  if (current_context && current_context->HasAPIPermission(
-                             extensions::APIPermission::kClipboardRead)) {
+  if (current_context &&
+      current_context->HasAPIPermission(
+          extensions::mojom::APIPermissionID::kClipboardRead)) {
     return true;
   }
 #endif
@@ -96,7 +97,7 @@ ChromeContentSettingsAgentDelegate::AllowWriteToClipboard() {
       return true;
     }
     if (current_context->HasAPIPermission(
-            extensions::APIPermission::kClipboardWrite)) {
+            extensions::mojom::APIPermissionID::kClipboardWrite)) {
       return true;
     }
   }

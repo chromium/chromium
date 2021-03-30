@@ -88,7 +88,7 @@ class TestingConsentProviderDelegate
 
   bool HasRequestDownloadsPermission(const Extension& extension) override {
     return extension.permissions_data()->HasAPIPermission(
-        APIPermission::kFileSystemRequestDownloads);
+        mojom::APIPermissionID::kFileSystemRequestDownloads);
   }
 
   int show_dialog_counter_;

@@ -43,7 +43,8 @@ bool CanEnableAudioDebugRecordingsFromExtension(
   if (extension) {
     enabled_by_permissions =
         extension->permissions_data()->active_permissions().HasAPIPermission(
-            extensions::APIPermission::kWebrtcLoggingPrivateAudioDebug);
+            extensions::mojom::APIPermissionID::
+                kWebrtcLoggingPrivateAudioDebug);
   }
 #endif
   return base::CommandLine::ForCurrentProcess()->HasSwitch(

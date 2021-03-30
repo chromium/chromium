@@ -490,7 +490,7 @@ bool ExtensionContextMenuModel::IsPageAccessCommandEnabled(
   // commands should be shown.
   DCHECK(site_access.has_site_access || site_access.withheld_site_access ||
          extension.permissions_data()->HasAPIPermission(
-             APIPermission::kActiveTab));
+             mojom::APIPermissionID::kActiveTab));
 
   switch (command_id) {
     case PAGE_ACCESS_SUBMENU:
@@ -530,7 +530,7 @@ void ExtensionContextMenuModel::CreatePageAccessSubmenu(
       modifier.GetSiteAccess(url);
 
   bool has_active_tab = extension->permissions_data()->HasAPIPermission(
-      APIPermission::kActiveTab);
+      mojom::APIPermissionID::kActiveTab);
   bool wants_site_access =
       site_access.has_site_access || site_access.withheld_site_access;
   if (!wants_site_access && !has_active_tab) {

@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
       test_data_dir_.AppendASCII("experimental.crx"), 1);
   ASSERT_TRUE(extension);
   EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
-      APIPermission::kExperimental));
+      mojom::APIPermissionID::kExperimental));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
@@ -470,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
       test_data_dir_.AppendASCII("experimental.crx"), 1);
   ASSERT_TRUE(extension);
   EXPECT_FALSE(extension->permissions_data()->HasAPIPermission(
-      APIPermission::kExperimental));
+      mojom::APIPermissionID::kExperimental));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTestWithExperimentalApis,
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTestWithExperimentalApis,
       test_data_dir_.AppendASCII("experimental.crx"), 1);
   ASSERT_TRUE(extension);
   EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
-      APIPermission::kExperimental));
+      mojom::APIPermissionID::kExperimental));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTestWithExperimentalApis,

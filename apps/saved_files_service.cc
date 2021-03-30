@@ -241,7 +241,7 @@ const SavedFileEntry* SavedFilesService::GetFileEntry(
 void SavedFilesService::ClearQueueIfNoRetainPermission(
     const Extension* extension) {
   if (!extension->permissions_data()->active_permissions().HasAPIPermission(
-          APIPermission::kFileSystemRetainEntries)) {
+          extensions::mojom::APIPermissionID::kFileSystemRetainEntries)) {
     ClearQueue(extension);
   }
 }

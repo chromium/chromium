@@ -261,7 +261,7 @@ class CommandsApiTest : public ExtensionApiTest {
                        const content::WebContents* web_contents) {
     return extension->permissions_data()->HasAPIPermissionForTab(
         sessions::SessionTabHelper::IdForTab(web_contents).id(),
-        APIPermission::kTab);
+        mojom::APIPermissionID::kTab);
   }
 
   // Returns true if the extension with the given |extension_id| has an active

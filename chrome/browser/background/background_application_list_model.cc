@@ -50,6 +50,7 @@ using extensions::ExtensionSet;
 using extensions::PermissionSet;
 using extensions::UnloadedExtensionReason;
 using extensions::UpdatedExtensionPermissionsInfo;
+using extensions::mojom::APIPermissionID;
 
 class ExtensionNameComparator {
  public:
@@ -249,7 +250,7 @@ bool BackgroundApplicationListModel::IsPersistentBackgroundApp(
 
   // Not a background app if we don't have the background permission.
   if (!extension.permissions_data()->HasAPIPermission(
-          APIPermission::kBackground)) {
+          APIPermissionID::kBackground)) {
     return false;
   }
 
@@ -284,7 +285,7 @@ bool BackgroundApplicationListModel::IsTransientBackgroundApp(
     Profile* profile) {
   return base::FeatureList::IsEnabled(features::kOnConnectNative) &&
          extension.permissions_data()->HasAPIPermission(
-             APIPermission::kTransientBackground) &&
+             APIPermissionID::kTransientBackground) &&
          extensions::BackgroundInfo::HasLazyBackgroundPage(&extension);
 }
 
@@ -373,9 +374,9 @@ void BackgroundApplicationListModel::OnExtensionPermissionsUpdated(
     const Extension* extension,
     UpdatedExtensionPermissionsInfo::Reason reason,
     const PermissionSet& permissions) {
-  if (permissions.HasAPIPermission(APIPermission::kBackground) ||
+  if (permissions.HasAPIPermission(APIPermissionID::kBackground) ||
       (base::FeatureList::IsEnabled(features::kOnConnectNative) &&
-       permissions.HasAPIPermission(APIPermission::kTransientBackground))) {
+       permissions.HasAPIPermission(APIPermissionID::kTransientBackground))) {
     switch (reason) {
       case UpdatedExtensionPermissionsInfo::ADDED:
       case UpdatedExtensionPermissionsInfo::REMOVED:

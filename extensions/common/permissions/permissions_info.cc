@@ -33,7 +33,7 @@ void PermissionsInfo::RegisterPermissions(
 
 const APIPermissionInfo* PermissionsInfo::GetByID(
     mojom::APIPermissionID id) const {
-  auto i = id_map_.find(static_cast<APIPermission::ID>(id));
+  auto i = id_map_.find(id);
   return (i == id_map_.end()) ? nullptr : i->second.get();
 }
 
@@ -46,7 +46,7 @@ const APIPermissionInfo* PermissionsInfo::GetByName(
 APIPermissionSet PermissionsInfo::GetAll() const {
   APIPermissionSet permissions;
   for (auto i = id_map_.cbegin(); i != id_map_.cend(); ++i)
-    permissions.insert(static_cast<mojom::APIPermissionID>(i->second->id()));
+    permissions.insert(i->second->id());
   return permissions;
 }
 
@@ -56,8 +56,7 @@ APIPermissionSet PermissionsInfo::GetAllByName(
   for (auto i = permission_names.cbegin(); i != permission_names.cend(); ++i) {
     const APIPermissionInfo* permission_info = GetByName(*i);
     if (permission_info) {
-      permissions.insert(
-          static_cast<mojom::APIPermissionID>(permission_info->id()));
+      permissions.insert(permission_info->id());
     }
   }
   return permissions;

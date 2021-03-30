@@ -16,6 +16,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/script_constants.h"
 #include "extensions/renderer/module_system.h"
@@ -244,7 +245,7 @@ class ScriptContext {
   // a context for an extension which has that permission, or by being a web
   // context which has been granted the corresponding capability by an
   // extension.
-  bool HasAPIPermission(APIPermission::ID permission) const;
+  bool HasAPIPermission(mojom::APIPermissionID permission) const;
 
   // Throws an Error in this context's JavaScript context, if this context does
   // not have access to |name|. Returns true if this context has access (i.e.

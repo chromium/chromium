@@ -211,7 +211,7 @@ bool HidDeviceManager::HasPermission(
   }
 
   if (extension->permissions_data()->HasAPIPermission(
-          APIPermission::kU2fDevices)) {
+          mojom::APIPermissionID::kU2fDevices)) {
     HidDeviceFilter u2f_filter;
     u2f_filter.SetUsagePage(0xF1D0);
     if (u2f_filter.Matches(device_info)) {

@@ -395,7 +395,7 @@ content::KeyboardEventProcessingResult AppWindow::PreHandleKeyboardEvent(
   if (event.windows_key_code == ui::VKEY_ESCAPE && IsFullscreen() &&
       !IsForcedFullscreen() &&
       !extension->permissions_data()->HasAPIPermission(
-          APIPermission::kOverrideEscFullscreen)) {
+          mojom::APIPermissionID::kOverrideEscFullscreen)) {
     Restore();
     return content::KeyboardEventProcessingResult::HANDLED;
   }

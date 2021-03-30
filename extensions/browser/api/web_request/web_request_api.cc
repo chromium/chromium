@@ -92,6 +92,7 @@
 
 using content::BrowserThread;
 using extension_web_request_api_helpers::ExtraInfoSpec;
+using extensions::mojom::APIPermissionID;
 
 namespace activity_log = activity_log_web_request_constants;
 namespace helpers = extension_web_request_api_helpers;
@@ -417,12 +418,12 @@ std::unique_ptr<WebRequestEventDetails> CreateEventDetails(
 // Checks whether the extension has any permissions that would use the web
 // request API.
 bool HasAnyWebRequestPermissions(const Extension* extension) {
-  static const APIPermission::ID kWebRequestPermissions[] = {
-      APIPermission::ID::kWebRequest,
-      APIPermission::ID::kWebRequestBlocking,
-      APIPermission::ID::kDeclarativeWebRequest,
-      APIPermission::ID::kDeclarativeNetRequest,
-      APIPermission::ID::kWebView,
+  static const APIPermissionID kWebRequestPermissions[] = {
+      APIPermissionID::kWebRequest,
+      APIPermissionID::kWebRequestBlocking,
+      APIPermissionID::kDeclarativeWebRequest,
+      APIPermissionID::kDeclarativeNetRequest,
+      APIPermissionID::kWebView,
   };
 
   const PermissionsData* permissions = extension->permissions_data();
@@ -2587,7 +2588,7 @@ WebRequestInternalAddEventListenerFunction::Run() {
     if ((extra_info_spec &
          (ExtraInfoSpec::BLOCKING | ExtraInfoSpec::ASYNC_BLOCKING)) &&
         !extension->permissions_data()->HasAPIPermission(
-            APIPermission::kWebRequestBlocking)) {
+            APIPermissionID::kWebRequestBlocking)) {
       return RespondNow(Error(keys::kBlockingPermissionRequired));
     }
 

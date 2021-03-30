@@ -26,7 +26,7 @@ class APIPermissionSet;
 template<>
 struct BaseSetOperatorsTraits<APIPermissionSet> {
   typedef APIPermission ElementType;
-  typedef APIPermission::ID ElementIDType;
+  typedef mojom::APIPermissionID ElementIDType;
 };
 
 class APIPermissionSet : public BaseSetOperators<APIPermissionSet> {
@@ -77,13 +77,13 @@ class APIPermissionSet : public BaseSetOperators<APIPermissionSet> {
 //
 // TODO(sashab): Move this to the same file as PermissionIDSet once that moves
 // to its own file.
-class PermissionID : public std::pair<APIPermission::ID, std::u16string> {
+class PermissionID : public std::pair<mojom::APIPermissionID, std::u16string> {
  public:
-  explicit PermissionID(APIPermission::ID id);
-  PermissionID(APIPermission::ID id, const std::u16string& parameter);
+  explicit PermissionID(mojom::APIPermissionID id);
+  PermissionID(mojom::APIPermissionID id, const std::u16string& parameter);
   virtual ~PermissionID();
 
-  const APIPermission::ID& id() const { return this->first; }
+  const mojom::APIPermissionID& id() const { return this->first; }
   const std::u16string& parameter() const { return this->second; }
 };
 
@@ -108,13 +108,13 @@ class PermissionID : public std::pair<APIPermission::ID, std::u16string> {
 //
 // TODO(sashab): Move this to its own file and rename it to PermissionSet after
 // APIPermission is removed, the current PermissionSet is no longer used, and
-// APIPermission::ID is the only type of Permission ID.
+// mojom::APIPermissionID is the only type of Permission ID.
 class PermissionIDSet {
  public:
   using const_iterator = std::set<PermissionID>::const_iterator;
 
   PermissionIDSet();
-  PermissionIDSet(std::initializer_list<APIPermission::ID> permissions);
+  PermissionIDSet(std::initializer_list<mojom::APIPermissionID> permissions);
   PermissionIDSet(const PermissionIDSet& other);
   virtual ~PermissionIDSet();
 
