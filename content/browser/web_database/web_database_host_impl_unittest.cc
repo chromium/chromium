@@ -71,7 +71,8 @@ class WebDatabaseHostImplTest : public ::testing::Test {
         }));
     run_loop.Run();
     RunUntilIdle();
-    EXPECT_EQ("Unauthorized origin.", bad_message_observer.WaitForBadMessage());
+    EXPECT_EQ("WebDatabaseHost: Unauthorized origin.",
+              bad_message_observer.WaitForBadMessage());
   }
 
   template <typename Callable>
@@ -86,7 +87,8 @@ class WebDatabaseHostImplTest : public ::testing::Test {
         }));
     run_loop.Run();
     RunUntilIdle();
-    EXPECT_EQ("Invalid origin.", bad_message_observer.WaitForBadMessage());
+    EXPECT_EQ("WebDatabaseHost: Invalid origin.",
+              bad_message_observer.WaitForBadMessage());
   }
 
   void CallRenderProcessHostCleanup() { render_process_host_.reset(); }
@@ -229,7 +231,8 @@ TEST_F(WebDatabaseHostImplTest, ProcessShutdown) {
 
     EXPECT_FALSE(success_callback_was_called);
     EXPECT_TRUE(error_callback_message.has_value());
-    EXPECT_EQ("Unauthorized origin.", error_callback_message.value());
+    EXPECT_EQ("WebDatabaseHost: Unauthorized origin.",
+              error_callback_message.value());
   }
 
   success_callback_was_called = false;

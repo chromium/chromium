@@ -54,8 +54,8 @@ void ValidateOriginOnUIThread(
   if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
           process_id, origin)) {
     callback_task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(error_callback), "Unauthorized origin."));
+        FROM_HERE, base::BindOnce(std::move(error_callback),
+                                  "WebDatabaseHost: Unauthorized origin."));
     return;
   }
 
@@ -351,7 +351,7 @@ void WebDatabaseHostImpl::ModifiedValidated(
   std::string origin_identifier(storage::GetIdentifierFromOrigin(origin));
   if (!database_connections_.IsDatabaseOpened(origin_identifier,
                                               database_name)) {
-    mojo::ReportBadMessage("Database not opened on modify");
+    mojo::ReportBadMessage("WebDatabaseHost: Database not opened on modify");
     return;
   }
 
@@ -374,7 +374,7 @@ void WebDatabaseHostImpl::ClosedValidated(const url::Origin& origin,
   std::string origin_identifier(storage::GetIdentifierFromOrigin(origin));
   if (!database_connections_.IsDatabaseOpened(origin_identifier,
                                               database_name)) {
-    mojo::ReportBadMessage("Database not opened on close");
+    mojo::ReportBadMessage("WebDatabaseHost: Database not opened on close");
     return;
   }
 
@@ -438,7 +438,7 @@ blink::mojom::WebDatabase& WebDatabaseHostImpl::GetWebDatabase() {
 void WebDatabaseHostImpl::ValidateOrigin(const url::Origin& origin,
                                          base::OnceClosure callback) {
   if (origin.opaque()) {
-    mojo::ReportBadMessage("Invalid origin.");
+    mojo::ReportBadMessage("WebDatabaseHost: Invalid origin.");
     return;
   }
 
