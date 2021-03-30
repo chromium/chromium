@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <map>
 #include <numeric>
-#include <string>
 #include <utility>
 #include <vector>
 
@@ -49,11 +48,9 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/url_util.h"
-#include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
 
 namespace {
 // TODO(skare): Pull the enum in search_provider.cc into its .h file, and switch
