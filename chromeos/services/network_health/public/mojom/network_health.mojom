@@ -68,6 +68,8 @@ struct Network {
 
 // Aggregate structure for all of the network health state.
 struct NetworkHealthState {
+  // This is a list of networking devices and any associated connections. Only
+  // networking technologies that are present on the device are included.
   // Networks will be sorted with active connections listed first.
   array<Network> networks;
 };
@@ -94,8 +96,8 @@ interface NetworkHealthService {
   // pipe.
   AddObserver(pending_remote<NetworkEventsObserver> observer);
 
-  // Returns a list of all the networks. Networks will be sorted with active
-  // connections listed first.
+  // Returns a list of networks. See NetworkHealthState.networks for more
+  // details.
   GetNetworkList() => (array<Network> networks);
 
   // Returns the current network health state.
