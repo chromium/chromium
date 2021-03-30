@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/handwriting/handwriting_recognition_service.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -26,16 +27,29 @@ void OnCreateHandwritingRecognizer(
     handwriting::mojom::blink::CreateHandwritingRecognizerResult result,
     mojo::PendingRemote<handwriting::mojom::blink::HandwritingRecognizer>
         pending_remote) {
-  if (result !=
-      handwriting::mojom::blink::CreateHandwritingRecognizerResult::kOk) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError, "Internal error."));
-    return;
+  switch (result) {
+    case handwriting::mojom::blink::CreateHandwritingRecognizerResult::kError: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError, "Internal error."));
+      return;
+    }
+    case handwriting::mojom::blink::CreateHandwritingRecognizerResult::
+        kNotSupported: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "The provided model constraints aren't supported."));
+      return;
+    }
+    case handwriting::mojom::blink::CreateHandwritingRecognizerResult::kOk: {
+      auto* handwriting_recognizer =
+          MakeGarbageCollected<HandwritingRecognizer>(
+              ExecutionContext::From(script_state), std::move(pending_remote));
+      resolver->Resolve(handwriting_recognizer);
+      return;
+    }
   }
 
-  auto* handwriting_recognizer = MakeGarbageCollected<HandwritingRecognizer>(
-      ExecutionContext::From(script_state), std::move(pending_remote));
-  resolver->Resolve(handwriting_recognizer);
+  NOTREACHED() << "CreateHandwritingRecognizer returns an invalid result.";
 }
 
 void OnQueryHandwritingFeature(

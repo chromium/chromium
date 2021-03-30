@@ -160,4 +160,7 @@ interface HandwritingRecognitionService {
 enum CreateHandwritingRecognizerResult {
   kOk,
   kError,
+  // The provided model constraint can't be satisfied (e.g. the language is
+  // not supported).
+  kNotSupported,
 };

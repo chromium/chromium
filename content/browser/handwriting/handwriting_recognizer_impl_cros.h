@@ -38,6 +38,9 @@ class CONTENT_EXPORT CrOSHandwritingRecognizerImpl final
       delete;
   ~CrOSHandwritingRecognizerImpl() override;
 
+  // Returns whether the provided |language_tag| is supported.
+  static bool SupportsLanguageTag(base::StringPiece language_tag);
+
  private:
   explicit CrOSHandwritingRecognizerImpl(
       mojo::PendingRemote<
