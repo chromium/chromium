@@ -34,6 +34,7 @@
   <dt>Expanded Size</dt> <dd>The size of the file and all the files it includes, directly and indirectly. Also shown as percentage of the total translation unit size.</dd>
   <dt>Added Size</dt> <dd>How much size is added by this file being part of the build. In other words, if this file were empty and had no includes, how much smaller would the build be. Also shown as percentage of the total translation unit size.</dd>
   <dt>Occurrences</dt> <dd>How many translation units this file is part of. Also shown as a percentage of the total number of translation units.</dd>
+  <dt>Include Count</dt> <dd>How many times this file is included directly.</dd>
 </dl>
 
 <p>File size does not correlate perfectly with compile time, but generally serve as a rough guide to what files are slow to compile.</p>
@@ -41,8 +42,8 @@
 
 <p>
 <label for="filter">Filter:</label>
-<input type="text" id="filter" name="filter" size="20">
-<button onClick="buildTable()">Apply</button>
+<input type="text" id="filter" name="filter" size="60">
+<button onClick="buildTable()" id="apply">Apply</button>
 (Filename regex)
 </p>
 
@@ -55,6 +56,7 @@
       <th id="tsize" colspan="2">Expanded Size (B) <a href="javascript:sortOnTSize()">&darr;</a></th>
       <th id="asize" colspan="2">Added Size (B) <a href="javascript:sortOnASize()">&darr;</a></th>
       <th id="prevalence" colspan="2">Occurrences <a href="javascript:sortOnPrevalence()">&darr;</a></th>
+      <th id="includecount">Include Count <a href="javascript:sortOnIncludeCount()">&darr;</a></th>
     </tr>
   </thead>
   <tbody>
@@ -88,6 +90,11 @@ document.getElementById('numFiles').textContent = fmt(data.files.length);
 document.getElementById('totFileSize').textContent = fmt(totFileSize);
 
 
+function showIncluders(i) {
+  document.getElementById('filter').value = 'includes:' + data.files[i];
+  document.getElementById('apply').click();
+}
+
 function buildRow(i, rank) {
   return `
 <tr>
@@ -97,6 +104,7 @@ function buildRow(i, rank) {
 <td>${fmt(data.tsizes[i])}</td> <td>${(100 * data.tsizes[i] / totBuildSize).toFixed(2)}&nbsp;%</td>
 <td>${fmt(data.asizes[i])}</td> <td>${(100 * data.asizes[i] / totBuildSize).toFixed(2)}&nbsp;%</td>
 <td>${fmt(data.prevalence[i])}</td> <td>${(100 * data.prevalence[i] / numRoots).toFixed(2)}&nbsp;%</td>
+<td><a href="javascript:showIncluders(${i})">${fmt(data.included_by[i].length)}</a></td>
 </tr>
   `;
 }
@@ -106,6 +114,11 @@ function clearTable() {
   tbody.parentNode.removeChild(tbody);
 }
 
+function intersect(arr1, arr2) {
+  let s2 = new Set(arr2);
+  return arr1.filter(x => s2.has(x));
+}
+
 let sortFunc;
 
 function buildTable() {
@@ -113,8 +126,19 @@ function buildTable() {
 
   let fileNums = [...Array(data.files.length).keys()];
 
-  const filter = document.getElementById('filter').value;
+  let filter = document.getElementById('filter').value;
   if (filter !== '') {
+    let match;
+
+    // Handle includes: operator.
+    const includesOp = new RegExp(' *includes:([^ ]*) *');
+    while (match = filter.match(includesOp)) {
+      const include = match[1];
+      const fileNum = data.files.findIndex(n => n === include);
+      fileNums = intersect(fileNums, data.included_by[fileNum]);
+      filter = filter.replace(includesOp, '');
+    }
+
     const re = new RegExp(filter);
     fileNums = fileNums.filter(i => data.files[i].match(re));
   }
@@ -161,6 +185,12 @@ function sortOnASize() {
 function sortOnPrevalence() {
   highlightTH('prevalence');
   sortFunc = (i, j) => data.prevalence[j] - data.prevalence[i];
+  buildTable();
+}
+
+function sortOnIncludeCount() {
+  highlightTH('includecount');
+  sortFunc = (i, j) => data.included_by[j].length - data.included_by[i].length;
   buildTable();
 }
 

@@ -230,24 +230,31 @@ def analyze(target, revision, build_log_file, json_file):
   (roots, includes) = parse_build(build_log_file)
 
   print('Getting file sizes...')
-  sizes = {name: os.path.getsize(name) for name in includes.keys()}
+  sizes = {name: os.path.getsize(name) for name in includes}
 
   print('Computing transitive sizes...')
-  trans_sizes = {n: trans_size(n, includes, sizes) for n in includes.keys()}
+  trans_sizes = {n: trans_size(n, includes, sizes) for n in includes}
 
   print('Counting prevalence...')
-  prevalence = {name: 0 for name in includes.keys()}
+  prevalence = {name: 0 for name in includes}
   for r in roots:
     for n in post_order_nodes(r, includes):
       prevalence[n] += 1
 
+  # Map from file to files that include it.
+  print('Building reverse include map...')
+  included_by = {k: set() for k in includes}
+  for k, v in includes.values():
+    for i in v:
+      included_by[i].add(k)
+
   build_size = sum([trans_sizes[n] for n in roots])
 
   print('Computing added sizes...')
-  added_sizes = {name: 0 for name in includes.keys()}
+  added_sizes = {name: 0 for name in includes}
   for r in roots:
     doms = compute_doms(r, includes)
-    for n in doms.keys():
+    for n in doms:
       for d in doms[n]:
         added_sizes[d] += sizes[n]
 
@@ -275,6 +282,7 @@ def analyze(target, revision, build_log_file, json_file):
           'files': names,
           'roots': [nr(x) for x in sorted(roots)],
           'includes': [[nr(x) for x in includes[n]] for n in names],
+          'included_by': [[nr(x) for x in included_by[n]] for n in names],
           'sizes': [sizes[n] for n in names],
           'tsizes': [trans_sizes[n] for n in names],
           'asizes': [added_sizes[n] for n in names],
