@@ -233,8 +233,12 @@ interface AppHistory : EventTarget
     attribute @@toStringTag
     getter current
     getter onnavigate
+    getter onnavigateerror
+    getter onnavigatesuccess
     method constructor
     setter onnavigate
+    setter onnavigateerror
+    setter onnavigatesuccess
 interface AppHistoryEntry : EventTarget
     attribute @@toStringTag
     getter sameDocument

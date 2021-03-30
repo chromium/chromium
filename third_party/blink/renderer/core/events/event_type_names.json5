@@ -194,6 +194,8 @@
     "mousewheel",
     "mute",
     "navigate",
+    "navigateerror",
+    "navigatesuccess",
     "negotiationneeded",
     "nomatch",
     "notificationclick",

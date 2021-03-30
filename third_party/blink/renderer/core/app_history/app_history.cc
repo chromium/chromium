@@ -63,9 +63,7 @@ bool AppHistory::DispatchNavigateEvent(const KURL& url,
   navigate_event->SetUrl(url);
   navigate_event->SetFrameLoadType(type);
   navigate_event->SetStateObject(state_object);
-
-  DispatchEvent(*navigate_event);
-  return !navigate_event->defaultPrevented();
+  return navigate_event->Fire(this, same_document);
 }
 
 const AtomicString& AppHistory::InterfaceName() const {

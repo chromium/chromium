@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_APP_HISTORY_APP_HISTORY_NAVIGATE_EVENT_H_
 
 #include "third_party/blink/public/web/web_frame_load_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -16,6 +17,7 @@
 
 namespace blink {
 
+class AppHistory;
 class AppHistoryNavigateEventInit;
 class ExceptionState;
 class FormData;
@@ -35,6 +37,8 @@ class AppHistoryNavigateEvent final : public Event,
   AppHistoryNavigateEvent(ExecutionContext* context,
                           const AtomicString& type,
                           AppHistoryNavigateEventInit* init);
+
+  bool Fire(AppHistory*, bool same_document);
 
   void SetUrl(const KURL& url) { url_ = url; }
   void SetFrameLoadType(WebFrameLoadType type) { frame_load_type_ = type; }
@@ -61,6 +65,7 @@ class AppHistoryNavigateEvent final : public Event,
   KURL url_;
   WebFrameLoadType frame_load_type_ = WebFrameLoadType::kStandard;
   scoped_refptr<SerializedScriptValue> state_object_;
+  ScriptPromise completion_promise_;
 };
 
 }  // namespace blink

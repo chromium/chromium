@@ -10,4 +10,6 @@
   readonly attribute AppHistoryEntry current;
 
   attribute EventHandler onnavigate;
+  attribute EventHandler onnavigatesuccess;
+  attribute EventHandler onnavigateerror;
 };
