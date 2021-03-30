@@ -3026,7 +3026,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.Stage1.FactoryInit"
-    units="ms" expires_after="2021-07-24">
+    units="ms" expires_after="2021-09-26">
   <owner>changwan@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3036,7 +3036,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold"
-    units="ms" expires_after="2021-07-24">
+    units="ms" expires_after="2021-09-26">
   <owner>changwan@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3048,7 +3048,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Warm"
-    units="ms" expires_after="2021-07-24">
+    units="ms" expires_after="2021-09-26">
   <owner>changwan@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
