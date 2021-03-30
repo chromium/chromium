@@ -472,7 +472,6 @@
   },
   "android-pie-arm64-coverage-experimental-rel": {
     "gn_args": {
-      "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "fail_on_android_expectations": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -482,7 +481,6 @@
       "system_webview_package_name": "com.google.android.webview",
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_clang_coverage": true,
       "use_goma": true
     }
   },
