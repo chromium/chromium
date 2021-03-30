@@ -2178,10 +2178,6 @@
       name: "WebAuthenticationConditionalUI",
     },
     {
-      name: "WebAuthenticationGetAssertionFeaturePolicy",
-      status: "experimental",
-    },
-    {
       name: "WebAuthenticationLargeBlobExtension",
       status: "experimental",
     },

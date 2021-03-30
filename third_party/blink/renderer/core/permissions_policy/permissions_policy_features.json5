@@ -247,7 +247,6 @@
     {
       name: "PublicKeyCredentialsGet",
       permissions_policy_name: "publickey-credentials-get",
-      depends_on: ["WebAuthenticationGetAssertionFeaturePolicy"],
     },
     {
       name: "ScreenWakeLock",

@@ -487,13 +487,11 @@ void FidoCableDiscovery::CableDeviceFound(BluetoothAdapter* adapter,
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
   // Speed up GATT service discovery on ChromeOS/BlueZ.
   // SetConnectionLatency() is NOTIMPLEMENTED() on other platforms.
-  if (base::FeatureList::IsEnabled(device::kWebAuthCableLowLatency)) {
-    device->SetConnectionLatency(BluetoothDevice::CONNECTION_LATENCY_LOW,
-                                 base::DoNothing(), base::BindRepeating([]() {
-                                   FIDO_LOG(ERROR)
-                                       << "SetConnectionLatency() failed";
-                                 }));
-  }
+  device->SetConnectionLatency(BluetoothDevice::CONNECTION_LATENCY_LOW,
+                               base::DoNothing(), base::BindRepeating([]() {
+                                 FIDO_LOG(ERROR)
+                                     << "SetConnectionLatency() failed";
+                               }));
 #endif  // defined(OS_CHROMEOS) || defined(OS_LINUX)
 
   auto cable_device =

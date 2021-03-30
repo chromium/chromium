@@ -136,8 +136,6 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
     bool* is_cross_origin) {
   *is_cross_origin = !IsSameOriginWithAncestors(origin);
   if ((type != RequestType::kGetAssertion ||
-       !base::FeatureList::IsEnabled(
-           device::kWebAuthGetAssertionFeaturePolicy) ||
        !render_frame_host_->IsFeatureEnabled(
            blink::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet)) &&
       (type != RequestType::kMakePaymentCredential ||

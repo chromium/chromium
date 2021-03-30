@@ -406,8 +406,6 @@ class WebAuthBrowserTestBase : public content::ContentBrowserTest {
  protected:
   WebAuthBrowserTestBase() = default;
 
-  virtual std::vector<base::Feature> GetFeaturesToEnable() { return {}; }
-
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
 
@@ -449,13 +447,11 @@ class WebAuthBrowserTestBase : public content::ContentBrowserTest {
 
  private:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitWithFeatures(GetFeaturesToEnable(), {});
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<WebAuthBrowserTestContentBrowserClient> test_client_;
   WebAuthBrowserTestState test_state_;
@@ -806,11 +802,6 @@ class WebAuthJavascriptClientBrowserTest : public WebAuthBrowserTestBase {
  public:
   WebAuthJavascriptClientBrowserTest() = default;
   ~WebAuthJavascriptClientBrowserTest() override = default;
-
- protected:
-  std::vector<base::Feature> GetFeaturesToEnable() override {
-    return {device::kWebAuthGetAssertionFeaturePolicy};
-  }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebAuthJavascriptClientBrowserTest);

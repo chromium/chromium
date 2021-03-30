@@ -937,9 +937,7 @@ ScriptPromise CredentialsContainer::get(
 
   auto required_origin_type = RequiredOriginType::kSecureAndSameWithAncestors;
   // hasPublicKey() implies that this is a WebAuthn request.
-  if (options->hasPublicKey() &&
-      RuntimeEnabledFeatures::
-          WebAuthenticationGetAssertionFeaturePolicyEnabled()) {
+  if (options->hasPublicKey()) {
     required_origin_type = RequiredOriginType::
         kSecureAndPermittedByWebAuthGetAssertionPermissionsPolicy;
   } else if (options->hasOtp() &&

@@ -515,12 +515,6 @@ void WebRuntimeFeatures::EnableWebAuth(bool enable) {
   RuntimeEnabledFeatures::SetWebAuthEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableWebAuthenticationGetAssertionFeaturePolicy(
-    bool enable) {
-  RuntimeEnabledFeatures::SetWebAuthenticationGetAssertionFeaturePolicyEnabled(
-      enable);
-}
-
 void WebRuntimeFeatures::EnableWebOTPAssertionFeaturePolicy(bool enable) {
   RuntimeEnabledFeatures::SetWebOTPAssertionFeaturePolicyEnabled(enable);
 }

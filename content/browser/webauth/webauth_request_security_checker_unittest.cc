@@ -78,8 +78,7 @@ class WebAuthRequestSecurityCheckerTest
   WebAuthRequestSecurityCheckerTest()
       : web_contents_(web_contents_factory_.CreateWebContents(&context_)) {
     features_.InitWithFeatures(
-        /*enabled_features=*/{device::kWebAuthGetAssertionFeaturePolicy,
-                              features::kSecurePaymentConfirmation},
+        /*enabled_features=*/{features::kSecurePaymentConfirmation},
         /*disabled_features=*/{});
   }
 
