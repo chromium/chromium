@@ -11,8 +11,8 @@
 #include "base/time/default_clock.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_store_chromeos.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/prefs/pref_service.h"
 
@@ -28,7 +28,7 @@ LookupKeyUploader::LookupKeyUploader(
     : policy_store_(policy_store),
       prefs_(pref_service),
       certificate_uploader_(certificate_uploader),
-      cryptohome_client_(chromeos::CryptohomeClient::Get()),
+      cryptohome_misc_client_(chromeos::CryptohomeMiscClient::Get()),
       clock_(base::DefaultClock::GetInstance()) {
   // Can be null in tests.
   if (policy_store_)
@@ -55,7 +55,7 @@ void LookupKeyUploader::OnStoreLoaded(CloudPolicyStore* store) {
     return;
   needs_upload_ = false;
 
-  cryptohome_client_->WaitForServiceToBeAvailable(base::BindOnce(
+  cryptohome_misc_client_->WaitForServiceToBeAvailable(base::BindOnce(
       &LookupKeyUploader::GetDataFromCryptohome, weak_factory_.GetWeakPtr()));
 }
 
@@ -64,8 +64,10 @@ void LookupKeyUploader::GetDataFromCryptohome(bool available) {
     needs_upload_ = true;
     return;
   }
-  cryptohome_client_->GetRsuDeviceId(base::BindOnce(
-      &LookupKeyUploader::OnRsuDeviceIdReceived, weak_factory_.GetWeakPtr()));
+  cryptohome_misc_client_->GetRsuDeviceId(
+      user_data_auth::GetRsuDeviceIdRequest(),
+      base::BindOnce(&LookupKeyUploader::OnRsuDeviceIdReceived,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void LookupKeyUploader::OnStoreError(CloudPolicyStore* store) {
@@ -73,25 +75,18 @@ void LookupKeyUploader::OnStoreError(CloudPolicyStore* store) {
 }
 
 void LookupKeyUploader::OnRsuDeviceIdReceived(
-    base::Optional<cryptohome::BaseReply> result) {
+    base::Optional<user_data_auth::GetRsuDeviceIdReply> result) {
   if (!result.has_value()) {
     Result(std::string(), false /* success */);
     return;
   }
 
-  if (!result->HasExtension(cryptohome::GetRsuDeviceIdReply::reply) ||
-      !result->GetExtension(cryptohome::GetRsuDeviceIdReply::reply)
-           .has_rsu_device_id() ||
-      result->GetExtension(cryptohome::GetRsuDeviceIdReply::reply)
-          .rsu_device_id()
-          .empty()) {
+  if (result->rsu_device_id().empty()) {
     LOG(ERROR) << "Failed to extract RSU lookup key.";
     Result(std::string(), false /* success */);
     return;
   }
-  const std::string rsu_device_id =
-      result->GetExtension(cryptohome::GetRsuDeviceIdReply::reply)
-          .rsu_device_id();
+  const std::string rsu_device_id = result->rsu_device_id();
 
   // Making it printable so we can store it in prefs.
   std::string encoded_rsu_device_id;
