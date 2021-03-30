@@ -149,7 +149,6 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD(void,
               RegisterSubresourceOverride,
               (blink::mojom::TransferrableURLLoaderPtr));
-  MOCK_METHOD(bool, FromDownloadCrossOriginRedirect, ());
   MOCK_METHOD(bool, IsSameProcess, ());
   MOCK_METHOD(NavigationEntry*, GetNavigationEntry, ());
   MOCK_METHOD(int, GetNavigationEntryOffset, ());
