@@ -479,7 +479,7 @@ class CORE_EXPORT NGPhysicalFragment
 
   const ComputedStyle& SlowEffectiveStyle() const;
 
-  const Vector<NGInlineItem>& InlineItemsOfContainingBlock() const;
+  const HeapVector<NGInlineItem>& InlineItemsOfContainingBlock() const;
 
   // The following bitfields are only to be used by NGPhysicalContainerFragment
   // (it's defined here to save memory, since that class has no bitfields).

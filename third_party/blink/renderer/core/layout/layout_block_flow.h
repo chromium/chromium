@@ -846,7 +846,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
     // mapping for |NGInlineNode::GetOffsetMapping()|.
     // TODO(yosin): Once we have no legacy support, we should get rid of
     // |offset_mapping_| here.
-    std::unique_ptr<NGOffsetMapping> offset_mapping_;
+    Member<NGOffsetMapping> offset_mapping_;
 
     // Name of the start page for this object, if propagated from a descendant;
     // see https://drafts.csswg.org/css-page-3/#start-page-value
@@ -864,7 +864,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   void ClearOffsetMappingIfNeeded();
   const NGOffsetMapping* GetOffsetMapping() const;
-  void SetOffsetMapping(std::unique_ptr<NGOffsetMapping>);
+  void SetOffsetMapping(NGOffsetMapping*);
 
   const FloatingObjects* GetFloatingObjects() const {
     NOT_DESTROYED();

@@ -59,12 +59,12 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
       previous_fragment.MayHaveDescendantAboveBlockStart());
 }
 
-scoped_refptr<const NGLayoutResult> NGSimplifiedOOFLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGSimplifiedOOFLayoutAlgorithm::Layout() {
   return container_builder_.ToBoxFragment();
 }
 
 void NGSimplifiedOOFLayoutAlgorithm::AppendOutOfFlowResult(
-    scoped_refptr<const NGLayoutResult> result) {
+    const NGLayoutResult* result) {
   container_builder_.AddResult(*result, result->OutOfFlowPositionedOffset(),
                                /* offset_includes_relative_position */ false,
                                /* propagate_oof_descendants */ false);

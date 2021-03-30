@@ -65,7 +65,7 @@ void NGMathPaddedLayoutAlgorithm::GatherChildren(
   }
 }
 
-scoped_refptr<const NGLayoutResult> NGMathPaddedLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGMathPaddedLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
 
   NGBlockNode content = nullptr;
@@ -76,7 +76,7 @@ scoped_refptr<const NGLayoutResult> NGMathPaddedLayoutAlgorithm::Layout() {
   if (content) {
     NGConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
         Node(), ChildAvailableSize(), ConstraintSpace(), content);
-    scoped_refptr<const NGLayoutResult> content_layout_result =
+    const NGLayoutResult* content_layout_result =
         content.Layout(constraint_space);
     content_fragment =
         &To<NGPhysicalBoxFragment>(content_layout_result->PhysicalFragment());

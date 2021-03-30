@@ -963,12 +963,16 @@ TEST_F(MediaControlsImplTest,
   auto& video =
       To<HTMLVideoElement>(*page_holder->GetDocument().QuerySelector("video"));
   WeakPersistent<HTMLMediaElement> weak_persistent_video = &video;
-  video.remove();
+  WeakPersistent<LayoutObject> weak_persistent_layout_object =
+      video.GetLayoutObject();
 
+  video.remove();
+  page_holder->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   test::RunPendingTasks();
 
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_EQ(nullptr, weak_persistent_video);
+  EXPECT_EQ(nullptr, weak_persistent_layout_object);
 }
 
 TEST_F(MediaControlsImplTest,

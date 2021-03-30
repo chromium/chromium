@@ -430,7 +430,7 @@ void NGBoxFragmentBuilder::PropagateBreak(
     has_violating_break_ |= child_layout_result.HasViolatingBreak();
 }
 
-scoped_refptr<const NGLayoutResult> NGBoxFragmentBuilder::ToBoxFragment(
+const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(
     WritingMode block_or_line_writing_mode) {
 #if DCHECK_IS_ON()
   if (ItemsBuilder()) {
@@ -460,15 +460,14 @@ scoped_refptr<const NGLayoutResult> NGBoxFragmentBuilder::ToBoxFragment(
       NGPhysicalBoxFragment::Create(this, block_or_line_writing_mode);
   fragment->CheckType();
 
-  return base::AdoptRef(
-      new NGLayoutResult(NGLayoutResult::NGBoxFragmentBuilderPassKey(),
-                         std::move(fragment), this));
+  return MakeGarbageCollected<NGLayoutResult>(
+      NGLayoutResult::NGBoxFragmentBuilderPassKey(), std::move(fragment), this);
 }
 
-scoped_refptr<const NGLayoutResult> NGBoxFragmentBuilder::Abort(
+const NGLayoutResult* NGBoxFragmentBuilder::Abort(
     NGLayoutResult::EStatus status) {
-  return base::AdoptRef(new NGLayoutResult(
-      NGLayoutResult::NGBoxFragmentBuilderPassKey(), status, this));
+  return MakeGarbageCollected<NGLayoutResult>(
+      NGLayoutResult::NGBoxFragmentBuilderPassKey(), status, this);
 }
 
 LogicalOffset NGBoxFragmentBuilder::GetChildOffset(

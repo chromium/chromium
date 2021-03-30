@@ -127,8 +127,9 @@ struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   LayoutRectOutsets margin_box_outsets;
   MinMaxSizes intrinsic_logical_widths;
   LayoutUnit intrinsic_logical_widths_initial_block_size;
-  void* pointers[3];
-  Vector<scoped_refptr<const NGLayoutResult>, 1> layout_results;
+  Member<void*> result;
+  HeapVector<Member<const NGLayoutResult>, 1> layout_results;
+  void* pointers[2];
   Member<void*> inline_box_wrapper;
   wtf_size_t first_fragment_item_index_;
   Member<void*> rare_data;
@@ -436,6 +437,8 @@ LayoutBox::LayoutBox(ContainerNode* node)
 }
 
 void LayoutBox::Trace(Visitor* visitor) const {
+  visitor->Trace(measure_result_);
+  visitor->Trace(layout_results_);
   visitor->Trace(inline_box_wrapper_);
   visitor->Trace(rare_data_);
   LayoutBoxModelObject::Trace(visitor);
@@ -902,8 +905,7 @@ void LayoutBox::LayoutSubtreeRoot() {
         cb->measure_result_ =
             NGLayoutResult::CloneWithPostLayoutFragments(*cb->measure_result_);
       }
-      for (scoped_refptr<const NGLayoutResult>& layout_result :
-           cb->layout_results_) {
+      for (auto& layout_result : cb->layout_results_) {
         layout_result =
             NGLayoutResult::CloneWithPostLayoutFragments(*layout_result);
       }
@@ -3241,7 +3243,7 @@ bool LayoutBox::NGPhysicalFragmentList::HasFragmentItems() const {
 wtf_size_t LayoutBox::NGPhysicalFragmentList::IndexOf(
     const NGPhysicalBoxFragment& fragment) const {
   wtf_size_t index = 0;
-  for (const scoped_refptr<const NGLayoutResult>& result : layout_results_) {
+  for (const auto& result : layout_results_) {
     if (&result->PhysicalFragment() == &fragment)
       return index;
     ++index;
@@ -3254,8 +3256,7 @@ bool LayoutBox::NGPhysicalFragmentList::Contains(
   return IndexOf(fragment) != kNotFound;
 }
 
-void LayoutBox::SetCachedLayoutResult(
-    scoped_refptr<const NGLayoutResult> result) {
+void LayoutBox::SetCachedLayoutResult(const NGLayoutResult* result) {
   NOT_DESTROYED();
   DCHECK(!result->PhysicalFragment().BreakToken());
   DCHECK(!result->IsSingleUse());
@@ -3281,7 +3282,7 @@ void LayoutBox::SetCachedLayoutResult(
   AddLayoutResult(std::move(result), 0);
 }
 
-void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result,
+void LayoutBox::AddLayoutResult(const NGLayoutResult* result,
                                 wtf_size_t index) {
   NOT_DESTROYED();
   DCHECK_EQ(result->Status(), NGLayoutResult::kSuccess);
@@ -3296,7 +3297,7 @@ void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result,
   AddLayoutResult(std::move(result));
 }
 
-void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result) {
+void LayoutBox::AddLayoutResult(const NGLayoutResult* result) {
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   layout_results_.push_back(std::move(result));
   CheckDidAddFragment(*this, fragment);
@@ -3307,12 +3308,12 @@ void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result) {
     NGFragmentItems::FinalizeAfterLayout(layout_results_);
 }
 
-void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
+void LayoutBox::ReplaceLayoutResult(const NGLayoutResult* result,
                                     wtf_size_t index) {
   NOT_DESTROYED();
   DCHECK_LE(index, layout_results_.size());
-  const NGLayoutResult* old_result = layout_results_[index].get();
-  if (old_result == result.get())
+  const NGLayoutResult* old_result = layout_results_[index];
+  if (old_result == result)
     return;
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   bool got_new_fragment = &old_result->PhysicalFragment() != &fragment;
@@ -3342,7 +3343,7 @@ void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
     NGFragmentItems::FinalizeAfterLayout(layout_results_);
 }
 
-void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
+void LayoutBox::ReplaceLayoutResult(const NGLayoutResult* result,
                                     const NGPhysicalBoxFragment& old_fragment) {
   DCHECK_EQ(this, old_fragment.OwnerLayoutBox());
   DCHECK_EQ(result->PhysicalFragment().GetSelfOrContainerLayoutObject(),
@@ -3403,7 +3404,7 @@ const NGLayoutResult* LayoutBox::GetCachedLayoutResult() const {
   if (layout_results_.IsEmpty())
     return nullptr;
   // Only return re-usable results.
-  const NGLayoutResult* result = layout_results_[0].get();
+  const NGLayoutResult* result = layout_results_[0];
   if (result->IsSingleUse())
     return nullptr;
   DCHECK(!result->PhysicalFragment().IsLayoutObjectDestroyedOrMoved() ||
@@ -3420,10 +3421,10 @@ const NGLayoutResult* LayoutBox::GetCachedMeasureResult() const {
   if (measure_result_->IsSingleUse())
     return nullptr;
 
-  return measure_result_.get();
+  return measure_result_;
 }
 
-scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
+const NGLayoutResult* LayoutBox::CachedLayoutResult(
     const NGConstraintSpace& new_space,
     const NGBreakToken* break_token,
     const NGEarlyBreak* early_break,
@@ -3650,10 +3651,9 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
     return cached_layout_result;
   }
 
-  scoped_refptr<const NGLayoutResult> new_result =
-      base::AdoptRef(new NGLayoutResult(*cached_layout_result, new_space,
-                                        end_margin_strut, bfc_line_offset,
-                                        bfc_block_offset, block_offset_delta));
+  const NGLayoutResult* new_result = MakeGarbageCollected<NGLayoutResult>(
+      *cached_layout_result, new_space, end_margin_strut, bfc_line_offset,
+      bfc_block_offset, block_offset_delta);
 
   if (needs_cached_result_update)
     SetCachedLayoutResult(new_result);

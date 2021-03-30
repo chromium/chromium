@@ -70,7 +70,7 @@ NGGridLayoutAlgorithm::NGGridLayoutAlgorithm(
   }
 }
 
-scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGGridLayoutAlgorithm::Layout() {
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
 
   // Measure items.
@@ -734,7 +734,7 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
   //  - We'll need to respect the aspect-ratio when appropriate.
   auto BlockContributionSize = [&]() -> LayoutUnit {
     DCHECK(!is_parallel_with_track_direction);
-    scoped_refptr<const NGLayoutResult> result = node.Layout(space);
+    const NGLayoutResult* result = node.Layout(space);
     NGBoxFragment fragment(
         item_style.GetWritingDirection(),
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
@@ -1359,7 +1359,7 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
     LogicalRect unused;
     const NGConstraintSpace space = CreateConstraintSpace(
         grid_geometry, grid_item, NGCacheSlot::kMeasure, &unused);
-    scoped_refptr<const NGLayoutResult> result = grid_item.node.Layout(space);
+    const NGLayoutResult* result = grid_item.node.Layout(space);
 
     NGBoxFragment fragment(
         grid_item.node.Style().GetWritingDirection(),
@@ -2714,7 +2714,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
     const NGConstraintSpace space = CreateConstraintSpace(
         grid_geometry, grid_item, NGCacheSlot::kLayout, &containing_grid_area);
 
-    scoped_refptr<const NGLayoutResult> result = grid_item.node.Layout(space);
+    const NGLayoutResult* result = grid_item.node.Layout(space);
     const auto& physical_fragment =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment());
     NGBoxFragment logical_fragment(grid_item.node.Style().GetWritingDirection(),

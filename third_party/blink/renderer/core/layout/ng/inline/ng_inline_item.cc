@@ -147,7 +147,7 @@ const char* NGInlineItem::NGInlineItemTypeToString(int val) const {
 }
 
 void NGInlineItem::SetSegmentData(const RunSegmenter::RunSegmenterRange& range,
-                                  Vector<NGInlineItem>* items) {
+                                  HeapVector<NGInlineItem>* items) {
   unsigned segment_data = NGInlineItemSegment::PackSegmentData(range);
   for (NGInlineItem& item : *items) {
     if (item.Type() == NGInlineItem::kText)
@@ -164,7 +164,7 @@ void NGInlineItem::SetSegmentData(const RunSegmenter::RunSegmenterRange& range,
 // @param end_offset The exclusive end offset to set.
 // @param level The level to set.
 // @return The index of the next item.
-unsigned NGInlineItem::SetBidiLevel(Vector<NGInlineItem>& items,
+unsigned NGInlineItem::SetBidiLevel(HeapVector<NGInlineItem>& items,
                                     unsigned index,
                                     unsigned end_offset,
                                     UBiDiLevel level) {
@@ -226,7 +226,7 @@ String NGInlineItem::ToString() const {
 // @param items The list of NGInlineItem.
 // @param index The index to split.
 // @param offset The offset to split at.
-void NGInlineItem::Split(Vector<NGInlineItem>& items,
+void NGInlineItem::Split(HeapVector<NGInlineItem>& items,
                          unsigned index,
                          unsigned offset) {
   DCHECK_GT(offset, items[index].start_offset_);
@@ -237,4 +237,12 @@ void NGInlineItem::Split(Vector<NGInlineItem>& items,
   items[index + 1].start_offset_ = offset;
 }
 
+void NGInlineItem::Trace(Visitor* visitor) const {
+  visitor->Trace(layout_object_);
+}
+
+void NGInlineItemsData::Trace(Visitor* visitor) const {
+  visitor->Trace(items);
+  visitor->Trace(offset_mapping);
+}
 }  // namespace blink

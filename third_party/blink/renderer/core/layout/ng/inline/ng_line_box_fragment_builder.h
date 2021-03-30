@@ -80,7 +80,7 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final
   void PropagateChildrenData(NGLogicalLineItems&);
 
   // Creates the fragment. Can only be called once.
-  scoped_refptr<const NGLayoutResult> ToLineBoxFragment();
+  const NGLayoutResult* ToLineBoxFragment();
 
  private:
   FontHeight metrics_ = FontHeight::Empty();

@@ -54,7 +54,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
                         const PhysicalRect& layout_overflow,
                         bool recalculate_layout_overflow);
 
-  scoped_refptr<const NGLayoutResult> CloneAsHiddenForPaint() const;
+  const NGLayoutResult* CloneAsHiddenForPaint() const;
 
   ~NGPhysicalBoxFragment() {
     ink_overflow_.Reset(InkOverflowType());
