@@ -2116,13 +2116,13 @@
     Not allowed to handle protocols
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_DESCRIPTION" desc="Description of the serial ports content setting.">
-    Sites usually connect to serial devices for data transfer features, like setting up your network
+    Sites usually connect to serial ports for data transfer features, like setting up your network
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_ALLOWED" desc="Label for the enabled option of the serial ports content setting.">
-    Sites can ask to connect to serial devices
+    Sites can ask to connect to serial ports
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_BLOCKED" desc="Label for the disabled option of the serial ports content setting.">
-    Don't allow sites to connect to serial devices
+    Don't allow sites to connect to serial ports
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND_DESCRIPTION" desc="Description of the sound content setting.">
     Sites might play sound to provide audio for music, videos, and other media
