@@ -77,12 +77,18 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(viz::GetRendererTypes()),
                          ::testing::PrintToStringParamName());
 
+// viz::GetRendererTypes() can return an empty list on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(LayerTreeHostFiltersPixelTest);
+
 using LayerTreeHostFiltersPixelTestGPU = LayerTreeHostFiltersPixelTest;
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostFiltersPixelTestGPU,
                          ::testing::ValuesIn(viz::GetGpuRendererTypes()),
                          ::testing::PrintToStringParamName());
+
+// viz::GetGpuRendererTypes() can return an empty list on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(LayerTreeHostFiltersPixelTestGPU);
 
 TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRect) {
   scoped_refptr<SolidColorLayer> background = CreateSolidColorLayer(
@@ -360,6 +366,10 @@ INSTANTIATE_TEST_SUITE_P(PixelResourceTest,
                          ::testing::ValuesIn(viz::GetGpuRendererTypes()),
                          ::testing::PrintToStringParamName());
 
+// viz::GetGpuRendererTypes() can return an empty list on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    LayerTreeHostBlurFiltersPixelTestGPULayerList);
+
 // TODO(michaelludwig): Re-enable after Skia roll and update expected images.
 // See skbug.com/9545
 TEST_P(LayerTreeHostBlurFiltersPixelTestGPULayerList,
@@ -465,6 +475,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostFiltersScaledPixelTest,
                          ::testing::ValuesIn(viz::GetRendererTypes()),
                          ::testing::PrintToStringParamName());
+
+// viz::GetRendererTypes() can return an empty list on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    LayerTreeHostFiltersScaledPixelTest);
 
 TEST_P(LayerTreeHostFiltersScaledPixelTest, StandardDpi) {
   RunPixelTestType(100, 1.f);
@@ -1169,6 +1183,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(viz::GetRendererTypes()),
                          ::testing::PrintToStringParamName());
 
+// viz::GetRendererTypes() can return an empty list on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(BackdropFilterOffsetTest);
+
 TEST_P(BackdropFilterOffsetTest, StandardDpi) {
   RunPixelTestType(1.f);
 }
@@ -1228,6 +1245,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          BackdropFilterInvertTest,
                          ::testing::ValuesIn(viz::GetRendererTypes()),
                          ::testing::PrintToStringParamName());
+
+// viz::GetRendererTypes() can return an empty list on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(BackdropFilterInvertTest);
 
 TEST_P(BackdropFilterInvertTest, StandardDpi) {
   RunPixelTestType(1.f);

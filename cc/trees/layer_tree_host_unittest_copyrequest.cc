@@ -180,6 +180,10 @@ INSTANTIATE_TEST_SUITE_P(
     CombineWithCompositorModes(viz::GetRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
+// viz::GetGpuRendererTypesNoDawn() is empty on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    LayerTreeHostCopyRequestTestMultipleRequests);
+
 TEST_P(LayerTreeHostCopyRequestTestMultipleRequests, Test) {
   RunTest(compositor_mode());
 }
@@ -222,6 +226,10 @@ INSTANTIATE_TEST_SUITE_P(
     LayerTreeHostCopyRequestTestMultipleRequestsOutOfOrder,
     CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
+
+// viz::GetGpuRendererTypesNoDawn() is empty on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    LayerTreeHostCopyRequestTestMultipleRequestsOutOfOrder);
 
 TEST_P(LayerTreeHostCopyRequestTestMultipleRequestsOutOfOrder, Test) {
   RunTest(compositor_mode());
@@ -281,6 +289,10 @@ INSTANTIATE_TEST_SUITE_P(
     LayerTreeHostCopyRequestCompletionCausesCommit,
     CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
+
+// viz::GetGpuRendererTypesNoDawn() is empty on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    LayerTreeHostCopyRequestCompletionCausesCommit);
 
 TEST_P(LayerTreeHostCopyRequestCompletionCausesCommit, Test) {
   RunTest(compositor_mode());
@@ -389,6 +401,10 @@ INSTANTIATE_TEST_SUITE_P(
     CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
+// viz::GetGpuRendererTypesNoDawn() is empty on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    LayerTreeHostCopyRequestTestLayerDestroyed);
+
 TEST_P(LayerTreeHostCopyRequestTestLayerDestroyed, Test) {
   RunTest(compositor_mode());
 }
@@ -494,6 +510,10 @@ INSTANTIATE_TEST_SUITE_P(
     LayerTreeHostCopyRequestTestInHiddenSubtree,
     CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
+
+// viz::GetGpuRendererTypesNoDawn() is empty on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    LayerTreeHostCopyRequestTestInHiddenSubtree);
 
 TEST_P(LayerTreeHostCopyRequestTestInHiddenSubtree, Test) {
   RunTest(compositor_mode());
@@ -616,6 +636,10 @@ INSTANTIATE_TEST_SUITE_P(
     CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
+// viz::GetGpuRendererTypesNoDawn() is empty on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    LayerTreeHostTestHiddenSurfaceNotAllocatedForSubtreeCopyRequest);
+
 TEST_P(LayerTreeHostTestHiddenSurfaceNotAllocatedForSubtreeCopyRequest, Test) {
   RunTest(compositor_mode());
 }
@@ -671,6 +695,10 @@ INSTANTIATE_TEST_SUITE_P(
     LayerTreeHostCopyRequestTestClippedOut,
     CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
+
+// viz::GetGpuRendererTypesNoDawn() is empty on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    LayerTreeHostCopyRequestTestClippedOut);
 
 TEST_P(LayerTreeHostCopyRequestTestClippedOut, Test) {
   RunTest(compositor_mode());
@@ -731,6 +759,10 @@ INSTANTIATE_TEST_SUITE_P(
     LayerTreeHostCopyRequestTestScaledLayer,
     CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
+
+// viz::GetGpuRendererTypesNoDawn() is empty on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    LayerTreeHostCopyRequestTestScaledLayer);
 
 TEST_P(LayerTreeHostCopyRequestTestScaledLayer, Test) {
   RunTest(compositor_mode());
@@ -825,6 +857,10 @@ INSTANTIATE_TEST_SUITE_P(
     LayerTreeHostTestAsyncTwoReadbacksWithoutDraw,
     CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
+
+// viz::GetGpuRendererTypesNoDawn() is empty on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    LayerTreeHostTestAsyncTwoReadbacksWithoutDraw);
 
 TEST_P(LayerTreeHostTestAsyncTwoReadbacksWithoutDraw, Test) {
   RunTest(compositor_mode());
@@ -976,6 +1012,10 @@ INSTANTIATE_TEST_SUITE_P(
     CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
+// viz::GetGpuRendererTypesNoDawn() is empty on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    LayerTreeHostCopyRequestTestDeleteSharedImage);
+
 TEST_P(LayerTreeHostCopyRequestTestDeleteSharedImage, Test) {
   RunTest(compositor_mode());
 }
@@ -1126,6 +1166,10 @@ INSTANTIATE_TEST_SUITE_P(
     CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
+// viz::GetGpuRendererTypesNoDawn() is empty on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    LayerTreeHostCopyRequestTestCreatesSharedImage);
+
 TEST_P(LayerTreeHostCopyRequestTestCreatesSharedImage, Test) {
   RunTest(compositor_mode());
 }
@@ -1214,6 +1258,10 @@ INSTANTIATE_TEST_SUITE_P(
     CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
+// viz::GetGpuRendererTypesNoDawn() is empty on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    LayerTreeHostCopyRequestTestDestroyBeforeCopy);
+
 TEST_P(LayerTreeHostCopyRequestTestDestroyBeforeCopy, Test) {
   RunTest(compositor_mode());
 }
@@ -1296,6 +1344,10 @@ INSTANTIATE_TEST_SUITE_P(
     LayerTreeHostCopyRequestTestShutdownBeforeCopy,
     CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
+
+// viz::GetGpuRendererTypesNoDawn() is empty on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    LayerTreeHostCopyRequestTestShutdownBeforeCopy);
 
 TEST_P(LayerTreeHostCopyRequestTestShutdownBeforeCopy, Test) {
   RunTest(compositor_mode());
@@ -1428,6 +1480,10 @@ INSTANTIATE_TEST_SUITE_P(
     LayerTreeHostCopyRequestTestMultipleDrawsHiddenCopyRequest,
     CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
+
+// viz::GetGpuRendererTypesNoDawn() is empty on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    LayerTreeHostCopyRequestTestMultipleDrawsHiddenCopyRequest);
 
 TEST_P(LayerTreeHostCopyRequestTestMultipleDrawsHiddenCopyRequest, Test) {
   RunTest(compositor_mode());
