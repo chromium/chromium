@@ -23,6 +23,7 @@
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/tpm/buildflags.h"
@@ -112,7 +113,7 @@ SystemTokenCertDBInitializer::SystemTokenCertDBInitializer()
           kIsSystemSlotSoftwareFallbackAllowed) {
   // Only start loading the system token once cryptohome is available and only
   // if the TPM is ready (available && owned && not being owned).
-  CryptohomeClient::Get()->WaitForServiceToBeAvailable(
+  UserDataAuthClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(&SystemTokenCertDBInitializer::OnCryptohomeAvailable,
                      weak_ptr_factory_.GetWeakPtr()));
 }

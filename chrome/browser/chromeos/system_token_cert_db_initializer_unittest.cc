@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/system_token_cert_db_storage_test_util.h"
 #include "chromeos/tpm/tpm_token_loader.h"
@@ -27,7 +28,7 @@ class SystemTokenCertDbInitializerTest : public testing::Test {
  public:
   SystemTokenCertDbInitializerTest() {
     TPMTokenLoader::InitializeForTest();
-    CryptohomeClient::InitializeFake();
+    UserDataAuthClient::InitializeFake();
     SystemTokenCertDbStorage::Initialize();
     NetworkCertLoader::Initialize();
     TpmManagerClient::InitializeFake();
@@ -45,7 +46,7 @@ class SystemTokenCertDbInitializerTest : public testing::Test {
     TpmManagerClient::Shutdown();
     NetworkCertLoader::Shutdown();
     SystemTokenCertDbStorage::Shutdown();
-    CryptohomeClient::Shutdown();
+    UserDataAuthClient::Shutdown();
     TPMTokenLoader::Shutdown();
   }
 
