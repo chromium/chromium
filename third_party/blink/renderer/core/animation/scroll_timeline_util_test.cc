@@ -140,68 +140,70 @@ TEST_F(ScrollTimelineUtilTest, ConvertOrientationPhysicalCases) {
                                        WritingMode::kVerticalRl};
   Vector<TextDirection> directions = {TextDirection::kLtr, TextDirection::kRtl};
 
-  ComputedStyle* style = GetDocument().GetStyleResolver().CreateComputedStyle();
+  scoped_refptr<ComputedStyle> style =
+      GetDocument().GetStyleResolver().CreateComputedStyle();
   for (const WritingMode& writing_mode : writing_modes) {
     for (const TextDirection& direction : directions) {
       style->SetWritingMode(writing_mode);
       style->SetDirection(direction);
-      EXPECT_EQ(ConvertOrientation(ScrollTimeline::Vertical, style),
+      EXPECT_EQ(ConvertOrientation(ScrollTimeline::Vertical, style.get()),
                 CompositorScrollTimeline::ScrollDown);
-      EXPECT_EQ(ConvertOrientation(ScrollTimeline::Horizontal, style),
+      EXPECT_EQ(ConvertOrientation(ScrollTimeline::Horizontal, style.get()),
                 CompositorScrollTimeline::ScrollRight);
     }
   }
 }
 
 TEST_F(ScrollTimelineUtilTest, ConvertOrientationLogical) {
-  ComputedStyle* style = GetDocument().GetStyleResolver().CreateComputedStyle();
+  scoped_refptr<ComputedStyle> style =
+      GetDocument().GetStyleResolver().CreateComputedStyle();
 
   // horizontal-tb, ltr
   style->SetWritingMode(WritingMode::kHorizontalTb);
   style->SetDirection(TextDirection::kLtr);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Block, style),
+  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Block, style.get()),
             CompositorScrollTimeline::ScrollDown);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Inline, style),
+  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Inline, style.get()),
             CompositorScrollTimeline::ScrollRight);
 
   // vertical-lr, ltr
   style->SetWritingMode(WritingMode::kVerticalLr);
   style->SetDirection(TextDirection::kLtr);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Block, style),
+  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Block, style.get()),
             CompositorScrollTimeline::ScrollRight);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Inline, style),
+  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Inline, style.get()),
             CompositorScrollTimeline::ScrollDown);
 
   // vertical-rl, ltr
   style->SetWritingMode(WritingMode::kVerticalRl);
   style->SetDirection(TextDirection::kLtr);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Block, style),
+  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Block, style.get()),
             CompositorScrollTimeline::ScrollLeft);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Inline, style),
+  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Inline, style.get()),
             CompositorScrollTimeline::ScrollDown);
 
   // horizontal-tb, rtl
   style->SetWritingMode(WritingMode::kHorizontalTb);
   style->SetDirection(TextDirection::kRtl);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Block, style),
+  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Block, style.get()),
             CompositorScrollTimeline::ScrollDown);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Inline, style),
+  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Inline, style.get()),
             CompositorScrollTimeline::ScrollLeft);
 
   // vertical-lr, rtl
   style->SetWritingMode(WritingMode::kVerticalLr);
   style->SetDirection(TextDirection::kRtl);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Block, style),
+  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Block, style.get()),
             CompositorScrollTimeline::ScrollRight);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Inline, style),
+  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Inline, style.get()),
             CompositorScrollTimeline::ScrollUp);
 
   // vertical-rl, rtl
   style->SetWritingMode(WritingMode::kVerticalRl);
   style->SetDirection(TextDirection::kRtl);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Block, style),
+  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Block, style.get()),
             CompositorScrollTimeline::ScrollLeft);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Inline, style),
+  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Inline, style.get()),
             CompositorScrollTimeline::ScrollUp);
 }
 

@@ -155,7 +155,7 @@ class CORE_EXPORT NGFragmentItem {
   }
   const LayoutObject* GetLayoutObject() const { return layout_object_; }
   LayoutObject* GetMutableLayoutObject() const {
-    return const_cast<LayoutObject*>(layout_object_.Get());
+    return const_cast<LayoutObject*>(layout_object_);
   }
   bool IsLayoutObjectDestroyedOrMoved() const { return !layout_object_; }
   void LayoutObjectWillBeDestroyed() const;
@@ -448,7 +448,7 @@ class CORE_EXPORT NGFragmentItem {
   void RecalcInkOverflow(const NGInlineCursor& cursor,
                          PhysicalRect* self_and_contents_rect_out);
 
-  UntracedMember<const LayoutObject> layout_object_;
+  const LayoutObject* layout_object_;
 
   // TODO(kojii): We can make them sub-classes if we need to make the vector of
   // pointers. Sub-classing from DisplayItemClient prohibits copying and that we

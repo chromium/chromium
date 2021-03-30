@@ -106,7 +106,8 @@ class CORE_EXPORT InspectorDOMSnapshotAgent final
   WTF::HashMap<String, int> string_table_;
 
   HeapHashMap<Member<const CSSValue>, int> css_value_cache_;
-  HeapHashMap<Member<const ComputedStyle>, protocol::Array<int>*> style_cache_;
+  HashMap<scoped_refptr<const ComputedStyle>, protocol::Array<int>*>
+      style_cache_;
 
   std::unique_ptr<protocol::Array<protocol::DOMSnapshot::DocumentSnapshot>>
       documents_;

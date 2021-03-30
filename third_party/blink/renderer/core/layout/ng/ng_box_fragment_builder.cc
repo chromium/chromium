@@ -33,8 +33,7 @@ void GatherInlineContainerFragmentsFromItems(
     const Items& items,
     const PhysicalOffset& box_offset,
     NGBoxFragmentBuilder::InlineContainingBlockMap* inline_containing_block_map,
-    HeapHashMap<Member<const LayoutObject>, LineBoxPair>*
-        containing_linebox_map) {
+    HashMap<const LayoutObject*, LineBoxPair>* containing_linebox_map) {
   const NGPhysicalLineBoxFragment* linebox = nullptr;
   for (const auto& item : items) {
     // Track the current linebox.
@@ -522,7 +521,7 @@ void NGBoxFragmentBuilder::ComputeInlineContainerGeometry(
     DCHECK_EQ(entry.key, entry.key->ContinuationRoot());
 #endif
 
-  HeapHashMap<Member<const LayoutObject>, LineBoxPair> containing_linebox_map;
+  HashMap<const LayoutObject*, LineBoxPair> containing_linebox_map;
 
   if (items_builder_) {
     // To access the items correctly we need to convert them to the physical

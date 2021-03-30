@@ -33,7 +33,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
  public:
   NGBoxFragmentBuilder(NGLayoutInputNode node,
-                       const ComputedStyle* style,
+                       scoped_refptr<const ComputedStyle> style,
                        const NGConstraintSpace* space,
                        WritingDirectionMode writing_direction)
       : NGContainerFragmentBuilder(node,
@@ -46,7 +46,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // Build a fragment for LayoutObject without NGLayoutInputNode. LayoutInline
   // has NGInlineItem but does not have corresponding NGLayoutInputNode.
   NGBoxFragmentBuilder(LayoutObject* layout_object,
-                       const ComputedStyle* style,
+                       scoped_refptr<const ComputedStyle> style,
                        WritingDirectionMode writing_direction)
       : NGContainerFragmentBuilder(/* node */ nullptr,
                                    std::move(style),
@@ -554,8 +554,8 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   };
 
   using InlineContainingBlockMap =
-      HeapHashMap<Member<const LayoutObject>,
-                  base::Optional<InlineContainingBlockGeometry>>;
+      HashMap<const LayoutObject*,
+              base::Optional<InlineContainingBlockGeometry>>;
 
   // Computes the geometry required for any inline containing blocks.
   // |inline_containing_block_map| is a map whose keys specify which inline
@@ -637,7 +637,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   base::Optional<PhysicalRect> table_grid_rect_;
   base::Optional<NGTableFragmentData::ColumnGeometries>
       table_column_geometries_;
-  Persistent<const NGTableBorders> table_collapsed_borders_;
+  scoped_refptr<const NGTableBorders> table_collapsed_borders_;
   std::unique_ptr<NGTableFragmentData::CollapsedBordersGeometry>
       table_collapsed_borders_geometry_;
   base::Optional<wtf_size_t> table_column_count_;

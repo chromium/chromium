@@ -32,15 +32,15 @@ TEST_F(StyleBuilderTest, WritingModeChangeDirtiesFont) {
 
   for (const CSSProperty* property : properties) {
     for (const CSSValue* value : values) {
-      auto* parent_style =
+      auto parent_style =
           GetDocument().GetStyleResolver().CreateComputedStyle();
-      auto* style = GetDocument().GetStyleResolver().CreateComputedStyle();
+      auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
       // This test assumes that initial 'writing-mode' is not 'vertical-lr'.
       ASSERT_NE(WritingMode::kVerticalLr, style->GetWritingMode());
       style->SetWritingMode(WritingMode::kVerticalLr);
 
       StyleResolverState state(GetDocument(), *GetDocument().body(),
-                               StyleRequest(parent_style));
+                               StyleRequest(parent_style.get()));
       state.SetStyle(style);
 
       ASSERT_FALSE(state.GetFontBuilder().FontDirty());
@@ -65,15 +65,15 @@ TEST_F(StyleBuilderTest, TextOrientationChangeDirtiesFont) {
 
   for (const CSSProperty* property : properties) {
     for (const CSSValue* value : values) {
-      auto* parent_style =
+      auto parent_style =
           GetDocument().GetStyleResolver().CreateComputedStyle();
-      auto* style = GetDocument().GetStyleResolver().CreateComputedStyle();
+      auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
       // This test assumes that initial 'text-orientation' is not 'upright'.
       ASSERT_NE(ETextOrientation::kUpright, style->GetTextOrientation());
       style->SetTextOrientation(ETextOrientation::kUpright);
 
       StyleResolverState state(GetDocument(), *GetDocument().body(),
-                               StyleRequest(parent_style));
+                               StyleRequest(parent_style.get()));
       state.SetStyle(style);
 
       ASSERT_FALSE(state.GetFontBuilder().FontDirty());
@@ -85,10 +85,10 @@ TEST_F(StyleBuilderTest, TextOrientationChangeDirtiesFont) {
 }
 
 TEST_F(StyleBuilderTest, HasExplicitInheritance) {
-  auto* parent_style = GetDocument().GetStyleResolver().CreateComputedStyle();
-  auto* style = GetDocument().GetStyleResolver().CreateComputedStyle();
+  auto parent_style = GetDocument().GetStyleResolver().CreateComputedStyle();
+  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
   StyleResolverState state(GetDocument(), *GetDocument().body(),
-                           StyleRequest(parent_style));
+                           StyleRequest(parent_style.get()));
   state.SetStyle(style);
   EXPECT_FALSE(style->HasExplicitInheritance());
 

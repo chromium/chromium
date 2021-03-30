@@ -194,7 +194,7 @@ LayoutRubyBase* LayoutRubyRun::CreateRubyBase() const {
   NOT_DESTROYED();
   LayoutRubyBase* layout_object =
       LayoutRubyBase::CreateAnonymous(&GetDocument(), *this);
-  ComputedStyle* new_style =
+  scoped_refptr<ComputedStyle> new_style =
       GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           StyleRef(), EDisplay::kBlock);
   new_style->SetTextAlign(ETextAlign::kCenter);  // FIXME: use WEBKIT_CENTER?
@@ -209,12 +209,12 @@ LayoutRubyRun* LayoutRubyRun::StaticCreateRubyRun(
   DCHECK(parent_ruby->IsRuby());
   LayoutRubyRun* rr;
   if (containing_block.IsLayoutNGObject()) {
-    rr = MakeGarbageCollected<LayoutNGRubyRun>();
+    rr = new LayoutNGRubyRun();
   } else {
-    rr = MakeGarbageCollected<LayoutRubyRun>(nullptr);
+    rr = new LayoutRubyRun(nullptr);
   }
   rr->SetDocumentForAnonymous(&parent_ruby->GetDocument());
-  ComputedStyle* new_style =
+  scoped_refptr<ComputedStyle> new_style =
       parent_ruby->GetDocument()
           .GetStyleResolver()
           .CreateAnonymousStyleWithDisplay(parent_ruby->StyleRef(),

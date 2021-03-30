@@ -62,7 +62,7 @@ void NGLineBoxFragmentBuilder::PropagateChildrenData(
     }
     if (child.out_of_flow_positioned_box) {
       AddOutOfFlowInlineChildCandidate(
-          NGBlockNode(To<LayoutBox>(child.out_of_flow_positioned_box.Get())),
+          NGBlockNode(To<LayoutBox>(child.out_of_flow_positioned_box)),
           child.Offset(), child.container_direction);
       child.out_of_flow_positioned_box = nullptr;
     }

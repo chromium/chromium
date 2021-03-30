@@ -468,7 +468,7 @@ NGInlineNode::NGInlineNode(LayoutBlockFlow* block)
 
 bool NGInlineNode::IsPrepareLayoutFinished() const {
   const NGInlineNodeData* data =
-      To<LayoutBlockFlow>(box_.Get())->GetNGInlineNodeData();
+      To<LayoutBlockFlow>(box_)->GetNGInlineNodeData();
   return data && !data->text_content.IsNull();
 }
 
@@ -1380,7 +1380,7 @@ void NGInlineNode::ShapeTextForFirstLineIfNeeded(NGInlineNodeData* data) const {
 
 void NGInlineNode::AssociateItemsWithInlines(NGInlineNodeData* data) const {
 #if DCHECK_IS_ON()
-  HeapHashSet<Member<LayoutObject>> associated_objects;
+  HashSet<LayoutObject*> associated_objects;
 #endif
   Vector<NGInlineItem>& items = data->items;
   for (NGInlineItem* item = items.begin(); item != items.end();) {
@@ -1515,7 +1515,7 @@ static LayoutUnit ComputeContentSize(
       EFloat previous_float_type = EFloat::kNone;
       for (const auto& floating_object : floating_objects_) {
         const EClear float_clear =
-            floating_object.float_style->Clear(*floating_object.style);
+            floating_object.float_style.Clear(floating_object.style);
 
         // If this float clears the previous float we start a new "line".
         // This is subtly different to block layout which will only reset either
@@ -1534,7 +1534,7 @@ static LayoutUnit ComputeContentSize(
         floats_inline_size_ += floating_object.float_inline_max_size_with_margin
                                    .ClampNegativeToZero();
         previous_float_type =
-            floating_object.float_style->Floating(*floating_object.style);
+            floating_object.float_style.Floating(floating_object.style);
       }
       max_inline_size =
           std::max(max_inline_size, line_inline_size + floats_inline_size_);
@@ -1807,11 +1807,6 @@ bool NGInlineNode::NeedsShapingForTesting(const NGInlineItem& item) {
 
 String NGInlineNode::ToString() const {
   return "NGInlineNode";
-}
-
-void NGInlineNode::FloatingObject::Trace(Visitor* visitor) const {
-  visitor->Trace(float_style);
-  visitor->Trace(style);
 }
 
 }  // namespace blink

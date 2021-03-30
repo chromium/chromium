@@ -38,7 +38,7 @@ struct NGInlineBoxState {
  public:
   unsigned fragment_start = 0;
   const NGInlineItem* item = nullptr;
-  Persistent<const ComputedStyle> style;
+  const ComputedStyle* style = nullptr;
 
   // The united metrics for the current box. This includes all objects in this
   // box, including descendants, and adjusted by placement properties such as

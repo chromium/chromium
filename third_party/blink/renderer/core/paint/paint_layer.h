@@ -256,7 +256,7 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
 
   LayoutBoxModelObject& GetLayoutObject() const { return *layout_object_; }
   LayoutBox* GetLayoutBox() const {
-    return DynamicTo<LayoutBox>(layout_object_.Get());
+    return DynamicTo<LayoutBox>(layout_object_);
   }
   PaintLayer* Parent() const { return parent_; }
   PaintLayer* PreviousSibling() const { return previous_; }
@@ -321,7 +321,7 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
   // blocks writing mode.
   IntSize PixelSnappedSize() const {
     LayoutPoint location = layout_object_->IsBox()
-                               ? To<LayoutBox>(layout_object_.Get())->Location()
+                               ? To<LayoutBox>(layout_object_)->Location()
                                : LayoutPoint();
     return PixelSnappedIntSize(Size(), location);
   }
@@ -820,7 +820,7 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
     IntRect clipped_absolute_bounding_box;
     IntRect unclipped_absolute_bounding_box;
 
-    UntracedMember<const LayoutBoxModelObject> clipping_container;
+    const LayoutBoxModelObject* clipping_container = nullptr;
   };
   bool NeedsVisualOverflowRecalc() const {
     return needs_visual_overflow_recalc_;
@@ -1433,7 +1433,7 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
   mutable unsigned layer_list_mutation_allowed_ : 1;
 #endif
 
-  const UntracedMember<LayoutBoxModelObject> layout_object_;
+  LayoutBoxModelObject* const layout_object_;
 
   PaintLayer* parent_;
   PaintLayer* previous_;

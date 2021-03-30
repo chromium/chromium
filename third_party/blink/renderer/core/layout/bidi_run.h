@@ -31,7 +31,7 @@ namespace blink {
 
 class InlineBox;
 
-struct BidiRun final : BidiCharacterRun {
+struct BidiRun : BidiCharacterRun {
   BidiRun(bool override,
           unsigned char level,
           int start,
@@ -57,16 +57,11 @@ struct BidiRun final : BidiCharacterRun {
     has_hyphen_ = false;
   }
 
-  BidiRun* Next() { return static_cast<BidiRun*>(next_.Get()); }
-
-  void Trace(Visitor* visitor) const final {
-    visitor->Trace(box_);
-    BidiCharacterRun::Trace(visitor);
-  }
+  BidiRun* Next() { return static_cast<BidiRun*>(next_); }
 
  public:
   LineLayoutItem line_layout_item_;
-  Member<InlineBox> box_;
+  InlineBox* box_;
 };
 
 }  // namespace blink

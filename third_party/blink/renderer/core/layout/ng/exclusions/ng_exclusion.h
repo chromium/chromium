@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_bfc_rect.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 namespace blink {
@@ -21,7 +20,7 @@ struct CORE_EXPORT NGExclusionShapeData {
                        const NGBoxStrut& shape_insets)
       : layout_box(layout_box), margins(margins), shape_insets(shape_insets) {}
 
-  UntracedMember<const LayoutBox> layout_box;
+  const LayoutBox* layout_box;
   const NGBoxStrut margins;
   const NGBoxStrut shape_insets;
 };

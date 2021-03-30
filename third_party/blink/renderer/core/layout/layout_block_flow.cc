@@ -77,7 +77,8 @@ bool LayoutBlockFlow::can_propagate_float_into_sibling_ = false;
 
 struct SameSizeAsLayoutBlockFlow : public LayoutBlock {
   LineBoxList line_boxes;
-  Member<void*> members[2];
+  void* pointers[1];
+  Persistent<void*> persistent[1];
 };
 
 ASSERT_SIZE(LayoutBlockFlow, SameSizeAsLayoutBlockFlow);
@@ -269,16 +270,10 @@ LayoutBlockFlow::~LayoutBlockFlow() {
 LayoutBlockFlow::~LayoutBlockFlow() = default;
 #endif
 
-void LayoutBlockFlow::Trace(Visitor* visitor) const {
-  visitor->Trace(line_boxes_);
-  visitor->Trace(rare_data_);
-  visitor->Trace(floating_objects_);
-  LayoutBlock::Trace(visitor);
-}
-
-LayoutBlockFlow* LayoutBlockFlow::CreateAnonymous(Document* document,
-                                                  ComputedStyle* style,
-                                                  LegacyLayout legacy) {
+LayoutBlockFlow* LayoutBlockFlow::CreateAnonymous(
+    Document* document,
+    scoped_refptr<ComputedStyle> style,
+    LegacyLayout legacy) {
   LayoutBlockFlow* layout_block_flow =
       LayoutObjectFactory::CreateBlockFlow(*document, *style, legacy);
   layout_block_flow->SetDocumentForAnonymous(document);
@@ -1395,13 +1390,13 @@ void LayoutBlockFlow::RebuildFloatsFromIntruding() {
   if (floating_objects_)
     floating_objects_->SetHorizontalWritingMode(IsHorizontalWritingMode());
 
-  HeapHashSet<Member<LayoutBox>> old_intruding_float_set;
+  HashSet<LayoutBox*> old_intruding_float_set;
   if (!ChildrenInline() && floating_objects_) {
     const FloatingObjectSet& floating_object_set = floating_objects_->Set();
     FloatingObjectSetIterator end = floating_object_set.end();
     for (FloatingObjectSetIterator it = floating_object_set.begin(); it != end;
          ++it) {
-      const FloatingObject& floating_object = *it->Get();
+      const FloatingObject& floating_object = *it->get();
       if (!floating_object.IsDescendant())
         old_intruding_float_set.insert(floating_object.GetLayoutObject());
     }
@@ -1485,7 +1480,7 @@ void LayoutBlockFlow::RebuildFloatsFromIntruding() {
       FloatingObjectSetIterator end = floating_object_set.end();
       for (FloatingObjectSetIterator it = floating_object_set.begin();
            it != end; ++it) {
-        const FloatingObject& floating_object = *it->Get();
+        const FloatingObject& floating_object = *it->get();
         FloatingObject* old_floating_object =
             float_map.at(floating_object.GetLayoutObject());
         LayoutUnit logical_bottom = LogicalBottomForFloat(floating_object);
@@ -1540,7 +1535,7 @@ void LayoutBlockFlow::RebuildFloatsFromIntruding() {
     LayoutBoxToFloatInfoMap::iterator end = float_map.end();
     for (LayoutBoxToFloatInfoMap::iterator it = float_map.begin(); it != end;
          ++it) {
-      Member<FloatingObject>& floating_object = it->value;
+      std::unique_ptr<FloatingObject>& floating_object = it->value;
       if (!floating_object->IsDescendant()) {
         change_logical_top = LayoutUnit();
         change_logical_bottom = std::max(
@@ -2782,7 +2777,7 @@ LayoutUnit LayoutBlockFlow::GetClearDelta(LayoutBox* child,
 void LayoutBlockFlow::CreateFloatingObjects() {
   NOT_DESTROYED();
   floating_objects_ =
-      MakeGarbageCollected<FloatingObjects>(this, IsHorizontalWritingMode());
+      std::make_unique<FloatingObjects>(this, IsHorizontalWritingMode());
 }
 
 void LayoutBlockFlow::WillBeDestroyed() {
@@ -3173,7 +3168,7 @@ void LayoutBlockFlow::MoveAllChildrenIncludingFloatsTo(
 
     for (FloatingObjectSetIterator it = from_floating_object_set.begin();
          it != end; ++it) {
-      const FloatingObject& floating_object = *it->Get();
+      const FloatingObject& floating_object = *it->get();
 
       // Don't insert the object again if it's already in the list
       if (to_block_flow->ContainsFloat(floating_object.GetLayoutObject()))
@@ -3305,7 +3300,7 @@ void LayoutBlockFlow::MakeChildrenInlineIfPossible() {
   if (IsAnonymousBlock() && !IsRubyBase())
     return;
 
-  HeapVector<Member<LayoutBlockFlow>, 3> blocks_to_remove;
+  Vector<LayoutBlockFlow*, 3> blocks_to_remove;
   for (LayoutObject* child = FirstChild(); child;
        child = child->NextSibling()) {
     if (child->IsFloating())
@@ -3613,7 +3608,7 @@ FloatingObject* LayoutBlockFlow::InsertFloatingObject(LayoutBox& float_box) {
     FloatingObjectSetIterator it =
         floating_object_set.Find<FloatingObjectHashTranslator>(&float_box);
     if (it != floating_object_set.end())
-      return it->Get();
+      return it->get();
   }
 
   // Create the special object entry & append it to the list
@@ -3621,7 +3616,8 @@ FloatingObject* LayoutBlockFlow::InsertFloatingObject(LayoutBox& float_box) {
   DCHECK(f == EFloat::kLeft || f == EFloat::kRight);
   FloatingObject::Type type = f == EFloat::kLeft ? FloatingObject::kFloatLeft
                                                  : FloatingObject::kFloatRight;
-  FloatingObject* new_obj = FloatingObject::Create(&float_box, type);
+  std::unique_ptr<FloatingObject> new_obj =
+      FloatingObject::Create(&float_box, type);
   return floating_objects_->Add(std::move(new_obj));
 }
 
@@ -3632,7 +3628,7 @@ void LayoutBlockFlow::RemoveFloatingObject(LayoutBox* float_box) {
     FloatingObjectSetIterator it =
         floating_object_set.Find<FloatingObjectHashTranslator>(float_box);
     if (it != floating_object_set.end()) {
-      FloatingObject& floating_object = *it->Get();
+      FloatingObject& floating_object = *it->get();
       if (ChildrenInline()) {
         LayoutUnit logical_top = LogicalTopForFloat(floating_object);
         LayoutUnit logical_bottom = LogicalBottomForFloat(floating_object);
@@ -3672,13 +3668,13 @@ void LayoutBlockFlow::RemoveFloatingObjectsBelow(FloatingObject* last_float,
     return;
 
   const FloatingObjectSet& floating_object_set = floating_objects_->Set();
-  FloatingObject* curr = floating_object_set.back().Get();
+  FloatingObject* curr = floating_object_set.back().get();
   while (curr != last_float &&
          (!curr->IsPlaced() || LogicalTopForFloat(*curr) >= logical_offset)) {
     floating_objects_->Remove(curr);
     if (floating_object_set.IsEmpty())
       break;
-    curr = floating_object_set.back().Get();
+    curr = floating_object_set.back().get();
   }
 }
 
@@ -3693,7 +3689,7 @@ FloatingObject* LayoutBlockFlow::LastPlacedFloat(
   while (it != begin) {
     --it;
     if ((*it)->IsPlaced()) {
-      last_placed_floating_object = it->Get();
+      last_placed_floating_object = it->get();
       ++it;
       break;
     }
@@ -3720,7 +3716,7 @@ bool LayoutBlockFlow::PlaceNewFloats(LayoutUnit logical_top_margin_edge,
   // Move backwards through our floating object list until we find a float that
   // has already been positioned. Then we'll be able to move forward,
   // positioning all of the new floats that need it.
-  FloatingObjectSetIterator it = floating_object_set.begin();
+  FloatingObjectSetIterator it;
   FloatingObject* last_placed_floating_object = LastPlacedFloat(&it);
 
   // The float cannot start above the top position of the last positioned float.
@@ -3733,7 +3729,7 @@ bool LayoutBlockFlow::PlaceNewFloats(LayoutUnit logical_top_margin_edge,
   FloatingObjectSetIterator end = floating_object_set.end();
   // Now walk through the set of unpositioned floats and place them.
   for (; it != end; ++it) {
-    FloatingObject& floating_object = *it->Get();
+    FloatingObject& floating_object = *it->get();
     // The containing block is responsible for positioning floats, so if we have
     // unplaced floats in our list that come from somewhere else, we have a bug.
     DCHECK_EQ(floating_object.GetLayoutObject()->ContainingBlock(), this);
@@ -3917,7 +3913,7 @@ void LayoutBlockFlow::AddIntrudingFloats(LayoutBlockFlow* prev,
   FloatingObjectSetIterator prev_end = prev_set.end();
   for (FloatingObjectSetIterator prev_it = prev_set.begin();
        prev_it != prev_end; ++prev_it) {
-    FloatingObject& floating_object = *prev_it->Get();
+    FloatingObject& floating_object = *prev_it->get();
     if (LogicalBottomForFloat(floating_object) > logical_top_offset) {
       if (!floating_objects_ ||
           !floating_objects_->Set().Contains(&floating_object)) {
@@ -3965,7 +3961,7 @@ void LayoutBlockFlow::AddOverhangingFloats(LayoutBlockFlow* child,
   for (FloatingObjectSetIterator child_it =
            child->floating_objects_->Set().begin();
        child_it != child_end; ++child_it) {
-    FloatingObject& floating_object = *child_it->Get();
+    FloatingObject& floating_object = *child_it->get();
     LayoutUnit logical_bottom_for_float =
         std::min(LogicalBottomForFloat(floating_object),
                  LayoutUnit::Max() - child_logical_top);
@@ -4122,7 +4118,7 @@ bool LayoutBlockFlow::HitTestFloats(HitTestResult& result,
   FloatingObjectSetIterator begin = floating_object_set.begin();
   for (FloatingObjectSetIterator it = floating_object_set.end(); it != begin;) {
     --it;
-    const FloatingObject& floating_object = *it->Get();
+    const FloatingObject& floating_object = *it->get();
     if (floating_object.ShouldPaint() &&
         // TODO(wangxianzhu): Should this be a DCHECK?
         !floating_object.GetLayoutObject()->HasSelfPaintingLayer()) {
@@ -4228,7 +4224,7 @@ void LayoutBlockFlow::UpdateAncestorShouldPaintFloatingObject(
 
     auto* ancestor_block = To<LayoutBlockFlow>(ancestor);
     FloatingObjects* ancestor_floating_objects =
-        ancestor_block->floating_objects_;
+        ancestor_block->floating_objects_.get();
     if (!ancestor_floating_objects)
       break;
     FloatingObjectSet::iterator it =
@@ -4416,7 +4412,7 @@ void LayoutBlockFlow::MoveChildrenTo(LayoutBoxModelObject* to_box_model_object,
 
 RootInlineBox* LayoutBlockFlow::CreateRootInlineBox() {
   NOT_DESTROYED();
-  return MakeGarbageCollected<RootInlineBox>(LineLayoutItem(this));
+  return new RootInlineBox(LineLayoutItem(this));
 }
 
 void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
@@ -4499,7 +4495,7 @@ LayoutBlockFlow::LayoutBlockFlowRareData& LayoutBlockFlow::EnsureRareData() {
 void LayoutBlockFlow::SimplifiedNormalFlowInlineLayout() {
   NOT_DESTROYED();
   DCHECK(ChildrenInline());
-  HeapLinkedHashSet<Member<RootInlineBox>> line_boxes;
+  LinkedHashSet<RootInlineBox*> line_boxes;
   for (InlineWalker walker(LineLayoutBlockFlow(this)); !walker.AtEnd();
        walker.Advance()) {
     LayoutObject* o = walker.Current().GetLayoutObject();
@@ -4519,7 +4515,9 @@ void LayoutBlockFlow::SimplifiedNormalFlowInlineLayout() {
   // FIXME: Glyph overflow will get lost in this case, but not really a big
   // deal.
   GlyphOverflowAndFallbackFontsMap text_box_data_map;
-  for (auto box : line_boxes) {
+  for (LinkedHashSet<RootInlineBox*>::const_iterator it = line_boxes.begin();
+       it != line_boxes.end(); ++it) {
+    RootInlineBox* box = *it;
     box->ComputeOverflow(box->LineTop(), box->LineBottom(), text_box_data_map);
   }
 }
@@ -4529,7 +4527,7 @@ LayoutBlockFlow::RecalcInlineChildrenLayoutOverflow() {
   NOT_DESTROYED();
   DCHECK(ChildrenInline());
   RecalcLayoutOverflowResult result;
-  HeapHashSet<Member<RootInlineBox>> line_boxes;
+  HashSet<RootInlineBox*> line_boxes;
   for (InlineWalker walker(LineLayoutBlockFlow(this)); !walker.AtEnd();
        walker.Advance()) {
     LayoutObject* layout_object = walker.Current().GetLayoutObject();
@@ -4550,7 +4548,7 @@ LayoutBlockFlow::RecalcInlineChildrenLayoutOverflow() {
   // FIXME: Glyph overflow will get lost in this case, but not really a big
   // deal.
   GlyphOverflowAndFallbackFontsMap text_box_data_map;
-  for (auto box : line_boxes) {
+  for (auto* box : line_boxes) {
     box->ClearKnownToHaveNoOverflow();
     box->ComputeOverflow(box->LineTop(), box->LineBottom(), text_box_data_map);
   }
@@ -4865,10 +4863,6 @@ LayoutBlockFlow::LayoutBlockFlowRareData::LayoutBlockFlowRareData(
       did_break_at_line_to_avoid_widow_(false) {}
 
 LayoutBlockFlow::LayoutBlockFlowRareData::~LayoutBlockFlowRareData() = default;
-
-void LayoutBlockFlow::LayoutBlockFlowRareData::Trace(Visitor* visitor) const {
-  visitor->Trace(multi_column_flow_thread_);
-}
 
 void LayoutBlockFlow::ClearOffsetMappingIfNeeded() {
   NOT_DESTROYED();

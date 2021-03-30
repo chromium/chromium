@@ -349,13 +349,13 @@ LayoutObject* HTMLPlugInElement::CreateLayoutObject(const ComputedStyle& style,
     return LayoutObject::CreateObject(this, style, legacy);
 
   if (IsImageType()) {
-    LayoutImage* image = MakeGarbageCollected<LayoutImage>(this);
+    LayoutImage* image = new LayoutImage(this);
     image->SetImageResource(MakeGarbageCollected<LayoutImageResource>());
     return image;
   }
 
   plugin_is_available_ = true;
-  return MakeGarbageCollected<LayoutEmbeddedObject>(this);
+  return new LayoutEmbeddedObject(this);
 }
 
 void HTMLPlugInElement::FinishParsingChildren() {
@@ -669,9 +669,7 @@ bool HTMLPlugInElement::LoadPlugin(const KURL& url,
         *this, url, plugin_params.Names(), plugin_params.Values(), mime_type,
         load_manually);
     if (!plugin) {
-      layout_object = GetLayoutEmbeddedObject();
-      // LayoutObject can be destroyed between the previous check and here.
-      if (layout_object && !layout_object->ShowsUnavailablePluginIndicator()) {
+      if (!layout_object->ShowsUnavailablePluginIndicator()) {
         plugin_is_available_ = false;
         layout_object->SetPluginAvailability(
             LayoutEmbeddedObject::kPluginMissing);
@@ -800,9 +798,10 @@ void HTMLPlugInElement::UpdateServiceTypeIfEmpty() {
   }
 }
 
-ComputedStyle* HTMLPlugInElement::CustomStyleForLayoutObject(
+scoped_refptr<ComputedStyle> HTMLPlugInElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
-  ComputedStyle* style = OriginalStyleForLayoutObject(style_recalc_context);
+  scoped_refptr<ComputedStyle> style =
+      OriginalStyleForLayoutObject(style_recalc_context);
   if (IsImageType() && !GetLayoutObject() && style &&
       LayoutObjectIsNeeded(*style)) {
     if (!image_loader_)

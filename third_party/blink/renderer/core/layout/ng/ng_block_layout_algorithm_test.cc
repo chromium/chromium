@@ -66,9 +66,9 @@ class NGBlockLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
     return fragment->DumpFragmentTree(flags);
   }
 
-  ComputedStyle* MutableStyleForElement(Element* element) {
+  scoped_refptr<ComputedStyle> MutableStyleForElement(Element* element) {
     DCHECK(element->GetLayoutObject());
-    ComputedStyle* mutable_style =
+    scoped_refptr<ComputedStyle> mutable_style =
         ComputedStyle::Clone(element->GetLayoutObject()->StyleRef());
     element->GetLayoutObject()->SetModifiedStyleOutsideStyleRecalc(
         mutable_style, LayoutObject::ApplyStyleChanges::kNo);
@@ -912,7 +912,8 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsEmptyBlockWithClearance) {
     MutableStyleForElement(zero_top)->SetMarginBottom(zero_top_margin_bottom);
     zero_top->GetLayoutObject()->SetNeedsLayout("");
     Element* zero_inner = GetDocument().getElementById("zero-inner");
-    ComputedStyle* zero_inner_style = MutableStyleForElement(zero_inner);
+    scoped_refptr<ComputedStyle> zero_inner_style =
+        MutableStyleForElement(zero_inner);
     zero_inner_style->SetMarginTop(zero_inner_margin_top);
     zero_inner_style->SetMarginBottom(zero_inner_margin_bottom);
     zero_inner->GetLayoutObject()->SetNeedsLayout("");

@@ -13,7 +13,6 @@ class LayoutNGButton final : public LayoutNGFlexibleBox {
  public:
   explicit LayoutNGButton(Element*);
   ~LayoutNGButton() override;
-  void Trace(Visitor*) const override;
 
   const char* GetName() const override { return "LayoutNGButton"; }
   void AddChild(LayoutObject* new_child,
@@ -30,7 +29,7 @@ class LayoutNGButton final : public LayoutNGFlexibleBox {
     return type == kLayoutObjectNGButton || LayoutNGFlexibleBox::IsOfType(type);
   }
 
-  Member<LayoutBlock> inner_;
+  LayoutBlock* inner_;
 };
 
 }  // namespace blink

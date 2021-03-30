@@ -2698,7 +2698,8 @@ TEST_F(NGColumnLayoutAlgorithmTest, MinMax) {
   LayoutObject* layout_object = GetLayoutObjectByElementId("multicol");
   ASSERT_TRUE(layout_object);
   NGBlockNode node = NGBlockNode(To<LayoutBox>(layout_object));
-  ComputedStyle* style = ComputedStyle::Clone(layout_object->StyleRef());
+  scoped_refptr<ComputedStyle> style =
+      ComputedStyle::Clone(layout_object->StyleRef());
   layout_object->SetStyle(style);
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},

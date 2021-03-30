@@ -21,7 +21,6 @@ namespace blink {
 
 void CanvasFormattedText::Trace(Visitor* visitor) const {
   visitor->Trace(text_runs_);
-  visitor->Trace(block_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -42,7 +41,8 @@ CanvasFormattedText::CanvasFormattedText(ExecutionContext* execution_context) {
   // block flow. In the future we should handle execution_context's from worker
   // threads that do not have a document.
   auto* document = To<LocalDOMWindow>(execution_context)->document();
-  ComputedStyle* style = document->GetStyleResolver().CreateComputedStyle();
+  scoped_refptr<ComputedStyle> style =
+      document->GetStyleResolver().CreateComputedStyle();
   style->SetDisplay(EDisplay::kBlock);
   block_ =
       LayoutBlockFlow::CreateAnonymous(document, style, LegacyLayout::kAuto);
@@ -64,7 +64,8 @@ void CanvasFormattedText::Dispose() {
 LayoutBlockFlow* CanvasFormattedText::GetLayoutBlock(
     Document& document,
     const FontDescription& defaultFont) {
-  ComputedStyle* style = document.GetStyleResolver().CreateComputedStyle();
+  scoped_refptr<ComputedStyle> style =
+      document.GetStyleResolver().CreateComputedStyle();
   style->SetDisplay(EDisplay::kBlock);
   style->SetFontDescription(defaultFont);
   block_->SetStyle(style);

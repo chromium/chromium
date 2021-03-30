@@ -178,7 +178,7 @@ bool FontFaceSetDocument::ResolveFontStyle(const String& font_string,
     return true;
   }
 
-  ComputedStyle* style =
+  scoped_refptr<ComputedStyle> style =
       GetDocument()->GetStyleResolver().CreateComputedStyle();
 
   FontFamily font_family;
@@ -192,7 +192,7 @@ bool FontFaceSetDocument::ResolveFontStyle(const String& font_string,
   style->SetFontDescription(default_font_description);
 
   GetDocument()->GetStyleEngine().ComputeFont(*GetDocument()->documentElement(),
-                                              style, *parsed_style);
+                                              style.get(), *parsed_style);
 
   font = style->GetFont();
 

@@ -75,7 +75,7 @@ class CORE_EXPORT ViewportStyleResolver final
 
   Member<Document> document_;
   Member<MutableCSSPropertyValueSet> property_set_;
-  Member<ComputedStyle> initial_style_;
+  scoped_refptr<ComputedStyle> initial_style_;
   bool has_viewport_units_ = false;
   UpdateType needs_update_ = kCollectRules;
 };

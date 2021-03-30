@@ -16,7 +16,6 @@ class LayoutNGTable;
 class CORE_EXPORT LayoutNGTableColumn : public LayoutBox {
  public:
   explicit LayoutNGTableColumn(Element*);
-  void Trace(Visitor*) const override;
 
   LayoutNGTable* Table() const;
 

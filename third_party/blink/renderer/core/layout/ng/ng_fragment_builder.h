@@ -30,7 +30,8 @@ class CORE_EXPORT NGFragmentBuilder {
   void SetStyleVariant(NGStyleVariant style_variant) {
     style_variant_ = style_variant;
   }
-  void SetStyle(const ComputedStyle* style, NGStyleVariant style_variant) {
+  void SetStyle(scoped_refptr<const ComputedStyle> style,
+                NGStyleVariant style_variant) {
     DCHECK(style);
     style_ = std::move(style);
     style_variant_ = style_variant;
@@ -62,7 +63,7 @@ class CORE_EXPORT NGFragmentBuilder {
   const LayoutObject* GetLayoutObject() const { return layout_object_; }
 
  protected:
-  NGFragmentBuilder(const ComputedStyle* style,
+  NGFragmentBuilder(scoped_refptr<const ComputedStyle> style,
                     WritingDirectionMode writing_direction)
       : style_(std::move(style)),
         writing_direction_(writing_direction),
@@ -81,7 +82,7 @@ class CORE_EXPORT NGFragmentBuilder {
         is_hidden_for_paint_(fragment.IsHiddenForPaint()) {}
 
  protected:
-  const ComputedStyle* style_;
+  scoped_refptr<const ComputedStyle> style_;
   WritingDirectionMode writing_direction_;
   NGStyleVariant style_variant_;
   LogicalSize size_;

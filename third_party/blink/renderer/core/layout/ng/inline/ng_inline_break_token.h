@@ -40,7 +40,7 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
 
   // The style at the end of this break token. The next line should start with
   // this style.
-  const ComputedStyle* Style() const { return style_; }
+  const ComputedStyle* Style() const { return style_.get(); }
 
   unsigned ItemIndex() const {
     return item_index_;
@@ -79,7 +79,7 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
 #endif
 
  private:
-  Persistent<const ComputedStyle> style_;
+  scoped_refptr<const ComputedStyle> style_;
   unsigned item_index_;
   unsigned text_offset_;
 };

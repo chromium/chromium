@@ -116,8 +116,7 @@ struct SameSizeAsPaintLayer : DisplayItemClient {
   // has only 8-bit data.
   unsigned bit_fields1 : 24;
   unsigned bit_fields2;
-  void* pointers[9];
-  UntracedMember<void*> members[1];
+  void* pointers[10];
 #if DCHECK_IS_ON()
   void* pointer;
 #endif

@@ -184,7 +184,7 @@ void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
     return;
   }
 
-  HeapHashSet<Member<const LayoutObject>> placed_objects;
+  HashSet<const LayoutObject*> placed_objects;
   LayoutCandidates(&candidates, only_layout, &placed_objects);
 
   if (only_layout)
@@ -233,7 +233,7 @@ void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
 // </div>
 // Returns false if no new candidates were found.
 bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
-    HeapHashSet<Member<const LayoutObject>>* placed_objects) {
+    HashSet<const LayoutObject*>* placed_objects) {
   const auto* container_block =
       DynamicTo<LayoutBlock>(container_builder_->GetLayoutObject());
   if (!container_block)
@@ -353,7 +353,7 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocks(
     if (candidate.inline_container &&
         !inline_container_fragments.Contains(candidate.inline_container)) {
       NGBoxFragmentBuilder::InlineContainingBlockGeometry inline_geometry = {};
-      inline_container_fragments.insert(candidate.inline_container.Get(),
+      inline_container_fragments.insert(candidate.inline_container,
                                         inline_geometry);
     }
   }
@@ -366,7 +366,7 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocks(
   PhysicalSize container_builder_physical_size =
       ToPhysicalSize(container_builder_size, writing_mode_);
   // Transform the start/end fragments into a ContainingBlockInfo.
-  for (const auto& block_info : inline_container_fragments) {
+  for (auto& block_info : inline_container_fragments) {
     DCHECK(block_info.value.has_value());
 
     // The calculation below determines the size of the inline containing block
@@ -491,7 +491,7 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocks(
 void NGOutOfFlowLayoutPart::LayoutCandidates(
     Vector<NGLogicalOutOfFlowPositionedNode>* candidates,
     const LayoutBox* only_layout,
-    HeapHashSet<Member<const LayoutObject>>* placed_objects) {
+    HashSet<const LayoutObject*>* placed_objects) {
   while (candidates->size() > 0) {
     ComputeInlineContainingBlocks(*candidates);
     for (auto& candidate : *candidates) {

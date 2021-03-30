@@ -31,13 +31,11 @@ class NGInlineItemsBuilderTest : public NGLayoutTest {
     style_ = GetDocument().GetStyleResolver().CreateComputedStyle();
     block_flow_ = LayoutBlockFlow::CreateAnonymous(&GetDocument(), style_,
                                                    LegacyLayout::kAuto);
-    anonymous_objects_ =
-        MakeGarbageCollected<HeapVector<Member<LayoutObject>>>();
-    anonymous_objects_->push_back(block_flow_);
+    anonymous_objects_.push_back(block_flow_);
   }
 
   void TearDown() override {
-    for (LayoutObject* anonymous_object : *anonymous_objects_)
+    for (LayoutObject* anonymous_object : anonymous_objects_)
       anonymous_object->Destroy();
     NGLayoutTest::TearDown();
   }
@@ -48,10 +46,10 @@ class NGInlineItemsBuilderTest : public NGLayoutTest {
     style_->SetWhiteSpace(whitespace);
   }
 
-  ComputedStyle* GetStyle(EWhiteSpace whitespace) {
+  scoped_refptr<ComputedStyle> GetStyle(EWhiteSpace whitespace) {
     if (whitespace == EWhiteSpace::kNormal)
       return style_;
-    ComputedStyle* style(
+    scoped_refptr<ComputedStyle> style(
         GetDocument().GetStyleResolver().CreateComputedStyle());
     style->SetWhiteSpace(whitespace);
     return style;
@@ -63,35 +61,35 @@ class NGInlineItemsBuilderTest : public NGLayoutTest {
 
   void AppendText(const String& text, NGInlineItemsBuilder* builder) {
     LayoutText* layout_text = LayoutText::CreateEmptyAnonymous(
-        GetDocument(), style_, LegacyLayout::kAuto);
-    anonymous_objects_->push_back(layout_text);
+        GetDocument(), style_.get(), LegacyLayout::kAuto);
+    anonymous_objects_.push_back(layout_text);
     builder->AppendText(text, layout_text);
   }
 
   void AppendAtomicInline(NGInlineItemsBuilder* builder) {
     LayoutBlockFlow* layout_block_flow = LayoutBlockFlow::CreateAnonymous(
         &GetDocument(), style_, LegacyLayout::kAuto);
-    anonymous_objects_->push_back(layout_block_flow);
+    anonymous_objects_.push_back(layout_block_flow);
     builder->AppendAtomicInline(layout_block_flow);
   }
 
   void AppendRubyRun(NGInlineItemsBuilder* builder) {
-    LayoutNGRubyRun* ruby_run = MakeGarbageCollected<LayoutNGRubyRun>();
+    LayoutNGRubyRun* ruby_run = new LayoutNGRubyRun();
     ruby_run->SetDocumentForAnonymous(&GetDocument());
     ruby_run->SetStyle(style_);
-    anonymous_objects_->push_back(ruby_run);
+    anonymous_objects_.push_back(ruby_run);
     builder->AppendAtomicInline(ruby_run);
   }
 
   struct Input {
     const String text;
     EWhiteSpace whitespace = EWhiteSpace::kNormal;
-    Persistent<LayoutText> layout_text;
+    LayoutText* layout_text = nullptr;
   };
 
   const String& TestAppend(Vector<Input> inputs) {
     items_.clear();
-    HeapVector<Member<LayoutText>> anonymous_objects;
+    Vector<LayoutText*> anonymous_objects;
     NGInlineItemsBuilder builder(GetLayoutBlockFlow(), &items_);
     for (Input& input : inputs) {
       if (!input.layout_text) {
@@ -174,11 +172,11 @@ class NGInlineItemsBuilderTest : public NGLayoutTest {
     EXPECT_EQ(text_, reuse_text);
   }
 
-  Persistent<LayoutBlockFlow> block_flow_;
+  LayoutBlockFlow* block_flow_ = nullptr;
   Vector<NGInlineItem> items_;
   String text_;
-  Persistent<ComputedStyle> style_;
-  Persistent<HeapVector<Member<LayoutObject>>> anonymous_objects_;
+  scoped_refptr<ComputedStyle> style_;
+  Vector<LayoutObject*> anonymous_objects_;
 };
 
 #define TestWhitespaceValue(expected_text, input, whitespace) \
@@ -412,9 +410,9 @@ TEST_F(NGInlineItemsBuilderTest, IgnorablePre) {
 TEST_F(NGInlineItemsBuilderTest, Empty) {
   Vector<NGInlineItem> items;
   NGInlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
-  ComputedStyle* block_style =
-      GetDocument().GetStyleResolver().CreateComputedStyle();
-  builder.EnterBlock(block_style);
+  scoped_refptr<ComputedStyle> block_style(
+      GetDocument().GetStyleResolver().CreateComputedStyle());
+  builder.EnterBlock(block_style.get());
   builder.ExitBlock();
 
   EXPECT_EQ("", builder.ToString());
@@ -455,11 +453,11 @@ TEST_F(NGInlineItemsBuilderTest, GenerateBreakOpportunityAfterLeadingSpaces) {
 TEST_F(NGInlineItemsBuilderTest, BidiBlockOverride) {
   Vector<NGInlineItem> items;
   NGInlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
-  ComputedStyle* block_style =
-      GetDocument().GetStyleResolver().CreateComputedStyle();
+  scoped_refptr<ComputedStyle> block_style(
+      GetDocument().GetStyleResolver().CreateComputedStyle());
   block_style->SetUnicodeBidi(UnicodeBidi::kBidiOverride);
   block_style->SetDirection(TextDirection::kRtl);
-  builder.EnterBlock(block_style);
+  builder.EnterBlock(block_style.get());
   AppendText("Hello", &builder);
   builder.ExitBlock();
 
@@ -474,8 +472,9 @@ TEST_F(NGInlineItemsBuilderTest, BidiBlockOverride) {
 static LayoutInline* CreateLayoutInline(
     Document* document,
     void (*initialize_style)(ComputedStyle*)) {
-  ComputedStyle* style = document->GetStyleResolver().CreateComputedStyle();
-  initialize_style(style);
+  scoped_refptr<ComputedStyle> style(
+      document->GetStyleResolver().CreateComputedStyle());
+  initialize_style(style.get());
   LayoutInline* const node = LayoutInline::CreateAnonymous(document);
   node->SetModifiedStyleOutsideStyleRecalc(
       std::move(style), LayoutObject::ApplyStyleChanges::kNo);

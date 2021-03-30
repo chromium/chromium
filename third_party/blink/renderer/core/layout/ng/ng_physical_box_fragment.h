@@ -95,7 +95,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   }
 
   const NGTableBorders* TableCollapsedBorders() const {
-    return ComputeRareDataAddress()->table_collapsed_borders;
+    return ComputeRareDataAddress()->table_collapsed_borders.get();
   }
 
   const NGTableFragmentData::CollapsedBordersGeometry*
@@ -346,7 +346,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
     // TablesNG rare data.
     PhysicalRect table_grid_rect;
     NGTableFragmentData::ColumnGeometries table_column_geometries;
-    Persistent<const NGTableBorders> table_collapsed_borders;
+    scoped_refptr<const NGTableBorders> table_collapsed_borders;
     std::unique_ptr<NGTableFragmentData::CollapsedBordersGeometry>
         table_collapsed_borders_geometry;
     wtf_size_t table_cell_column_index;

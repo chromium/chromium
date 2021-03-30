@@ -238,7 +238,7 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
   // copying back position information.
   NGBlockNode container_node(container);
   NGBoxFragmentBuilder container_builder(
-      container_node, container_style,
+      container_node, scoped_refptr<const ComputedStyle>(container_style),
       /* space */ nullptr, container_style->GetWritingDirection());
   container_builder.SetIsNewFormattingContext(
       container_node.CreatesNewFormattingContext());

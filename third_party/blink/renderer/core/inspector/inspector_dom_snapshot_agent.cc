@@ -750,7 +750,6 @@ void InspectorDOMSnapshotAgent::Trace(Visitor* visitor) const {
   visitor->Trace(dom_debugger_agent_);
   visitor->Trace(document_order_map_);
   visitor->Trace(css_value_cache_);
-  visitor->Trace(style_cache_);
   InspectorBaseAgent::Trace(visitor);
 }
 

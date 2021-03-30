@@ -79,7 +79,7 @@ class CORE_EXPORT NGBreakToken : public RefCounted<NGBreakToken> {
  private:
   // Because |NGLayoutInputNode| has a pointer and 1 bit flag, and it's fast to
   // re-construct, keep |LayoutBox| to save the memory consumed by alignment.
-  UntracedMember<LayoutBox> box_;
+  LayoutBox* box_;
 
   unsigned type_ : 1;
   unsigned status_ : 1;

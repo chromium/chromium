@@ -39,7 +39,7 @@ class NGRelativeUtilsTest : public testing::Test {
                                   : Length::Fixed(left.ToInt()));
   }
 
-  Persistent<ComputedStyle> style_;
+  scoped_refptr<ComputedStyle> style_;
   LogicalSize container_size_;
 };
 

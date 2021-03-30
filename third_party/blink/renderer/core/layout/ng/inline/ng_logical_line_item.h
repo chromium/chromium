@@ -212,13 +212,12 @@ struct NGLogicalLineItem {
 
   // Ellipsis does not have |NGInlineItem|, but built from |LayoutObject| and
   // |NGStyleVariant|.
-  UntracedMember<const LayoutObject> layout_object = nullptr;
+  const LayoutObject* layout_object = nullptr;
   // Used only when |layout_object_| is not null.
   NGStyleVariant style_variant = NGStyleVariant::kStandard;
 
-  UntracedMember<LayoutObject> out_of_flow_positioned_box;
-  UntracedMember<LayoutObject> unpositioned_float;
-
+  LayoutObject* out_of_flow_positioned_box = nullptr;
+  LayoutObject* unpositioned_float = nullptr;
   // The offset of the border box, initially in this child coordinate system.
   // |ComputeInlinePositions()| converts it to the offset within the line box.
   LogicalRect rect;

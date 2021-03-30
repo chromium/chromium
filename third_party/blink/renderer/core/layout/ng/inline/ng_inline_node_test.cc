@@ -155,8 +155,8 @@ class NGInlineNodeTest : public NGLayoutTest {
     EXPECT_FALSE(expected);
   }
 
-  Persistent<LayoutNGBlockFlow> layout_block_flow_;
-  Persistent<LayoutObject> layout_object_;
+  LayoutNGBlockFlow* layout_block_flow_ = nullptr;
+  LayoutObject* layout_object_ = nullptr;
   FontCachePurgePreventer purge_preventer_;
 };
 

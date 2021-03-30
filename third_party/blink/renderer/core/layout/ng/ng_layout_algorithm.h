@@ -67,7 +67,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
   STACK_ALLOCATED();
  public:
   NGLayoutAlgorithm(NGInputNodeType node,
-                    const ComputedStyle* style,
+                    scoped_refptr<const ComputedStyle> style,
                     const NGConstraintSpace& space,
                     TextDirection direction,
                     const NGBreakTokenType* break_token)

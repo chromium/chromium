@@ -41,7 +41,7 @@ void SVGSymbolElement::SvgAttributeChanged(
 
 LayoutObject* SVGSymbolElement::CreateLayoutObject(const ComputedStyle&,
                                                    LegacyLayout) {
-  return MakeGarbageCollected<LayoutSVGHiddenContainer>(this);
+  return new LayoutSVGHiddenContainer(this);
 }
 
 }  // namespace blink

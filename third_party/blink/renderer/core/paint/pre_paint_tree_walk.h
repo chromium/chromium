@@ -107,9 +107,9 @@ class CORE_EXPORT PrePaintTreeWalk {
     // enabled.
     bool clip_changed = false;
 
-    UntracedMember<const LayoutBoxModelObject> paint_invalidation_container;
-    UntracedMember<const LayoutBoxModelObject>
-        paint_invalidation_container_for_stacked_contents;
+    const LayoutBoxModelObject* paint_invalidation_container = nullptr;
+    const LayoutBoxModelObject*
+        paint_invalidation_container_for_stacked_contents = nullptr;
   };
 
   static bool ContextRequiresChildPrePaint(const PrePaintTreeWalkContext&);

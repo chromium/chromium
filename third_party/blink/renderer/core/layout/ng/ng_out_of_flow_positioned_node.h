@@ -38,7 +38,7 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
   NGBlockNode node;
   NGPhysicalStaticPosition static_position;
   // Continuation root of the optional inline container.
-  UntracedMember<const LayoutInline> inline_container;
+  const LayoutInline* inline_container;
   PhysicalOffset containing_block_offset;
   scoped_refptr<const NGPhysicalContainerFragment> containing_block_fragment;
 
@@ -69,9 +69,8 @@ struct NGLogicalOutOfFlowPositionedNode {
   NGBlockNode node;
   NGLogicalStaticPosition static_position;
   // Continuation root of the optional inline container.
-  UntracedMember<const LayoutInline> inline_container;
+  const LayoutInline* inline_container;
   bool needs_block_offset_adjustment;
-  const LayoutUnit fragmentainer_consumed_block_size;
   LogicalOffset containing_block_offset;
   scoped_refptr<const NGPhysicalContainerFragment> containing_block_fragment;
   base::Optional<LogicalRect> containing_block_rect;

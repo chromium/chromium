@@ -125,7 +125,7 @@ TEST_F(SvgHitTestPerfTest, IntersectsClipPath) {
             SVGLayoutSupport::IntersectsClipPath(
                 *container, container_bounding_box, *local_location);
           },
-          WrapPersistent(container), std::ref(object_bounding_box),
+          WTF::Unretained(container), std::ref(object_bounding_box),
           std::ref(local_location)));
 }
 
