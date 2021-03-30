@@ -34,7 +34,7 @@ public class MediaSessionImpl extends MediaSession {
     private ObserverList.RewindableIterator<MediaSessionObserver> mObserversIterator;
 
     private boolean mIsControllable;
-    private boolean mIsSuspended;
+    private Boolean mIsSuspended;
     private MediaMetadata mMetadata;
     private List<MediaImage> mImagesList;
     private HashSet<Integer> mActionSet;
@@ -46,11 +46,21 @@ public class MediaSessionImpl extends MediaSession {
 
     public void addObserver(MediaSessionObserver observer) {
         mObservers.addObserver(observer);
-        observer.mediaSessionStateChanged(mIsControllable, mIsSuspended);
-        observer.mediaSessionMetadataChanged(mMetadata);
-        observer.mediaSessionArtworkChanged(mImagesList);
-        observer.mediaSessionPositionChanged(mPosition);
-        observer.mediaSessionActionsChanged(mActionSet);
+        if (mIsSuspended != null) {
+            observer.mediaSessionStateChanged(mIsControllable, mIsSuspended);
+        }
+        if (mMetadata != null) {
+            observer.mediaSessionMetadataChanged(mMetadata);
+        }
+        if (mImagesList != null) {
+            observer.mediaSessionArtworkChanged(mImagesList);
+        }
+        if (mPosition != null) {
+            observer.mediaSessionPositionChanged(mPosition);
+        }
+        if (mActionSet != null) {
+            observer.mediaSessionActionsChanged(mActionSet);
+        }
     }
 
     public void removeObserver(MediaSessionObserver observer) {
