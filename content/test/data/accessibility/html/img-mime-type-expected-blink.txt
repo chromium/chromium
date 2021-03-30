@@ -2,4 +2,5 @@ rootWebArea name='img-mime-type.png (19×19)'
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++genericContainer ignored
-++++++++image
+++++++++genericContainer ignored
+++++++++++image

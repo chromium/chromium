@@ -25,12 +25,14 @@ rootWebArea name='Action verbs'
 ++++++radioButton defaultActionVerb=check checkedState=false
 ++++++switch name='ARIA Switch' defaultActionVerb=check checkedState=false
 ++++++details
-++++++++disclosureTriangle collapsed name='Summary' defaultActionVerb=press
-++++++++++listMarker ignored name='▸ '
-++++++++++++staticText ignored name='▸ '
-++++++++++staticText name='Summary'
-++++++++++++inlineTextBox name='Summary'
+++++++++genericContainer ignored
+++++++++++disclosureTriangle collapsed name='Summary' defaultActionVerb=press
+++++++++++++listMarker ignored name='▸ '
+++++++++++++++staticText ignored name='▸ '
+++++++++++++staticText name='Summary'
+++++++++++++++inlineTextBox name='Summary'
 ++++++++genericContainer ignored invisible
+++++++++++staticText ignored name='Details'
 ++++++popUpButton collapsed value='Pop-up button' defaultActionVerb=open haspopup=menu
 ++++++++menuListPopup invisible
 ++++++++++menuListOption name='Pop-up button' defaultActionVerb=select selected=true

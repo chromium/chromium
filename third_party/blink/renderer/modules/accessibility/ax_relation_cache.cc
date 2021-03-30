@@ -370,8 +370,15 @@ void AXRelationCache::GetReverseRelated(
 
 void AXRelationCache::UpdateRelatedTree(Node* node, AXObject* obj) {
   HeapVector<Member<AXObject>> related_sources;
+#if DCHECK_IS_ON()
   DCHECK(node);
-  DCHECK(!obj || Get(node) == obj);
+  AXObject* obj_for_node = Get(node);
+  DCHECK(!obj || obj_for_node == obj)
+      << "Object and node did not match:"
+      << "\n* node = " << node << "\n* obj = " << obj->ToString(true, true)
+      << "\n* obj_for_node = "
+      << (obj_for_node ? obj_for_node->ToString(true, true) : "null");
+#endif
   AXObject* related_target = obj ? obj : Get(node);
   // If it's already owned, schedule an update on the owner.
   if (related_target && IsAriaOwned(related_target)) {

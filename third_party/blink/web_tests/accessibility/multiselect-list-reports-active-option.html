@@ -33,9 +33,9 @@ async_test_after_layout_and_paint((testCase) => {
     var menulist = document.getElementById("menulist");
     menulist.focus();
     window.accessibleMenulist = accessibilityController.focusedElement;
-    window.accessibleOne = accessibleMenulist.childAtIndex(0);
-    window.accessibleTwo = accessibleMenulist.childAtIndex(1);
-    window.accessibleThree = accessibleMenulist.childAtIndex(2);
+    window.accessibleOne = accessibleMenulist.childAtIndex(0).childAtIndex(0);
+    window.accessibleTwo = accessibleMenulist.childAtIndex(0).childAtIndex(1);
+    window.accessibleThree = accessibleMenulist.childAtIndex(0).childAtIndex(2);
 
     function listListener(notification) {
         assert_less_than(notificationReceivedIndex, expectedNotifications.length);

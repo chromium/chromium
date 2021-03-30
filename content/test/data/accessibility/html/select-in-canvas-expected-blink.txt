@@ -9,6 +9,7 @@ rootWebArea focusable
 ++++++canvas
 ++++++++staticText name='<newline>  '
 ++++++++popUpButton collapsed focusable value='1'
-++++++++++menuListOption focusable
-++++++++++menuListOption focusable
+++++++++++genericContainer ignored
+++++++++++++menuListOption focusable
+++++++++++++menuListOption focusable
 ++++++++staticText name='<newline>'

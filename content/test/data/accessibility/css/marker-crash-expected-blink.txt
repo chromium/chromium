@@ -5,6 +5,5 @@ rootWebArea
 ++++++++listMarker name='• '
 ++++++++listItem
 ++++++++++genericContainer
-++++++++++++listMarker name='• '
 ++++++++++genericContainer ignored
 ++++++genericContainer ignored

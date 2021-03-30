@@ -3,5 +3,6 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer
 ++++++++pluginObject
-++++++++++staticText name='Fallback'
-++++++++++++inlineTextBox name='Fallback'
+++++++++++genericContainer ignored
+++++++++++++staticText name='Fallback'
+++++++++++++++inlineTextBox name='Fallback'

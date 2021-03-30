@@ -138,8 +138,9 @@ AXRole: AXGenericContainer
             AXRole: AXInlineTextBox "The option B has option role because it has an explicit role."
     AXRole: AXGroup
         AXRole: AXPresentational
-            AXRole: AXStaticText "A"
-            AXRole: AXListBoxOption "B"
+            AXRole: AXGenericContainer
+                AXRole: AXStaticText "A"
+                AXRole: AXListBoxOption "B"
 
 PASS successfullyParsed is true
 

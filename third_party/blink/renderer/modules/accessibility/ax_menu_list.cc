@@ -80,7 +80,7 @@ void AXMenuList::Detach() {
   }
 }
 
-void AXMenuList::ClearChildren() {
+void AXMenuList::ClearChildren() const {
   if (children_.IsEmpty())
     return;
 

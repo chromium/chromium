@@ -634,8 +634,7 @@ const AXObject* AXNodeObject::InheritsPresentationalRoleFrom() const {
 
   // http://www.w3.org/TR/wai-aria/complete#presentation
   // ARIA spec says that the user agent MUST apply an inherited role of
-  // presentation
-  // to any owned elements that do not have an explicit role defined.
+  // presentation to any owned elements that do not have an explicit role.
   if (AriaRoleAttribute() != ax::mojom::blink::Role::kUnknown)
     return nullptr;
 
@@ -3576,12 +3575,15 @@ void AXNodeObject::AddImageMapChildren() {
       // Unlike many role changes, this can be done on the same object.
       // There's no need to fire a role changed event or MarkDirty because the
       // only time the role changes is when we're updating children anyway.
-      if (role_ == ax::mojom::blink::Role::kImageMap)
-        role_ = ax::mojom::blink::Role::kImage;
+      if (role_ == ax::mojom::blink::Role::kImageMap) {
+        ax_primary_image->ClearChildren();  // Clear the children now.
+        ax_primary_image->UpdateRoleForImage();
+      }
     }
     return;
   }
 
+  // Yes, this is the primary image.
   HTMLAreaElement* first_area = Traversal<HTMLAreaElement>::FirstWithin(*map);
   if (first_area) {
     // If the <area> children were part of a different parent, notify that
@@ -3590,12 +3592,13 @@ void AXNodeObject::AddImageMapChildren() {
       if (AXObject* ax_previous_parent = ax_preexisting->CachedParentObject()) {
         DCHECK_NE(ax_previous_parent, this);
         DCHECK(ax_previous_parent->GetNode());
-        // Need to do this immediately so that DCHECKs for illegal reparenting
-        // don't fail down the line. It's safe from reentrancy on |this|,
-        // because the only children an HTML image can have are area children.
         AXObjectCache().ChildrenChangedWithCleanLayout(
             ax_previous_parent->GetNode(), ax_previous_parent);
-        ax_previous_parent->UpdateChildrenIfNecessary();
+        if (ax_previous_parent->RoleValue() ==
+            ax::mojom::blink::Role::kImageMap) {
+          ax_previous_parent->ClearChildren();
+          ax_previous_parent->UpdateRoleForImage();
+        }
       }
     }
 
@@ -3611,7 +3614,7 @@ void AXNodeObject::AddImageMapChildren() {
     if (role_ == ax::mojom::blink::Role::kImage) {
       // There's no need to fire a role changed event or MarkDirty because the
       // only time the role changes is when we're updating children anyway.
-      role_ = ax::mojom::blink::Role::kImageMap;
+      UpdateRoleForImage();
     }
   }
 }
@@ -3729,7 +3732,6 @@ void AXNodeObject::AddChildrenImpl() {
   }
 
   DCHECK(children_dirty_);
-  children_dirty_ = false;
 
   if (!CanHaveChildren()) {
     NOTREACHED()
@@ -3790,6 +3792,7 @@ void AXNodeObject::AddChildren() {
 #endif
 
   AddChildrenImpl();
+  children_dirty_ = false;
 
 #if DCHECK_IS_ON()
   // All added children must be attached.
@@ -3829,7 +3832,7 @@ void AXNodeObject::AddNodeChild(Node* node) {
   bool did_add_child = children_.size() == num_children_before_add + 1 &&
                        children_[0] == ax_child;
   if (did_add_child) {
-    DCHECK(!ax_cached_parent || ax_cached_parent == this)
+    DCHECK(!ax_cached_parent || ax_cached_parent->AXObjectID() == AXObjectID())
         << "Newly added child shouldn't have a different preexisting parent:"
         << "\nChild = " << ax_child->ToString(true, true)
         << "\nNew parent = " << ToString(true, true)
