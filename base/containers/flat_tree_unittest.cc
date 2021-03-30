@@ -28,6 +28,7 @@
 // * No tests with min_allocator and no tests counting allocations.
 //   Flat sets currently don't support allocators.
 
+#include <deque>
 #include <forward_list>
 #include <functional>
 #include <iterator>

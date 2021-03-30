@@ -11,6 +11,7 @@
 #include <ostream>
 #include <utility>
 
+#include "base/as_const.h"
 #include "base/bit_cast.h"
 #include "base/check_op.h"
 #include "base/containers/checked_iterators.h"

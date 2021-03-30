@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_FILE_HANDLER_H_
 
 #include <ostream>
+#include <set>
 #include <string>
 #include <vector>
 

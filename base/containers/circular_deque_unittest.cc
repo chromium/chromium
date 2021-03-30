@@ -4,6 +4,13 @@
 
 #include "base/containers/circular_deque.h"
 
+// circular_dequeue.h is a widely included header and its size has significant
+// impact on build time. Try not to raise this limit unless necessary. See
+// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
+#ifndef NACL_TC_REV
+#pragma clang max_tokens_here 400000
+#endif
+
 #include "base/test/copy_only_int.h"
 #include "base/test/move_only_int.h"
 #include "testing/gtest/include/gtest/gtest.h"

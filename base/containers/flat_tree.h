@@ -11,10 +11,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/as_const.h"
 #include "base/compiler_specific.h"
 #include "base/functional/not_fn.h"
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
 #include "base/template_util.h"
 
 namespace base {

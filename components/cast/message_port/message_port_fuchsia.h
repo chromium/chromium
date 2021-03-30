@@ -11,6 +11,7 @@
 #include <lib/fidl/cpp/interface_request.h>
 
 #include "base/containers/circular_deque.h"
+#include "base/optional.h"
 #include "components/cast/message_port/message_port.h"
 #include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
 

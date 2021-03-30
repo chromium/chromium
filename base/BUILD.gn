@@ -209,6 +209,7 @@ component("base") {
     "allocator/allocator_check.h",
     "allocator/allocator_extension.cc",
     "allocator/allocator_extension.h",
+    "as_const.h",
     "at_exit.cc",
     "at_exit.h",
     "atomic_ref_count.h",
@@ -2847,6 +2848,7 @@ if (build_base_unittests) {
     sources = [
       "allocator/partition_allocator/arm_bti_test_functions.h",
       "allocator/tcmalloc_unittest.cc",
+      "as_const_unittest.cc",
       "at_exit_unittest.cc",
       "atomicops_unittest.cc",
       "auto_reset_unittest.cc",

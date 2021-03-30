@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/stl_util.h"
 #include "cc/animation/keyframe_model.h"
 #include "cc/test/geometry_test_utils.h"
 #include "chrome/browser/vr/databinding/binding.h"

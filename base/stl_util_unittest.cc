@@ -275,19 +275,6 @@ TEST(STLUtilTest, Data) {
   }
 }
 
-TEST(STLUtilTest, AsConst) {
-  int i = 123;
-  EXPECT_EQ(&i, &base::as_const(i));
-  static_assert(std::is_same<const int&, decltype(base::as_const(i))>::value,
-                "Error: base::as_const() returns an unexpected type");
-
-  const int ci = 456;
-  static_assert(&ci == &base::as_const(ci),
-                "Error: base::as_const() returns an unexpected reference");
-  static_assert(std::is_same<const int&, decltype(base::as_const(ci))>::value,
-                "Error: base::as_const() returns an unexpected type");
-}
-
 TEST(STLUtilTest, ToUnderlying) {
   enum Enum : int {
     kOne = 1,

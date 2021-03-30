@@ -6,6 +6,7 @@
 #define WEBLAYER_BROWSER_SAFE_BROWSING_SAFE_BROWSING_TOKEN_FETCHER_IMPL_H_
 
 #include <memory>
+#include <set>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"

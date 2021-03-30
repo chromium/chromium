@@ -14,6 +14,7 @@
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
 #include "third_party/icu/source/i18n/unicode/translit.h"

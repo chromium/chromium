@@ -10,6 +10,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <set>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
