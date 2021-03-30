@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 // clang-format on
 
 /**
@@ -22,7 +22,16 @@ cr.define('app_management', function() {
    * @return {AppMap}
    */
   AppState.addApp = function(apps, action) {
-    assert(!apps[action.app.id]);
+    if (apps[action.app.id]) {
+      const stringifyApp = (app) => {
+        return `id: ${app.id}, type: ${app.type}, install source: ${
+            app.installSource} title: ${app.title}`;
+      };
+      const errorMessage = `Attempted to add an app that already exists.
+                            New app: ${stringifyApp(action.app)}.
+                            Old app: ${stringifyApp(apps[action.app.id])}.`;
+      assertNotReached(errorMessage);
+    }
 
     const newAppEntry = {};
     newAppEntry[action.app.id] = action.app;
