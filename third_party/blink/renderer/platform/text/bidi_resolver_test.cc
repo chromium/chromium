@@ -260,7 +260,7 @@ void BidiTestRunner::RunTest(const std::basic_string<UChar>& input,
       break;
     }
   }
-  runs.DeleteRuns();
+  runs.ClearRuns();
 }
 
 TEST(BidiResolver, DISABLED_BidiTest_txt) {

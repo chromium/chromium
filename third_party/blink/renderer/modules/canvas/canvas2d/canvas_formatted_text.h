@@ -121,7 +121,7 @@ class MODULES_EXPORT CanvasFormattedText final : public ScriptWrappable {
 
  private:
   HeapVector<Member<CanvasFormattedTextRun>> text_runs_;
-  LayoutBlockFlow* block_;
+  Member<LayoutBlockFlow> block_;
 };
 
 }  // namespace blink

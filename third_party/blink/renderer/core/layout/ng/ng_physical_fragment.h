@@ -269,13 +269,13 @@ class CORE_EXPORT NGPhysicalFragment
   PaintLayer* Layer() const {
     if (!HasLayer())
       return nullptr;
-    return To<LayoutBoxModelObject>(layout_object_)->Layer();
+    return To<LayoutBoxModelObject>(layout_object_.Get())->Layer();
   }
 
   // Whether this object has a self-painting |Layer()|.
   bool HasSelfPaintingLayer() const {
-    return HasLayer() &&
-           To<LayoutBoxModelObject>(layout_object_)->HasSelfPaintingLayer();
+    return HasLayer() && To<LayoutBoxModelObject>(layout_object_.Get())
+                             ->HasSelfPaintingLayer();
   }
 
   // True if overflow != 'visible', except for certain boxes that do not allow
@@ -508,7 +508,7 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned has_rare_data_ : 1;
   unsigned is_first_for_node_ : 1;
 
-  LayoutObject* layout_object_;
+  UntracedMember<LayoutObject> layout_object_;
   const PhysicalSize size_;
 
   const unsigned type_ : 1;           // NGFragmentType

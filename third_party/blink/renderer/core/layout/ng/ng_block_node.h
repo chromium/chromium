@@ -189,7 +189,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   }
 
   bool HasLineIfEmpty() const {
-    if (const auto* block = DynamicTo<LayoutBlock>(box_))
+    if (const auto* block = DynamicTo<LayoutBlock>(box_.Get()))
       return block->HasLineIfEmpty();
     return false;
   }

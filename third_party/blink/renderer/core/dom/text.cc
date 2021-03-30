@@ -332,10 +332,10 @@ static bool IsSVGText(Text* text) {
 LayoutText* Text::CreateTextLayoutObject(const ComputedStyle& style,
                                          LegacyLayout legacy) {
   if (IsSVGText(this))
-    return new LayoutSVGInlineText(this, DataImpl());
+    return MakeGarbageCollected<LayoutSVGInlineText>(this, DataImpl());
 
   if (style.HasTextCombine())
-    return new LayoutTextCombine(this, DataImpl());
+    return MakeGarbageCollected<LayoutTextCombine>(this, DataImpl());
 
   return LayoutObjectFactory::CreateText(this, DataImpl(), legacy);
 }
@@ -389,7 +389,7 @@ bool NeedsWhitespaceLayoutObject(const ComputedStyle& style) {
 }  // namespace
 
 void Text::RecalcTextStyle(const StyleRecalcChange change) {
-  scoped_refptr<const ComputedStyle> new_style =
+  const ComputedStyle* new_style =
       GetDocument().GetStyleResolver().StyleForText(this);
   if (LayoutText* layout_text = GetLayoutObject()) {
     const ComputedStyle* layout_parent_style =

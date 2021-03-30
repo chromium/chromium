@@ -45,7 +45,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
     scoped_refptr<const NGPhysicalFragment> fragment;
   };
   typedef Vector<ChildWithOffset, 4> ChildrenVector;
-  using MulticolCollection = HashSet<LayoutBox*>;
+  using MulticolCollection = HashSet<UntracedMember<LayoutBox>>;
 
   LayoutUnit BfcLineOffset() const { return bfc_line_offset_; }
   void SetBfcLineOffset(LayoutUnit bfc_line_offset) {
@@ -240,7 +240,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   friend class NGPhysicalContainerFragment;
 
   NGContainerFragmentBuilder(NGLayoutInputNode node,
-                             scoped_refptr<const ComputedStyle> style,
+                             const ComputedStyle* style,
                              const NGConstraintSpace* space,
                              WritingDirectionMode writing_direction)
       : NGFragmentBuilder(std::move(style), writing_direction),

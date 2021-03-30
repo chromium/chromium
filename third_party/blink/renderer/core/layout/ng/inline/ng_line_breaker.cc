@@ -2044,7 +2044,7 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
           }
           continue;
         }
-        scoped_refptr<const ComputedStyle> was_current_style = current_style_;
+        const ComputedStyle* was_current_style = current_style_;
         SetCurrentStyle(*item.Style());
         const NGInlineItemResult item_result_before = *item_result;
         BreakText(item_result, item, *item.TextShapeResult(),
@@ -2362,7 +2362,7 @@ const ComputedStyle& NGLineBreaker::ComputeCurrentStyle(
 }
 
 void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
-  if (&style == current_style_.get()) {
+  if (&style == current_style_) {
 #if DCHECK_IS_ON()
     // Check that cache fields are already setup correctly.
     DCHECK_EQ(auto_wrap_, !is_svg_text_ && style.AutoWrap());
@@ -2457,14 +2457,13 @@ scoped_refptr<NGInlineBreakToken> NGLineBreaker::CreateBreakToken(
   if (item_index_ >= items.size())
     return nullptr;
   return NGInlineBreakToken::Create(
-      node_, current_style_.get(), item_index_, offset_,
-      (is_after_forced_break_ ? NGInlineBreakToken::kIsForcedBreak : 0) |
-          (line_info.UseFirstLineStyle()
-               ? NGInlineBreakToken::kUseFirstLineStyle
-               : 0) |
-          (cloned_box_decorations_count_
-               ? NGInlineBreakToken::kHasClonedBoxDecorations
-               : 0));
+      node_, current_style_, item_index_, offset_,
+      ((is_after_forced_break_ ? NGInlineBreakToken::kIsForcedBreak : 0) |
+       (line_info.UseFirstLineStyle() ? NGInlineBreakToken::kUseFirstLineStyle
+                                      : 0) |
+       (cloned_box_decorations_count_
+            ? NGInlineBreakToken::kHasClonedBoxDecorations
+            : 0)));
 }
 
 void NGLineBreaker::PropagateBreakToken(

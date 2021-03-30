@@ -127,9 +127,11 @@ struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   LayoutRectOutsets margin_box_outsets;
   MinMaxSizes intrinsic_logical_widths;
   LayoutUnit intrinsic_logical_widths_initial_block_size;
-  void* pointers[4];
+  void* pointers[3];
   Vector<scoped_refptr<const NGLayoutResult>, 1> layout_results;
-  Persistent<void*> rare_data;
+  Member<void*> inline_box_wrapper;
+  wtf_size_t first_fragment_item_index_;
+  Member<void*> rare_data;
 };
 
 ASSERT_SIZE(LayoutBox, SameSizeAsLayoutBox);
@@ -394,12 +396,13 @@ int HypotheticalScrollbarThickness(const LayoutBox& box,
 
 }  // namespace
 
-BoxLayoutExtraInput::BoxLayoutExtraInput(LayoutBox& box) : box(box) {
-  box.SetBoxLayoutExtraInput(this);
+BoxLayoutExtraInput::BoxLayoutExtraInput(LayoutBox& layout_box)
+    : box(&layout_box) {
+  box->SetBoxLayoutExtraInput(this);
 }
 
 BoxLayoutExtraInput::~BoxLayoutExtraInput() {
-  box.SetBoxLayoutExtraInput(nullptr);
+  box->SetBoxLayoutExtraInput(nullptr);
 }
 
 LayoutBoxRareData::LayoutBoxRareData()
@@ -412,10 +415,13 @@ LayoutBoxRareData::LayoutBoxRareData()
       has_override_percentage_resolution_block_size_(false),
       has_previous_content_box_rect_(false),
       percent_height_container_(nullptr),
-      snap_container_(nullptr),
-      snap_areas_(nullptr) {}
+      snap_container_(nullptr) {}
 
 void LayoutBoxRareData::Trace(Visitor* visitor) const {
+  visitor->Trace(spanner_placeholder_);
+  visitor->Trace(percent_height_container_);
+  visitor->Trace(snap_container_);
+  visitor->Trace(snap_areas_);
   visitor->Trace(layout_child_);
 }
 
@@ -427,6 +433,12 @@ LayoutBox::LayoutBox(ContainerNode* node)
   SetIsBox();
   if (blink::IsA<HTMLLegendElement>(node))
     SetIsHTMLLegendElement();
+}
+
+void LayoutBox::Trace(Visitor* visitor) const {
+  visitor->Trace(inline_box_wrapper_);
+  visitor->Trace(rare_data_);
+  LayoutBoxModelObject::Trace(visitor);
 }
 
 LayoutBox::~LayoutBox() = default;
@@ -3171,7 +3183,7 @@ PhysicalOffset LayoutBox::OffsetFromContainerInternal(
 
 InlineBox* LayoutBox::CreateInlineBox() {
   NOT_DESTROYED();
-  return new InlineBox(LineLayoutItem(this));
+  return MakeGarbageCollected<InlineBox>(LineLayoutItem(this));
 }
 
 void LayoutBox::DirtyLineBoxes(bool full_layout) {
@@ -7840,7 +7852,7 @@ void LayoutBox::SetSnapContainer(LayoutBox* new_container) {
 void LayoutBox::ClearSnapAreas() {
   NOT_DESTROYED();
   if (SnapAreaSet* areas = SnapAreas()) {
-    for (auto* const snap_area : *areas)
+    for (const auto& snap_area : *areas)
       snap_area->rare_data_->snap_container_ = nullptr;
     areas->clear();
   }
@@ -7848,15 +7860,15 @@ void LayoutBox::ClearSnapAreas() {
 
 void LayoutBox::AddSnapArea(LayoutBox& snap_area) {
   NOT_DESTROYED();
-  EnsureRareData().EnsureSnapAreas().insert(&snap_area);
+  EnsureRareData().snap_areas_.insert(&snap_area);
 }
 
 void LayoutBox::RemoveSnapArea(const LayoutBox& snap_area) {
   NOT_DESTROYED();
   // const_cast is safe here because we only need to modify the type to match
   // the key type, and not actually mutate the object.
-  if (rare_data_ && rare_data_->snap_areas_)
-    rare_data_->snap_areas_->erase(const_cast<LayoutBox*>(&snap_area));
+  if (rare_data_)
+    rare_data_->snap_areas_.erase(const_cast<LayoutBox*>(&snap_area));
 }
 
 void LayoutBox::ReassignSnapAreas(LayoutBox& new_container) {
@@ -7864,7 +7876,7 @@ void LayoutBox::ReassignSnapAreas(LayoutBox& new_container) {
   SnapAreaSet* areas = SnapAreas();
   if (!areas)
     return;
-  for (auto* const snap_area : *areas) {
+  for (const auto& snap_area : *areas) {
     snap_area->rare_data_->snap_container_ = &new_container;
     new_container.AddSnapArea(*snap_area);
   }
@@ -7885,7 +7897,7 @@ bool LayoutBox::AllowedToPropagateRecursiveScrollToParentFrame(
 
 SnapAreaSet* LayoutBox::SnapAreas() const {
   NOT_DESTROYED();
-  return rare_data_ ? rare_data_->snap_areas_.get() : nullptr;
+  return rare_data_ ? &rare_data_->snap_areas_ : nullptr;
 }
 
 CustomLayoutChild* LayoutBox::GetCustomLayoutChild() const {

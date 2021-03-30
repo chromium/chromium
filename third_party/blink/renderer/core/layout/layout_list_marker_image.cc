@@ -15,7 +15,8 @@ LayoutListMarkerImage::LayoutListMarkerImage(Element* element)
 
 LayoutListMarkerImage* LayoutListMarkerImage::CreateAnonymous(
     Document* document) {
-  LayoutListMarkerImage* object = new LayoutListMarkerImage(nullptr);
+  LayoutListMarkerImage* object =
+      MakeGarbageCollected<LayoutListMarkerImage>(nullptr);
   object->SetDocumentForAnonymous(document);
   return object;
 }

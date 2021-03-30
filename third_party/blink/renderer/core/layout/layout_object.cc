@@ -214,8 +214,7 @@ struct SameSizeAsLayoutObject : ImageResourceObserver, DisplayItemClient {
   unsigned bitfields_;
   unsigned bitfields2_;
   unsigned bitfields3_;
-  void* pointers[4];
-  Member<void*> members[1];
+  Member<void*> members[5];
   // The following fields are in FragmentData.
   PhysicalOffset paint_offset_;
   std::unique_ptr<int> rare_data_;
@@ -228,17 +227,6 @@ ASSERT_SIZE(LayoutObject, SameSizeAsLayoutObject);
 
 bool LayoutObject::affects_parent_block_ = false;
 
-void* LayoutObject::operator new(size_t sz) {
-  DCHECK(IsMainThread());
-  return WTF::Partitions::LayoutPartition()->Alloc(
-      sz, WTF_HEAP_PROFILER_TYPE_NAME(LayoutObject));
-}
-
-void LayoutObject::operator delete(void* ptr) {
-  DCHECK(IsMainThread());
-  WTF::Partitions::LayoutPartition()->Free(ptr);
-}
-
 LayoutObject* LayoutObject::CreateObject(Element* element,
                                          const ComputedStyle& style,
                                          LegacyLayout legacy) {
@@ -250,7 +238,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
   // feature.
   const ContentData* content_data = style.GetContentData();
   if (!element->IsPseudoElement() && ShouldUseContentData(content_data)) {
-    LayoutImage* image = new LayoutImage(element);
+    LayoutImage* image = MakeGarbageCollected<LayoutImage>(element);
     // LayoutImageResourceStyleImage requires a style being present on the
     // image but we don't want to trigger a style change now as the node is
     // not fully attached. Moving this code to style change doesn't make sense
@@ -276,7 +264,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     case EDisplay::kContents:
       return nullptr;
     case EDisplay::kInline:
-      return new LayoutInline(element);
+      return MakeGarbageCollected<LayoutInline>(element);
     case EDisplay::kBlock:
     case EDisplay::kFlowRoot:
     case EDisplay::kInlineBlock:
@@ -319,7 +307,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     case EDisplay::kLayoutCustom:
     case EDisplay::kInlineLayoutCustom:
       DCHECK(RuntimeEnabledFeatures::LayoutNGEnabled());
-      return new LayoutNGCustom(element);
+      return MakeGarbageCollected<LayoutNGCustom>(element);
   }
 
   NOTREACHED();
@@ -345,14 +333,19 @@ LayoutObject::LayoutObject(Node* node)
 }
 
 LayoutObject::~LayoutObject() {
+  DCHECK(bitfields_.BeingDestroyed());
 #if DCHECK_IS_ON()
-  DCHECK(!has_ax_object_);
-  DCHECK(BeingDestroyed());
+  DCHECK(is_destroyed_);
 #endif
   InstanceCounters::DecrementCounter(InstanceCounters::kLayoutObjectCounter);
-#if DCHECK_IS_ON()
-  is_destroyed_ = true;
-#endif
+}
+
+void LayoutObject::Trace(Visitor* visitor) const {
+  visitor->Trace(style_);
+  visitor->Trace(node_);
+  visitor->Trace(parent_);
+  visitor->Trace(previous_);
+  visitor->Trace(next_);
 }
 
 bool LayoutObject::IsDescendantOf(const LayoutObject* obj) const {
@@ -2230,8 +2223,7 @@ StyleDifference LayoutObject::AdjustStyleDifference(
   return diff;
 }
 
-void LayoutObject::SetPseudoElementStyle(
-    scoped_refptr<const ComputedStyle> pseudo_style) {
+void LayoutObject::SetPseudoElementStyle(const ComputedStyle* pseudo_style) {
   NOT_DESTROYED();
   DCHECK(pseudo_style->StyleType() == kPseudoIdBefore ||
          pseudo_style->StyleType() == kPseudoIdAfter ||
@@ -2241,15 +2233,15 @@ void LayoutObject::SetPseudoElementStyle(
   // FIXME: We should consider just making all pseudo items use an inherited
   // style.
 
-  // Images are special and must inherit the pseudoStyle so the width and height
-  // of the pseudo element doesn't change the size of the image. In all other
-  // cases we can just share the style.
+  // Images are special and must inherit the pseudoStyle so the width and
+  // height of the pseudo element doesn't change the size of the image. In all
+  // other cases we can just share the style.
   //
   // Quotes are also LayoutInline, so we need to create an inherited style to
   // avoid getting an inline with positioning or an invalid display.
   //
   if (IsImage() || IsQuote()) {
-    scoped_refptr<ComputedStyle> style =
+    ComputedStyle* style =
         GetDocument().GetStyleResolver().CreateComputedStyle();
     style->InheritFrom(*pseudo_style);
     SetStyle(std::move(style));
@@ -2322,7 +2314,7 @@ void LayoutObject::SetNeedsOverflowRecalc(
 }
 
 DISABLE_CFI_PERF
-void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
+void LayoutObject::SetStyle(const ComputedStyle* style,
                             ApplyStyleChanges apply_changes) {
   NOT_DESTROYED();
   if (style_ == style)
@@ -2353,17 +2345,17 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
 
   StyleWillChange(diff, *style);
 
-  scoped_refptr<const ComputedStyle> old_style = std::move(style_);
+  const ComputedStyle* old_style = std::move(style_);
   SetStyleInternal(std::move(style));
 
   if (!IsText())
-    UpdateImageObservers(old_style.get(), style_.get());
+    UpdateImageObservers(old_style, style_);
 
-  CheckCounterChanges(old_style.get(), style_.get());
+  CheckCounterChanges(old_style, style_);
 
   bool does_not_need_layout_or_paint_invalidation = !parent_;
 
-  StyleDidChange(diff, old_style.get());
+  StyleDidChange(diff, old_style);
 
   // FIXME: |this| might be destroyed here. This can currently happen for a
   // LayoutTextFragment when its first-letter block gets an update in
@@ -2513,19 +2505,20 @@ void LayoutObject::UpdateFirstLineImageObservers(
     return;
 
   using FirstLineStyleMap =
-      HashMap<const LayoutObject*, scoped_refptr<const ComputedStyle>>;
-  DEFINE_STATIC_LOCAL(FirstLineStyleMap, first_line_style_map, ());
+      HeapHashMap<WeakMember<const LayoutObject>, Member<const ComputedStyle>>;
+  DEFINE_STATIC_LOCAL(Persistent<FirstLineStyleMap>, first_line_style_map,
+                      (MakeGarbageCollected<FirstLineStyleMap>()));
   DCHECK_EQ(bitfields_.RegisteredAsFirstLineImageObserver(),
-            first_line_style_map.Contains(this));
+            first_line_style_map->Contains(this));
   const auto* old_first_line_style =
       bitfields_.RegisteredAsFirstLineImageObserver()
-          ? first_line_style_map.at(this)
+          ? first_line_style_map->at(this)
           : nullptr;
 
   // UpdateFillImages() may indirectly call LayoutBlock::ImageChanged() which
   // will invalidate the first line style cache and remove a reference to
   // new_first_line_style, so hold a reference here.
-  scoped_refptr<const ComputedStyle> new_first_line_style =
+  const ComputedStyle* new_first_line_style =
       has_new_first_line_style ? FirstLineStyleWithoutFallback() : nullptr;
 
   if (new_first_line_style && !new_first_line_style->HasBackgroundImage())
@@ -2546,13 +2539,13 @@ void LayoutObject::UpdateFirstLineImageObservers(
           &FirstLineStyleWithoutFallback()->BackgroundLayers()));
       new_first_line_style = FirstLineStyleWithoutFallback();
       bitfields_.SetRegisteredAsFirstLineImageObserver(true);
-      first_line_style_map.Set(this, std::move(new_first_line_style));
+      first_line_style_map->Set(this, new_first_line_style);
     } else {
       bitfields_.SetRegisteredAsFirstLineImageObserver(false);
-      first_line_style_map.erase(this);
+      first_line_style_map->erase(this);
     }
     DCHECK_EQ(bitfields_.RegisteredAsFirstLineImageObserver(),
-              first_line_style_map.Contains(this));
+              first_line_style_map->Contains(this));
   }
 }
 
@@ -2884,7 +2877,7 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
     if (child->AnonymousHasStylePropagationOverride())
       continue;
 
-    scoped_refptr<ComputedStyle> new_style =
+    ComputedStyle* new_style =
         GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
             StyleRef(), child->StyleRef().Display());
 
@@ -3557,7 +3550,7 @@ void LayoutObject::WillBeDestroyed() {
 
   // Remove this object as ImageResourceObserver.
   if (style_ && !IsText())
-    UpdateImageObservers(style_.get(), nullptr);
+    UpdateImageObservers(style_, nullptr);
 
   // We must have removed all image observers.
   SECURITY_CHECK(!bitfields_.RegisteredAsFirstLineImageObserver());
@@ -3829,12 +3822,10 @@ void LayoutObject::Destroy() {
   // other house keepings.
   bitfields_.SetBeingDestroyed(true);
   WillBeDestroyed();
-  DeleteThis();
-}
-
-void LayoutObject::DeleteThis() {
-  NOT_DESTROYED();
-  delete this;
+#if DCHECK_IS_ON()
+  DCHECK(!has_ax_object_);
+  is_destroyed_ = true;
+#endif
 }
 
 PositionWithAffinity LayoutObject::PositionForPoint(
@@ -3986,7 +3977,7 @@ const ComputedStyle* LayoutObject::FirstLineStyleWithoutFallback() const {
       // it's based on first_line_block's style. We need to get the uncached
       // first line style based on this object's style and cache the result in
       // it.
-      if (scoped_refptr<ComputedStyle> first_line_style =
+      if (ComputedStyle* first_line_style =
               first_line_block->GetUncachedPseudoElementStyle(
                   StyleRequest(kPseudoIdFirstLine, Style()))) {
         return StyleRef().AddCachedPseudoElementStyle(
@@ -4003,7 +3994,7 @@ const ComputedStyle* LayoutObject::FirstLineStyleWithoutFallback() const {
             Parent()->FirstLineStyleWithoutFallback()) {
       // A first-line style is in effect. Get uncached first line style based on
       // parent_first_line_style and cache the result in this object's style.
-      if (scoped_refptr<ComputedStyle> first_line_style =
+      if (ComputedStyle* first_line_style =
               GetUncachedPseudoElementStyle(StyleRequest(
                   kPseudoIdFirstLineInherited, parent_first_line_style))) {
         return StyleRef().AddCachedPseudoElementStyle(
@@ -4029,7 +4020,7 @@ const ComputedStyle* LayoutObject::GetCachedPseudoElementStyle(
   return element->CachedStyleForPseudoElement(pseudo);
 }
 
-scoped_refptr<ComputedStyle> LayoutObject::GetUncachedPseudoElementStyle(
+ComputedStyle* LayoutObject::GetUncachedPseudoElementStyle(
     const StyleRequest& request) const {
   NOT_DESTROYED();
   DCHECK_NE(request.pseudo_id, kPseudoIdBefore);
@@ -4725,7 +4716,7 @@ Vector<PhysicalRect> LayoutObject::OutlineRects(
 }
 
 void LayoutObject::SetModifiedStyleOutsideStyleRecalc(
-    scoped_refptr<const ComputedStyle> style,
+    const ComputedStyle* style,
     ApplyStyleChanges apply_changes) {
   NOT_DESTROYED();
   SetStyle(style, apply_changes);

@@ -29,7 +29,7 @@ struct SameSizeAsNGPhysicalFragment
   // |flags_for_free_maybe| is used to support an additional increase in size
   // needed for DCHECK and 32-bit builds.
   unsigned flags_for_free_maybe;
-  void* layout_object;
+  Member<void*> layout_object;
   PhysicalSize size;
   unsigned flags;
 };
@@ -183,7 +183,7 @@ class FragmentTreeDumper {
       if (!descendant->IsLayoutNGObject()) {
         if (const auto* block = DynamicTo<LayoutBlock>(descendant)) {
           if (const auto* positioned_descendants = block->PositionedObjects()) {
-            for (const auto* positioned_object : *positioned_descendants) {
+            for (const auto& positioned_object : *positioned_descendants) {
               if (positioned_object->IsLayoutNGObject())
                 AppendNGRootInLegacySubtree(*positioned_object, indent);
               else

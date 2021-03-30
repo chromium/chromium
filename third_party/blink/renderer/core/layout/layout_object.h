@@ -269,7 +269,8 @@ struct RecalcLayoutOverflowResult {
 // IntrinsicLogicalWidthsDirty.
 //
 // See the individual getters below for more details about what each width is.
-class CORE_EXPORT LayoutObject : public ImageResourceObserver,
+class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
+                                 public ImageResourceObserver,
                                  public DisplayItemClient {
   friend class LayoutObjectChildList;
   FRIEND_TEST_ALL_PREFIXES(LayoutObjectTest, MutableForPaintingClearPaintFlags);
@@ -288,16 +289,29 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   FRIEND_TEST_ALL_PREFIXES(
       LayoutObjectTest,
       ContainingBlockAbsoluteLayoutObjectShouldNotBeNonStaticallyPositionedInlineAncestor);
+  FRIEND_TEST_ALL_PREFIXES(LayoutObjectTest, VisualRect);
 
   friend class VisualRectMappingTest;
 
  public:
+  // Use a type specific arena for LayoutObject
+  template <typename T>
+  static void* AllocateObject(size_t size) {
+    ThreadState* state =
+        ThreadStateFor<ThreadingTrait<LayoutObject>::kAffinity>::GetState();
+    const char* type_name = "blink::LayoutObject";
+    return state->Heap().AllocateOnArenaIndex(
+        state, size, BlinkGC::kLayoutObjectArenaIndex,
+        GCInfoTrait<GCInfoFoldedType<LayoutObject>>::Index(), type_name);
+  }
+
   // Anonymous objects should pass the document as their node, and they will
   // then automatically be marked as anonymous in the constructor.
   explicit LayoutObject(Node*);
   LayoutObject(const LayoutObject&) = delete;
   LayoutObject& operator=(const LayoutObject&) = delete;
   ~LayoutObject() override;
+  virtual void Trace(Visitor*) const;
 
 // Should be added at the beginning of every method to ensure we are not
 // accessing a LayoutObject after the Desroy() call.
@@ -754,10 +768,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   static LayoutObject* CreateObject(Element*,
                                     const ComputedStyle&,
                                     LegacyLayout);
-
-  // LayoutObjects are allocated out of the rendering partition.
-  void* operator new(size_t);
-  void operator delete(void*);
 
   bool IsPseudoElement() const {
     NOT_DESTROYED();
@@ -1742,8 +1752,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   // from the originating element's style (because we can cache only one
   // version), while the uncached pseudo style can inherit from any style.
   const ComputedStyle* GetCachedPseudoElementStyle(PseudoId) const;
-  scoped_refptr<ComputedStyle> GetUncachedPseudoElementStyle(
-      const StyleRequest&) const;
+  ComputedStyle* GetUncachedPseudoElementStyle(const StyleRequest&) const;
 
   LayoutView* View() const {
     NOT_DESTROYED();
@@ -2207,11 +2216,11 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   // and new ComputedStyle like paint and size invalidations. If kNo, just set
   // the ComputedStyle member.
   enum class ApplyStyleChanges { kNo, kYes };
-  void SetStyle(scoped_refptr<const ComputedStyle>,
+  void SetStyle(const ComputedStyle*,
                 ApplyStyleChanges = ApplyStyleChanges::kYes);
 
   // Set the style of the object if it's generated content.
-  void SetPseudoElementStyle(scoped_refptr<const ComputedStyle>);
+  void SetPseudoElementStyle(const ComputedStyle*);
 
   // In some cases we modify the ComputedStyle after the style recalc, either
   // for updating anonymous style or doing layout hacks for special elements
@@ -2223,7 +2232,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   // visual invalidation etc.
   //
   // Do not use unless strictly necessary.
-  void SetModifiedStyleOutsideStyleRecalc(scoped_refptr<const ComputedStyle>,
+  void SetModifiedStyleOutsideStyleRecalc(const ComputedStyle*,
                                           ApplyStyleChanges);
 
   void ClearBaseComputedStyle();
@@ -2468,7 +2477,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
 
   const ComputedStyle* Style() const {
     NOT_DESTROYED();
-    return style_.get();
+    return style_;
   }
 
   // style_ can only be nullptr before the first style is set, thus most
@@ -3486,16 +3495,12 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     return false;
   }
 
-  // While the |DeleteThis()| method is virtual, this should only be overridden
-  // in very rare circumstances.
-  // You want to override |WillBeDestroyed()| instead unless you explicitly need
-  // to stop this object from being destroyed (for example,
-  // |LayoutEmbeddedContent| overrides |DeleteThis()| for this purpose).
-  virtual void DeleteThis();
-
-  void SetBeingDestroyedForTesting() {
+  void SetDestroyedForTesting() {
     NOT_DESTROYED();
     bitfields_.SetBeingDestroyed(true);
+#if DCHECK_IS_ON()
+    is_destroyed_ = true;
+#endif
   }
 
   const ComputedStyle& SlowEffectiveStyle(NGStyleVariant style_variant) const;
@@ -3503,9 +3508,9 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   // Updates only the local style ptr of the object.  Does not update the state
   // of the object, and so only should be called when the style is known not to
   // have changed (or from SetStyle).
-  void SetStyleInternal(scoped_refptr<const ComputedStyle> style) {
+  void SetStyleInternal(const ComputedStyle* style) {
     NOT_DESTROYED();
-    style_ = std::move(style);
+    style_ = style;
   }
   // Overrides should call the superclass at the end. style_ will be 0 the
   // first time this function will be called.
@@ -4128,6 +4133,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
                          HasNonCollapsedBorderDecoration);
 
     // True at start of |Destroy()| before calling |WillBeDestroyed()|.
+    // TODO(yukiy): Remove this bitfield
     ADD_BOOLEAN_BITFIELD(being_destroyed_, BeingDestroyed);
 
     // From LayoutListMarkerImage
@@ -4288,15 +4294,13 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
 
  private:
   friend class LineLayoutItem;
+  friend class LocalFrameView;
 
-  scoped_refptr<const ComputedStyle> style_;
-
-  // Oilpan: This untraced pointer to the owning Node is considered safe.
-  UntracedMember<Node> node_;
-
-  LayoutObject* parent_;
-  LayoutObject* previous_;
-  LayoutObject* next_;
+  Member<const ComputedStyle> style_;
+  Member<Node> node_;
+  Member<LayoutObject> parent_;
+  Member<LayoutObject> previous_;
+  Member<LayoutObject> next_;
 
   // Store state between styleWillChange and styleDidChange
   static bool affects_parent_block_;

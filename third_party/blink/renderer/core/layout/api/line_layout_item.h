@@ -66,7 +66,8 @@ class LineLayoutItem {
   Node* NonPseudoNode() const { return layout_object_->NonPseudoNode(); }
 
   Node* GetNodeForOwnerNodeId() const {
-    auto* layout_text_fragment = DynamicTo<LayoutTextFragment>(layout_object_);
+    auto* layout_text_fragment =
+        DynamicTo<LayoutTextFragment>(layout_object_.Get());
     if (layout_text_fragment)
       return layout_text_fragment->AssociatedTextNode();
     return layout_object_->GetNode();
@@ -213,7 +214,8 @@ class LineLayoutItem {
   bool IsText() const { return layout_object_->IsText(); }
 
   bool IsEmptyText() const {
-    return IsText() && To<LayoutText>(layout_object_)->GetText().IsEmpty();
+    return IsText() &&
+           To<LayoutText>(layout_object_.Get())->GetText().IsEmpty();
   }
 
   bool HasLayer() const { return layout_object_->HasLayer(); }
@@ -352,7 +354,7 @@ class LineLayoutItem {
   const LayoutObject* GetLayoutObject() const { return layout_object_; }
 
  private:
-  LayoutObject* layout_object_;
+  UntracedMember<LayoutObject> layout_object_;
 
   friend class LayoutBlockFlow;
   friend class LineLayoutAPIShim;

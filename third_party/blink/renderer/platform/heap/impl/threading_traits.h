@@ -30,6 +30,7 @@ enum ThreadAffinity {
 
 // TODO(haraken): These forward declarations violate dependency rules.
 // Remove them.
+class LayoutObject;
 class Node;
 class NodeList;
 class NodeRareData;
@@ -37,6 +38,8 @@ class NodeRareData;
 template <
     typename T,
     bool mainThreadOnly =
+        WTF::IsSubclass<typename std::remove_const<T>::type,
+                        LayoutObject>::value ||
         WTF::IsSubclass<typename std::remove_const<T>::type, Node>::value ||
         WTF::IsSubclass<typename std::remove_const<T>::type, NodeList>::value ||
         WTF::IsSubclass<typename std::remove_const<T>::type,

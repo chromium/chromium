@@ -85,14 +85,14 @@ struct CORE_EXPORT PaintInvalidatorContext {
 
   // The current directly composited  container for normal flow objects.
   // It is the enclosing composited object.
-  const LayoutBoxModelObject* directly_composited_container = nullptr;
+  UntracedMember<const LayoutBoxModelObject> directly_composited_container;
 
   // The current directly composited container for stacked contents (stacking
   // contexts or positioned objects). It is the nearest ancestor composited
   // object which establishes a stacking context. For more information, see:
   // https://chromium.googlesource.com/chromium/src.git/+/master/third_party/blink/renderer/core/paint/README.md#Stacked-elements-and-stacking-contexts
-  const LayoutBoxModelObject*
-      directly_composited_container_for_stacked_contents = nullptr;
+  UntracedMember<const LayoutBoxModelObject>
+      directly_composited_container_for_stacked_contents;
 
   PaintLayer* painting_layer = nullptr;
 
@@ -143,7 +143,8 @@ class PaintInvalidator {
       const PaintPropertyTreeBuilderFragmentContext&,
       PaintInvalidatorContext&);
 
-  Vector<const LayoutObject*> pending_delayed_paint_invalidations_;
+  Vector<UntracedMember<const LayoutObject>>
+      pending_delayed_paint_invalidations_;
 };
 
 }  // namespace blink

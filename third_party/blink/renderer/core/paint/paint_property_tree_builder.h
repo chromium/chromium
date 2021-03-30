@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -76,7 +77,7 @@ struct PaintPropertyTreeBuilderFragmentContext {
     PhysicalOffset directly_composited_container_paint_offset_subpixel_delta;
 
     // The PaintLayer corresponding to the origin of |paint_offset|.
-    const LayoutObject* paint_offset_root = nullptr;
+    UntracedMember<const LayoutObject> paint_offset_root;
     // Whether newly created children should flatten their inherited transform
     // (equivalently, draw into the plane of their parent). Should generally
     // be updated whenever |transform| is; flattening only needs to happen
@@ -170,8 +171,8 @@ struct PaintPropertyTreeBuilderContext {
   Vector<PaintPropertyTreeBuilderFragmentContext, 1> fragments;
 
   // TODO(mstensho): Stop using these in LayoutNGFragmentTraversal.
-  const LayoutObject* container_for_absolute_position = nullptr;
-  const LayoutObject* container_for_fixed_position = nullptr;
+  UntracedMember<const LayoutObject> container_for_absolute_position;
+  UntracedMember<const LayoutObject> container_for_fixed_position;
 
   // The physical bounding box of all appearances of the repeating table section
   // in the flow thread or the paged LayoutView.

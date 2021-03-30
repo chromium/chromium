@@ -12,7 +12,7 @@ namespace blink {
 namespace {
 
 struct SameSizeAsNGInlineBreakToken : NGBreakToken {
-  scoped_refptr<const ComputedStyle> style_;
+  Persistent<const ComputedStyle> style_;
   unsigned numbers[2];
 };
 

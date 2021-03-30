@@ -372,7 +372,7 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
   if (builder->table_column_geometries_)
     table_column_geometries = *builder->table_column_geometries_;
   if (builder->table_collapsed_borders_)
-    table_collapsed_borders = std::move(builder->table_collapsed_borders_);
+    table_collapsed_borders = builder->table_collapsed_borders_;
   if (builder->table_collapsed_borders_geometry_) {
     table_collapsed_borders_geometry =
         std::move(builder->table_collapsed_borders_geometry_);
@@ -591,6 +591,9 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
   // - Float / OOF overflow is added as is.
   // - Children not reachable by scroll overflow do not contribute to it.
   struct ComputeOverflowContext {
+    STACK_ALLOCATED();
+
+   public:
     ComputeOverflowContext(const NGPhysicalBoxFragment& container,
                            TextHeightType height_type)
         : container(container),
@@ -946,7 +949,7 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
     return layout_object_->CreatePositionWithAffinity(0);
   }
 
-  if (IsA<LayoutBlockFlow>(layout_object_) &&
+  if (IsA<LayoutBlockFlow>(*layout_object_) &&
       layout_object_->ChildrenInline()) {
     // Here |this| may have out-of-flow children without inline children, we
     // don't find closest child of |point| for out-of-flow children.

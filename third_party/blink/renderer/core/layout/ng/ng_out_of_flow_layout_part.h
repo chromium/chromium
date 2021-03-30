@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
@@ -155,7 +156,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     const NGBlockBreakToken* break_token = nullptr;
   };
 
-  bool SweepLegacyCandidates(HashSet<const LayoutObject*>* placed_objects);
+  bool SweepLegacyCandidates(
+      HeapHashSet<Member<const LayoutObject>>* placed_objects);
 
   const ContainingBlockInfo GetContainingBlockInfo(
       const NGLogicalOutOfFlowPositionedNode&,
@@ -164,9 +166,10 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   void ComputeInlineContainingBlocks(
       const Vector<NGLogicalOutOfFlowPositionedNode>&);
 
-  void LayoutCandidates(Vector<NGLogicalOutOfFlowPositionedNode>* candidates,
-                        const LayoutBox* only_layout,
-                        HashSet<const LayoutObject*>* placed_objects);
+  void LayoutCandidates(
+      Vector<NGLogicalOutOfFlowPositionedNode>* candidates,
+      const LayoutBox* only_layout,
+      HeapHashSet<Member<const LayoutObject>>* placed_objects);
 
   void HandleMulticolsWithPendingOOFs(NGBoxFragmentBuilder* container_builder);
   void LayoutOOFsInMulticol(const NGBlockNode& multicol);
@@ -255,7 +258,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   NGBoxFragmentBuilder* container_builder_;
   ContainingBlockInfo default_containing_block_info_for_absolute_;
   ContainingBlockInfo default_containing_block_info_for_fixed_;
-  HashMap<const LayoutObject*, ContainingBlockInfo> containing_blocks_map_;
+  HeapHashMap<Member<const LayoutObject>, ContainingBlockInfo>
+      containing_blocks_map_;
   const WritingMode writing_mode_;
   const WritingDirectionMode default_writing_direction_;
   // The block size of the multi-column (before adjustment for spanners, etc.)

@@ -229,8 +229,8 @@ class NGOffsetMappingTest : public NGLayoutTest {
     return GetOffsetMapping().GetLastPosition(offset);
   }
 
-  LayoutBlockFlow* layout_block_flow_ = nullptr;
-  LayoutObject* layout_object_ = nullptr;
+  Persistent<LayoutBlockFlow> layout_block_flow_;
+  Persistent<LayoutObject> layout_object_;
   FontCachePurgePreventer purge_preventer_;
 };
 
@@ -515,7 +515,7 @@ TEST_F(NGOffsetMappingTest, OneTextNode) {
 
 TEST_F(NGOffsetMappingTest, TwoTextNodes) {
   SetupHtml("t", "<div id=t>foo<span id=s>bar</span></div>");
-  const auto* foo = To<LayoutText>(layout_object_);
+  const auto* foo = To<LayoutText>(layout_object_.Get());
   const auto* bar = GetLayoutTextUnder("s");
   const Node* foo_node = foo->GetNode();
   const Node* bar_node = bar->GetNode();
@@ -581,7 +581,7 @@ TEST_F(NGOffsetMappingTest, TwoTextNodes) {
 
 TEST_F(NGOffsetMappingTest, BRBetweenTextNodes) {
   SetupHtml("t", u"<div id=t>foo<br>bar</div>");
-  const auto* foo = To<LayoutText>(layout_object_);
+  const auto* foo = To<LayoutText>(layout_object_.Get());
   const auto* br = To<LayoutText>(foo->NextSibling());
   const auto* bar = To<LayoutText>(br->NextSibling());
   const Node* foo_node = foo->GetNode();
@@ -771,7 +771,7 @@ TEST_F(NGOffsetMappingTest, FullyCollapsedWhiteSpaceNode) {
 
 TEST_F(NGOffsetMappingTest, ReplacedElement) {
   SetupHtml("t", "<div id=t>foo <img> bar</div>");
-  const auto* foo = To<LayoutText>(layout_object_);
+  const auto* foo = To<LayoutText>(layout_object_.Get());
   const LayoutObject* img = foo->NextSibling();
   const auto* bar = To<LayoutText>(img->NextSibling());
   const Node* foo_node = foo->GetNode();

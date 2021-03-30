@@ -31,6 +31,8 @@ namespace {
 
 // NGTableCollapsedEdge represents collapsed border edge for painting.
 class NGTableCollapsedEdge {
+  STACK_ALLOCATED();
+
  public:
   NGTableCollapsedEdge(const NGTableBorders& borders, wtf_size_t edge_index)
       : borders_(borders) {

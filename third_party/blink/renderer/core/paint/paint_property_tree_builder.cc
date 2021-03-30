@@ -2461,7 +2461,8 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
 
         // Absolutely positioned content in an inline should be positioned
         // relative to the inline.
-        const auto* container = full_context_.container_for_absolute_position;
+        const LayoutObject* container =
+            full_context_.container_for_absolute_position;
         if (container && container->IsLayoutInline()) {
           DCHECK(container->CanContainAbsolutePositionObjects());
           DCHECK(box_model_object.IsBox());
@@ -2483,7 +2484,8 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
         if (context_.fixed_position.fixed_position_children_fixed_to_root)
           context_.current.paint_offset_root = &box_model_object;
 
-        const auto* container = full_context_.container_for_fixed_position;
+        const LayoutObject* container =
+            full_context_.container_for_fixed_position;
         if (container && container->IsLayoutInline()) {
           DCHECK(container->CanContainFixedPositionObjects());
           DCHECK(box_model_object.IsBox());

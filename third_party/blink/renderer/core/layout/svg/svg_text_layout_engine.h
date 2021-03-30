@@ -49,7 +49,7 @@ class SVGTextLayoutEngine {
   STACK_ALLOCATED();
 
  public:
-  SVGTextLayoutEngine(const Vector<LayoutSVGInlineText*>&);
+  explicit SVGTextLayoutEngine(const HeapVector<Member<LayoutSVGInlineText>>&);
   SVGTextLayoutEngine(const SVGTextLayoutEngine&) = delete;
   SVGTextLayoutEngine& operator=(const SVGTextLayoutEngine&) = delete;
   ~SVGTextLayoutEngine();
@@ -78,12 +78,12 @@ class SVGTextLayoutEngine {
   void AdvanceToNextLogicalCharacter(const SVGTextMetrics&);
 
   // Logical iteration state.
-  const Vector<LayoutSVGInlineText*>& descendant_text_nodes_;
+  const HeapVector<Member<LayoutSVGInlineText>>& descendant_text_nodes_;
   unsigned current_logical_text_node_index_;
   unsigned logical_character_offset_;
   unsigned logical_metrics_list_offset_;
 
-  Vector<SVGInlineTextBox*> line_layout_boxes_;
+  HeapVector<Member<SVGInlineTextBox>> line_layout_boxes_;
 
   SVGTextFragment current_text_fragment_;
   SVGInlineTextMetricsIterator visual_metrics_iterator_;

@@ -80,14 +80,14 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // doesn't re-transform the string.
   LayoutText(Node*, scoped_refptr<StringImpl>);
 
-  ~LayoutText() override;
+  void Trace(Visitor*) const override;
 
   static LayoutText* CreateEmptyAnonymous(Document&,
-                                          scoped_refptr<const ComputedStyle>,
+                                          const ComputedStyle*,
                                           LegacyLayout);
 
   static LayoutText* CreateAnonymous(Document&,
-                                     scoped_refptr<const ComputedStyle>,
+                                     const ComputedStyle*,
                                      scoped_refptr<StringImpl>,
                                      LegacyLayout legacy);
 
@@ -586,16 +586,15 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   mutable LogicalOffset previous_logical_starting_point_ =
       UninitializedLogicalStartingPoint();
 
-  union {
-    // The line boxes associated with this object.
-    // Read the LINE BOXES OWNERSHIP section in the class header comment.
-    // Valid only when !IsInLayoutNGInlineFormattingContext().
-    InlineTextBoxList text_boxes_;
-    // The index of the first fragment item associated with this object in
-    // |NGFragmentItems::Items()|. Zero means there are no such item.
-    // Valid only when IsInLayoutNGInlineFormattingContext().
-    wtf_size_t first_fragment_item_index_;
-  };
+  // The line boxes associated with this object.
+  // Read the LINE BOXES OWNERSHIP section in the class header comment.
+  // Valid only when !IsInLayoutNGInlineFormattingContext().
+  InlineTextBoxList text_boxes_;
+
+  // The index of the first fragment item associated with this object in
+  // |NGFragmentItems::Items()|. Zero means there are no such item.
+  // Valid only when IsInLayoutNGInlineFormattingContext().
+  wtf_size_t first_fragment_item_index_ = 0u;
 };
 
 inline InlineTextBoxList& LayoutText::MutableTextBoxes() {

@@ -282,7 +282,7 @@ class CORE_EXPORT NGLineBreaker {
   const NGConstraintSpace& constraint_space_;
   NGExclusionSpace* exclusion_space_;
   scoped_refptr<const NGInlineBreakToken> break_token_;
-  scoped_refptr<const ComputedStyle> current_style_;
+  const ComputedStyle* current_style_ = nullptr;
 
   LazyLineBreakIterator break_iterator_;
   HarfBuzzShaper shaper_;

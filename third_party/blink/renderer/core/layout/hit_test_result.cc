@@ -133,6 +133,7 @@ void HitTestResult::PopulateFromCachedResult(const HitTestResult& other) {
 }
 
 void HitTestResult::Trace(Visitor* visitor) const {
+  visitor->Trace(hit_test_request_);
   visitor->Trace(inner_node_);
   visitor->Trace(inert_node_);
   visitor->Trace(inner_element_);

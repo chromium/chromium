@@ -94,7 +94,7 @@ void NGFragmentItems::FinalizeAfterLayout(
     wtf_size_t fragment_id;
     wtf_size_t item_index;
   };
-  HashMap<const LayoutObject*, LastItem> last_items;
+  HeapHashMap<Member<const LayoutObject>, LastItem> last_items;
   wtf_size_t item_index = 0;
   for (const auto& result : results) {
     const auto& fragment =
