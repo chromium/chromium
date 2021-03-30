@@ -239,8 +239,7 @@ OmniboxResult::OmniboxResult(Profile* profile,
       // The answer subtype overrides the match subtype.
       set_result_subtype(static_cast<int>(match_.answer->type()));
     } else if (match_.type == AutocompleteMatchType::CALCULATOR) {
-      // Calculator results are treated as answers.
-      SetOmniboxType(OmniboxType::kAnswer);
+      SetOmniboxType(OmniboxType::kCalculatorAnswer);
     } else if (!match_.image_url.is_empty()) {
       SetOmniboxType(OmniboxType::kRichImage);
     }
@@ -301,8 +300,10 @@ void OmniboxResult::OnFetchComplete(const GURL& url, const SkBitmap* bitmap) {
 
 ash::SearchResultType OmniboxResult::GetSearchResultType() const {
   // Rich entity types take precedence.
-  if (omnibox_type() == OmniboxType::kAnswer)
+  if (omnibox_type() == OmniboxType::kAnswer ||
+      omnibox_type() == OmniboxType::kCalculatorAnswer) {
     return ash::OMNIBOX_RICH_ENTITY_ANSWER;
+  }
   if (omnibox_type() == OmniboxType::kRichImage)
     return ash::OMNIBOX_RICH_ENTITY_IMAGE_ENTITY;
 

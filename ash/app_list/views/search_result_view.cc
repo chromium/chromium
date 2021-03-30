@@ -555,7 +555,9 @@ void SearchResultView::OnGetContextMenu(
 
 bool SearchResultView::IsAnswer() const {
   return app_list_features::IsOmniboxRichEntitiesEnabled() && result() &&
-         result()->omnibox_type() == SearchResultOmniboxType::kAnswer;
+         (result()->omnibox_type() == SearchResultOmniboxType::kAnswer ||
+          result()->omnibox_type() ==
+              SearchResultOmniboxType::kCalculatorAnswer);
 }
 
 bool SearchResultView::IsRichImage() const {

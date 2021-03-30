@@ -185,6 +185,7 @@ enum SearchResultDisplayIndex {
 enum SearchResultOmniboxType {
   kDefault,
   kAnswer,
+  kCalculatorAnswer,
   kRichImage,
   kOmniboxTypeMax,  // Do not use.
 };
