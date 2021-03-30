@@ -6,7 +6,6 @@
 #define COMPONENTS_EXO_KEYBOARD_DELEGATE_H_
 
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 
@@ -35,12 +34,12 @@ class KeyboardDelegate {
   // Called when keyboard focus leaves a valid target surface.
   virtual void OnKeyboardLeave(Surface* surface) = 0;
 
-  // Called when keyboard key state changed. |pressed| is true when |key|
-  // was pressed and false if it was released. Should return the serial
+  // Called when keyboard key state changed. |pressed| is true when a key with
+  // |code| was pressed and false if it was released. Should return the serial
   // number that will be used by the client to acknowledge the change in
   // key state.
   virtual uint32_t OnKeyboardKey(base::TimeTicks time_stamp,
-                                 ui::DomCode key,
+                                 ui::DomCode code,
                                  bool pressed) = 0;
 
   // Called when keyboard modifier state changed.
