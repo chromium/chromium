@@ -126,10 +126,8 @@ void ManagePasswordsUIController::OnPasswordSubmitted(
   // If the save bubble is already shown (possibly manual fallback for saving)
   // then ignore the changes because the user may interact with it right now.
   if (bubble_status_ == BubbleStatus::SHOWN &&
-      GetState() == password_manager::ui::PENDING_PASSWORD_STATE) {
-    VLOG(0) << "Already showing the bubble";
+      GetState() == password_manager::ui::PENDING_PASSWORD_STATE)
     return;
-  }
   bool show_bubble = !form_manager->IsBlocklisted();
   DestroyAccountChooser();
   save_fallback_timer_.Stop();
@@ -144,7 +142,6 @@ void ManagePasswordsUIController::OnPasswordSubmitted(
   }
   if (show_bubble)
     bubble_status_ = BubbleStatus::SHOULD_POP_UP;
-  VLOG(0) << "bubble_status_=" << static_cast<int>(bubble_status_);
   UpdateBubbleAndIconVisibility();
 }
 

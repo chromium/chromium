@@ -183,8 +183,6 @@ void CustomManagePasswordsUIController::OnPasswordSubmitted(
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager) {
   ManagePasswordsUIController::OnPasswordSubmitted(std::move(form_manager));
   was_prompt_automatically_shown_ = IsShowingBubbleForTest();
-  VLOG(0) << "CustomManagePasswordsUIController::OnPasswordSubmitted "
-          << was_prompt_automatically_shown_;
   ProcessStateExpectations(password_manager::ui::PENDING_PASSWORD_STATE);
 }
 
@@ -275,7 +273,6 @@ void CustomManagePasswordsUIController::ProcessStateExpectations(
 }
 
 void CustomManagePasswordsUIController::QuitRunLoop() {
-  VLOG(0) << "QuitRunLoop()";
   run_loop_->Quit();
   run_loop_ = nullptr;
   wait_for_fallback_ = false;
