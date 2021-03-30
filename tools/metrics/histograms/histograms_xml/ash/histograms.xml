@@ -678,8 +678,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>tclaiborne@chromium.org</owner>
   <summary>
     Emitted when there's a change in the virtual desks count whether due to desk
-    creation or removal. Specifies the number of available desks. It is not
-    emitted for the first-ever created default desk.
+    creation or removal in classic desks. Specifies the number of available
+    desks. It is not emitted for the first-ever created default desk.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.DesksCount3" units="units"
+    expires_after="2021-11-29">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Emitted when there's a change in the virtual desks count whether due to desk
+    creation or removal in Bento. Specifies the number of available desks. It is
+    not emitted for the first-ever created default desk.
   </summary>
 </histogram>
 

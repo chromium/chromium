@@ -49,7 +49,10 @@ namespace ash {
 namespace {
 
 constexpr char kNewDeskHistogramName[] = "Ash.Desks.NewDesk2";
+// TODO(minch): Remove kDesksCountHistogramName and make the corresponding
+// histogram obsolete when Bento is fully launched.
 constexpr char kDesksCountHistogramName[] = "Ash.Desks.DesksCount2";
+constexpr char kBentoDesksCountHistogramName[] = "Ash.Desks.DesksCount3";
 constexpr char kRemoveDeskHistogramName[] = "Ash.Desks.RemoveDesk";
 constexpr char kDeskSwitchHistogramName[] = "Ash.Desks.DesksSwitch";
 constexpr char kMoveWindowFromActiveDeskHistogramName[] =
@@ -1169,8 +1172,10 @@ void DesksController::ReportNumberOfWindowsPerDeskHistogram() const {
 
 void DesksController::ReportDesksCountHistogram() const {
   DCHECK_LE(desks_.size(), desks_util::GetMaxNumberOfDesks());
-  UMA_HISTOGRAM_EXACT_LINEAR(kDesksCountHistogramName, desks_.size(),
-                             desks_util::GetMaxNumberOfDesks());
+  UMA_HISTOGRAM_EXACT_LINEAR(features::IsBentoEnabled()
+                                 ? kBentoDesksCountHistogramName
+                                 : kDesksCountHistogramName,
+                             desks_.size(), desks_util::GetMaxNumberOfDesks());
 }
 
 }  // namespace ash
