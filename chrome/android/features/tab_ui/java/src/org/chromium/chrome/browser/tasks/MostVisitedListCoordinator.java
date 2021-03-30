@@ -205,9 +205,8 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
 
         @Override
         public void onClick(View v) {
-            ReturnToChromeExperimentsUtil.willHandleLoadUrlFromStartSurface(
-                    mTile.getUrl().getSpec(), PageTransition.AUTO_BOOKMARK, null /*incognito*/,
-                    mParentTabSupplier.get());
+            ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurface(mTile.getUrl().getSpec(),
+                    PageTransition.AUTO_BOOKMARK, null /*incognito*/, mParentTabSupplier.get());
             SuggestionsMetrics.recordTileTapped();
         }
 

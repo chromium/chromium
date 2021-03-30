@@ -207,12 +207,13 @@ public final class ReturnToChromeExperimentsUtil {
      * @param transition The page transition type.
      * @param incognito Whether to load URL in an incognito Tab.
      * @param parentTab  The parent tab used to create a new tab if needed.
-     * @return true if we have handled the navigation, false otherwise.
+     * @return Current tab created if we have handled the navigation, null otherwise.
      */
-    public static boolean willHandleLoadUrlFromStartSurface(String url,
-            @PageTransition int transition, @Nullable Boolean incognito, @Nullable Tab parentTab) {
+    public static Tab handleLoadUrlFromStartSurface(String url, @PageTransition int transition,
+            @Nullable Boolean incognito, @Nullable Tab parentTab) {
         LoadUrlParams params = new LoadUrlParams(url, transition);
-        return handleLoadUrlWithPostDataFromStartSurface(params, null, null, incognito, parentTab);
+        return handleLoadUrlWithPostDataFromStartSurface(
+                params, null, null, incognito, parentTab, false, false, null, null);
     }
 
     /**
@@ -226,13 +227,12 @@ public final class ReturnToChromeExperimentsUtil {
      * @param currentTabModel The current TabModel.
      * @param emptyTabCloseCallback The callback to run when the newly created empty Tab will be
      *                              closing.
-     * @return true if we have handled the navigation, false otherwise.
      */
-    public static boolean handleLoadUrlFromStartSurfaceAsNewTab(String url,
+    public static void handleLoadUrlFromStartSurfaceAsNewTab(String url,
             @PageTransition int transition, @Nullable Boolean incognito, @Nullable Tab parentTab,
             TabModel currentTabModel, @Nullable Runnable emptyTabCloseCallback) {
         LoadUrlParams params = new LoadUrlParams(url, transition);
-        return handleLoadUrlWithPostDataFromStartSurface(params, null, null, incognito, parentTab,
+        handleLoadUrlWithPostDataFromStartSurface(params, null, null, incognito, parentTab,
                 /*focusOnOmnibox*/ true, /*skipOverviewCheck*/ true, currentTabModel,
                 emptyTabCloseCallback);
     }
@@ -253,8 +253,9 @@ public final class ReturnToChromeExperimentsUtil {
     public static boolean handleLoadUrlWithPostDataFromStartSurface(LoadUrlParams params,
             @Nullable String postDataType, @Nullable byte[] postData, @Nullable Boolean incognito,
             @Nullable Tab parentTab) {
-        return handleLoadUrlWithPostDataFromStartSurface(
-                params, postDataType, postData, incognito, parentTab, false, false, null, null);
+        return handleLoadUrlWithPostDataFromStartSurface(params, postDataType, postData, incognito,
+                       parentTab, false, false, null, null)
+                != null;
     }
 
     /**
@@ -273,16 +274,16 @@ public final class ReturnToChromeExperimentsUtil {
      * @param currentTabModel The current TabModel.
      * @param emptyTabCloseCallback The callback to run when the newly created empty Tab will be
      *                              closing.
-     * @return true if we have handled the navigation, false otherwise.
+     * @return Current tab created if we have handled the navigation, null otherwise.
      */
-    private static boolean handleLoadUrlWithPostDataFromStartSurface(LoadUrlParams params,
+    private static Tab handleLoadUrlWithPostDataFromStartSurface(LoadUrlParams params,
             @Nullable String postDataType, @Nullable byte[] postData, @Nullable Boolean incognito,
             @Nullable Tab parentTab, boolean focusOnOmnibox, boolean skipOverviewCheck,
             @Nullable TabModel currentTabModel, @Nullable Runnable emptyTabCloseCallback) {
         String url = params.getUrl();
         ChromeActivity chromeActivity =
                 getActivityPresentingOverviewWithOmnibox(url, skipOverviewCheck);
-        if (chromeActivity == null) return false;
+        if (chromeActivity == null) return null;
 
         // Create a new unparented tab.
         boolean incognitoParam;
@@ -318,7 +319,7 @@ public final class ReturnToChromeExperimentsUtil {
                     false, url, params.getTransitionType());
         }
 
-        return true;
+        return newTab;
     }
 
     /**

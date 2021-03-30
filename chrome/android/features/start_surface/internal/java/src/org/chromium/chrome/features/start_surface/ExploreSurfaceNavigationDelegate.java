@@ -33,12 +33,12 @@ class ExploreSurfaceNavigationDelegate implements NativePageNavigationDelegate {
     @Nullable
     public Tab openUrl(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
         // TODO(crbug.com/1159879): Set PageTransition.AUTO_BOOKMARK here.
-        boolean result = ReturnToChromeExperimentsUtil.willHandleLoadUrlFromStartSurface(
+        Tab newTab = ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurface(
                 loadUrlParams.getUrl(), PageTransition.AUTO_TOPLEVEL,
                 windowOpenDisposition == WindowOpenDisposition.OFF_THE_RECORD,
                 mParentTabSupplier.get());
-        assert result;
-        return null;
+        assert newTab != null;
+        return newTab;
     }
 
     @Override

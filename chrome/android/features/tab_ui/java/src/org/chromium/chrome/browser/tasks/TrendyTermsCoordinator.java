@@ -86,7 +86,7 @@ public class TrendyTermsCoordinator {
             OnClickListener listener = v -> {
                 RecordUserAction.record("StartSurface.TrendyTerms.TapTerm");
                 String url = TemplateUrlServiceFactory.get().getUrlForSearchQuery(trendyTerm);
-                ReturnToChromeExperimentsUtil.willHandleLoadUrlFromStartSurface(url,
+                ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurface(url,
                         PageTransition.AUTO_BOOKMARK, null /*incognito*/, mParentTabSupplier.get());
             };
             PropertyModel trendInfo =
