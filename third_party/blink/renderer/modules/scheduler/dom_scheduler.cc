@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/scheduler/dom_scheduler.h"
 
-#include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_scheduler_post_task_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_task_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -50,14 +49,17 @@ DOMScheduler::DOMScheduler(LocalDOMWindow* window)
     return;
   DCHECK(window->GetScheduler());
   DCHECK(window->GetScheduler()->ToFrameScheduler());
-  CreateGlobalTaskQueues(window);
+  CreateFixedPriorityTaskQueues(window);
 }
 
 void DOMScheduler::ContextDestroyed() {
-  global_task_queues_.clear();
+  fixed_priority_task_queues_.clear();
+  signal_to_task_queue_map_.clear();
 }
 
 void DOMScheduler::Trace(Visitor* visitor) const {
+  visitor->Trace(fixed_priority_task_queues_);
+  visitor->Trace(signal_to_task_queue_map_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
@@ -80,6 +82,11 @@ ScriptPromise DOMScheduler::postTask(
     // If only a signal is given, and it is a TaskSignal rather than an
     // basic AbortSignal, use it.
     task_signal = To<DOMTaskSignal>(options->signal());
+
+    // If we haven't seen this TaskSignal before, then it was created by a
+    // TaskController and has modifiable priority.
+    if (!signal_to_task_queue_map_.Contains(task_signal))
+      CreateTaskQueueFor(task_signal);
   } else {
     // Otherwise, construct an implicit TaskSignal. Have it follow the signal
     // if it was given, so that it can still honor any aborts, but have it
@@ -87,21 +94,23 @@ ScriptPromise DOMScheduler::postTask(
     //
     // An implicit TaskSignal, in addition to being read-only, won't own its
     // own task queue. Instead, it will use the appropriate task queue from
-    // |global_task_queues_|.
+    // |fixed_priority_task_queues_|.
     WebSchedulingPriority priority =
         options->hasPriorityNonNull()
             ? WebSchedulingPriorityFromString(
                   AtomicString(IDLEnumAsString(options->priorityNonNull())))
-            : WebSchedulingPriority::kUserVisiblePriority;
-    task_signal = MakeGarbageCollected<DOMTaskSignal>(
-        GetSupplementable(), priority, DOMTaskSignal::Type::kImplicit);
+            : kDefaultPriority;
+    task_signal = CreateTaskSignalFor(priority);
     if (options->signal())
       task_signal->Follow(options->signal());
   }
 
   DCHECK(task_signal);
-  if (!task_signal->GetTaskRunner())
-    return RejectPromiseImmediately(exception_state);
+  DCHECK(signal_to_task_queue_map_.Contains(task_signal));
+  auto* task_runner = signal_to_task_queue_map_.at(task_signal)
+                          ->GetWebSchedulingTaskQueue()
+                          ->GetTaskRunner()
+                          .get();
 
   // TODO(shaseley): We need to figure out the behavior we want for delay. For
   // now, we use behavior that is very similar to setTimeout: negative delays
@@ -113,34 +122,75 @@ ScriptPromise DOMScheduler::postTask(
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   MakeGarbageCollected<DOMTask>(this, resolver, callback_function, task_signal,
-                                delay);
+                                task_runner, delay);
   return resolver->Promise();
 }
 
-DOMTaskSignal* DOMScheduler::currentTaskSignal(
-    ScriptState* script_state) const {
+DOMTaskSignal* DOMScheduler::currentTaskSignal(ScriptState* script_state) {
+  if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed())
+    return nullptr;
+
   v8::Local<v8::Value> embedder_data =
       script_state->GetContext()->GetContinuationPreservedEmbedderData();
   if (V8TaskSignal::HasInstance(embedder_data, script_state->GetIsolate()))
     return V8TaskSignal::ToImpl(v8::Local<v8::Object>::Cast(embedder_data));
 
-  return MakeGarbageCollected<DOMTaskSignal>(
-      GetSupplementable(), WebSchedulingPriority::kUserVisiblePriority,
-      DOMTaskSignal::Type::kImplicit);
+  // TODO(shaseley): consider returning nullptr to reduce memory churn and so we
+  // don't need to insert a mapping every time. This might also be beneficial
+  // from on the client side to determine if the task was scheduled or not.
+  return CreateTaskSignalFor(kDefaultPriority);
 }
 
-base::SingleThreadTaskRunner* DOMScheduler::GetTaskRunnerFor(
-    WebSchedulingPriority priority) {
-  DCHECK(!global_task_queues_.IsEmpty());
-  return global_task_queues_[static_cast<int>(priority)]->GetTaskRunner().get();
-}
-
-void DOMScheduler::CreateGlobalTaskQueues(LocalDOMWindow* window) {
+void DOMScheduler::CreateFixedPriorityTaskQueues(LocalDOMWindow* window) {
   FrameScheduler* scheduler = window->GetScheduler()->ToFrameScheduler();
   for (size_t i = 0; i < kWebSchedulingPriorityCount; i++) {
-    global_task_queues_.push_back(scheduler->CreateWebSchedulingTaskQueue(
-        static_cast<WebSchedulingPriority>(i)));
+    std::unique_ptr<WebSchedulingTaskQueue> task_queue =
+        scheduler->CreateWebSchedulingTaskQueue(
+            static_cast<WebSchedulingPriority>(i));
+    fixed_priority_task_queues_.push_back(
+        MakeGarbageCollected<DOMTaskQueue>(std::move(task_queue)));
   }
 }
+
+DOMTaskSignal* DOMScheduler::CreateTaskSignalFor(
+    WebSchedulingPriority priority) {
+  DOMTaskSignal* signal = MakeGarbageCollected<DOMTaskSignal>(
+      GetSupplementable(), WebSchedulingPriorityToString(priority));
+  DOMTaskQueue* task_queue =
+      fixed_priority_task_queues_[static_cast<int>(priority)];
+  signal_to_task_queue_map_.insert(signal, task_queue);
+  return signal;
+}
+
+void DOMScheduler::CreateTaskQueueFor(DOMTaskSignal* signal) {
+  FrameScheduler* scheduler =
+      GetExecutionContext()->GetScheduler()->ToFrameScheduler();
+  DCHECK(scheduler);
+  WebSchedulingPriority priority =
+      WebSchedulingPriorityFromString(signal->priority());
+  std::unique_ptr<WebSchedulingTaskQueue> task_queue =
+      scheduler->CreateWebSchedulingTaskQueue(priority);
+  signal_to_task_queue_map_.insert(
+      signal, MakeGarbageCollected<DOMTaskQueue>(std::move(task_queue)));
+  signal->AddPriorityChangeAlgorithm(WTF::Bind(&DOMScheduler::OnPriorityChange,
+                                               WrapWeakPersistent(this),
+                                               WrapWeakPersistent(signal)));
+}
+
+void DOMScheduler::OnPriorityChange(DOMTaskSignal* signal) {
+  if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed())
+    return;
+  DCHECK(signal);
+  DCHECK(signal_to_task_queue_map_.Contains(signal));
+  DOMTaskQueue* task_queue = signal_to_task_queue_map_.at(signal);
+  task_queue->GetWebSchedulingTaskQueue()->SetPriority(
+      WebSchedulingPriorityFromString(signal->priority()));
+}
+
+DOMScheduler::DOMTaskQueue::DOMTaskQueue(
+    std::unique_ptr<WebSchedulingTaskQueue> task_queue)
+    : web_scheduling_task_queue_(std::move(task_queue)) {}
+
+DOMScheduler::DOMTaskQueue::~DOMTaskQueue() = default;
 
 }  // namespace blink

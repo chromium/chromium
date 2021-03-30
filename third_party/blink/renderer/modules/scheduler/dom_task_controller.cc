@@ -12,26 +12,17 @@ namespace blink {
 // static
 DOMTaskController* DOMTaskController::Create(ExecutionContext* context,
                                              const AtomicString& priority) {
-  return MakeGarbageCollected<DOMTaskController>(
-      context, WebSchedulingPriorityFromString(priority));
+  return MakeGarbageCollected<DOMTaskController>(context, priority);
 }
 
 DOMTaskController::DOMTaskController(ExecutionContext* context,
-                                     WebSchedulingPriority priority)
-    : AbortController(MakeGarbageCollected<DOMTaskSignal>(
-          context,
-          priority,
-          DOMTaskSignal::Type::kCreatedByController)) {
+                                     const AtomicString& priority)
+    : AbortController(MakeGarbageCollected<DOMTaskSignal>(context, priority)) {
   DCHECK(!context->IsContextDestroyed());
 }
 
 void DOMTaskController::setPriority(const AtomicString& priority) {
-  GetTaskSignal()->SignalPriorityChange(
-      WebSchedulingPriorityFromString(priority));
-}
-
-DOMTaskSignal* DOMTaskController::GetTaskSignal() const {
-  return static_cast<DOMTaskSignal*>(signal());
+  return static_cast<DOMTaskSignal*>(signal())->SignalPriorityChange(priority);
 }
 
 }  // namespace blink

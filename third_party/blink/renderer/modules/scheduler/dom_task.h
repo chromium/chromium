@@ -26,6 +26,7 @@ class DOMTask final : public GarbageCollected<DOMTask> {
           ScriptPromiseResolver*,
           V8SchedulerPostTaskCallback*,
           DOMTaskSignal*,
+          base::SingleThreadTaskRunner*,
           base::TimeDelta delay);
 
   virtual void Trace(Visitor*) const;
@@ -36,7 +37,7 @@ class DOMTask final : public GarbageCollected<DOMTask> {
   // Internal step of Invoke that handles invoking the callback, including
   // catching any errors and retrieving the result.
   void InvokeInternal(ScriptState*);
-  void Abort();
+  void OnAbort();
 
   void RecordTaskStartMetrics();
 

@@ -172,10 +172,6 @@ PASS childWindow.pageXOffset is 0
 PASS childWindow.pageYOffset is 0
 PASS childWindow.performance.onresourcetimingbufferfull is null
 PASS childWindow.personalbar.visible is false
-PASS childWindow.scheduler.currentTaskSignal.aborted is false
-PASS childWindow.scheduler.currentTaskSignal.onabort is null
-PASS childWindow.scheduler.currentTaskSignal.onprioritychange is null
-PASS childWindow.scheduler.currentTaskSignal.priority is 'user-visible'
 PASS childWindow.screen.availHeight is 0
 PASS childWindow.screen.availLeft is 0
 PASS childWindow.screen.availTop is 0

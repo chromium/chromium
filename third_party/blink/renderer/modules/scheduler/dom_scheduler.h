@@ -24,6 +24,30 @@ class SchedulerPostTaskOptions;
 class V8SchedulerPostTaskCallback;
 class WebSchedulingTaskQueue;
 
+/*
+ * DOMScheduler maintains a set of DOMTaskQueues (wrappers around
+ * WebSchedulingTaskQueues) which are used to schedule tasks.
+ *
+ * There are two types of task queues that the scheduler maintains:
+ *  1. Fixed-priority, shared task queues. The priority of these task queues
+ *  never changes, which allows them to be shared by any tasks that don't
+ *  require variable priority. These are postTask tasks created where one of the
+ *  following are passed to postTask:
+ *    a) A fixed priority
+ *    b) Null priority and a signal that is null or not a TaskSignal instance
+ *    c) A TaskSignal that was created in a previous postTask call where (a) or
+ *       (b) held, and returned by |currentTaskSignal|
+ *    d) The "default task signal", returned by currentTaskSignal when there
+ *       is no current task signal
+ *  These task queues are created when the DOMScheduler is created and destroyed
+ *  when the underlying context is destroyed.
+ *
+ *  2. Variable-priority, per-signal task queues. The priority of these task
+ *  queues can change, and is controlled by the associated TaskController. These
+ *  task queues are created the first time a non-scheduler-created TaskSignal is
+ *  passed to postTask, and their lifetime matches that of the associated
+ *  TaskSignal.
+ */
 class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
                                     public ExecutionContextLifecycleObserver,
                                     public Supplement<LocalDOMWindow> {
@@ -58,9 +82,7 @@ class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
   // NOTE: This uses V8's ContinuationPreservedEmbedderData to propagate the
   // currentTaskSignal across microtask boundaries, so it will remain usable
   // even in then() blocks or after an await in an async function.
-  DOMTaskSignal* currentTaskSignal(ScriptState*) const;
-
-  base::SingleThreadTaskRunner* GetTaskRunnerFor(WebSchedulingPriority);
+  DOMTaskSignal* currentTaskSignal(ScriptState*);
 
   void ContextDestroyed() override;
 
@@ -70,12 +92,57 @@ class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
   static constexpr size_t kWebSchedulingPriorityCount =
       static_cast<size_t>(WebSchedulingPriority::kLastPriority) + 1;
 
-  void CreateGlobalTaskQueues(LocalDOMWindow*);
+  static constexpr WebSchedulingPriority kDefaultPriority =
+      WebSchedulingPriority::kUserVisiblePriority;
 
-  // |global_task_queues_| is initialized with one entry per priority, indexed
-  // by priority. This will be empty when the window is detached.
-  Vector<std::unique_ptr<WebSchedulingTaskQueue>, kWebSchedulingPriorityCount>
-      global_task_queues_;
+  // DOMTaskQueue is a thin wrapper around WebSchedulingTaskQueue to make it
+  // pseudo garbage collected. We use this indirection because multiple
+  // TaskSignals with independent lifetimes may map to the same
+  // WebSchedulingTaskQueue, so the WebSchedulingTaskQueue doesn't have a
+  // single, clear owner.
+  class DOMTaskQueue final : public GarbageCollected<DOMTaskQueue> {
+   public:
+    explicit DOMTaskQueue(std::unique_ptr<WebSchedulingTaskQueue> task_queue);
+    ~DOMTaskQueue();
+
+    void Trace(Visitor* visitor) const {}
+
+    WebSchedulingTaskQueue* GetWebSchedulingTaskQueue() {
+      return web_scheduling_task_queue_.get();
+    }
+
+   private:
+    std::unique_ptr<WebSchedulingTaskQueue> web_scheduling_task_queue_;
+  };
+
+  void CreateFixedPriorityTaskQueues(LocalDOMWindow*);
+
+  // Create a new fixed-priority DOMTaskSignal for the given priority and set up
+  // the mapping in |signal_to_task_queue_map_|.
+  DOMTaskSignal* CreateTaskSignalFor(WebSchedulingPriority);
+
+  // Create and initialize a new WebSchedulingTaskQueue for the given
+  // DOMTaskSignal. This creates the signal and |signal_to_task_queue_map_|
+  // mapping, and registers the callback for handling priority changes.
+  void CreateTaskQueueFor(DOMTaskSignal*);
+
+  // Callback for when the DOMTaskSignal signals priority change.
+  void OnPriorityChange(DOMTaskSignal*);
+
+  // |fixed_priority_task_queues_| is initialized with one entry per priority,
+  // indexed by priority. This will be empty when the window is detached.
+  HeapVector<Member<DOMTaskQueue>, kWebSchedulingPriorityCount>
+      fixed_priority_task_queues_;
+
+  // |signal_to_task_queue_map_| tracks the associated task queue for task
+  // signals the scheduler knows about that are still alive. If the task signal
+  // is "implicit", meaning created by the scheduler without a controller, then
+  // the signal will point back to one of the |fixed_priority_task_queues_|.
+  // Otherwise, it will point to a DOMTaskQueue that is unique for that signal.
+  // Mappings are removed automatically when the corresponding signal is garbage
+  // collected. This will be empty when the window is detached.
+  HeapHashMap<WeakMember<DOMTaskSignal>, Member<DOMTaskQueue>>
+      signal_to_task_queue_map_;
 };
 
 }  // namespace blink

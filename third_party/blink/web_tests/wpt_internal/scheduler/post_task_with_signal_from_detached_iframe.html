@@ -19,8 +19,8 @@ async_test(t => {
   window.onload = function() {
     setTimeout(() => {
       scheduler.postTask(() => {}, { signal: iframe_controller.signal }).then(
-          () => assert_unreached("Promise should be rejected"),
-          t.step_func_done());
+          t.step_func_done(),
+          () => assert_unreached("Promise should not be rejected"));
     }, 0);
   };
 }, 'Test scheduler.postTask() with a signal from a detached iframe');

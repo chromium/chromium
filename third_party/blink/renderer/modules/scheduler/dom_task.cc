@@ -35,6 +35,7 @@ DOMTask::DOMTask(DOMScheduler* scheduler,
                  ScriptPromiseResolver* resolver,
                  V8SchedulerPostTaskCallback* callback,
                  DOMTaskSignal* signal,
+                 base::SingleThreadTaskRunner* task_runner,
                  base::TimeDelta delay)
     : scheduler_(scheduler),
       callback_(callback),
@@ -45,12 +46,12 @@ DOMTask::DOMTask(DOMScheduler* scheduler,
       queue_time_(delay.is_zero() ? base::TimeTicks::Now()
                                   : base::TimeTicks()) {
   DCHECK(signal_);
-  DCHECK(signal_->GetTaskRunner());
+  DCHECK(task_runner);
   DCHECK(callback_);
-  signal_->AddAlgorithm(WTF::Bind(&DOMTask::Abort, WrapWeakPersistent(this)));
+  signal_->AddAlgorithm(WTF::Bind(&DOMTask::OnAbort, WrapWeakPersistent(this)));
 
   task_handle_ = PostDelayedCancellableTask(
-      *signal_->GetTaskRunner(), FROM_HERE,
+      *task_runner, FROM_HERE,
       WTF::Bind(&DOMTask::Invoke, WrapPersistent(this)), delay);
 
   ScriptState* script_state =
@@ -101,7 +102,7 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
   v8_context->SetContinuationPreservedEmbedderData(v8::Local<v8::Object>());
 }
 
-void DOMTask::Abort() {
+void DOMTask::OnAbort() {
   // If the task has already finished running, the promise is either resolved or
   // rejected, in which case abort will no longer have any effect.
   if (!callback_)
