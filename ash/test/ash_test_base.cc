@@ -484,4 +484,19 @@ display::Display AshTestBase::GetSecondaryDisplay() const {
   return ash_test_helper_->GetSecondaryDisplay();
 }
 
+// ============================================================================
+// NoSessionAshTestBase:
+
+NoSessionAshTestBase::NoSessionAshTestBase() {
+  set_start_session(false);
+}
+
+NoSessionAshTestBase::NoSessionAshTestBase(
+    base::test::TaskEnvironment::TimeSource time_source)
+    : AshTestBase(time_source) {
+  set_start_session(false);
+}
+
+NoSessionAshTestBase::~NoSessionAshTestBase() = default;
+
 }  // namespace ash

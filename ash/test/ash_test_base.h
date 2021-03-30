@@ -305,8 +305,10 @@ class AshTestBase : public testing::Test {
 
 class NoSessionAshTestBase : public AshTestBase {
  public:
-  NoSessionAshTestBase() { set_start_session(false); }
-  ~NoSessionAshTestBase() override {}
+  NoSessionAshTestBase();
+  explicit NoSessionAshTestBase(
+      base::test::TaskEnvironment::TimeSource time_source);
+  ~NoSessionAshTestBase() override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(NoSessionAshTestBase);
