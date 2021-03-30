@@ -113,11 +113,6 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   // shell windows.
   bool RunPlatformAppTest(const std::string& extension_name) WARN_UNUSED_RESULT;
 
-  // Similar to RunPlatformAppTest, except sets an additional string argument
-  // |customArg| to the test config object.
-  bool RunPlatformAppTestWithArg(const std::string& extension_name,
-                                 const char* custom_arg) WARN_UNUSED_RESULT;
-
   // Start the test server, and store details of its state. Those details
   // will be available to JavaScript tests using chrome.test.getConfig().
   bool StartEmbeddedTestServer();

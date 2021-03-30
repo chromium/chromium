@@ -133,7 +133,9 @@ class MediaGalleriesPlatformAppBrowserTest : public PlatformAppBrowserTest {
     }
 
     base::AutoReset<base::FilePath> reset(&test_data_dir_, temp_dir.GetPath());
-    bool result = RunPlatformAppTestWithArg(extension_name, custom_arg);
+    bool result = RunExtensionTest({.name = extension_name.c_str(),
+                                    .custom_arg = custom_arg,
+                                    .launch_as_platform_app = true});
     content::RunAllPendingInMessageLoop();  // avoid race on exit in registry.
     return result;
   }

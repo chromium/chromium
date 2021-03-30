@@ -194,8 +194,9 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
   bool RunNetworkingSubtest(const std::string& test) {
     const std::string arg =
         base::StringPrintf("{\"test\": \"%s\"}", test.c_str());
-    return RunPlatformAppTestWithArg("networking_private/chromeos",
-                                     arg.c_str());
+    return RunExtensionTest({.name = "networking_private/chromeos",
+                             .custom_arg = arg.c_str(),
+                             .launch_as_platform_app = true});
   }
 
   void SetUpInProcessBrowserTestFixture() override {

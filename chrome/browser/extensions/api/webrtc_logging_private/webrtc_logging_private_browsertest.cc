@@ -31,9 +31,10 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest,
                        TestGetLogsDirectoryCreatesWebRtcLogsDirectory) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_FALSE(base::PathExists(webrtc_logs_path()));
-  ASSERT_TRUE(RunPlatformAppTestWithArg(
-      "api_test/webrtc_logging_private/get_logs_directory",
-      "test_without_directory"))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "api_test/webrtc_logging_private/get_logs_directory",
+       .custom_arg = "test_without_directory",
+       .launch_as_platform_app = true}))
       << message_;
   ASSERT_TRUE(base::PathExists(webrtc_logs_path()));
   ASSERT_TRUE(base::IsDirectoryEmpty(webrtc_logs_path()));
@@ -46,9 +47,10 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest,
   base::FilePath test_file_path = webrtc_logs_path().AppendASCII("test.file");
   std::string contents = "test file contents";
   ASSERT_TRUE(base::WriteFile(test_file_path, contents));
-  ASSERT_TRUE(RunPlatformAppTestWithArg(
-      "api_test/webrtc_logging_private/get_logs_directory",
-      "test_with_file_in_directory"))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "api_test/webrtc_logging_private/get_logs_directory",
+       .custom_arg = "test_with_file_in_directory",
+       .launch_as_platform_app = true}))
       << message_;
 }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
