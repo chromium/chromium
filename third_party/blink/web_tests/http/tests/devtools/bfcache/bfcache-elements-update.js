@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that elements tab updates after a bf-cache navigation.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
 
   // Save time on style updates.
