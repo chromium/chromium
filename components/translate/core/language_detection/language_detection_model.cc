@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/language/core/common/language_util.h"
 #include "components/translate/core/common/translate_constants.h"
+#include "components/translate/core/common/translate_util.h"
 #include "components/translate/core/language_detection/language_detection_resolver.h"
 #include "components/translate/core/language_detection/language_detection_util.h"
 #include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h"
@@ -22,10 +23,6 @@ struct sort_category {
     return c1.score > c2.score;
   }
 };
-
-// TODO(crbug.com/1175942): Make the threshold Finch controllable for
-// experimentation.
-constexpr float kDefaultReliabilityThreshold = .7;
 
 // The number of characters to sample and provide as a buffer to the model
 // for determining its language.
@@ -162,8 +159,10 @@ std::string LanguageDetectionModel::DeterminePageLanguage(
 
   prediction_reliability_score = top_language_result->second;
 
+  // TODO(crbug.com/1177992): Use the model threshold provided
+  // by the model itself. Not needed until threshold is finalized.
   bool is_reliable =
-      prediction_reliability_score > kDefaultReliabilityThreshold;
+      prediction_reliability_score > GetTFLiteLanguageDetectionThreshold();
 
   std::string final_prediction = translate::FilterDetectedLanguage(
       base::UTF16ToUTF8(contents), top_language_result->first, is_reliable);
