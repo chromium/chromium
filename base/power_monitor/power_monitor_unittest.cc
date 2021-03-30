@@ -135,6 +135,9 @@ TEST_F(PowerMonitorTest, AddPowerSuspendObserverBeforeAndAfterInitialization) {
   source()->GenerateResumeEvent();
   EXPECT_EQ(observer1.resumes(), 1);
   EXPECT_EQ(observer2.resumes(), 1);
+
+  PowerMonitor::RemovePowerSuspendObserver(&observer1);
+  PowerMonitor::RemovePowerSuspendObserver(&observer2);
 }
 
 TEST_F(PowerMonitorTest, AddPowerStateObserverBeforeAndAfterInitialization) {
@@ -158,6 +161,9 @@ TEST_F(PowerMonitorTest, AddPowerStateObserverBeforeAndAfterInitialization) {
   source()->GeneratePowerStateEvent(false);
   EXPECT_EQ(observer1.power_state_changes(), 2);
   EXPECT_EQ(observer2.power_state_changes(), 2);
+
+  PowerMonitor::RemovePowerStateObserver(&observer1);
+  PowerMonitor::RemovePowerStateObserver(&observer2);
 }
 
 TEST_F(PowerMonitorTest, SuspendStateReturnedFromAddObserver) {
