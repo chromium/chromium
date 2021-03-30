@@ -8,6 +8,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 
@@ -65,6 +66,9 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
       content_annotations.has_value());
   if (!content_annotations)
+    return;
+
+  if (!features::ShouldWriteContentAnnotationsToHistoryService())
     return;
 
   history_service_->QueryURL(

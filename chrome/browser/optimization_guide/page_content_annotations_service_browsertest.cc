@@ -128,8 +128,12 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceDisabledBrowserTest,
 class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
  public:
   PageContentAnnotationsServiceBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kOptimizationHints, features::kPageContentAnnotations},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kOptimizationHints, {}},
+         {features::kPageContentAnnotations,
+          {
+              {"write_to_history_service", "true"},
+          }}},
         /*disabled_features=*/{});
   }
   ~PageContentAnnotationsServiceBrowserTest() override = default;
@@ -319,6 +323,50 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 
   EXPECT_FALSE(GetContentAnnotationsForURL(history_visit.url).has_value());
 }
+
+class PageContentAnnotationsServiceNoHistoryTest
+    : public PageContentAnnotationsServiceBrowserTest {
+ public:
+  PageContentAnnotationsServiceNoHistoryTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kOptimizationHints, {}},
+         {features::kPageContentAnnotations,
+          {
+              {"write_to_history_service", "false"},
+          }}},
+        /*disabled_features=*/{});
+  }
+  ~PageContentAnnotationsServiceNoHistoryTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
+                       ModelExecutesButDoesntWriteToHistory) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/hello-no-history.html"));
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  RetryForHistogramUntilCountReached(
+      histogram_tester,
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", true,
+      1);
+
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus",
+      0);
+
+  EXPECT_FALSE(GetContentAnnotationsForURL(url).has_value());
+}
+
 #endif
 
 }  // namespace optimization_guide

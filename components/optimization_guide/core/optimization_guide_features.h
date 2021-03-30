@@ -191,6 +191,9 @@ bool IsPageContentAnnotationEnabled();
 // Returns the max size that should be requested for a page content text dump.
 uint64_t MaxSizeForPageContentTextDump();
 
+// Whether we should write content annotations to History Service.
+bool ShouldWriteContentAnnotationsToHistoryService();
+
 }  // namespace features
 }  // namespace optimization_guide
 
