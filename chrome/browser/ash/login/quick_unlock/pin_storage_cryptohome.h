@@ -8,10 +8,8 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/login/auth/user_context.h"
 
 class AccountId;
@@ -54,19 +52,9 @@ class PinStorageCryptohome {
  private:
   void OnSystemSaltObtained(const std::string& system_salt);
 
-  void CheckCryptohomePinKey(const AccountId& account_id,
-                             PinStorageCryptohome::BoolCallback callback,
-                             bool require_unlocked,
-                             base::Optional<cryptohome::BaseReply> reply);
-
   bool salt_obtained_ = false;
   std::string system_salt_;
   std::vector<base::OnceClosure> system_salt_callbacks_;
-
-  // Caches results of CanAuthenticate calls.
-  // TODO(rsorokin): Maybe reconsider the cache if `HasStrongAuth` moved to the
-  // cryptohome side.
-  base::flat_map<AccountId, bool> can_authenticate_cache_;
 
   base::WeakPtrFactory<PinStorageCryptohome> weak_factory_{this};
 
