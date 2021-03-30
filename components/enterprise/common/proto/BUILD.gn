@@ -10,3 +10,8 @@ proto_library("connectors_proto") {
 
   deps = [ "//components/safe_browsing/core:csd_proto" ]
 }
+
+proto_library("extensions_workflow_events_proto") {
+  proto_in_dir = "//"
+  sources = [ "extensions_workflow_events.proto" ]
+}

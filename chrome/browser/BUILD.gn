@@ -2040,6 +2040,7 @@ static_library("browser") {
     "//components/encrypted_messages",
     "//components/enterprise",
     "//components/enterprise/common/proto:connectors_proto",
+    "//components/enterprise/common/proto:extensions_workflow_events_proto",
     "//components/error_page/common",
     "//components/error_page/content/browser",
     "//components/favicon/content",
