@@ -9,7 +9,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "components/content_capture/android/content_capture_controller.h"
 #include "components/content_capture/android/jni_headers/ContentCaptureData_jni.h"
 #include "components/content_capture/android/jni_headers/ContentCaptureFrame_jni.h"
 #include "components/content_capture/android/jni_headers/ContentCaptureReceiverManager_jni.h"
@@ -18,6 +17,7 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
+using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaLongArray;
@@ -200,8 +200,9 @@ bool ContentCaptureReceiverManagerAndroid::ShouldCapture(const GURL& url) {
   // before the content is sent to the consumers.
   if (features::ShouldTriggerContentCaptureForExperiment())
     return true;
-
-  return ContentCaptureController::Get()->ShouldCapture(url);
+  JNIEnv* env = AttachCurrentThread();
+  return Java_ContentCaptureReceiverManager_shouldCapture(
+      env, java_ref_, ConvertUTF8ToJavaString(env, url.spec()));
 }
 
 ScopedJavaLocalRef<jobject>

@@ -20,7 +20,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.history.HistoryDeletionInfo;
-import org.chromium.components.content_capture.ContentCaptureController;
+import org.chromium.components.content_capture.PlatformContentCaptureController;
 
 /**
  * Unit tests for the ContentCaptureHistoryDeletionObserver.
@@ -29,7 +29,7 @@ import org.chromium.components.content_capture.ContentCaptureController;
 @Config(manifest = Config.NONE)
 public class ContentCaptureHistoryDeletionObserverTest {
     @Mock
-    ContentCaptureController mContentCaptureController;
+    PlatformContentCaptureController mContentCaptureController;
     @Mock
     HistoryDeletionInfo mHistoryDeletionInfo;
 

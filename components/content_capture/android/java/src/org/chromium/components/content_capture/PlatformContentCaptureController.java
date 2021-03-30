@@ -13,38 +13,48 @@ import android.view.contentcapture.ContentCaptureCondition;
 import android.view.contentcapture.ContentCaptureManager;
 import android.view.contentcapture.DataRemovalRequest;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.VerifiesOnQ;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
- * The implementation of ContentCaptureController to verify ContentCaptureService
- * is Aiai and signed by right certificate, this class also read allowlist from
- * framework and set to native side.
+ * The class talks to the COntentCaptureManager to verify ContentCaptureService is Aiai and provide
+ * the methods to check if the given urls shall be captured and delete the ContentCapture history.
  */
-// TODO(crbug.com/965566): Write junit tests for this when junit supports q.
 @VerifiesOnQ
 @TargetApi(Build.VERSION_CODES.Q)
-public class ContentCaptureControllerImpl extends ContentCaptureController {
+public class PlatformContentCaptureController {
     private static final String TAG = "ContentCapture";
-
     private static final String AIAI_PACKAGE_NAME = "com.google.android.as";
 
+    private static PlatformContentCaptureController sContentCaptureController;
+
     private boolean mShouldStartCapture;
+    private boolean mIsAiai;
+    private UrlAllowlist mAllowlist;
     private ContentCaptureManager mContentCaptureManager;
 
     public static void init(Context context) {
-        sContentCaptureController = new ContentCaptureControllerImpl(context);
+        sContentCaptureController = new PlatformContentCaptureController(context);
     }
 
-    public ContentCaptureControllerImpl(Context context) {
+    public static PlatformContentCaptureController getInstance() {
+        return sContentCaptureController;
+    }
+
+    public PlatformContentCaptureController(Context context) {
         mContentCaptureManager = context.getSystemService(ContentCaptureManager.class);
         verifyService();
+        pullAllowlist();
     }
 
-    @Override
     public boolean shouldStartCapture() {
         return mShouldStartCapture;
     }
@@ -61,8 +71,8 @@ public class ContentCaptureControllerImpl extends ContentCaptureController {
             return;
         }
 
-        mShouldStartCapture = AIAI_PACKAGE_NAME.equals(componentName.getPackageName());
-        if (!mShouldStartCapture) {
+        mIsAiai = AIAI_PACKAGE_NAME.equals(componentName.getPackageName());
+        if (!mIsAiai) {
             log("Package doesn't match, current one is "
                     + mContentCaptureManager.getServiceComponentName().getPackageName());
             // Disable the ContentCapture if there is no testing flag.
@@ -77,23 +87,28 @@ public class ContentCaptureControllerImpl extends ContentCaptureController {
         }
     }
 
-    @Override
-    protected void pullAllowlist() {
+    private void pullAllowlist() {
+        if (mContentCaptureManager == null) {
+            // Nothing shall be captured.
+            mAllowlist = new UrlAllowlist(null, null);
+            return;
+        }
         Set<ContentCaptureCondition> conditions =
                 mContentCaptureManager.getContentCaptureConditions();
-        String[] allowlist = null;
-        boolean[] isRegEx = null;
-        if (conditions != null) {
-            allowlist = new String[conditions.size()];
-            isRegEx = new boolean[conditions.size()];
-            int index = 0;
-            for (ContentCaptureCondition c : conditions) {
-                allowlist[index] = c.getLocusId().getId();
-                isRegEx[index] = (c.getFlags() & ContentCaptureCondition.FLAG_IS_REGEX) != 0;
-                index++;
+        if (conditions == null) return;
+
+        HashSet<String> allowedUrls = null;
+        ArrayList<Pattern> allowedRe = null;
+        for (ContentCaptureCondition c : conditions) {
+            if ((c.getFlags() & ContentCaptureCondition.FLAG_IS_REGEX) != 0) {
+                if (allowedRe == null) allowedRe = new ArrayList<Pattern>();
+                allowedRe.add(Pattern.compile(c.getLocusId().getId()));
+            } else {
+                if (allowedUrls == null) allowedUrls = new HashSet<String>();
+                allowedUrls.add(c.getLocusId().getId());
             }
         }
-        setAllowlist(allowlist, isRegEx);
+        mAllowlist = new UrlAllowlist(allowedUrls, allowedRe);
     }
 
     private void log(String msg) {
@@ -101,14 +116,12 @@ public class ContentCaptureControllerImpl extends ContentCaptureController {
         Log.i(TAG, msg);
     }
 
-    @Override
     public void clearAllContentCaptureData() {
         if (mContentCaptureManager == null) return;
 
         mContentCaptureManager.removeData(new DataRemovalRequest.Builder().forEverything().build());
     }
 
-    @Override
     public void clearContentCaptureDataForURLs(String[] urlsToDelete) {
         if (mContentCaptureManager == null) return;
 
@@ -118,5 +131,18 @@ public class ContentCaptureControllerImpl extends ContentCaptureController {
                     new LocusId(url), /* Signals that we aren't using extra flags */ 0);
         }
         mContentCaptureManager.removeData(builder.build());
+    }
+
+    /**
+     * @return  @return if any of the given allows to be captured.
+     */
+    public boolean shouldCapture(String[] urls) {
+        if (mAllowlist == null) return true;
+        return mAllowlist.isAllowed(urls);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public boolean isAiai() {
+        return mIsAiai;
     }
 }

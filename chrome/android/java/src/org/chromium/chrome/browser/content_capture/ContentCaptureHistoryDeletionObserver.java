@@ -7,21 +7,22 @@ package org.chromium.chrome.browser.content_capture;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.history.HistoryDeletionBridge;
 import org.chromium.chrome.browser.history.HistoryDeletionInfo;
-import org.chromium.components.content_capture.ContentCaptureController;
+import org.chromium.components.content_capture.PlatformContentCaptureController;
 
 /** History deletion observer that calls ContentCapture methods. */
 public class ContentCaptureHistoryDeletionObserver implements HistoryDeletionBridge.Observer {
-    Supplier<ContentCaptureController> mContentCaptureControllerSupplier;
+    Supplier<PlatformContentCaptureController> mContentCaptureControllerSupplier;
 
     public ContentCaptureHistoryDeletionObserver(
-            Supplier<ContentCaptureController> contentCaptureControllerSupplier) {
+            Supplier<PlatformContentCaptureController> contentCaptureControllerSupplier) {
         mContentCaptureControllerSupplier = contentCaptureControllerSupplier;
     }
 
     /** Observer method when a bit of history is deleted. */
     @Override
     public void onURLsDeleted(HistoryDeletionInfo historyDeletionInfo) {
-        ContentCaptureController contentCaptureController = mContentCaptureControllerSupplier.get();
+        PlatformContentCaptureController contentCaptureController =
+                mContentCaptureControllerSupplier.get();
         if (contentCaptureController == null) return;
 
         // A timerange deletion is equivalent to deleting "all" history.

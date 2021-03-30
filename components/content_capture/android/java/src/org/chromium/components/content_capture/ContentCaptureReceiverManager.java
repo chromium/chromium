@@ -102,6 +102,15 @@ public class ContentCaptureReceiverManager {
         return RenderCoordinates.fromWebContents(webContents).getContentOffsetYPixInt();
     }
 
+    @CalledByNative
+    private boolean shouldCapture(String url) {
+        String[] urls = new String[] {url};
+        for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
+            if (consumer.shouldCapture(urls)) return true;
+        }
+        return false;
+    }
+
     private FrameSession toFrameSession(Object[] session) {
         FrameSession frameSession = new FrameSession(session.length);
         for (Object s : session) frameSession.add((ContentCaptureFrame) s);

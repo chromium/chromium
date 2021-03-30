@@ -11,6 +11,8 @@ java_library("components_content_capture_junit_tests") {
   testonly = true
   sources = [
     "src/org/chromium/components/content_capture/PlatformAPIWrapperTest.java",
+    "src/org/chromium/components/content_capture/PlatformContentCaptureControllerTest.java",
+    "src/org/chromium/components/content_capture/UrlAllowlistTest.java",
   ]
   deps = [
     "//base:base_java",
