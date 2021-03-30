@@ -376,7 +376,8 @@ module.exports = {
     'cros': 'readable',
     'trustedTypes': 'readable',
     'BarcodeDetector': 'readable',
-    'webkitRequestFileSystem': 'readable',
+    'FileSystemFileHandle': 'readable',
+    'FileSystemDirectoryHandle': 'readable',
 
     // TODO(b/172879638): Remove this once we have
     // https://github.com/sindresorhus/globals/pull/171 merged in ESLint and
