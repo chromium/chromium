@@ -25,7 +25,7 @@ class TranslateURLFetcher;
 
 class TranslateScript {
  public:
-  using RequestCallback = base::OnceCallback<void(bool, const std::string&)>;
+  using RequestCallback = base::OnceCallback<void(bool)>;
 
   TranslateScript();
   virtual ~TranslateScript();

@@ -576,8 +576,7 @@ void TranslateManager::PageTranslated(const std::string& source_lang,
 void TranslateManager::OnTranslateScriptFetchComplete(
     const std::string& source_lang,
     const std::string& target_lang,
-    bool success,
-    const std::string& data) {
+    bool success) {
   if (!translate_driver_->HasCurrentPage())
     return;
 

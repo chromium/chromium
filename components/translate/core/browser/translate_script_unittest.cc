@@ -62,7 +62,7 @@ class TranslateScriptTest : public testing::Test {
   }
 
  private:
-  void OnComplete(bool success, const std::string& script) {
+  void OnComplete(bool success) {
     // No op.
   }
 

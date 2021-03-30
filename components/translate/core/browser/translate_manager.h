@@ -261,8 +261,7 @@ class TranslateManager {
   // Initiates the translation.
   void OnTranslateScriptFetchComplete(const std::string& source_lang,
                                       const std::string& target_lang,
-                                      bool success,
-                                      const std::string& data);
+                                      bool success);
 
   // Helper function to initialize a translate event metric proto.
   void InitTranslateEvent(const std::string& src_lang,

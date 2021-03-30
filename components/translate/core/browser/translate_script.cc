@@ -172,7 +172,7 @@ void TranslateScript::OnScriptFetchComplete(bool success,
         expiration_delay_);
   }
 
-  callback_list_.Notify(success, data);
+  callback_list_.Notify(success);
 }
 
 }  // namespace translate
