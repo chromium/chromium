@@ -39,8 +39,9 @@ class MessageWrapper {
   void SetDescription(const std::u16string& description);
   std::u16string GetPrimaryButtonText();
   void SetPrimaryButtonText(const std::u16string& primary_button_text);
-  std::u16string GetSecondaryActionText();
-  void SetSecondaryActionText(const std::u16string& secondary_action_text);
+  std::u16string GetSecondaryButtonMenuText();
+  void SetSecondaryButtonMenuText(
+      const std::u16string& secondary_button_menu_text);
 
   // When setting a message icon use ResourceMapper::MapToJavaDrawableId to
   // translate from chromium resource_id to Android drawable resource_id.

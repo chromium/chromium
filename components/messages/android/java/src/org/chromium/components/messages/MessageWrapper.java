@@ -75,13 +75,14 @@ public final class MessageWrapper {
     }
 
     @CalledByNative
-    String getSecondaryActionText() {
-        return mMessageProperties.get(MessageBannerProperties.SECONDARY_ACTION_TEXT);
+    String getSecondaryButtonMenuText() {
+        return mMessageProperties.get(MessageBannerProperties.SECONDARY_BUTTON_MENU_TEXT);
     }
 
     @CalledByNative
-    void setSecondaryActionText(String secondaryActionText) {
-        mMessageProperties.set(MessageBannerProperties.SECONDARY_ACTION_TEXT, secondaryActionText);
+    void setSecondaryButtonMenuText(String secondaryButtonMenuText) {
+        mMessageProperties.set(
+                MessageBannerProperties.SECONDARY_BUTTON_MENU_TEXT, secondaryButtonMenuText);
     }
 
     @CalledByNative

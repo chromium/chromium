@@ -42,7 +42,7 @@ import org.chromium.ui.test.util.DummyUiActivity;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class MessageBannerViewTest {
-    private static final String SECONDARY_ACTION_TEXT = "SecondaryActionText";
+    private static final String SECONDARY_BUTTON_MENU_TEXT = "SecondaryActionText";
 
     @ClassRule
     public static DisableAnimationsTestRule sDisableAnimationsRule =
@@ -84,8 +84,30 @@ public class MessageBannerViewTest {
     }
 
     /**
-     * Tests that clicking on secondary button opens a menu with an item with SECONDARY_ACTION_TEXT.
-     * Clicking on this item triggers ON_SECONDARY_ACTION callback invocation.
+     * Tests that, when SECONDARY_BUTTON_MENU_TEXT is not specified, clicking on secondary button
+     * triggers ON_SECONDARY_ACTION callback invocation.
+     */
+    @Test
+    @MediumTest
+    public void testSecondaryActionDirectCallback() {
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID,
+                                android.R.drawable.ic_menu_add)
+                        .with(MessageBannerProperties.ON_SECONDARY_ACTION, mSecondaryActionCallback)
+                        .build();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModelChangeProcessor.create(
+                    propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+        });
+        onView(withId(R.id.message_secondary_button)).perform(click());
+        Mockito.verify(mSecondaryActionCallback).run();
+    }
+
+    /**
+     * Tests that clicking on secondary button opens a menu with an item with
+     * SECONDARY_BUTTON_MENU_TEXT. Clicking on this item triggers ON_SECONDARY_ACTION callback
+     * invocation.
      */
     @Test
     @MediumTest
@@ -94,7 +116,8 @@ public class MessageBannerViewTest {
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID,
                                 android.R.drawable.ic_menu_add)
-                        .with(MessageBannerProperties.SECONDARY_ACTION_TEXT, SECONDARY_ACTION_TEXT)
+                        .with(MessageBannerProperties.SECONDARY_BUTTON_MENU_TEXT,
+                                SECONDARY_BUTTON_MENU_TEXT)
                         .with(MessageBannerProperties.ON_SECONDARY_ACTION, mSecondaryActionCallback)
                         .build();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -102,7 +125,7 @@ public class MessageBannerViewTest {
                     propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
         });
         onView(withId(R.id.message_secondary_button)).perform(click());
-        onView(withText(SECONDARY_ACTION_TEXT)).perform(click());
+        onView(withText(SECONDARY_BUTTON_MENU_TEXT)).perform(click());
         Mockito.verify(mSecondaryActionCallback).run();
     }
 }

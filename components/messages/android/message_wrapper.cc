@@ -74,22 +74,24 @@ void MessageWrapper::SetPrimaryButtonText(
                                            jprimary_button_text);
 }
 
-std::u16string MessageWrapper::GetSecondaryActionText() {
+std::u16string MessageWrapper::GetSecondaryButtonMenuText() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> jsecondary_action_text =
-      Java_MessageWrapper_getSecondaryActionText(env, java_message_wrapper_);
-  return jsecondary_action_text.is_null()
+  base::android::ScopedJavaLocalRef<jstring> jsecondary_button_menu_text =
+      Java_MessageWrapper_getSecondaryButtonMenuText(env,
+                                                     java_message_wrapper_);
+  return jsecondary_button_menu_text.is_null()
              ? std::u16string()
-             : base::android::ConvertJavaStringToUTF16(jsecondary_action_text);
+             : base::android::ConvertJavaStringToUTF16(
+                   jsecondary_button_menu_text);
 }
 
-void MessageWrapper::SetSecondaryActionText(
-    const std::u16string& secondary_action_text) {
+void MessageWrapper::SetSecondaryButtonMenuText(
+    const std::u16string& secondary_button_menu_text) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> jsecondary_action_text =
-      base::android::ConvertUTF16ToJavaString(env, secondary_action_text);
-  Java_MessageWrapper_setSecondaryActionText(env, java_message_wrapper_,
-                                             jsecondary_action_text);
+  base::android::ScopedJavaLocalRef<jstring> jsecondary_button_menu_text =
+      base::android::ConvertUTF16ToJavaString(env, secondary_button_menu_text);
+  Java_MessageWrapper_setSecondaryButtonMenuText(env, java_message_wrapper_,
+                                                 jsecondary_button_menu_text);
 }
 
 int MessageWrapper::GetIconResourceId() {

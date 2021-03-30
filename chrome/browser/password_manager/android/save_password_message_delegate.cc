@@ -109,7 +109,7 @@ void SavePasswordMessageDelegate::DisplaySavePasswordPromptInternal(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAVE_PASSWORD));
   message_->SetSecondaryIconResourceId(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_SETTINGS));
-  message_->SetSecondaryActionText(
+  message_->SetSecondaryButtonMenuText(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON));
 
   message_->SetSecondaryActionCallback(base::BindOnce(

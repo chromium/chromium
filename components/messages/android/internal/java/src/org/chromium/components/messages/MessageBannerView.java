@@ -36,7 +36,7 @@ public class MessageBannerView extends BoundedLinearLayout {
     private TextView mPrimaryButton;
     private ListMenuButton mSecondaryButton;
     private View mDivider;
-    private String mSecondaryActionText;
+    private String mSecondaryButtonMenuText;
     private Runnable mSecondaryActionCallback;
     private SwipeGestureListener mSwipeGestureDetector;
 
@@ -53,7 +53,7 @@ public class MessageBannerView extends BoundedLinearLayout {
         mIconView = findViewById(R.id.message_icon);
         mSecondaryButton = findViewById(R.id.message_secondary_button);
         mDivider = findViewById(R.id.message_divider);
-        mSecondaryButton.setOnClickListener((View v) -> { displayMenu(); });
+        mSecondaryButton.setOnClickListener((View v) -> { handleSecondaryButtonClick(); });
     }
 
     void setTitle(String title) {
@@ -88,8 +88,8 @@ public class MessageBannerView extends BoundedLinearLayout {
         mSecondaryActionCallback = callback;
     }
 
-    void setSecondaryActionText(String text) {
-        mSecondaryActionText = text;
+    void setSecondaryButtonMenuText(String text) {
+        mSecondaryButtonMenuText = text;
     }
 
     void setSecondaryIconContentDescription(String description) {
@@ -100,13 +100,17 @@ public class MessageBannerView extends BoundedLinearLayout {
         mSwipeGestureDetector = new MessageSwipeGestureListener(getContext(), handler);
     }
 
-    // TODO(crbug.com/1163302): For the M88 experiment we decided to display single item menu in
-    // response to the tap on secondary button. The code below implements this logic. Past M88 it
-    // will be replaced with modal dialog driven from the feature code.
-    void displayMenu() {
+    void handleSecondaryButtonClick() {
+        if (mSecondaryButtonMenuText == null) {
+            if (mSecondaryActionCallback != null) {
+                mSecondaryActionCallback.run();
+            }
+            return;
+        }
+
         final PropertyModel menuItemPropertyModel =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                        .with(ListMenuItemProperties.TITLE, mSecondaryActionText)
+                        .with(ListMenuItemProperties.TITLE, mSecondaryButtonMenuText)
                         .with(ListMenuItemProperties.ENABLED, true)
                         .build();
 

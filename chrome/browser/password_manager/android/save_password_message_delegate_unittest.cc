@@ -209,7 +209,7 @@ TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues) {
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SAVE_BUTTON),
             GetMessageWrapper()->GetPrimaryButtonText());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON),
-            GetMessageWrapper()->GetSecondaryActionText());
+            GetMessageWrapper()->GetSecondaryButtonMenuText());
   EXPECT_EQ(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAVE_PASSWORD),
       GetMessageWrapper()->GetIconResourceId());

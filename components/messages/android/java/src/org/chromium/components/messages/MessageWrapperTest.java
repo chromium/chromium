@@ -62,9 +62,9 @@ public class MessageWrapperTest {
         Assert.assertEquals("Button text doesn't match provided value", "Primary button",
                 messageProperties.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
 
-        message.setSecondaryActionText("Primary button");
-        Assert.assertEquals("Button text doesn't match provided value", "Primary button",
-                messageProperties.get(MessageBannerProperties.SECONDARY_ACTION_TEXT));
+        message.setSecondaryButtonMenuText("Secondary button");
+        Assert.assertEquals("Button text doesn't match provided value", "Secondary button",
+                messageProperties.get(MessageBannerProperties.SECONDARY_BUTTON_MENU_TEXT));
 
         message.setIconResourceId(1);
         Assert.assertEquals("Icon resource id doesn't match provided value", 1,
