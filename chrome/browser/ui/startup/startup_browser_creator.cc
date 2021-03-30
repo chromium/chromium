@@ -477,36 +477,6 @@ bool StartupBrowserCreator::InSynchronousProfileLaunch() {
   return in_synchronous_profile_launch_;
 }
 
-Profile* StartupBrowserCreator::GetPrivateProfileIfRequested(
-    const base::CommandLine& command_line,
-    Profile* profile) {
-  if (profiles::IsGuestModeRequested(command_line,
-                                     g_browser_process->local_state(),
-                                     /* show_warning= */ true)) {
-    profile = g_browser_process->profile_manager()->GetProfile(
-        ProfileManager::GetGuestProfilePath());
-    if (!profile->IsEphemeralGuestProfile())
-      profile = profile->GetPrimaryOTRProfile();
-    return profile;
-  }
-
-  if (IncognitoModePrefs::ShouldLaunchIncognito(command_line,
-                                                profile->GetPrefs())) {
-    return profile->GetPrimaryOTRProfile();
-  } else {
-    bool expect_incognito = command_line.HasSwitch(switches::kIncognito);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    expect_incognito |=
-        chromeos::LacrosChromeServiceImpl::Get()->init_params()->is_incognito;
-#endif
-    LOG_IF(WARNING, expect_incognito)
-        << "Incognito mode disabled by policy, launching a normal "
-        << "browser session.";
-  }
-
-  return profile;
-}
-
 bool StartupBrowserCreator::LaunchBrowser(
     const base::CommandLine& command_line,
     Profile* profile,
@@ -522,7 +492,24 @@ bool StartupBrowserCreator::LaunchBrowser(
   in_synchronous_profile_launch_ =
       process_startup == chrome::startup::IS_PROCESS_STARTUP;
 
-  profile = GetPrivateProfileIfRequested(command_line, profile);
+  // Continue with the incognito profile from here on if Incognito mode is
+  // forced.
+  if (IncognitoModePrefs::ShouldLaunchIncognito(command_line,
+                                                profile->GetPrefs())) {
+    profile = profile->GetPrimaryOTRProfile();
+  } else if (command_line.HasSwitch(switches::kIncognito)) {
+    LOG(WARNING) << "Incognito mode disabled by policy, launching a normal "
+                 << "browser session.";
+  }
+
+  if (profiles::IsGuestModeRequested(command_line,
+                                     g_browser_process->local_state(),
+                                     /* show_warning= */ true)) {
+    profile = g_browser_process->profile_manager()->GetProfile(
+        ProfileManager::GetGuestProfilePath());
+    if (!profile->IsEphemeralGuestProfile())
+      profile = profile->GetPrimaryOTRProfile();
+  }
 
   if (!IsSilentLaunchEnabled(command_line, profile)) {
     StartupBrowserCreatorImpl lwp(cur_dir, command_line, this, is_first_run);
@@ -926,11 +913,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   // the second case, the tab should either open in an existing Chrome window
   // for this profile, or spawn a new Chrome window without any NTP if no window
   // exists (see crbug.com/528385).
-  // TODO(https://crbug.com/1188873): Investigate switching to private mode
-  // sooner if request.
-  Profile* profile_to_launch =
-      GetPrivateProfileIfRequested(command_line, last_used_profile);
-  if (MaybeLaunchApplication(command_line, cur_dir, profile_to_launch,
+  if (MaybeLaunchApplication(command_line, cur_dir, last_used_profile,
                              std::make_unique<LaunchModeRecorder>())) {
     return true;
   }
