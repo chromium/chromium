@@ -36,6 +36,10 @@ if (is_android) {
   import("//build/config/android/config.gni")
 }
 
+if (is_linux) {
+  import("build/config/linux/gtk/gtk.gni")
+}
+
 declare_args() {
   # A list of extra dependencies to add to the root target. This allows a
   # checkout to add additional targets without explicitly changing any checked-
@@ -758,7 +762,7 @@ group("gn_all") {
     }
   }
 
-  if (is_linux && !is_chromecast) {
+  if (is_linux && !is_chromecast && use_gtk) {
     deps += [ "//ui/gtk:gtk_unittests" ]
   }
 
