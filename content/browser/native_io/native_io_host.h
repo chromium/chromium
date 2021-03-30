@@ -74,6 +74,8 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
     return !delete_all_data_callbacks_.empty();
   }
 
+  bool is_incognito_mode() const { return root_path_.empty(); }
+
   // blink::mojom::NativeIOHost:
   void OpenFile(
       const std::string& name,
