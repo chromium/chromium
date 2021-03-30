@@ -144,6 +144,13 @@ BrowsingDataRemoverImpl::~BrowsingDataRemoverImpl() {
 void BrowsingDataRemoverImpl::SetRemoving(bool is_removing) {
   DCHECK_NE(is_removing_, is_removing);
   is_removing_ = is_removing;
+  if (embedder_delegate_) {
+    if (is_removing_) {
+      embedder_delegate_->OnStartRemoving();
+    } else {
+      embedder_delegate_->OnDoneRemoving();
+    }
+  }
 }
 
 void BrowsingDataRemoverImpl::SetEmbedderDelegate(

@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/files/file_util.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/shortcut_manager.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -96,6 +99,32 @@ class BrowserAddedObserver : public BrowserListObserver {
   base::RunLoop run_loop_;
 };
 
+class ProfileDeletionObserver : public ProfileAttributesStorage::Observer {
+ public:
+  ProfileDeletionObserver() {
+    g_browser_process->profile_manager()
+        ->GetProfileAttributesStorage()
+        .AddObserver(this);
+  }
+
+  ~ProfileDeletionObserver() override {
+    g_browser_process->profile_manager()
+        ->GetProfileAttributesStorage()
+        .RemoveObserver(this);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  // ProfileAttributesStorage::Observer:
+  void OnProfileWasRemoved(const base::FilePath& profile_path,
+                           const std::u16string& profile_name) override {
+    run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
 }  // namespace
 
 class ProfileHelperTest : public InProcessBrowserTest {
@@ -174,6 +203,8 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteSoleProfile) {
   ui_test_utils::WaitForBrowserToClose(original_browser);
   Browser* new_browser = added_observer.Wait();
 
+  content::RunAllTasksUntilIdle();
+
   EXPECT_EQ(1u, browser_list->size());
   EXPECT_NE(original_browser_profile_path, new_browser->profile()->GetPath());
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
@@ -198,12 +229,34 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteActiveProfile) {
                              ProfileMetrics::DELETE_PROFILE_SETTINGS);
   ui_test_utils::WaitForBrowserToClose(original_browser);
 
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(1u, browser_list->size());
   EXPECT_EQ(additional_profile, browser_list->get(0)->profile());
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 }
 
-IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteInactiveProfile) {
+class ProfileHelperTestWithDestroyProfile
+    : public ProfileHelperTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ProfileHelperTestWithDestroyProfile() {
+    bool enable_destroy_profile = GetParam();
+    if (enable_destroy_profile) {
+      feature_list_.InitAndEnableFeature(
+          features::kDestroyProfileOnBrowserClose);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kDestroyProfileOnBrowserClose);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ProfileHelperTestWithDestroyProfile,
+                       DeleteInactiveProfile) {
   content::TestWebUI web_ui;
   Browser* original_browser = browser();
   ProfileAttributesStorage& storage =
@@ -217,14 +270,38 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteInactiveProfile) {
   Profile* additional_profile = CreateProfile();
   EXPECT_EQ(2u, storage.GetNumberOfProfiles());
 
-  content::BrowsingDataRemoverCompletionInhibitor inhibitor(
-      content::BrowserContext::GetBrowsingDataRemover(additional_profile));
-  webui::DeleteProfileAtPath(additional_profile->GetPath(),
-                             ProfileMetrics::DELETE_PROFILE_SETTINGS);
-  inhibitor.BlockUntilNearCompletion();
-  inhibitor.ContinueToCompletion();
+  base::FilePath additional_profile_dir = additional_profile->GetPath();
+  bool destroy_profile =
+      base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose);
+
+  if (destroy_profile) {
+    ProfileDeletionObserver observer;
+    webui::DeleteProfileAtPath(additional_profile_dir,
+                               ProfileMetrics::DELETE_PROFILE_SETTINGS);
+    observer.Wait();
+  } else {
+    content::BrowsingDataRemoverCompletionInhibitor inhibitor(
+        content::BrowserContext::GetBrowsingDataRemover(additional_profile));
+    webui::DeleteProfileAtPath(additional_profile_dir,
+                               ProfileMetrics::DELETE_PROFILE_SETTINGS);
+    inhibitor.BlockUntilNearCompletion();
+    inhibitor.ContinueToCompletion();
+  }
 
   EXPECT_EQ(1u, browser_list->size());
   EXPECT_TRUE(base::Contains(*browser_list, original_browser));
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
+
+  // TODO(crbug.com/1191455): Once RemoveProfile()/NukeProfileFromDisk() aren't
+  // flaky anymore, EXPECT_FALSE(PathExists(additional_profile_dir)).
 }
+
+#if defined(OS_CHROMEOS)
+INSTANTIATE_TEST_SUITE_P(DestroyProfileOnBrowserClose,
+                         ProfileHelperTestWithDestroyProfile,
+                         testing::Values(false));
+#else
+INSTANTIATE_TEST_SUITE_P(DestroyProfileOnBrowserClose,
+                         ProfileHelperTestWithDestroyProfile,
+                         testing::Bool());
+#endif  // defined(OS_CHROMEOS)

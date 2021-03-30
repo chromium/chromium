@@ -387,6 +387,27 @@ int GetTotalRefCount(const std::map<ProfileKeepAliveOrigin, int>& keep_alives) {
       [](int acc, const auto& pair) { return acc + pair.second; });
 }
 
+// Outputs the state of ProfileInfo::keep_alives, for easier debugging. e.g.,
+// a Profile with 3 regular windows open, and one Incognito window open would
+// write this string:
+//    [kBrowserWindow (3), kOffTheRecordProfile (1)]
+std::ostream& operator<<(
+    std::ostream& out,
+    const std::map<ProfileKeepAliveOrigin, int>& keep_alives) {
+  out << "[";
+  bool first = true;
+  for (const auto& pair : keep_alives) {
+    if (pair.second == 0)
+      continue;
+    if (!first)
+      out << ", ";
+    out << pair.first << " (" << pair.second << ")";
+    first = false;
+  }
+  out << "]";
+  return out;
+}
+
 }  // namespace
 
 ProfileManager::ProfileManager(const base::FilePath& user_data_dir)
@@ -1346,15 +1367,11 @@ void ProfileManager::AddKeepAlive(const Profile* profile,
 
   info->keep_alives[origin]++;
 
-  int& waiting_for_first_browser_window =
-      info->keep_alives[ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow];
-  if (origin == ProfileKeepAliveOrigin::kBrowserWindow &&
-      waiting_for_first_browser_window != 0) {
-    waiting_for_first_browser_window = 0;
-  }
-
   VLOG(1) << "AddKeepAlive(" << profile->GetDebugName() << ", " << origin
-          << "). refcount=" << GetTotalRefCount(info->keep_alives);
+          << "). keep_alives=" << info->keep_alives;
+
+  if (origin == ProfileKeepAliveOrigin::kBrowserWindow)
+    ClearFirstBrowserWindowKeepAlive(profile);
 }
 
 void ProfileManager::RemoveKeepAlive(const Profile* profile,
@@ -1382,15 +1399,42 @@ void ProfileManager::RemoveKeepAlive(const Profile* profile,
   info->keep_alives[origin]--;
   DCHECK_LE(0, info->keep_alives[origin]);
 
-  int total_refcount = GetTotalRefCount(info->keep_alives);
   VLOG(1) << "RemoveKeepAlive(" << profile->GetDebugName() << ", " << origin
-          << "). refcount=" << total_refcount;
+          << "). keep_alives=" << info->keep_alives;
 
+  DeleteProfileIfNoKeepAlive(info);
+}
+
+void ProfileManager::ClearFirstBrowserWindowKeepAlive(const Profile* profile) {
+  DCHECK(base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose));
+
+  DCHECK(profile);
+  DCHECK(!profile->IsOffTheRecord());
+
+  ProfileInfo* info = GetProfileInfoByPath(profile->GetPath());
+  DCHECK(info);
+
+  int& waiting_for_first_browser_window =
+      info->keep_alives[ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow];
+
+  if (waiting_for_first_browser_window == 0)
+    return;
+
+  waiting_for_first_browser_window = 0;
+
+  VLOG(1) << "ClearFirstBrowserWindowKeepAlive(" << profile->GetDebugName()
+          << "). keep_alives=" << info->keep_alives;
+
+  DeleteProfileIfNoKeepAlive(info);
+}
+
+void ProfileManager::DeleteProfileIfNoKeepAlive(const ProfileInfo* info) {
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (total_refcount == 0) {
-    VLOG(1) << "Deleting profile " << profile->GetDebugName();
-    RemoveProfile(profile->GetPath());
-  }
+  if (GetTotalRefCount(info->keep_alives) != 0)
+    return;
+
+  VLOG(1) << "Deleting profile " << info->profile->GetDebugName();
+  RemoveProfile(info->profile->GetPath());
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -1622,23 +1666,31 @@ void ProfileManager::RemoveProfile(const base::FilePath& profile_dir) {
 
   Profile* profile = GetProfileByPath(profile_dir);
   bool ephemeral = IsEphemeral(profile);
+  bool marked_for_deletion = IsProfileDirectoryMarkedForDeletion(profile_dir);
 
   // Remove from |profiles_info_|, eventually causing the Profile object's
   // destruction.
   profiles_info_.erase(profile_dir);
 
-  if (!ephemeral)
+  if (!ephemeral && !marked_for_deletion)
     return;
 
-  // If the profile is ephemeral, also do some cleanup.
+  // If the profile is ephemeral or deleted via ScheduleProfileForDeletion(),
+  // also do some cleanup.
 
   // TODO(crbug.com/88586): There could still be pending tasks that write to
   // disk, and don't need the Profile. If they run after
   // NukeProfileFromDisk(), they may still leave files behind.
+  //
+  // TODO(crbug.com/1191455): This can also fail if an object is holding a lock
+  // to a file in the profile directory. This happens flakily, e.g. with the
+  // LevelDB for GCMStore. The locked files don't get deleted properly.
   base::ThreadPool::PostTask(FROM_HERE,
                              {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                               base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
                              base::BindOnce(&NukeProfileFromDisk, profile_dir));
+
+  GetProfileAttributesStorage().RemoveProfile(profile_dir);
 }
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1749,8 +1801,7 @@ void ProfileManager::OnLoadProfileForProfileDeletion(
     const base::FilePath& profile_dir,
     Profile* profile) {
   ProfileAttributesStorage& storage = GetProfileAttributesStorage();
-  // TODO(sail): Due to bug 88586 we don't delete the profile instance. Once we
-  // start deleting the profile instance we need to close background apps too.
+
   if (profile) {
     // TODO(estade): Migrate additional code in this block to observe
     // ProfileManager instead of handling shutdown here.
@@ -1781,10 +1832,21 @@ void ProfileManager::OnLoadProfileForProfileDeletion(
 
     // The Profile Data doesn't get wiped until Chrome closes. Since we promised
     // that the user's data would be removed, do so immediately.
+    //
+    // With DestroyProfileOnBrowserClose, this adds a KeepAlive. So the Profile*
+    // only gets deleted *after* browsing data is removed. This also clears some
+    // keepalives in the process, e.g. due to background extensions getting
+    // uninstalled.
     profiles::RemoveBrowsingDataForProfile(profile_dir);
 
     // Clean-up pref data that won't be cleaned up by deleting the profile dir.
     profile->GetPrefs()->OnStoreDeletionFromDisk();
+
+    if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+      // Allow the Profile* to be deleted, even if it had no browser windows.
+      ClearFirstBrowserWindowKeepAlive(profile);
+      return;
+    }
   } else {
     // We failed to load the profile, but it's safe to delete a not yet loaded
     // Profile from disk.
@@ -1852,8 +1914,6 @@ void ProfileManager::CleanUpGuestProfile() {
     // Clear all browsing data once a Guest Session completes. The Guest
     // profile has BrowserContextKeyedServices that the ProfileDestroyer
     // can't delete it properly.
-    // TODO(https://crbug.com/88586): Delete the guest when regular profiles
-    // become deletable when not needed.
     profiles::RemoveBrowsingDataForProfile(GetGuestProfilePath());
   }
   profile_manager->guest_profile_path_.clear();

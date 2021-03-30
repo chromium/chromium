@@ -21,9 +21,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -97,10 +95,6 @@ class BrowsingDataRemoverObserver
         filterable_deletion_(filterable_deletion),
         profile_(profile),
         keep_alive_(std::move(keep_alive)) {
-    if (keep_alive_ && !profile_->IsOffTheRecord()) {
-      profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
-          profile_, ProfileKeepAliveOrigin::kClearingBrowsingData);
-    }
     browsing_data_remover_observer_.Observe(remover);
     base::UmaHistogramBoolean(state_histogram(),
                               /*BooleanStartedCompleted.Started*/ false);
@@ -140,7 +134,6 @@ class BrowsingDataRemoverObserver
 
   Profile* const profile_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
-  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 };
 
 uint64_t GetOriginTypeMask(const base::Value& data_types) {

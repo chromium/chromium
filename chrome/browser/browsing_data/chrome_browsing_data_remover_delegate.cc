@@ -68,6 +68,8 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
@@ -295,6 +297,10 @@ ChromeBrowsingDataRemoverDelegate::~ChromeBrowsingDataRemoverDelegate() =
     default;
 
 void ChromeBrowsingDataRemoverDelegate::Shutdown() {
+  auto* remover = BrowserContext::GetBrowsingDataRemover(profile_);
+  DCHECK(remover);
+  remover->SetEmbedderDelegate(nullptr);
+  profile_keep_alive_.reset();
   history_task_tracker_.TryCancelAll();
 }
 
@@ -1278,6 +1284,16 @@ void ChromeBrowsingDataRemoverDelegate::OnTaskComplete(
 
   DCHECK(!callback_.is_null());
   std::move(callback_).Run(failed_data_types_);
+}
+
+void ChromeBrowsingDataRemoverDelegate::OnStartRemoving() {
+  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+      profile_->GetOriginalProfile(),
+      ProfileKeepAliveOrigin::kClearingBrowsingData);
+}
+
+void ChromeBrowsingDataRemoverDelegate::OnDoneRemoving() {
+  profile_keep_alive_.reset();
 }
 
 base::OnceClosure
