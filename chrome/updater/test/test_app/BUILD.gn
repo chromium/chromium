@@ -19,6 +19,7 @@ if (is_mac) {
 
 group("test_app") {
   deps = [ ":app" ]
+  data_deps = [ ":app" ]
 }
 
 process_version("version_header") {
@@ -96,7 +97,7 @@ source_set("app_sources") {
 
 if (is_win) {
   executable("app") {
-    output_name = "updatertestapp"
+    output_name = app_name
     sources = [ "main_win.cc" ]
 
     configs += [ "//build/config/win:windowed" ]

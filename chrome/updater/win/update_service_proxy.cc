@@ -144,21 +144,22 @@ class UpdaterObserver
 // However, its functions are invoked directly by COM RPC, and they are not
 // sequenced through the thread task runner. This means that sequence checkers
 // can't be used in this class.
-class UpdaterRegisterCallback
+class UpdaterRegisterAppCallback
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
           IUpdaterRegisterAppCallback> {
  public:
-  UpdaterRegisterCallback(Microsoft::WRL::ComPtr<IUpdater> updater,
-                          UpdateService::RegisterAppCallback callback);
-  UpdaterRegisterCallback(const UpdaterRegisterCallback&) = delete;
-  UpdaterRegisterCallback& operator=(const UpdaterRegisterCallback&) = delete;
+  UpdaterRegisterAppCallback(Microsoft::WRL::ComPtr<IUpdater> updater,
+                             UpdateService::RegisterAppCallback callback);
+  UpdaterRegisterAppCallback(const UpdaterRegisterAppCallback&) = delete;
+  UpdaterRegisterAppCallback& operator=(const UpdaterRegisterAppCallback&) =
+      delete;
 
   // Overrides for IUpdaterRegisterAppCallback. These functions are called on
   // the STA thread directly by the COM RPC runtime.
   IFACEMETHODIMP Run(LONG status_code) override {
     com_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&UpdaterRegisterCallback::OnRunOnSTA,
+        FROM_HERE, base::BindOnce(&UpdaterRegisterAppCallback::OnRunOnSTA,
                                   base::WrapRefCounted(this), status_code));
     return S_OK;
   }
@@ -169,7 +170,7 @@ class UpdaterRegisterCallback
   UpdateService::RegisterAppCallback Disconnect();
 
  private:
-  ~UpdaterRegisterCallback() override;
+  ~UpdaterRegisterAppCallback() override;
 
   // Called in sequence on the `com_task_runner_`.
   void OnRunOnSTA(LONG status_code);
@@ -372,23 +373,23 @@ void UpdaterObserver::OnCompleteOnSTA(const UpdateService::Result& result) {
                              base::BindOnce(std::move(callback_), result));
 }
 
-UpdaterRegisterCallback::UpdaterRegisterCallback(
+UpdaterRegisterAppCallback::UpdaterRegisterAppCallback(
     Microsoft::WRL::ComPtr<IUpdater> updater,
     UpdateService::RegisterAppCallback callback)
     : com_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       updater_(updater),
       callback_(std::move(callback)) {}
 
-UpdaterRegisterCallback::~UpdaterRegisterCallback() = default;
+UpdaterRegisterAppCallback::~UpdaterRegisterAppCallback() = default;
 
-UpdateService::RegisterAppCallback UpdaterRegisterCallback::Disconnect() {
+UpdateService::RegisterAppCallback UpdaterRegisterAppCallback::Disconnect() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(2) << __func__;
   updater_ = nullptr;
   return std::move(callback_);
 }
 
-void UpdaterRegisterCallback::OnRunOnSTA(LONG status_code) {
+void UpdaterRegisterAppCallback::OnRunOnSTA(LONG status_code) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   DVLOG(4) << __func__;
@@ -603,7 +604,7 @@ void UpdateServiceProxy::RegisterAppOnSTA(
     return;
   }
 
-  auto callback_wrapper = Microsoft::WRL::Make<UpdaterRegisterCallback>(
+  auto callback_wrapper = Microsoft::WRL::Make<UpdaterRegisterAppCallback>(
       updater, std::move(callback));
   hr = updater->RegisterApp(app_id.c_str(), brand_code.c_str(), tag.c_str(),
                             version.c_str(), existence_checker_path.c_str(),

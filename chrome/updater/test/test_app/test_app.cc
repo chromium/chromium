@@ -35,7 +35,7 @@ class TestApp : public App {
   void FirstTaskRun() override;
 
   void DoForegroundUpdate();
-  void ParseCommandLine();
+  void HandleCommandLine();
   void Register();
   void SetUpdateStatus(UpdateStatus status,
                        int progress,
@@ -89,12 +89,17 @@ void TestApp::DoForegroundUpdate() {
       base::BindRepeating(&TestApp::SetUpdateStatus, this));
 }
 
-void TestApp::ParseCommandLine() {
+void TestApp::HandleCommandLine() {
+  static constexpr base::TaskTraits kTaskTraitsBlockWithSyncPrimitives = {
+      base::MayBlock(), base::WithBaseSyncPrimitives(),
+      base::TaskPriority::BEST_EFFORT,
+      base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(kInstallUpdaterSwitch)) {
     base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()}, base::BindOnce(&InstallUpdater),
+        FROM_HERE, kTaskTraitsBlockWithSyncPrimitives,
+        base::BindOnce(&InstallUpdater),
         base::BindOnce(&TestApp::Shutdown, this));
   } else if (command_line->HasSwitch(kRegisterToUpdaterSwitch)) {
     Register();
@@ -102,7 +107,8 @@ void TestApp::ParseCommandLine() {
     DoForegroundUpdate();
   } else if (command_line->HasSwitch(kRegisterUpdaterSwitch)) {
     base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()}, base::BindOnce(&InstallUpdater),
+        FROM_HERE, kTaskTraitsBlockWithSyncPrimitives,
+        base::BindOnce(&InstallUpdater),
         base::BindOnce(
             [](base::OnceClosure register_func,
                base::OnceCallback<void(int)> shutdown_func, int error) {
@@ -120,7 +126,7 @@ void TestApp::ParseCommandLine() {
 }
 
 void TestApp::FirstTaskRun() {
-  ParseCommandLine();
+  HandleCommandLine();
 }
 
 scoped_refptr<App> MakeTestApp() {

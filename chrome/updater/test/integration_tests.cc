@@ -232,7 +232,6 @@ TEST_F(IntegrationTest, ReportsActive) {
   Uninstall();
 }
 
-#if defined(OS_MAC)
 // TODO(https://crbug.com/1186583): Test failing frequently on Mac
 #if defined(OS_MAC)
 #define MAYBE_UnregisterUninstalledApp DISABLED_UnregisterUninstalledApp
@@ -260,6 +259,7 @@ TEST_F(IntegrationTest, MAYBE_UnregisterUninstalledApp) {
   Uninstall();
 }
 
+#if defined(OS_MAC)
 // TODO(https://crbug.com/1186583): Test failing frequently on Mac
 #if defined(OS_MAC)
 #define MAYBE_UninstallUpdaterWhenAllAppsUninstalled \

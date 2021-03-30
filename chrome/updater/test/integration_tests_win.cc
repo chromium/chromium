@@ -51,7 +51,7 @@ base::FilePath GetTestAppExecutablePath() {
   base::FilePath test_executable;
   if (!base::PathService::Get(base::FILE_EXE, &test_executable))
     return base::FilePath();
-  return test_executable.DirName().AppendASCII(TEST_APP_FULLNAME_STRING);
+  return test_executable.DirName().AppendASCII(TEST_APP_FULLNAME_STRING ".exe");
 }
 
 base::Optional<base::FilePath> GetProductPath() {

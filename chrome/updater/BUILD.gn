@@ -443,11 +443,9 @@ if (is_win || is_mac) {
       "//testing/gtest",
     ]
 
+    data_deps = [ "//chrome/updater/test/test_app" ]
     if (is_mac) {
-      data_deps = [
-        "//chrome/updater/mac:updater_bundle",
-        "//chrome/updater/test/test_app",
-      ]
+      data_deps += [ "//chrome/updater/mac:updater_bundle" ]
     }
   }
 
