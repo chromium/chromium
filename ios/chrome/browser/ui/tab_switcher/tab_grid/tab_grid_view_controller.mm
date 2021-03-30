@@ -1267,8 +1267,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     } else {
       [self configureDoneButtonBasedOnPage:self.activePage];
     }
-    // Don't need to config "NewTab" and "CloseAll" buttons because remote tabs
-    // page doesn't have them.
+    // Configure the "Close All" button on the recent tabs page.
+    [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
     return;
   }
 
