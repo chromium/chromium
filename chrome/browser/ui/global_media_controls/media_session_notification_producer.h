@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_H_
 
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_container_observer_set.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
@@ -31,6 +32,8 @@ class MediaSessionNotificationProducer
   base::WeakPtr<media_message_center::MediaNotificationItem>
   GetNotificationItem(const std::string& id) override;
   std::set<std::string> GetActiveControllableNotificationIds() const override;
+  void OnItemShown(const std::string& id,
+                   MediaNotificationContainerImpl* container) override;
 
   // media_session::mojom::AudioFocusObserver:
   void OnFocusGained(
@@ -39,18 +42,12 @@ class MediaSessionNotificationProducer
       media_session::mojom::AudioFocusRequestStatePtr session) override;
 
   // MediaNotificationContainerObserver implementation.
-  void OnContainerSizeChanged() override {}
-  void OnContainerMetadataChanged() override {}
-  void OnContainerActionsChanged() override {}
   void OnContainerClicked(const std::string& id) override;
   void OnContainerDismissed(const std::string& id) override;
-  void OnContainerDestroyed(const std::string& id) override;
   void OnContainerDraggedOut(const std::string& id, gfx::Rect bounds) override;
   void OnAudioSinkChosen(const std::string& id,
                          const std::string& sink_id) override;
 
-  void ObserveContainer(MediaNotificationContainerImpl* container,
-                        const std::string& id);
   void HideItem(const std::string& id);
   void RemoveItem(const std::string& id);
   // Puts the item with the given ID on the list of active items. Returns false
@@ -129,8 +126,8 @@ class MediaSessionNotificationProducer
 
   MediaNotificationService* const service_;
 
-  // A map of all containers we're currently observing.
-  std::map<std::string, MediaNotificationContainerImpl*> observed_containers_;
+  // Keeps track of all the containers we're currently observing.
+  MediaNotificationContainerObserverSet container_observer_set_;
 
   OverlayMediaNotificationsManagerImpl overlay_media_notifications_manager_;
 

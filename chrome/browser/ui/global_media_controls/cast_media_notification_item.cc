@@ -148,14 +148,14 @@ CastMediaNotificationItem::CastMediaNotificationItem(
     std::unique_ptr<CastMediaSessionController> session_controller,
     Profile* profile)
     : notification_controller_(notification_controller),
+      profile_(profile),
       session_controller_(std::move(session_controller)),
       media_route_id_(route.media_route_id()),
       image_downloader_(
           profile,
           base::BindRepeating(&CastMediaNotificationItem::ImageChanged,
                               base::Unretained(this))),
-      session_info_(CreateSessionInfo()),
-      profile_(profile) {
+      session_info_(CreateSessionInfo()) {
   metadata_.source_title = GetSourceTitle(route);
   base::UmaHistogramEnumeration(
       kSourceHistogramName, route.is_local() ? Source::kLocalCastSession
@@ -198,6 +198,7 @@ void CastMediaNotificationItem::OnMediaSessionActionButtonPressed(
 
 void CastMediaNotificationItem::Dismiss() {
   notification_controller_->HideNotification(media_route_id_);
+  is_active_ = false;
 }
 
 media_message_center::SourceType CastMediaNotificationItem::SourceType() {

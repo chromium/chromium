@@ -99,13 +99,13 @@ TEST_F(CastMediaNotificationProviderTest, AddAndRemoveRoute) {
   EXPECT_CALL(items_changed_callback_, Run());
   notification_provider_->OnRoutesUpdated({route}, {});
   testing::Mock::VerifyAndClearExpectations(&items_changed_callback_);
-  EXPECT_TRUE(notification_provider_->HasItems());
+  EXPECT_EQ(1u, notification_provider_->GetActiveItemCount());
   EXPECT_NE(nullptr, notification_provider_->GetNotificationItem(route_id));
 
   EXPECT_CALL(items_changed_callback_, Run());
   notification_provider_->OnRoutesUpdated({}, {});
   testing::Mock::VerifyAndClearExpectations(&items_changed_callback_);
-  EXPECT_FALSE(notification_provider_->HasItems());
+  EXPECT_EQ(0u, notification_provider_->GetActiveItemCount());
 }
 
 TEST_F(CastMediaNotificationProviderTest, UpdateRoute) {
@@ -142,5 +142,21 @@ TEST_F(CastMediaNotificationProviderTest, RoutesWithoutNotifications) {
 
   notification_provider_->OnRoutesUpdated(
       {non_display_route, no_controller_route, multizone_member_route}, {});
-  EXPECT_FALSE(notification_provider_->HasItems());
+  EXPECT_EQ(0u, notification_provider_->GetActiveItemCount());
+}
+
+TEST_F(CastMediaNotificationProviderTest, DismissNotification) {
+  const std::string route_id1 = "route-id-1";
+  const std::string route_id2 = "route-id-2";
+  MediaRoute route1 = CreateRoute(route_id1);
+  MediaRoute route2 = CreateRoute(route_id2);
+  notification_provider_->OnRoutesUpdated({route1}, {});
+  EXPECT_EQ(1u, notification_provider_->GetActiveItemCount());
+
+  notification_provider_->OnContainerDismissed(route_id1);
+  EXPECT_EQ(0u, notification_provider_->GetActiveItemCount());
+
+  // Adding another route should not bring back the dismissed notification.
+  notification_provider_->OnRoutesUpdated({route1, route2}, {});
+  EXPECT_EQ(1u, notification_provider_->GetActiveItemCount());
 }

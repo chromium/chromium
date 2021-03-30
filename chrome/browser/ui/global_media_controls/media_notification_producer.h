@@ -14,6 +14,8 @@ namespace media_message_center {
 class MediaNotificationItem;
 }  // namespace media_message_center
 
+class MediaNotificationContainerImpl;
+
 // Creates and owns the media notification items shown in the Global Media
 // Controls. There are multiple MediaNotificationProducers for different types
 // of notification items.
@@ -24,6 +26,9 @@ class MediaNotificationProducer {
 
   virtual std::set<std::string> GetActiveControllableNotificationIds()
       const = 0;
+
+  virtual void OnItemShown(const std::string& id,
+                           MediaNotificationContainerImpl* container) {}
 };
 
 #endif  // CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_PRODUCER_H_

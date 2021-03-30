@@ -12,6 +12,8 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_container_observer_set.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_producer.h"
 #include "components/media_router/browser/media_routes_observer.h"
 
@@ -23,8 +25,10 @@ class MediaNotificationController;
 
 // Manages media notifications shown in the Global Media Controls dialog for
 // active Cast sessions.
-class CastMediaNotificationProvider : public MediaNotificationProducer,
-                                      public media_router::MediaRoutesObserver {
+class CastMediaNotificationProvider
+    : public MediaNotificationProducer,
+      public media_router::MediaRoutesObserver,
+      public MediaNotificationContainerObserver {
  public:
   CastMediaNotificationProvider(
       Profile* profile,
@@ -46,16 +50,22 @@ class CastMediaNotificationProvider : public MediaNotificationProducer,
   base::WeakPtr<media_message_center::MediaNotificationItem>
   GetNotificationItem(const std::string& id) override;
   std::set<std::string> GetActiveControllableNotificationIds() const override;
+  void OnItemShown(const std::string& id,
+                   MediaNotificationContainerImpl* container) override;
+
+  // MediaNotificationContainerObserver:
+  void OnContainerDismissed(const std::string& id) override;
 
   // media_router::MediaRoutesObserver:
   void OnRoutesUpdated(const std::vector<media_router::MediaRoute>& routes,
                        const std::vector<media_router::MediaRoute::Id>&
                            joinable_route_ids) override;
 
-  virtual bool HasItems() const;
-  size_t GetItemCount() const;
+  size_t GetActiveItemCount() const;
 
  private:
+  bool HasActiveItems() const;
+
   Profile* const profile_;
   media_router::MediaRouter* const router_;
   media_message_center::MediaNotificationController* const
@@ -67,6 +77,8 @@ class CastMediaNotificationProvider : public MediaNotificationProducer,
   // Called when the number of items changes from zero to positive or vice
   // versa.
   base::RepeatingClosure items_changed_callback_;
+
+  MediaNotificationContainerObserverSet container_observer_set_;
 };
 
 #endif  // CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_NOTIFICATION_PROVIDER_H_

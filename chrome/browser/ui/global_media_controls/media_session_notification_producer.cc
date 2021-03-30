@@ -60,7 +60,9 @@ MediaSessionNotificationProducer::MediaSessionNotificationProducer(
     MediaNotificationService* service,
     Profile* profile,
     bool show_from_all_profiles)
-    : service_(service), overlay_media_notifications_manager_(service_) {
+    : service_(service),
+      container_observer_set_(this),
+      overlay_media_notifications_manager_(service_) {
   // Connect to the controller manager so we can create media controllers for
   // media sessions.
   content::GetMediaSessionService().BindMediaControllerManager(
@@ -92,10 +94,7 @@ MediaSessionNotificationProducer::MediaSessionNotificationProducer(
   }
 }
 
-MediaSessionNotificationProducer::~MediaSessionNotificationProducer() {
-  for (auto container_pair : observed_containers_)
-    container_pair.second->RemoveObserver(this);
-}
+MediaSessionNotificationProducer::~MediaSessionNotificationProducer() = default;
 
 base::WeakPtr<media_message_center::MediaNotificationItem>
 MediaSessionNotificationProducer::GetNotificationItem(const std::string& id) {
@@ -214,15 +213,6 @@ void MediaSessionNotificationProducer::OnContainerDismissed(
   session->item()->Dismiss();
 }
 
-void MediaSessionNotificationProducer::OnContainerDestroyed(
-    const std::string& id) {
-  auto iter = observed_containers_.find(id);
-  DCHECK(iter != observed_containers_.end());
-
-  iter->second->RemoveObserver(this);
-  observed_containers_.erase(iter);
-}
-
 void MediaSessionNotificationProducer::OnContainerDraggedOut(
     const std::string& id,
     gfx::Rect bounds) {
@@ -257,11 +247,11 @@ void MediaSessionNotificationProducer::OnAudioSinkChosen(
   it->second.SetAudioSinkId(sink_id);
 }
 
-void MediaSessionNotificationProducer::ObserveContainer(
-    MediaNotificationContainerImpl* container,
-    const std::string& id) {
-  container->AddObserver(this);
-  observed_containers_[id] = container;
+void MediaSessionNotificationProducer::OnItemShown(
+    const std::string& id,
+    MediaNotificationContainerImpl* container) {
+  if (container)
+    container_observer_set_.Observe(id, container);
 }
 
 void MediaSessionNotificationProducer::HideItem(const std::string& id) {
@@ -321,11 +311,7 @@ bool MediaSessionNotificationProducer::OnOverlayNotificationClosed(
 
   // Since the overlay is closing, we no longer need to observe the associated
   // container.
-  auto observed_iter = observed_containers_.find(id);
-  if (observed_iter != observed_containers_.end()) {
-    observed_iter->second->RemoveObserver(this);
-    observed_containers_.erase(observed_iter);
-  }
+  container_observer_set_.StopObserving(id);
   return true;
 }
 

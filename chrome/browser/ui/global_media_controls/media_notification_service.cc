@@ -422,8 +422,9 @@ void MediaNotificationService::SetDialogDelegate(
         GetNotificationItem(id);
     MediaNotificationContainerImpl* container =
         dialog_delegate_->ShowMediaSession(id, item);
-    if (container)
-      media_session_notification_producer_->ObserveContainer(container, id);
+    auto* notification_producer = GetNotificationProducer(id);
+    if (notification_producer)
+      notification_producer->OnItemShown(id, container);
   }
 
   media_message_center::RecordConcurrentNotificationCount(
@@ -431,7 +432,7 @@ void MediaNotificationService::SetDialogDelegate(
 
   if (cast_notification_provider_) {
     media_message_center::RecordConcurrentCastNotificationCount(
-        cast_notification_provider_->GetItemCount());
+        cast_notification_provider_->GetActiveItemCount());
   }
 }
 
@@ -510,8 +511,9 @@ void MediaNotificationService::ShowAndObserveContainer(const std::string& id) {
       GetNotificationItem(id);
   MediaNotificationContainerImpl* container =
       dialog_delegate_->ShowMediaSession(id, item);
-  if (container)
-    media_session_notification_producer_->ObserveContainer(container, id);
+  auto* notification_producer = GetNotificationProducer(id);
+  if (notification_producer)
+    notification_producer->OnItemShown(id, container);
 }
 
 base::WeakPtr<media_message_center::MediaNotificationItem>
@@ -550,4 +552,14 @@ bool MediaNotificationService::HasSessionForWebContents(
     content::WebContents* web_contents) const {
   return media_session_notification_producer_->HasSessionForWebContents(
       web_contents);
+}
+
+MediaNotificationProducer* MediaNotificationService::GetNotificationProducer(
+    const std::string& notification_id) {
+  for (auto* notification_producer : notification_providers_) {
+    if (notification_producer->GetNotificationItem(notification_id)) {
+      return notification_producer;
+    }
+  }
+  return nullptr;
 }

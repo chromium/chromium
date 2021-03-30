@@ -291,6 +291,9 @@ class MediaNotificationService
 
   bool HasSessionForWebContents(content::WebContents* web_contents) const;
 
+  MediaNotificationProducer* GetNotificationProducer(
+      const std::string& notification_id);
+
   MediaDialogDelegate* dialog_delegate_ = nullptr;
 
   // A mapping of supplemental notification IDs to their associated web
