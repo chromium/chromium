@@ -205,6 +205,14 @@
           'shards': 25,
         },
       },
+      'Mac10.15 Tests (dbg)': {
+        'args': [
+          '--debug',
+        ],
+        'swarming': {
+          'shards': 25,
+        },
+      },
       'V8 Blink Linux Debug': {
         # This builder compiles Chromium in release mode, but V8 in debug.
         # TODO(machenbach): Change name and out directory of this builder to
@@ -510,6 +518,12 @@
       'Mac10.13 Tests (dbg)': {
         'swarming': {
           'shards': 20,
+        },
+      },
+      'Mac10.15 Tests (dbg)': {
+        # https://crbug.com/1152770
+        'swarming': {
+          'shards': 40,
         },
       },
       'ToTWin(dbg)': {
@@ -1920,6 +1934,7 @@
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
       'Mac10.15 Tests',
+      'Mac10.15 Tests (dbg)',
       'Mac ASan 64 Tests (1)',
       'ToTMacASan',
     ],
@@ -1956,6 +1971,7 @@
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
       'Mac10.15 Tests',
+      'Mac10.15 Tests (dbg)',
       'Mac ASan 64 Tests (1)',
       'ToTMacASan',
     ],
@@ -1973,6 +1989,7 @@
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
       'Mac10.15 Tests',
+      'Mac10.15 Tests (dbg)',
       'Mac ASan 64 Tests (1)',
       'ToTMacASan',
     ],
@@ -1989,6 +2006,7 @@
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
       'Mac10.15 Tests',
+      'Mac10.15 Tests (dbg)',
       'Mac ASan 64 Tests (1)',
       'ToTMacASan',
     ],
@@ -2010,6 +2028,7 @@
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
       'Mac10.15 Tests',
+      'Mac10.15 Tests (dbg)',
       'Mac ASan 64 Tests (1)',
       'ToTMacASan',
     ],
@@ -2359,6 +2378,11 @@
           '--browser=debug',
         ],
       },
+      'Mac10.15 Tests (dbg)': {
+        'args': [
+          '--browser=debug',
+        ],
+      },
       'Win10 Tests x64 (dbg)': {
         'args': [
           '--browser=debug_x64',
@@ -2692,6 +2716,7 @@
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
       'Mac10.15 Tests',
+      'Mac10.15 Tests (dbg)',
       'Linux - Future (dbg)',  # client.v8.chromium
       'Win10 Tests x64',
       'Win10 Tests x64 (dbg)',
