@@ -655,7 +655,8 @@ Polymer({
     const resources = [
       {
         msgId: 'next_command_reference',
-        link: 'https://www.chromevox.com/next_keyboard_shortcuts.html'
+        link:
+            'https://support.google.com/chromebook/answer/7031755#zippy=%2Cmove-through-a-page-with-keyboard-shortcuts'
       },
       {
         msgId: 'chrome_keyboard_shortcuts',

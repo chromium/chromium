@@ -590,7 +590,7 @@ TEST_F('ChromeVoxTutorialTest', 'ResourcesTest', function() {
         .expectSpeech('ChromeVox Command Reference', 'Link')
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech('tab created')
-        .expectSpeech('www.chromevox.com')
+        .expectSpeech('support.google.com')
         .replay();
   });
 });
