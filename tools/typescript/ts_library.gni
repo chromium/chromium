@@ -13,6 +13,7 @@ template("ts_library") {
                              "deps",
                              "extra_deps",
                              "sources",
+                             "definitions",
                            ])
 
     inputs = [ "//tools/typescript/tsconfig_base.json" ]
@@ -42,6 +43,10 @@ template("ts_library") {
              rebase_path(target_gen_dir, root_build_dir),
              "--sources",
            ] + sources
+
+    if (defined(definitions)) {
+      args += [ "--definitions" ] + definitions
+    }
 
     if (defined(deps)) {
       args += [ "--deps" ]

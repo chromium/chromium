@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 
 import ts_library
+import ts_definitions
 import os
 import shutil
 import tempfile
@@ -23,6 +24,18 @@ class TsLibraryTest(unittest.TestCase):
 
   def _build_project1(self):
     gen_dir = os.path.join(self._out_folder, 'project1')
+
+    # Generate definition .d.ts file for legacy JS file.
+    ts_definitions.main([
+        '--root_dir',
+        os.path.join(_HERE_DIR, 'tests', 'project1'),
+        '--gen_dir',
+        gen_dir,
+        '--js_files',
+        'legacy_file.js',
+    ])
+
+    # Build project1, which includes a mix of TS and definition files.
     ts_library.main([
         '--root_dir',
         os.path.join(_HERE_DIR, 'tests', 'project1'),
@@ -30,12 +43,15 @@ class TsLibraryTest(unittest.TestCase):
         gen_dir,
         '--sources',
         'foo.ts',
+        '--definitions',
+        'legacy_file.d.ts',
     ])
     return gen_dir
 
   def _assert_project1_output(self, gen_dir):
     os.path.exists(os.path.join(gen_dir, 'foo.d.ts'))
     os.path.exists(os.path.join(gen_dir, 'foo.js'))
+    os.path.exists(os.path.join(gen_dir, 'legacy_file.d.ts'))
     os.path.exists(os.path.join(gen_dir, 'tsconfig.json'))
     os.path.exists(os.path.join(gen_dir, 'tsconfig.manifest'))
     os.path.exists(os.path.join(gen_dir, 'tsconfig.tsbuildinfo'))

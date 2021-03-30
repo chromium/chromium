@@ -33,6 +33,7 @@ def main(argv):
   parser.add_argument('--path_mappings', nargs='*')
   parser.add_argument('--root_dir', required=True)
   parser.add_argument('--sources', nargs='*', required=True)
+  parser.add_argument('--definitions', nargs='*')
   args = parser.parse_args(argv)
 
   root_dir = os.path.relpath(args.root_dir, args.gen_dir)
@@ -42,6 +43,10 @@ def main(argv):
     tsconfig = json.loads(root_tsconfig.read())
 
   tsconfig['files'] = sources
+  if args.definitions is not None:
+    # Definitions .d.ts files are always assumed to reside in |gen_dir|.
+    tsconfig['files'].extend(args.definitions)
+
   tsconfig['compilerOptions']['rootDir'] = root_dir
 
   # Handle custom path mappings, for example chrome://resources/ URLs.
