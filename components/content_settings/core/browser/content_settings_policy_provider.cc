@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/stl_util.h"
 #include "base/values.h"
@@ -32,7 +31,7 @@ struct PrefsForManagedContentSettingsMapEntry {
   ContentSetting setting;
 };
 
-const PrefsForManagedContentSettingsMapEntry
+constexpr PrefsForManagedContentSettingsMapEntry
     kPrefsForManagedContentSettingsMap[] = {
         {prefs::kManagedCookiesAllowedForUrls, ContentSettingsType::COOKIES,
          CONTENT_SETTING_ALLOW},
@@ -301,34 +300,35 @@ std::unique_ptr<RuleIterator> PolicyProvider::GetRuleIterator(
 
 void PolicyProvider::GetContentSettingsFromPreferences(
     OriginIdentifierValueMap* value_map) {
-  for (size_t i = 0; i < base::size(kPrefsForManagedContentSettingsMap); ++i) {
-    const char* pref_name = kPrefsForManagedContentSettingsMap[i].pref_name;
+  for (const auto& entry : kPrefsForManagedContentSettingsMap) {
     // Skip unset policies.
-    if (!prefs_->HasPrefPath(pref_name)) {
-      VLOG(2) << "Skipping unset preference: " << pref_name;
+    if (!prefs_->HasPrefPath(entry.pref_name)) {
+      VLOG(2) << "Skipping unset preference: " << entry.pref_name;
       continue;
     }
 
-    const PrefService::Preference* pref = prefs_->FindPreference(pref_name);
+    const PrefService::Preference* pref =
+        prefs_->FindPreference(entry.pref_name);
     DCHECK(pref);
-    DCHECK(!pref->HasUserSetting() && !pref->HasExtensionSetting());
+    DCHECK(!pref->HasUserSetting());
+    DCHECK(!pref->HasExtensionSetting());
 
-    const base::ListValue* pattern_str_list = nullptr;
-    if (!pref->GetValue()->GetAsList(&pattern_str_list)) {
-      NOTREACHED() << "Could not read patterns from " << pref_name;
+    if (!pref->GetValue()->is_list()) {
+      NOTREACHED() << "Could not read patterns from " << entry.pref_name;
       return;
     }
 
-    for (size_t j = 0; j < pattern_str_list->GetSize(); ++j) {
-      std::string original_pattern_str;
-      if (!pattern_str_list->GetString(j, &original_pattern_str)) {
-        NOTREACHED() << "Could not read content settings pattern #" << j
-                     << " from " << pref_name;
+    base::Value::ConstListView pattern_str_list = pref->GetValue()->GetList();
+    for (size_t i = 0; i < pattern_str_list.size(); ++i) {
+      if (!pattern_str_list[i].is_string()) {
+        NOTREACHED() << "Could not read content settings pattern #" << i
+                     << " from " << entry.pref_name;
         continue;
       }
 
+      const std::string& original_pattern_str = pattern_str_list[i].GetString();
       VLOG(2) << "Reading content settings pattern " << original_pattern_str
-              << " from " << pref_name;
+              << " from " << entry.pref_name;
 
       PatternPair pattern_pair = ParsePatternString(original_pattern_str);
       // Ignore invalid patterns.
@@ -338,9 +338,8 @@ void PolicyProvider::GetContentSettingsFromPreferences(
         continue;
       }
 
-      ContentSettingsType content_type =
-          kPrefsForManagedContentSettingsMap[i].content_type;
-      DCHECK_NE(content_type, ContentSettingsType::AUTO_SELECT_CERTIFICATE);
+      DCHECK_NE(entry.content_type,
+                ContentSettingsType::AUTO_SELECT_CERTIFICATE);
       // If only one pattern was defined auto expand it to a pattern pair.
       ContentSettingsPattern secondary_pattern =
           !pattern_pair.second.IsValid() ? ContentSettingsPattern::Wildcard()
@@ -352,24 +351,23 @@ void PolicyProvider::GetContentSettingsFromPreferences(
       // All settings that can set pattern pairs support embedded exceptions.
       if (pattern_pair.first != pattern_pair.second &&
           pattern_pair.second != ContentSettingsPattern::Wildcard() &&
-          !content_settings::WebsiteSettingsRegistry::GetInstance()
-               ->Get(content_type)
+          !WebsiteSettingsRegistry::GetInstance()
+               ->Get(entry.content_type)
                ->SupportsSecondaryPattern()) {
         continue;
       }
 
       // Don't set a timestamp for policy settings.
-      value_map->SetValue(
-          pattern_pair.first, secondary_pattern, content_type, base::Time(),
-          base::Value(kPrefsForManagedContentSettingsMap[i].setting), {});
+      value_map->SetValue(pattern_pair.first, secondary_pattern,
+                          entry.content_type, base::Time(),
+                          base::Value(entry.setting), {});
     }
   }
 }
 
 void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
     OriginIdentifierValueMap* value_map) {
-  const char* pref_name = prefs::kManagedAutoSelectCertificateForUrls;
-
+  constexpr const char* pref_name = prefs::kManagedAutoSelectCertificateForUrls;
   if (!prefs_->HasPrefPath(pref_name)) {
     VLOG(2) << "Skipping unset preference: " << pref_name;
     return;
@@ -377,10 +375,10 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
 
   const PrefService::Preference* pref = prefs_->FindPreference(pref_name);
   DCHECK(pref);
-  DCHECK(!pref->HasUserSetting() && !pref->HasExtensionSetting());
+  DCHECK(!pref->HasUserSetting());
+  DCHECK(!pref->HasExtensionSetting());
 
-  const base::ListValue* pattern_filter_str_list = nullptr;
-  if (!pref->GetValue()->GetAsList(&pattern_filter_str_list)) {
+  if (!pref->GetValue()->is_list()) {
     NOTREACHED();
     return;
   }
@@ -403,37 +401,34 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
   //   }
   // }
   std::unordered_map<std::string, base::DictionaryValue> filters_map;
-  for (size_t j = 0; j < pattern_filter_str_list->GetSize(); ++j) {
-    std::string pattern_filter_json;
-    if (!pattern_filter_str_list->GetString(j, &pattern_filter_json)) {
+  for (const auto& pattern_filter_str : pref->GetValue()->GetList()) {
+    if (!pattern_filter_str.is_string()) {
       NOTREACHED();
       continue;
     }
 
-    std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(
-        pattern_filter_json, base::JSON_ALLOW_TRAILING_COMMAS);
-    if (!value || !value->is_dict()) {
+    base::Optional<base::Value> pattern_filter = base::JSONReader::Read(
+        pattern_filter_str.GetString(), base::JSON_ALLOW_TRAILING_COMMAS);
+    if (!pattern_filter || !pattern_filter->is_dict()) {
       VLOG(1) << "Ignoring invalid certificate auto select setting. Reason:"
-                 " Invalid JSON object: " << pattern_filter_json;
+              << " Invalid JSON object: " << pattern_filter_str.GetString();
       continue;
     }
 
-    std::unique_ptr<base::DictionaryValue> pattern_filter_pair =
-        base::DictionaryValue::From(std::move(value));
-    base::Value* pattern = pattern_filter_pair->FindKey("pattern");
-    base::Value* filter = pattern_filter_pair->FindKey("filter");
+    const base::Value* pattern = pattern_filter->FindKey("pattern");
+    const base::Value* filter = pattern_filter->FindKey("filter");
     if (!pattern || !filter) {
       VLOG(1) << "Ignoring invalid certificate auto select setting. Reason:"
-                 " Missing pattern or filter.";
+              << " Missing pattern or filter.";
       continue;
     }
-    std::string pattern_str = pattern->GetString();
 
+    const std::string& pattern_str = pattern->GetString();
     if (filters_map.find(pattern_str) == filters_map.end())
       filters_map[pattern_str].SetKey("filters", base::ListValue());
 
-    // Don't pass removed values from |value|, because base::Values read with
-    // JSONReader use a shared string buffer. Instead, Clone() here.
+    // Don't pass removed values from `pattern_filter`, because base::Values
+    // read with JSONReader use a shared string buffer. Instead, Clone() here.
     filters_map[pattern_str].FindKey("filters")->Append(filter->Clone());
   }
 
@@ -446,8 +441,7 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
     // Ignore invalid patterns.
     if (!pattern.IsValid()) {
       VLOG(1) << "Ignoring invalid certificate auto select setting:"
-                 " Invalid content settings pattern: "
-              << pattern.ToString();
+              << " Invalid content settings pattern: " << pattern.ToString();
       continue;
     }
 
