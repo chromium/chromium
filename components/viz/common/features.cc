@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
-#include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/delegated_ink_prediction_configuration.h"
 #include "components/viz/common/switches.h"
@@ -39,7 +38,7 @@ const base::Feature kEnableOverlayPrioritization {
 const base::Feature kUseSkiaRenderer {
   "UseSkiaRenderer",
 #if defined(OS_WIN) || defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
+    defined(OS_LINUX)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
