@@ -26,23 +26,63 @@
 
 namespace extensions {
 
+using ContextType = ExtensionBrowserTest::ContextType;
+
 class ExtensionContextMenuApiTest : public ExtensionApiTest {
  public:
   ExtensionContextMenuApiTest() = default;
+  ExtensionContextMenuApiTest(const ExtensionContextMenuApiTest&) = delete;
+  ExtensionContextMenuApiTest& operator=(const ExtensionContextMenuApiTest&) =
+      delete;
 };
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ServiceWorkerContextMenus) {
-  ASSERT_TRUE(RunExtensionTest({.name = "context_menus/event_page"},
-                               {.load_as_service_worker = true}))
-      << message_;
+class ExtensionContextMenuApiTestWithContextType
+    : public ExtensionContextMenuApiTest,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  ExtensionContextMenuApiTestWithContextType() = default;
+  ExtensionContextMenuApiTestWithContextType(
+      const ExtensionContextMenuApiTestWithContextType&) = delete;
+  ExtensionContextMenuApiTestWithContextType& operator=(
+      const ExtensionContextMenuApiTestWithContextType&) = delete;
+
+ protected:
+  bool RunTest(const char* path) {
+    return RunExtensionTest(
+        {.name = path},
+        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         ExtensionContextMenuApiTestWithContextType,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ExtensionContextMenuApiTestWithContextType,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+// These tests are run from lazy extension contexts, namely event-page or
+// service worker extensions.
+using ExtensionContextMenuApiLazyTest =
+    ExtensionContextMenuApiTestWithContextType;
+
+INSTANTIATE_TEST_SUITE_P(EventPage,
+                         ExtensionContextMenuApiLazyTest,
+                         ::testing::Values(ContextType::kEventPage));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ExtensionContextMenuApiLazyTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiLazyTest, ContextMenus) {
+  ASSERT_TRUE(RunTest("context_menus/event_page")) << message_;
 }
 
 // crbug.com/51436 -- creating context menus from multiple script contexts
 // should work.
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ContextMenusFromMultipleContexts) {
+IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
+                       ContextMenusFromMultipleContexts) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(RunExtensionTest("context_menus/add_from_multiple_contexts"))
-      << message_;
+  ASSERT_TRUE(RunTest("context_menus/add_from_multiple_contexts")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
@@ -61,6 +101,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ContextMenusFromMultipleContexts) {
                                  extension->GetResourceURL("popup2.html"));
     ASSERT_TRUE(catcher.GetNextResult());
   }
+}
+
+IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
+                       ContextMenusBasics) {
+  ASSERT_TRUE(RunTest("context_menus/basics")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
+                       ContextMenusNoPerms) {
+  ASSERT_TRUE(RunTest("context_menus/no_perms")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
+                       ContextMenusMultipleIds) {
+  ASSERT_TRUE(RunTest("context_menus/item_ids")) << message_;
 }
 
 class ExtensionContextMenuVisibilityApiTest
@@ -163,26 +218,6 @@ class ExtensionContextMenuVisibilityApiTest
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionContextMenuVisibilityApiTest);
 };
-
-IN_PROC_BROWSER_TEST_F(ExtensionContextMenuVisibilityApiTest,
-                       ContextMenusBasics) {
-  ASSERT_TRUE(RunExtensionTest("context_menus/basics")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionContextMenuVisibilityApiTest,
-                       ContextMenusNoPerms) {
-  ASSERT_TRUE(RunExtensionTest("context_menus/no_perms")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionContextMenuVisibilityApiTest,
-                       ContextMenusMultipleIds) {
-  ASSERT_TRUE(RunExtensionTest("context_menus/item_ids")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionContextMenuVisibilityApiTest,
-                       ContextMenusEventPage) {
-  ASSERT_TRUE(RunExtensionTest("context_menus/event_page")) << message_;
-}
 
 // Tests showing a single visible menu item in the top-level menu model, which
 // includes actions like "Back", "View Page Source", "Inspect", etc.

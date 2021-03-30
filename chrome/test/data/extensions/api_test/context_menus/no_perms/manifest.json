@@ -4,7 +4,8 @@
   "manifest_version": 2,
   "description": "Tests that the contextMenus permission is required to use the context menus api.",
   "background": {
-    "page": "test.html"
+    "scripts": ["test.js"],
+    "persistent": true
   },
   "permissions": ["tabs"]
 }
