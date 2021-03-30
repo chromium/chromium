@@ -12,6 +12,10 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 
+#if defined(OS_ANDROID)
+#include <sys/utsname.h>
+#endif
+
 #include <algorithm>
 #include <atomic>
 #include <cstring>
@@ -31,6 +35,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/process_metrics.h"
+#include "base/system/sys_info.h"
 #include "base/task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -43,6 +48,35 @@
 
 namespace mojo {
 namespace core {
+
+namespace {
+
+#if defined(OS_ANDROID)
+// On Android base::SysInfo::OperatingSystemVersionNumbers actually returns the
+// build numbers and not the kernel version as the other posix OSes would.
+void KernelVersionNumbers(int32_t* major_version,
+                          int32_t* minor_version,
+                          int32_t* bugfix_version) {
+  struct utsname info;
+  if (uname(&info) < 0) {
+    NOTREACHED();
+    *major_version = 0;
+    *minor_version = 0;
+    *bugfix_version = 0;
+    return;
+  }
+  int num_read = sscanf(info.release, "%d.%d.%d", major_version, minor_version,
+                        bugfix_version);
+  if (num_read < 1)
+    *major_version = 0;
+  if (num_read < 2)
+    *minor_version = 0;
+  if (num_read < 3)
+    *bugfix_version = 0;
+}
+#endif  // defined(OS_ANDROID)
+
+}  // namespace
 
 // DataAvailableNotifier is a simple interface which allows us to
 // substitute how we notify the reader that we've made data available,
@@ -880,6 +914,22 @@ void ChannelLinux::OfferSharedMemUpgradeInternal() {
 // static
 bool ChannelLinux::KernelSupportsUpgradeRequirements() {
   static bool supported = []() -> bool {
+#if defined(OS_ANDROID)
+    // See https://crbug.com/1192696 for more context, but some Android vendor
+    // kernels pre-3.17 would use higher undefined syscall numbers for private
+    // syscalls. To start we'll validate the kernel version is greater than or
+    // equal to 3.17 before even bothering to call memfd_create.
+    int os_major_version = 0;
+    int os_minor_version = 0;
+    int os_bugfix_version = 0;
+    KernelVersionNumbers(&os_major_version, &os_minor_version,
+                         &os_bugfix_version);
+    if (os_major_version < 3 ||
+        (os_major_version == 3 && os_minor_version < 17)) {
+      return false;
+    }
+#endif
+
     // Do we have memfd_create support, we check by seeing if we get an -ENOSYS
     // or an -EINVAL. We also support -EPERM because of seccomp rules this is
     // another possible outcome.
