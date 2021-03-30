@@ -3259,23 +3259,6 @@
             ]
         }
     ],
-    "GlobalMediaControlsPictureInPicture": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GlobalMediaControlsPictureInPicture"
-                    ]
-                }
-            ]
-        }
-    ],
     "GwpAsanAndroid": [
         {
             "platforms": [
