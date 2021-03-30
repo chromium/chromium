@@ -30,9 +30,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
@@ -65,7 +65,7 @@ class CrashRestoreSimpleTest : public InProcessBrowserTest {
                                     cryptohome_id1_.account_id());
     command_line->AppendSwitchASCII(
         switches::kLoginProfile,
-        CryptohomeClient::GetStubSanitizedUsername(cryptohome_id1_));
+        UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id1_));
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(CrashRestoreSimpleTest, RestoreSessionForOneUser) {
   user_manager::User* user = user_manager->GetActiveUser();
   ASSERT_TRUE(user);
   EXPECT_EQ(account_id1_, user->GetAccountId());
-  EXPECT_EQ(CryptohomeClient::GetStubSanitizedUsername(cryptohome_id1_),
+  EXPECT_EQ(UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id1_),
             user->username_hash());
   EXPECT_EQ(1UL, user_manager->GetLoggedInUsers().size());
 
@@ -239,20 +239,20 @@ IN_PROC_BROWSER_TEST_F(CrashRestoreComplexTest, RestoreSessionForThreeUsers) {
   user_manager::User* user = user_manager->GetActiveUser();
   ASSERT_TRUE(user);
   EXPECT_EQ(account_id3_, user->GetAccountId());
-  EXPECT_EQ(CryptohomeClient::GetStubSanitizedUsername(cryptohome_id3_),
+  EXPECT_EQ(UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id3_),
             user->username_hash());
   const user_manager::UserList& users = user_manager->GetLRULoggedInUsers();
   ASSERT_EQ(3UL, users.size());
 
   // User that becomes active moves to the beginning of the list.
   EXPECT_EQ(account_id3_, users[0]->GetAccountId());
-  EXPECT_EQ(CryptohomeClient::GetStubSanitizedUsername(cryptohome_id3_),
+  EXPECT_EQ(UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id3_),
             users[0]->username_hash());
   EXPECT_EQ(account_id1_, users[1]->GetAccountId());
-  EXPECT_EQ(CryptohomeClient::GetStubSanitizedUsername(cryptohome_id1_),
+  EXPECT_EQ(UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id1_),
             users[1]->username_hash());
   EXPECT_EQ(account_id2_, users[2]->GetAccountId());
-  EXPECT_EQ(CryptohomeClient::GetStubSanitizedUsername(cryptohome_id2_),
+  EXPECT_EQ(UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id2_),
             users[2]->username_hash());
 
   auto* session_manager = session_manager::SessionManager::Get();
