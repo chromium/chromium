@@ -5423,7 +5423,7 @@ const CSSValue* Position::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(style.GetPosition());
+  return CSSIdentifierValue::Create(style.PositionInternal());
 }
 
 void Position::ApplyInherit(StyleResolverState& state) const {

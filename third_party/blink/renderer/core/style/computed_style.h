@@ -131,6 +131,7 @@ class InternalVisitedTextFillColor;
 class InternalVisitedTextStrokeColor;
 class LightingColor;
 class OutlineColor;
+class Position;
 class Resize;
 class StopColor;
 class Stroke;
@@ -242,6 +243,7 @@ class ComputedStyle : public ComputedStyleBase,
   friend class css_longhand::InternalVisitedTextStrokeColor;
   friend class css_longhand::LightingColor;
   friend class css_longhand::OutlineColor;
+  friend class css_longhand::Position;
   friend class css_longhand::Resize;
   friend class css_longhand::StopColor;
   friend class css_longhand::Stroke;
@@ -1951,6 +1953,15 @@ class ComputedStyle : public ComputedStyleBase,
     return GetPosition() == EPosition::kSticky &&
            (!Top().IsAuto() || !Left().IsAuto() || !Right().IsAuto() ||
             !Bottom().IsAuto());
+  }
+  EPosition GetPosition() const {
+    // Applied sticky position is static for table columns and column groups.
+    if (PositionInternal() == EPosition::kSticky &&
+        (Display() == EDisplay::kTableColumnGroup ||
+         Display() == EDisplay::kTableColumn)) {
+      return EPosition::kStatic;
+    }
+    return PositionInternal();
   }
 
   // Clear utility functions.
