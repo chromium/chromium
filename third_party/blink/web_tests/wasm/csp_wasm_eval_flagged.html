@@ -10,9 +10,7 @@ found in the LICENSE file.
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 <script src="instantiate_empty.js"></script>
-<!-- For now the 'wasm-eval' flag should not have an effect outside of Chrome
-Apps. This flag will likely be standardized in the future, at which point this
-behavior will change. -->
-<script src="instantiate_fail.js"></script>
+<!-- Try to instantiate, success depends on setting of WebAssemblyCSP runtime feature. -->
+<script src="instantiate_flagged.js"></script>
 </head>
 </html>

@@ -293,7 +293,9 @@ ContentSecurityPolicy::DidReceiveHeaders(
     const ContentSecurityPolicyResponseHeaders& headers) {
   scoped_refptr<SecurityOrigin> self_origin =
       SecurityOrigin::Create(headers.ResponseUrl());
-  if (headers.ShouldParseWasmEval())
+
+  if (RuntimeEnabledFeatures::WebAssemblyCSPEnabled() ||
+      headers.ShouldParseWasmEval())
     supports_wasm_eval_ = true;
 
   Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed_policies;

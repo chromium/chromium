@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -1229,6 +1230,28 @@ TEST_F(ContentSecurityPolicyTest, EmptyCSPIsNoOp) {
   EXPECT_EQ(network::mojom::blink::WebSandboxFlags::kNone,
             csp->GetSandboxMask());
   EXPECT_FALSE(csp->HasPolicyFromSource(ContentSecurityPolicySource::kHTTP));
+}
+
+// Tests that WasmCSP runtime feature properly governs support for WasmEval.
+TEST_F(ContentSecurityPolicyTest, WasmEvalCSPEnable) {
+  auto test_wasm_eval_enabled = [&](bool enabled) {
+    ScopedWebAssemblyCSPForTest enable_wasp(enabled);
+
+    csp = MakeGarbageCollected<ContentSecurityPolicy>();
+    csp->BindToDelegate(execution_context->GetContentSecurityPolicyDelegate());
+
+    csp->DidReceiveHeader("script-src 'wasm-eval'", *secure_origin,
+                          ContentSecurityPolicyType::kEnforce,
+                          ContentSecurityPolicySource::kHTTP);
+
+    EXPECT_EQ(enabled, csp->AllowWasmCodeGeneration(
+                           ReportingDisposition::kReport,
+                           ContentSecurityPolicy::kWillNotThrowException,
+                           g_empty_string));
+  };
+
+  test_wasm_eval_enabled(true);
+  test_wasm_eval_enabled(false);
 }
 
 TEST_F(ContentSecurityPolicyTest, OpaqueOriginBeforeBind) {

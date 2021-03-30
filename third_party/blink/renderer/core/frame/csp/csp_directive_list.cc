@@ -627,7 +627,8 @@ bool CheckEval(const network::mojom::blink::CSPSourceList* directive) {
 
 bool SupportsWasmEval(const network::mojom::blink::ContentSecurityPolicy& csp,
                       const ContentSecurityPolicy* policy) {
-  return policy->SupportsWasmEval() ||
+  return RuntimeEnabledFeatures::WebAssemblyCSPEnabled() ||
+         policy->SupportsWasmEval() ||
          SchemeRegistry::SchemeSupportsWasmEvalCSP(csp.self_origin->scheme);
 }
 
@@ -1092,6 +1093,7 @@ bool CSPDirectiveListAllowEval(
              OperativeDirective(csp, CSPDirectiveName::ScriptSrc).source_list);
 }
 
+// Complex conditional around infix is temp, until SupportsWasmEval goes away.
 bool CSPDirectiveListAllowWasmCodeGeneration(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     ContentSecurityPolicy* policy,

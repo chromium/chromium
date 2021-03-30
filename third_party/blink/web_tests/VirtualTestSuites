@@ -482,6 +482,11 @@
              "--site-per-process"]
   },
   {
+    "prefix": "wasm-csp",
+    "bases": ["wasm"],
+    "args": ["--enable-blink-features=WebAssemblyCSP"]
+  },
+  {
     "prefix": "split-http-cache-not-site-per-process",
     "bases": ["http/tests/devtools/isolated-code-cache"],
     "args": ["--enable-features=SplitCacheByNetworkIsolationKey",

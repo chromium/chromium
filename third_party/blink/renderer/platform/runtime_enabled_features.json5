@@ -2153,6 +2153,9 @@
       name: "WebAppWindowControlsOverlay",
     },
     {
+      name: "WebAssemblyCSP",
+    },
+    {
       name: "WebAssemblyExceptions",
       origin_trial_feature_name: "WebAssemblyExceptions",
       status: "test",

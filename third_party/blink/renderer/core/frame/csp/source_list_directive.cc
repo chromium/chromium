@@ -403,10 +403,15 @@ bool ParseSource(const UChar* begin,
     return true;
   }
 
-  if (policy->SupportsWasmEval() &&
-      EqualIgnoringASCIICase("'wasm-eval'", token)) {
-    source_list.allow_wasm_eval = true;
-    return true;
+  // Temporarily behind a runtime feature
+  if (EqualIgnoringASCIICase("'wasm-eval'", token)) {
+    if (RuntimeEnabledFeatures::WebAssemblyCSPEnabled() ||
+        policy->SupportsWasmEval()) {
+      source_list.allow_wasm_eval = true;
+      return true;
+    } else {
+      return false;
+    }
   }
 
   if (EqualIgnoringASCIICase("'strict-dynamic'", token)) {
