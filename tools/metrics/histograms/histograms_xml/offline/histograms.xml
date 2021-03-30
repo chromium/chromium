@@ -35,6 +35,39 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Offline.Measurements.IsAirplaneModeEnabled"
+    enum="BooleanEnabled" expires_after="M95">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Whether or not airplane mode was enabled when the Offline Measurements
+    background task was run.
+
+    Each time the Offline Measurements background task runs, the airplane mode
+    status is queried, and then that value is stored to prefs. At a later time,
+    when Chrome is starting up, all stored values are recorded to this
+    histogram. The stored values are then cleared so they are only recorded once
+    each.
+  </summary>
+</histogram>
+
+<histogram name="Offline.Measurements.IsRoaming" enum="Boolean"
+    expires_after="M95">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Whether or not the system was roaming when the Offline Measurements
+    background task was run. If there are multiple networks, then if any network
+    is not roaming, we record a value of &quot;not roaming&quot; (false).
+
+    Each time the Offline Measurements background task runs, it queries all
+    networks if they are marked roaming, and then that value is stored to prefs.
+    At a later time, when Chrome is starting up, all stored values are recorded
+    to this histogram. The stored values are then cleared so they are only
+    recorded once each.
+  </summary>
+</histogram>
+
 <histogram name="Offline.Measurements.MeasurementInterval" units="minutes"
     expires_after="2021-04-04">
   <owner>curranmax@chromium.org</owner>

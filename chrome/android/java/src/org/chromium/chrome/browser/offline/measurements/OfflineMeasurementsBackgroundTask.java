@@ -5,6 +5,10 @@
 package org.chromium.chrome.browser.offline.measurements;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.provider.Settings;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -53,6 +57,8 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
 
     // Testing overrides
     private static int sNewMeasurementIntervalInMinutesTestingOverride;
+    private static Boolean sIsAirplaneModeEnabledTestingOverride;
+    private static Boolean sIsRoamingTestingOverride;
 
     // UMA histograms.
     public static final String OFFLINE_MEASUREMENTS_MEASUREMENT_INTERVAL =
@@ -61,6 +67,9 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
             "Offline.Measurements.TimeBetweenChecks";
     public static final String OFFLINE_MEASUREMENTS_HTTP_PROBE_RESULT =
             "Offline.Measurements.HttpProbeResult";
+    public static final String OFFLINE_MEASUREMENTS_IS_AIRPLANE_MODE_ENABLED =
+            "Offline.Measurements.IsAirplaneModeEnabled";
+    public static final String OFFLINE_MEASUREMENTS_IS_ROAMING = "Offline.Measurements.IsRoaming";
 
     // The result of the HTTP probing. Defined in tools/metrics/histograms/enums.xml.
     // These values are persisted to logs. Entries should not be renumbered and
@@ -131,9 +140,22 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
                     httpProbeResult, ProbeResult.RESULT_COUNT);
         }
 
+        boolean[] isAirplaneModeEnabledList = getIsAirplaneModeEnabledListFromPrefs();
+        for (boolean isAirplaneModeEnabled : isAirplaneModeEnabledList) {
+            RecordHistogram.recordBooleanHistogram(
+                    OFFLINE_MEASUREMENTS_IS_AIRPLANE_MODE_ENABLED, isAirplaneModeEnabled);
+        }
+
+        boolean[] isRoamingList = getIsRoamingListFromPrefs();
+        for (boolean isRoaming : isRoamingList) {
+            RecordHistogram.recordBooleanHistogram(OFFLINE_MEASUREMENTS_IS_ROAMING, isRoaming);
+        }
+
         // After logging the data to UMA, clear the data from prefs so it isn't logged again.
         clearTimeBetweenChecksFromPrefs();
         clearHttpProbeResultsFromPrefs();
+        clearIsAirplaneModeEnabledListFromPrefs();
+        clearIsRoamingListFromPrefs();
     }
 
     private static void scheduleTask() {
@@ -330,6 +352,12 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
             addTimeBetweenChecksToPrefs(timeBetweenChecksMillis);
         }
 
+        // Gets whether airplane mode is enabled or disabled.
+        boolean isAirplaneModeEnabled = isAirplaneModeEnabled(context);
+        boolean isRoaming = isRoaming(context);
+        addIsAirplaneModeEnabledToPrefs(isAirplaneModeEnabled);
+        addIsRoamingToPrefs(isRoaming);
+
         // Starts the HTTP probe.
         sendHttpProbe((Integer result) -> { processResult(result, callback); });
 
@@ -436,6 +464,64 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
         mHttpProbeAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    /**
+     * Determines if airplane mode is enabled or disabled currently.
+     * @param context The current application context.
+     * @return Whether or not airplane mode is currently enabled. If context is null, then false is
+     *         returned.
+     */
+    private static boolean isAirplaneModeEnabled(Context context) {
+        if (sIsAirplaneModeEnabledTestingOverride != null) {
+            return sIsAirplaneModeEnabledTestingOverride;
+        }
+
+        return Settings.Global.getInt(
+                       context.getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 0)
+                != 0;
+    }
+
+    /**
+     * Whether or not the system is currently roaming.
+     * @param context the current application context.
+     * @return Whether or not all current networks are roaming or not. If at least one network is
+     *         not roaming, then false is returned. If context is null, then false is also returned.
+     */
+    private static boolean isRoaming(Context context) {
+        if (sIsRoamingTestingOverride != null) {
+            return sIsRoamingTestingOverride;
+        }
+
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        Network[] allNetworks = connectivityManager.getAllNetworks();
+
+        // If there are no networks, then the system is completely offline. We consider this as not
+        // roaming.
+        if (allNetworks.length == 0) {
+            return false;
+        }
+
+        // If and only if all networks are roaming, then the system is roaming.
+        for (Network network : allNetworks) {
+            NetworkCapabilities networkCapabilities =
+                    connectivityManager.getNetworkCapabilities(allNetworks[0]);
+            if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_ROAMING)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @VisibleForTesting
+    static void setIsAirplaneModeEnabledForTesting(boolean isAirplaneModeEnabled) {
+        sIsAirplaneModeEnabledTestingOverride = isAirplaneModeEnabled;
+    }
+
+    @VisibleForTesting
+    static void setIsRoamingForTesting(boolean isRoaming) {
+        sIsRoamingTestingOverride = isRoaming;
+    }
+
     private static String getTimeBetweenChecksFromPrefsAsString() {
         return SharedPreferencesManager.getInstance().readString(
                 ChromePreferenceKeys.OFFLINE_MEASUREMENTS_TIME_BETWEEN_CHECKS_MILLIS_LIST, "");
@@ -493,6 +579,72 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
     private static void clearHttpProbeResultsFromPrefs() {
         SharedPreferencesManager.getInstance().removeKey(
                 ChromePreferenceKeys.OFFLINE_MEASUREMENTS_HTTP_PROBE_RESULTS_LIST);
+    }
+
+    private static String getIsAirplaneModeEnabledListFromPrefsAsString() {
+        return SharedPreferencesManager.getInstance().readString(
+                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_IS_AIRPLANE_MODE_ENABLED_LIST, "");
+    }
+
+    private static void addIsAirplaneModeEnabledToPrefs(boolean isAirplaneModeEnabled) {
+        // Add the value to the list.
+        String existingList = getIsAirplaneModeEnabledListFromPrefsAsString();
+        String newList = addValueToStringList(isAirplaneModeEnabled ? 1 : 0, existingList);
+
+        // Write the new list to Prefs
+        SharedPreferencesManager.getInstance().writeString(
+                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_IS_AIRPLANE_MODE_ENABLED_LIST, newList);
+    }
+
+    private static boolean[] getIsAirplaneModeEnabledListFromPrefs() {
+        // Get values as an array of longs.
+        String rawList = getIsAirplaneModeEnabledListFromPrefsAsString();
+        long[] valuesAsLongs = getValuesFromStringList(rawList, 0);
+
+        // Convert each element to boolean.
+        boolean[] valuesAsBools = new boolean[valuesAsLongs.length];
+        for (int i = 0; i < valuesAsLongs.length; i++) {
+            valuesAsBools[i] = valuesAsLongs[i] != 0;
+        }
+        return valuesAsBools;
+    }
+
+    private static void clearIsAirplaneModeEnabledListFromPrefs() {
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_IS_AIRPLANE_MODE_ENABLED_LIST);
+    }
+
+    private static String getIsRoamingListFromPrefsAsString() {
+        return SharedPreferencesManager.getInstance().readString(
+                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_IS_ROAMING_LIST, "");
+    }
+
+    private static void addIsRoamingToPrefs(boolean isRoaming) {
+        // Add the value to the list.
+        String existingList = getIsRoamingListFromPrefsAsString();
+        String newList = addValueToStringList(isRoaming ? 1 : 0, existingList);
+
+        // Write the new list to Prefs
+        SharedPreferencesManager.getInstance().writeString(
+                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_IS_ROAMING_LIST, newList);
+    }
+
+    private static boolean[] getIsRoamingListFromPrefs() {
+        // Get values as an array of longs.
+        String rawList = getIsRoamingListFromPrefsAsString();
+        long[] valuesAsLongs = getValuesFromStringList(rawList, 0);
+
+        // Convert each element to boolean.
+        boolean[] valuesAsBools = new boolean[valuesAsLongs.length];
+        for (int i = 0; i < valuesAsLongs.length; i++) {
+            valuesAsBools[i] = valuesAsLongs[i] != 0;
+        }
+        return valuesAsBools;
+    }
+
+    private static void clearIsRoamingListFromPrefs() {
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_IS_ROAMING_LIST);
     }
 
     /**

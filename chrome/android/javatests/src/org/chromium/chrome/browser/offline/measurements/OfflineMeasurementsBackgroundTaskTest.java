@@ -130,6 +130,11 @@ public class OfflineMeasurementsBackgroundTaskTest {
                 0); // IN-TEST
 
         mNumTaskFinishedCallbacksTriggered = 0;
+
+        // Overrides the checks for airplane mode and roaming so that we don't run the full checks
+        // in any tests.
+        OfflineMeasurementsBackgroundTask.setIsAirplaneModeEnabledForTesting(false); // IN-TEST
+        OfflineMeasurementsBackgroundTask.setIsRoamingForTesting(false); // IN-TEST
     }
 
     private void maybeScheduleTaskAndReportMetrics() {
@@ -695,5 +700,100 @@ public class OfflineMeasurementsBackgroundTaskTest {
         // Check that the callback was not triggered.
         assertEquals("The task should not call the task finished callback", 0,
                 mNumTaskFinishedCallbacksTriggered);
+    }
+
+    /**
+     * Tests running the background task with airplane mode enabled and disabled. Checks that the
+     * expected values are recorded to the UMA histogram Offline.Measurements.IsAirplaneModeEnabled.
+     */
+    @Test
+    @MediumTest
+    public void recordIsAirplaneModeEnabled() throws Exception {
+        // Enable feature and initialize the HTTP probe parameters.
+        setFeatureStatusForTest(true);
+
+        // Set the task parameters.
+        TaskParameters testParameters =
+                TaskParameters.create(TaskIds.OFFLINE_MEASUREMENT_JOB_ID).build();
+        BackgroundTask.TaskFinishedCallback testCallback = needsReschedule -> {};
+
+        // Runs the task with airplane mode disabled, then runs it again with airplane mode enabled.
+        OfflineMeasurementsBackgroundTask.setIsAirplaneModeEnabledForTesting(false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
+            task.onStartTask(null, testParameters, testCallback);
+        });
+
+        OfflineMeasurementsBackgroundTask.setIsAirplaneModeEnabledForTesting(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
+            task.onStartTask(null, testParameters, testCallback);
+        });
+
+        // Reports the metrics stored in Prefs.
+        maybeScheduleTaskAndReportMetrics();
+
+        // Check histogram
+        assertEquals("There should be one sample for each time the task was ran", 2,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        OfflineMeasurementsBackgroundTask
+                                .OFFLINE_MEASUREMENTS_IS_AIRPLANE_MODE_ENABLED));
+
+        assertEquals("There should be one entry where airplane mode is disabled", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        OfflineMeasurementsBackgroundTask
+                                .OFFLINE_MEASUREMENTS_IS_AIRPLANE_MODE_ENABLED,
+                        /*false*/ 0));
+        assertEquals("There should be one entry where airplane mode is enabled", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        OfflineMeasurementsBackgroundTask
+                                .OFFLINE_MEASUREMENTS_IS_AIRPLANE_MODE_ENABLED,
+                        /*true*/ 1));
+    }
+
+    /**
+     * Tests running the background task when roaming and not roaming. Checks that the expected
+     * values are recorded to the UMA histogram Offline.Measurements.IsRoaming.
+     */
+    @Test
+    @MediumTest
+    public void recordIsRoaming() throws Exception {
+        // Enable feature and initialize the HTTP probe parameters.
+        setFeatureStatusForTest(true);
+
+        // Set the task parameters.
+        TaskParameters testParameters =
+                TaskParameters.create(TaskIds.OFFLINE_MEASUREMENT_JOB_ID).build();
+        BackgroundTask.TaskFinishedCallback testCallback = needsReschedule -> {};
+
+        // Runs the task while not roaming, then runs it again while roaming.
+        OfflineMeasurementsBackgroundTask.setIsRoamingForTesting(false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
+            task.onStartTask(null, testParameters, testCallback);
+        });
+
+        OfflineMeasurementsBackgroundTask.setIsRoamingForTesting(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
+            task.onStartTask(null, testParameters, testCallback);
+        });
+
+        // Reports the metrics stored in Prefs.
+        maybeScheduleTaskAndReportMetrics();
+
+        // Check histogram
+        assertEquals("There should be one sample for each time the task was ran", 2,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        OfflineMeasurementsBackgroundTask.OFFLINE_MEASUREMENTS_IS_ROAMING));
+
+        assertEquals("There should be one entry where not roaming", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        OfflineMeasurementsBackgroundTask.OFFLINE_MEASUREMENTS_IS_ROAMING,
+                        /*false*/ 0));
+        assertEquals("There should be one entry where roaming", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        OfflineMeasurementsBackgroundTask.OFFLINE_MEASUREMENTS_IS_ROAMING,
+                        /*true*/ 1));
     }
 }
