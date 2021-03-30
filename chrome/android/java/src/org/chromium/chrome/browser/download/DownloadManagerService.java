@@ -917,11 +917,22 @@ public class DownloadManagerService implements DownloadController.Observer,
 
     /**
      * Open the Activity which shows a list of all downloads.
-     * @param context Application context
-     * @param source The source where the user action coming from.
+     * @see {@link #openDownloadsPage(Context, OTRProfileID, int)}.
      */
     public static void openDownloadsPage(Context context, @DownloadOpenSource int source) {
-        if (DownloadUtils.showDownloadManager(null, null, source)) return;
+        openDownloadsPage(context, null, source);
+    }
+
+    /**
+     * Open the Activity which shows a list of all downloads.
+     * @param context Application context
+     * @param otrProfileID The {@link OTRProfileID} to determine whether to open download page
+     * in incognito profile. If null, download page will be opened in normal profile.
+     * @param source The source where the user action coming from.
+     */
+    public static void openDownloadsPage(
+            Context context, OTRProfileID otrProfileID, @DownloadOpenSource int source) {
+        if (DownloadUtils.showDownloadManager(null, null, otrProfileID, source)) return;
 
         // Open the Android Download Manager.
         Intent pageView = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);

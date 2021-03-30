@@ -84,18 +84,22 @@ public class DownloadUtils {
      * Displays the download manager UI. Note the UI is different on tablets and on phones.
      * @param activity The current activity is available.
      * @param tab The current tab if it exists.
+     * @param otrProfileID The {@link OTRProfileID} to determine whether download home should be
+     * opened in incognito mode. If null, download page will be opened in normal profile.
      * @param source The source where the user action is coming from.
      * @return Whether the UI was shown.
      */
-    public static boolean showDownloadManager(
-            @Nullable Activity activity, @Nullable Tab tab, @DownloadOpenSource int source) {
-        return showDownloadManager(activity, tab, source, false);
+    public static boolean showDownloadManager(@Nullable Activity activity, @Nullable Tab tab,
+            @Nullable OTRProfileID otrProfileID, @DownloadOpenSource int source) {
+        return showDownloadManager(activity, tab, otrProfileID, source, false);
     }
 
     /**
      * Displays the download manager UI. Note the UI is different on tablets and on phones.
      * @param activity The current activity is available.
      * @param tab The current tab if it exists.
+     * @param otrProfileID The {@link OTRProfileID} to determine whether download home should be
+     * opened in incognito mode. If null, download page will be opened in normal profile.
      * @param source The source where the user action is coming from.
      * @param showPrefetchedContent Whether the manager should start with prefetched content section
      * expanded.
@@ -103,7 +107,8 @@ public class DownloadUtils {
      */
     @CalledByNative
     public static boolean showDownloadManager(@Nullable Activity activity, @Nullable Tab tab,
-            @DownloadOpenSource int source, boolean showPrefetchedContent) {
+            @Nullable OTRProfileID otrProfileID, @DownloadOpenSource int source,
+            boolean showPrefetchedContent) {
         // Figure out what tab was last being viewed by the user.
         if (activity == null) activity = ApplicationStatus.getLastTrackedFocusedActivity();
         Context appContext = ContextUtils.getApplicationContext();
@@ -144,12 +149,11 @@ public class DownloadUtils {
             Intent intent = new Intent();
             intent.setClass(appContext, DownloadActivity.class);
             intent.putExtra(EXTRA_SHOW_PREFETCHED_CONTENT, showPrefetchedContent);
-            if (tab != null) {
-                intent.putExtra(EXTRA_IS_OFF_THE_RECORD, tab.isIncognito());
-
-                OTRProfileID id = Profile.fromWebContents(tab.getWebContents()).getOTRProfileID();
-                intent.putExtra(EXTRA_OTR_PROFILE_ID, OTRProfileID.serialize(id));
+            if (otrProfileID != null) {
+                intent.putExtra(EXTRA_OTR_PROFILE_ID, OTRProfileID.serialize(otrProfileID));
+                intent.putExtra(EXTRA_IS_OFF_THE_RECORD, true);
             }
+
             if (activity == null) {
                 // Stands alone in its own task.
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -163,11 +167,9 @@ public class DownloadUtils {
         }
 
         if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
-            // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
-            // incognito profile) instead of always using regular profile. It works correctly now,
-            // but it is not safe.
-            Profile profile = (tab == null ? Profile.getLastUsedRegularProfile()
-                                           : Profile.fromWebContents(tab.getWebContents()));
+            Profile profile = otrProfileID == null
+                    ? Profile.getLastUsedRegularProfile()
+                    : Profile.getLastUsedRegularProfile().getOffTheRecordProfile(otrProfileID);
             Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
             tracker.notifyEvent(EventConstants.DOWNLOAD_HOME_OPENED);
         }
@@ -448,7 +450,7 @@ public class DownloadUtils {
         boolean canOpen = DownloadUtils.openFile(
                 filePath, mimeType, downloadGuid, otrProfileID, originalUrl, referer, source);
         if (!canOpen) {
-            DownloadUtils.showDownloadManager(null, null, source);
+            DownloadUtils.showDownloadManager(null, null, otrProfileID, source);
         }
     }
 

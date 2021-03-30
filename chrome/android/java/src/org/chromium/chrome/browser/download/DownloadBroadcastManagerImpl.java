@@ -218,11 +218,17 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
         String action = intent.getAction();
         DownloadNotificationUmaHelper.recordNotificationInteractionHistogram(action);
         final ContentId id = getContentIdFromIntent(intent);
+        final DownloadSharedPreferenceEntry entry = getDownloadEntryFromIntent(intent);
+        boolean isOffTheRecord = entry == null
+                ? IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_OFF_THE_RECORD, false)
+                : OTRProfileID.isOffTheRecord(entry.otrProfileID);
+        OTRProfileID otrProfileID = entry == null ? DownloadUtils.getOTRProfileIDFromIntent(intent)
+                                                  : entry.otrProfileID;
 
         // Handle actions that do not require a specific entry or service delegate.
         switch (action) {
             case ACTION_NOTIFICATION_CLICKED:
-                openDownload(ContextUtils.getApplicationContext(), intent, id);
+                openDownload(ContextUtils.getApplicationContext(), intent, otrProfileID, id);
                 return;
 
             case ACTION_DOWNLOAD_OPEN:
@@ -236,12 +242,6 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                 return;
         }
 
-        final DownloadSharedPreferenceEntry entry = getDownloadEntryFromIntent(intent);
-        boolean isOffTheRecord = entry == null
-                ? IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_OFF_THE_RECORD, false)
-                : OTRProfileID.isOffTheRecord(entry.otrProfileID);
-        OTRProfileID otrProfileID = entry == null ? DownloadUtils.getOTRProfileIDFromIntent(intent)
-                                                  : entry.otrProfileID;
         // TODO(crbug.com/1164379): Pass OTRProfileID from intent by adding
         //  |DownloadNotificationService#EXTRA_OTR_PROFILE_ID|.
         if (isOffTheRecord && otrProfileID == null) {
@@ -342,9 +342,12 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
      * the download cannot be found by android DownloadManager.
      * @param context Context of the receiver.
      * @param intent Intent from the notification.
+     * @param otrProfileID The {@link OTRProfileID} to determine whether to open download page
+     * in incognito profile.
      * @param contentId Content ID of the download.
      */
-    private void openDownload(Context context, Intent intent, ContentId contentId) {
+    private void openDownload(
+            Context context, Intent intent, OTRProfileID otrProfileID, ContentId contentId) {
         String downloadFilePath = IntentUtils.safeGetStringExtra(
                 intent, DownloadNotificationService.EXTRA_DOWNLOAD_FILE_PATH);
         if (ContentUriUtils.isContentUri(downloadFilePath)) {
@@ -354,7 +357,8 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
             long[] ids =
                     intent.getLongArrayExtra(DownloadManager.EXTRA_NOTIFICATION_CLICK_DOWNLOAD_IDS);
             if (ids == null || ids.length == 0) {
-                DownloadManagerService.openDownloadsPage(context, DownloadOpenSource.NOTIFICATION);
+                DownloadManagerService.openDownloadsPage(
+                        context, otrProfileID, DownloadOpenSource.NOTIFICATION);
                 return;
             }
 
@@ -362,7 +366,7 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
             DownloadManagerBridge.queryDownloadResult(id, result -> {
                 if (result.contentUri == null) {
                     DownloadManagerService.openDownloadsPage(
-                            context, DownloadOpenSource.NOTIFICATION);
+                            context, otrProfileID, DownloadOpenSource.NOTIFICATION);
                     return;
                 }
                 openDownloadWithId(context, intent, id, contentId);

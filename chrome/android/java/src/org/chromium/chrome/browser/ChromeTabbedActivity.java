@@ -1889,7 +1889,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         true, OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION);
             }
         } else if (id == R.id.downloads_menu_id) {
-            DownloadUtils.showDownloadManager(this, currentTab, DownloadOpenSource.MENU);
+            DownloadUtils.showDownloadManager(this, currentTab,
+                    Profile.fromWebContents(currentTab.getWebContents()).getOTRProfileID(),
+                    DownloadOpenSource.MENU);
             if (currentTabIsNtp) {
                 NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_DOWNLOADS_MANAGER);
             }

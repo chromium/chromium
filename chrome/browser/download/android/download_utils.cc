@@ -121,7 +121,7 @@ void DownloadUtils::ShowDownloadManager(bool show_prefetched_content,
                                         DownloadOpenSource open_source) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_DownloadUtils_showDownloadManager(
-      env, nullptr, nullptr, static_cast<jint>(open_source),
+      env, nullptr, nullptr, nullptr, static_cast<jint>(open_source),
       static_cast<jboolean>(show_prefetched_content));
 }
 

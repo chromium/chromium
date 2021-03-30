@@ -70,7 +70,7 @@ public class PrefetchedPagesNotifier {
             // TODO(dewittj): Handle the case where we somehow get this broadcast but the Chrome
             // download manager is unavailable.  Today, if this happens then the Android download
             // manager will be launched, and that will not contain any prefetched content.
-            DownloadUtils.showDownloadManager(null, null,
+            DownloadUtils.showDownloadManager(null, null, null,
                     DownloadOpenSource.OFFLINE_CONTENT_NOTIFICATION,
                     true /*showPrefetchedContent*/);
         }

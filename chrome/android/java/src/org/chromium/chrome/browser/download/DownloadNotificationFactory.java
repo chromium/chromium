@@ -85,6 +85,7 @@ public final class DownloadNotificationFactory {
     public static Notification buildNotification(Context context,
             @DownloadNotificationService.DownloadStatus int downloadStatus,
             DownloadUpdate downloadUpdate, int notificationId) {
+        // TODO(xingliu): Write a unit test for this class.
         String channelId = ChromeChannelDefinitions.ChannelId.DOWNLOADS;
         if (LegacyHelpers.isLegacyDownload(downloadUpdate.getContentId())
                 && downloadStatus == DownloadNotificationService.DownloadStatus.COMPLETED
@@ -336,8 +337,8 @@ public final class DownloadNotificationFactory {
         if (!downloadUpdate.getIsTransient() && downloadUpdate.getNotificationId() != -1
                 && downloadStatus != DownloadNotificationService.DownloadStatus.COMPLETED
                 && downloadStatus != DownloadNotificationService.DownloadStatus.FAILED) {
-            Intent downloadHomeIntent = buildActionIntent(
-                    context, ACTION_NOTIFICATION_CLICKED, null, downloadUpdate.getIsOffTheRecord());
+            Intent downloadHomeIntent = buildActionIntent(context, ACTION_NOTIFICATION_CLICKED,
+                    downloadUpdate.getContentId(), downloadUpdate.getIsOffTheRecord());
             builder.setContentIntent(
                     PendingIntentProvider.getService(context, downloadUpdate.getNotificationId(),
                             downloadHomeIntent, PendingIntent.FLAG_UPDATE_CURRENT));
