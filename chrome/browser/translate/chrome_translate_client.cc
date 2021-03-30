@@ -306,7 +306,8 @@ void ChromeTranslateClient::ManualTranslateWhenReady() {
     manual_translate_on_ready_ = true;
   } else {
     translate::TranslateManager* manager = GetTranslateManager();
-    manager->InitiateManualTranslation(true);
+    manager->InitiateManualTranslation(/*auto_translate=*/true,
+                                       /*triggered_from_menu=*/true);
   }
 }
 #endif
