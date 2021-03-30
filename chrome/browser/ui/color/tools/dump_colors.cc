@@ -55,10 +55,7 @@ int main(int argc, const char* argv[]) {
     ui::AddNativeCoreColorMixer(provider, dark_window, high_contrast);
     ui::AddUiColorMixer(provider, dark_window, high_contrast);
     ui::AddNativeUiColorMixer(provider, dark_window, high_contrast);
-#if defined(OS_MAC)
-    // Always keep this mixer after all non-embedder ui mixers.
-    ui::AddSystemTintMixer(provider);
-#endif
+    ui::AddNativePostprocessingMixer(provider);
     AddChromeColorMixers(provider);
     AddOmniboxColorMixers(provider, false);
   };

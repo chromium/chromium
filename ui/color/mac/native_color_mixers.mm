@@ -49,13 +49,6 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
                      skia::NSSystemColorToSkColor(
                          [NSColor selectedTextBackgroundColor])},
                 }});
-
-  // Because we changed the value of kColorTextSelectionBackground, we must
-  // repeat any lower-level transforms that depended on it that we want to make
-  // use of the new value. Otherwise these transforms, when run, will scan only
-  // from their local mixer downwards, and not see this new value.
-  mixer[kColorTextSelectionForeground] =
-      GetColorWithMaxContrast(kColorTextSelectionBackground);
 }
 
 void AddNativeUiColorMixer(ColorProvider* provider,
@@ -98,8 +91,8 @@ void AddNativeUiColorMixer(ColorProvider* provider,
   }
 }
 
-void AddSystemTintMixer(ColorProvider* provider) {
-  ColorMixer& mixer = provider->AddMixer();
+void AddNativePostprocessingMixer(ColorProvider* provider) {
+  ColorMixer& mixer = provider->AddPostprocessingMixer();
 
   for (ColorId id = kUiColorsStart; id < kUiColorsEnd; ++id) {
     // Apply system tint to non-OS colors.

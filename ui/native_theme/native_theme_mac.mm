@@ -178,6 +178,8 @@ base::Optional<SkColor> NativeThemeMac::GetOSColor(
   // Mac has a couple of specific color overrides, documented below.
   switch (color_id) {
     case kColorId_EnabledMenuItemForegroundColor:
+    case kColorId_HighlightedMenuItemForegroundColor:
+    case kColorId_SelectedMenuItemForegroundColor:
       return skia::NSSystemColorToSkColor([NSColor controlTextColor]);
     case kColorId_DisabledMenuItemForegroundColor:
       return skia::NSSystemColorToSkColor([NSColor disabledControlTextColor]);

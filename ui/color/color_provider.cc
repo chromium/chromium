@@ -13,15 +13,43 @@
 
 namespace ui {
 
+ColorProvider::ColorProvider() = default;
+
+ColorProvider::~ColorProvider() = default;
+
 ColorMixer& ColorProvider::AddMixer() {
   // Adding a mixer could change any of the result colors.
   cache_.clear();
 
-  // Supply each new mixer with the previous mixer in the pipeline; this way
-  // GetColor() need not query each mixer in order, but simply ask the last
-  // mixer for its result, and trust mixers to query each other back up the
-  // chain as needed.
-  mixers_.emplace_front(mixers_.empty() ? nullptr : &mixers_.front());
+  mixers_.emplace_after(first_postprocessing_mixer_,
+                        GetLastNonPostprocessingMixer(),
+                        base::BindRepeating(
+                            [](const ColorProvider* provider) {
+                              return provider->GetLastNonPostprocessingMixer();
+                            },
+                            base::Unretained(this)));
+  return *std::next(first_postprocessing_mixer_, 1);
+}
+
+ColorMixer& ColorProvider::AddPostprocessingMixer() {
+  // Adding a mixer could change any of the result colors.
+  cache_.clear();
+
+  if (first_postprocessing_mixer_ == mixers_.before_begin()) {
+    mixers_.emplace_front(
+        mixers_.empty() ? nullptr : &mixers_.front(),
+        base::BindRepeating(
+            [](const ColorProvider* provider) {
+              return provider->GetLastNonPostprocessingMixer();
+            },
+            base::Unretained(this)));
+    first_postprocessing_mixer_ = mixers_.begin();
+  } else {
+    mixers_.emplace_front(
+        &mixers_.front(),
+        base::BindRepeating([](const ColorMixer* mixer) { return mixer; },
+                            base::Unretained(&mixers_.front())));
+  }
   return mixers_.front();
 }
 
@@ -46,8 +74,9 @@ SkColor ColorProvider::GetColor(ColorId id) const {
   return i->second;
 }
 
-ColorProvider::ColorProvider() = default;
-
-ColorProvider::~ColorProvider() = default;
+const ColorMixer* ColorProvider::GetLastNonPostprocessingMixer() const {
+  const auto it = std::next(first_postprocessing_mixer_, 1);
+  return (it == mixers_.cend()) ? nullptr : &(*it);
+}
 
 }  // namespace ui

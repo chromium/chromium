@@ -11,8 +11,10 @@
 
 namespace ui {
 
-ColorMixer::ColorMixer(const ColorMixer* previous_mixer)
-    : previous_mixer_(previous_mixer) {}
+ColorMixer::ColorMixer(const ColorMixer* previous_mixer,
+                       MixerGetter input_mixer_getter)
+    : previous_mixer_(previous_mixer),
+      input_mixer_getter_(std::move(input_mixer_getter)) {}
 
 ColorMixer::ColorMixer(ColorMixer&&) noexcept = default;
 
@@ -84,7 +86,11 @@ SkColor ColorMixer::GetResultColor(ColorId id) const {
   DCHECK_COLOR_ID_VALID(id);
   const SkColor color = GetInputColor(id);
   const auto i = recipes_.find(id);
-  return (i == recipes_.end()) ? color : i->second.GenerateResult(color, *this);
+  const ColorMixer* const mixer =
+      input_mixer_getter_ ? input_mixer_getter_.Run() : nullptr;
+  return (i == recipes_.end())
+             ? color
+             : i->second.GenerateResult(color, *(mixer ? mixer : this));
 }
 
 ColorMixer::ColorSets::const_iterator ColorMixer::FindSetWithId(

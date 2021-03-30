@@ -20,4 +20,6 @@ void AddNativeUiColorMixer(ColorProvider* provider,
   NOTIMPLEMENTED();
 }
 
+void AddNativePostprocessingMixer(ColorProvider* provider) {}
+
 }  // namespace ui

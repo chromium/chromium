@@ -62,11 +62,7 @@ ColorProviderManager& ColorProviderManager::Get() {
           ui::AddNativeCoreColorMixer(provider, dark_mode, high_contrast);
           ui::AddUiColorMixer(provider, dark_mode, high_contrast);
           ui::AddNativeUiColorMixer(provider, dark_mode, high_contrast);
-#if defined(OS_MAC)
-          // Always keep this mixer at the last so the system tint will be
-          // applied after getting the proper color.
-          ui::AddSystemTintMixer(provider);
-#endif
+          ui::AddNativePostprocessingMixer(provider);
         }));
 #endif  // !defined(OS_ANDROID)
   }

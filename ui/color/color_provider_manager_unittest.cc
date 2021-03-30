@@ -18,7 +18,7 @@ namespace {
 
 class ColorProviderManagerTest : public testing::Test {
  public:
-  ColorProviderManagerTest() = default;
+  ColorProviderManagerTest() { ColorProviderManager::ResetForTesting(); }
   ColorProviderManagerTest(const ColorProviderManagerTest&) = delete;
   ColorProviderManagerTest& operator=(const ColorProviderManagerTest&) = delete;
   ~ColorProviderManagerTest() override {
@@ -27,7 +27,7 @@ class ColorProviderManagerTest : public testing::Test {
 };
 
 ColorProvider* GetLightNormalColorProvider() {
-  return ColorProviderManager::Get().GetColorProviderFor(
+  return ColorProviderManager::GetForTesting().GetColorProviderFor(
       {ColorProviderManager::ColorMode::kLight,
        ColorProviderManager::ContrastMode::kNormal});
 }

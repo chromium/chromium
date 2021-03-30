@@ -46,10 +46,8 @@ void AddNativeUiColorMixer(ColorProvider* provider,
                            bool dark_window,
                            bool high_contrast);
 
-#if defined(OS_MAC)
 COMPONENT_EXPORT(COLOR)
-void AddSystemTintMixer(ColorProvider* provider);
-#endif
+void AddNativePostprocessingMixer(ColorProvider* provider);
 
 }  // namespace ui
 

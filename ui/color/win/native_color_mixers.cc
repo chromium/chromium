@@ -148,4 +148,6 @@ void AddNativeUiColorMixer(ColorProvider* provider,
   // TODO(pkasting): Add recipes
 }
 
+void AddNativePostprocessingMixer(ColorProvider* provider) {}
+
 }  // namespace ui
