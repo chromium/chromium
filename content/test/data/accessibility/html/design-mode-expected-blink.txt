@@ -1,0 +1,6 @@
+rootWebArea editable richlyEditable htmlTag='#document'
+++genericContainer editable ignored richlyEditable htmlTag='html' editableRoot=true
+++++genericContainer editable ignored richlyEditable htmlTag='body' editableRoot=true
+++++++paragraph editable richlyEditable htmlTag='p'
+++++++++staticText editable richlyEditable name='Hello'
+++++++++++inlineTextBox name='Hello'

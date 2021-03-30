@@ -334,8 +334,20 @@ bool AXLayoutObject::IsEditable() const {
     Document& document = GetLayoutObject()->GetDocument();
     HTMLElement* body = document.body();
     if (body && HasEditableStyle(*body)) {
-      AXObject* ax_body = AXObjectCache().GetOrCreate(body);
-      return ax_body && ax_body != ax_body->AriaHiddenRoot();
+      // A web area is editable if the body is contenteditable, unless the body
+      // or an ancestor of the body is aria-hidden. The following avoids
+      // GetOrCreate() on the body so that IsEditable() can be called when
+      // layout is not clean. Check current object for AriaHiddenRoot(), and
+      // manually check the <html> and <body> elements directly.
+      bool is_null = true;
+      if (AriaHiddenRoot() ||
+          AccessibleNode::GetPropertyOrARIAAttribute(
+              body, AOMBooleanProperty::kHidden, is_null) ||
+          AccessibleNode::GetPropertyOrARIAAttribute(
+              body->parentElement(), AOMBooleanProperty::kHidden, is_null)) {
+        return false;
+      }
+      return true;
     }
 
     return HasEditableStyle(document);

@@ -1492,6 +1492,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityDel) {
   RunHtmlTest(FILE_PATH_LITERAL("del.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityDesignMode) {
+  RunHtmlTest(FILE_PATH_LITERAL("design-mode.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityDetails) {
   RunHtmlTest(FILE_PATH_LITERAL("details.html"));
 }
