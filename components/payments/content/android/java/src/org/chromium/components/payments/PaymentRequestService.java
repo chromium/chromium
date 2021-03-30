@@ -1452,11 +1452,6 @@ public class PaymentRequestService
         return mJourneyLogger;
     }
 
-    /** @return Whether the WebContents is currently showing an off-the-record tab. */
-    public boolean isOffTheRecord() {
-        return mIsOffTheRecord;
-    }
-
     /**
      * Redact shipping address before exposing it in ShippingAddressChangeEvent.
      * https://w3c.github.io/payment-request/#shipping-address-changed-algorithm
@@ -1579,6 +1574,12 @@ public class PaymentRequestService
     @Nullable
     public String getTwaPackageName() {
         return mDelegate.getTwaPackageName();
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public boolean isOffTheRecord() {
+        return mIsOffTheRecord;
     }
 
     // Implements PaymentRequestUpdateEventListener:

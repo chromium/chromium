@@ -15,8 +15,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.payments.PaymentManifestVerifier.ManifestVerifyCallback;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.payments.AndroidPaymentApp;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.MethodStrings;
@@ -86,7 +84,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     private final TwaPackageManagerDelegate mTwaPackageManagerDelegate;
     private final PaymentAppFactoryDelegate mFactoryDelegate;
     private final PaymentAppFactoryInterface mFactory;
-    private final boolean mIsIncognito;
+    private final boolean mIsOffTheRecord;
 
     /**
      * The app stores that supports app-store billing methods.
@@ -188,12 +186,8 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         mPackageManagerDelegate = packageManagerDelegate;
         mTwaPackageManagerDelegate = twaPackageManagerDelegate;
         mFactory = factory;
-        TabModelSelector tabModelSelector = TabModelSelectorSupplier
-                                                    .from(mFactoryDelegate.getParams()
-                                                                    .getWebContents()
-                                                                    .getTopLevelNativeWindow())
-                                                    .get();
-        mIsIncognito = tabModelSelector != null && tabModelSelector.isIncognitoSelected();
+        assert mFactoryDelegate.getParams() != null;
+        mIsOffTheRecord = mFactoryDelegate.getParams().isOffTheRecord();
     }
 
     private void findAppStoreBillingApp(List<ResolveInfo> allInstalledPaymentApps) {
@@ -291,7 +285,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
             return;
         }
 
-        if (!mIsIncognito) {
+        if (!mIsOffTheRecord) {
             List<ResolveInfo> services = mPackageManagerDelegate.getServicesThatCanRespondToIntent(
                     new Intent(ACTION_IS_READY_TO_PAY));
             int numberOfServices = services.size();
@@ -683,7 +677,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                                                 mFactoryDelegate.getParams().getWebContents()),
                     packageName, resolveInfo.activityInfo.name,
                     mIsReadyToPayServices.get(packageName), label.toString(),
-                    mPackageManagerDelegate.getAppIcon(resolveInfo), mIsIncognito,
+                    mPackageManagerDelegate.getAppIcon(resolveInfo), mIsOffTheRecord,
                     webAppIdCanDeduped, appSupportedDelegations);
             mValidApps.put(packageName, app);
         }

@@ -84,4 +84,10 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
     default String getTwaPackageName() {
         return null;
     }
+
+    /**
+     * @return Whether the merchant WebContents's profile is in off-the-record mode. Return true
+     *         if the tab profile is not accessible from the WebContents.
+     */
+    boolean isOffTheRecord();
 }

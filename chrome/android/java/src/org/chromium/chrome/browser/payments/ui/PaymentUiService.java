@@ -302,7 +302,8 @@ public class PaymentUiService
                 AddressEditor.Purpose.PAYMENT_REQUEST, /*saveToDisk=*/!isOffTheRecord);
         // PaymentRequest card editor does not show the organization name in the dropdown with the
         // billing address labels.
-        mCardEditor = new CardEditor(webContents, mAddressEditor, /*includeOrgLabel=*/false);
+        mCardEditor = new CardEditor(
+                webContents, mAddressEditor, /*includeOrgLabel=*/false, isOffTheRecord);
         mJourneyLogger = journeyLogger;
         mWebContents = webContents;
         mTopLevelOriginFormattedForDisplay = topLevelOrigin;

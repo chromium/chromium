@@ -205,6 +205,11 @@ public class AndroidPaymentAppFinderTest
         return mTwaPackageManager.getTwaPackageName(mActivityTestRule.getActivity());
     }
 
+    @Override
+    public boolean isOffTheRecord() {
+        return false;
+    }
+
     @Before
     public void setUp() throws Throwable {
         mActivityTestRule.startMainActivityOnBlankPage();

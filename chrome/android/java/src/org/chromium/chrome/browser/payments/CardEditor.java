@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.chrome.R;
@@ -30,14 +29,11 @@ import org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel.EditorVa
 import org.chromium.chrome.browser.autofill.prefeditor.EditorModel;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.DropdownKeyValue;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.payments.BasicCardUtils;
 import org.chromium.components.payments.MethodStrings;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentMethodData;
-import org.chromium.ui.base.WindowAndroid;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -162,7 +158,7 @@ public class CardEditor
     private boolean mIsScanning;
     private int mCurrentMonth;
     private int mCurrentYear;
-    private boolean mIsIncognito;
+    private boolean mIsOffTheRecord;
 
     /**
      * Builds a credit card editor.
@@ -172,9 +168,10 @@ public class CardEditor
      *                        billing addresses.
      * @param includeOrgLabel Whether the labels in the billing address dropdown should include the
      *                        organization name.
+     * @param isOffTheRecord  Whether the merchant WebContents's profile is in off-the-record mode.
      */
-    public CardEditor(
-            WebContents webContents, AddressEditor addressEditor, boolean includeOrgLabel) {
+    public CardEditor(WebContents webContents, AddressEditor addressEditor, boolean includeOrgLabel,
+            boolean isOffTheRecord) {
         assert webContents != null;
         assert addressEditor != null;
 
@@ -268,18 +265,7 @@ public class CardEditor
         };
         mCalendar.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        mIsIncognito = resolveIncognitoState(mWebContents.getTopLevelNativeWindow());
-    }
-
-    /** Returns whether the user is currently incognito, defaults to false. */
-    private boolean resolveIncognitoState(@Nullable WindowAndroid windowAndroid) {
-        if (windowAndroid == null) return false;
-
-        Supplier<TabModelSelector> tabModelSelectorSupplier =
-                TabModelSelectorSupplier.from(windowAndroid);
-        if (tabModelSelectorSupplier == null || !tabModelSelectorSupplier.hasValue()) return false;
-
-        return tabModelSelectorSupplier.get().isIncognitoSelected();
+        mIsOffTheRecord = isOffTheRecord;
     }
 
     private boolean isCardNumberLengthMaximum(@Nullable CharSequence value) {
@@ -411,7 +397,7 @@ public class CardEditor
         addBillingAddressDropdown(editor, card);
 
         // Allow saving new cards on disk unless in incognito mode.
-        if (isNewCard && !mIsIncognito) addSaveCardCheckbox(editor);
+        if (isNewCard && !mIsOffTheRecord) addSaveCardCheckbox(editor);
 
         // If the user clicks [Cancel], send |toEdit| card back to the caller (will return original
         // state, which could be null, a full card, or a partial card).
@@ -802,7 +788,7 @@ public class CardEditor
 
         PersonalDataManager pdm = PersonalDataManager.getInstance();
         if (!card.getIsLocal()) {
-            if (!mIsIncognito) pdm.updateServerCardBillingAddress(card);
+            if (!mIsOffTheRecord) pdm.updateServerCardBillingAddress(card);
             return;
         }
 
@@ -820,12 +806,12 @@ public class CardEditor
         card.setIssuerIconDrawableId(displayableCard.getIssuerIconDrawableId());
 
         if (!isNewCard) {
-            if (!mIsIncognito) pdm.setCreditCard(card);
+            if (!mIsOffTheRecord) pdm.setCreditCard(card);
             return;
         }
 
         if (mSaveCardCheckbox != null && mSaveCardCheckbox.isChecked()) {
-            assert !mIsIncognito;
+            assert !mIsOffTheRecord;
             card.setGUID(pdm.setCreditCard(card));
         }
     }

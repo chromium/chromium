@@ -167,6 +167,13 @@ public class AutofillPaymentAppFactory implements PaymentAppFactoryInterface {
             }
 
             @Override
+            public boolean isOffTheRecord() {
+                // AutofillPaymentAppFactory.Creator doesn't need to know isOffTheRecord.
+                assert false : "isOffTheRecord() should not be called";
+                return false;
+            }
+
+            @Override
             public PaymentOptions getPaymentOptions() {
                 // AutofillPaymentAppFactory.Creator doesn't need PaymentOptions.
                 assert false : "getPaymentOptions() should not be called";
