@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/browser/accessibility/accessibility_manager.h"
+#include "chromecast/browser/accessibility/accessibility_manager_impl.h"
 
 #include "chromecast/graphics/accessibility/focus_ring_controller.h"
 #include "chromecast/graphics/accessibility/fullscreen_magnification_controller.h"
@@ -15,7 +15,7 @@
 namespace chromecast {
 namespace shell {
 
-AccessibilityManager::AccessibilityManager(
+AccessibilityManagerImpl::AccessibilityManagerImpl(
     CastWindowManagerAura* window_manager)
     : window_tree_host_(window_manager->window_tree_host()),
       accessibility_sound_proxy_(std::make_unique<AccessibilitySoundPlayer>()) {
@@ -38,19 +38,19 @@ AccessibilityManager::AccessibilityManager(
           root_window, window_manager->GetGestureHandler());
 }
 
-AccessibilityManager::~AccessibilityManager() {}
+AccessibilityManagerImpl::~AccessibilityManagerImpl() {}
 
-void AccessibilityManager::SetFocusRingColor(SkColor color) {
+void AccessibilityManagerImpl::SetFocusRingColor(SkColor color) {
   DCHECK(accessibility_focus_ring_controller_);
   accessibility_focus_ring_controller_->SetFocusRingColor(color);
 }
 
-void AccessibilityManager::ResetFocusRingColor() {
+void AccessibilityManagerImpl::ResetFocusRingColor() {
   DCHECK(accessibility_focus_ring_controller_);
   accessibility_focus_ring_controller_->ResetFocusRingColor();
 }
 
-void AccessibilityManager::SetFocusRing(
+void AccessibilityManagerImpl::SetFocusRing(
     const std::vector<gfx::Rect>& rects_in_screen,
     FocusRingBehavior focus_ring_behavior) {
   DCHECK(accessibility_focus_ring_controller_);
@@ -58,24 +58,24 @@ void AccessibilityManager::SetFocusRing(
                                                      focus_ring_behavior);
 }
 
-void AccessibilityManager::HideFocusRing() {
+void AccessibilityManagerImpl::HideFocusRing() {
   DCHECK(accessibility_focus_ring_controller_);
   accessibility_focus_ring_controller_->HideFocusRing();
 }
 
-void AccessibilityManager::SetHighlights(
+void AccessibilityManagerImpl::SetHighlights(
     const std::vector<gfx::Rect>& rects_in_screen,
     SkColor color) {
   DCHECK(accessibility_focus_ring_controller_);
   accessibility_focus_ring_controller_->SetHighlights(rects_in_screen, color);
 }
 
-void AccessibilityManager::HideHighlights() {
+void AccessibilityManagerImpl::HideHighlights() {
   DCHECK(accessibility_focus_ring_controller_);
   accessibility_focus_ring_controller_->HideHighlights();
 }
 
-void AccessibilityManager::SetScreenReader(bool enable) {
+void AccessibilityManagerImpl::SetScreenReader(bool enable) {
   touch_exploration_manager_->Enable(enable);
 
   // TODO(rdaum): Until we can fix triple-tap and two finger gesture conflicts
@@ -89,21 +89,21 @@ void AccessibilityManager::SetScreenReader(bool enable) {
   }
 }
 
-void AccessibilityManager::SetTouchAccessibilityAnchorPoint(
+void AccessibilityManagerImpl::SetTouchAccessibilityAnchorPoint(
     const gfx::Point& anchor_point) {
   touch_exploration_manager_->SetTouchAccessibilityAnchorPoint(anchor_point);
 }
 
-void AccessibilityManager::SetVirtualKeyboardBounds(const gfx::Rect& rect) {
+void AccessibilityManagerImpl::SetVirtualKeyboardBounds(const gfx::Rect& rect) {
   touch_exploration_manager_->SetVirtualKeyboardBounds(rect);
 }
 
-aura::WindowTreeHost* AccessibilityManager::window_tree_host() const {
+aura::WindowTreeHost* AccessibilityManagerImpl::window_tree_host() const {
   DCHECK(window_tree_host_);
   return window_tree_host_;
 }
 
-void AccessibilityManager::SetMagnificationGestureEnabled(
+void AccessibilityManagerImpl::SetMagnificationGestureEnabled(
     bool gesture_enabled) {
   magnify_gesture_detector_->set_enabled(gesture_enabled);
 
@@ -115,16 +115,16 @@ void AccessibilityManager::SetMagnificationGestureEnabled(
   }
 }
 
-bool AccessibilityManager::IsMagnificationGestureEnabled() const {
+bool AccessibilityManagerImpl::IsMagnificationGestureEnabled() const {
   return magnify_gesture_detector_->enabled();
 }
 
-void AccessibilityManager::OnTripleTap(const gfx::Point& tap_location) {
+void AccessibilityManagerImpl::OnTripleTap(const gfx::Point& tap_location) {
   magnification_controller_->SetEnabled(
       !magnification_controller_->IsEnabled());
 }
 
-void AccessibilityManager::SetAccessibilitySoundPlayer(
+void AccessibilityManagerImpl::SetAccessibilitySoundPlayer(
     std::unique_ptr<AccessibilitySoundPlayer> player) {
   accessibility_sound_proxy_.ResetPlayer(std::move(player));
 }

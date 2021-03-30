@@ -102,7 +102,7 @@
 // gn check ignored on OverlayManagerCast as it's not a public ozone
 // header, but is exported to allow injecting the overlay-composited
 // callback.
-#include "chromecast/browser/accessibility/accessibility_manager.h"
+#include "chromecast/browser/accessibility/accessibility_manager_impl.h"
 #include "chromecast/browser/cast_display_configurator.h"
 #include "chromecast/browser/devtools/cast_ui_devtools.h"
 #include "chromecast/graphics/cast_screen.h"
@@ -611,7 +611,7 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
   cast_browser_process_->SetAccessibilityManager(
-      std::make_unique<AccessibilityManager>(window_manager_.get()));
+      std::make_unique<AccessibilityManagerImpl>(window_manager_.get()));
 #endif  // BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
 
 #else   // defined(USE_AURA)

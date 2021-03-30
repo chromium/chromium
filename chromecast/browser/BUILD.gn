@@ -416,8 +416,9 @@ cast_source_set("browser_base") {
     ]
     if (use_aura) {
       sources += [
-        "accessibility/accessibility_manager.cc",
         "accessibility/accessibility_manager.h",
+        "accessibility/accessibility_manager_impl.cc",
+        "accessibility/accessibility_manager_impl.h",
         "accessibility/accessibility_sound_player.h",
         "accessibility/accessibility_sound_proxy.cc",
         "accessibility/accessibility_sound_proxy.h",
