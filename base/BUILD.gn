@@ -3530,7 +3530,7 @@ if (build_base_unittests) {
         "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
       ]
 
-      additional_manifests =
+      additional_manifest_fragments =
           [ "//build/config/fuchsia/test/test_logger_capabilities.test-cmx" ]
     }
 

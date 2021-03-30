@@ -376,7 +376,7 @@ test("aura_unittests") {
   }
 
   if (is_fuchsia) {
-    additional_manifests =
+    additional_manifest_fragments =
         [ "//build/config/fuchsia/test/present_view_capabilities.test-cmx" ]
   }
 

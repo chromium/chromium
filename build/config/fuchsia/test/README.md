@@ -3,7 +3,8 @@
 This directory contains the cmx fragments that are required for running
 Fuchsia tests hermetically. Tests start from `minimum_capabilities.test-cmx`
 and add additional capabilities as necessary by providing the
-additional_manifests argument. Some fragments are explained in detail below:
+`additional_manifest_fragments` argument. Some fragments are explained in detail
+below:
 
 ### General Purpose Fragments
 

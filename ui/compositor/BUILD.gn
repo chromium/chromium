@@ -277,7 +277,7 @@ test("compositor_unittests") {
   }
 
   if (is_fuchsia) {
-    additional_manifests = [
+    additional_manifest_fragments = [
       # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
       "//build/config/fuchsia/test/jit_capabilities.test-cmx",
 

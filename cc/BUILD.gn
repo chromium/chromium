@@ -861,7 +861,7 @@ cc_test("cc_unittests") {
   ]
 
   if (is_fuchsia) {
-    additional_manifests = [
+    additional_manifest_fragments = [
       "//build/config/fuchsia/test/font_capabilities.test-cmx",
 
       # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
