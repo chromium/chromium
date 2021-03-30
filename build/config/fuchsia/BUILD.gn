@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromecast_build.gni")
+
 assert(is_fuchsia)
 assert(!is_posix)
 
@@ -13,6 +15,13 @@ config("compiler") {
   # but on other platforms it's much higher, so a variety of code assumes more
   # will be available. Raise to 8M which matches e.g. macOS.
   ldflags = [ "-Wl,-z,stack-size=0x800000" ]
+
+  # Allow this in chromium-only builds, but do not allow this in Chromecast
+  # builds.
+  if (!is_chromecast) {
+    cflags_cc = [ "-fexperimental-relative-c++-abi-vtables" ]
+    ldflags += [ "-fexperimental-relative-c++-abi-vtables" ]
+  }
 }
 
 # Settings for executables.
