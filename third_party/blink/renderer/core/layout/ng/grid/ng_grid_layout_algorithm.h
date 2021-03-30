@@ -234,7 +234,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   explicit NGGridLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
-  const NGLayoutResult* Layout() override;
+  scoped_refptr<const NGLayoutResult> Layout() override;
   MinMaxSizesResult ComputeMinMaxSizes(
       const MinMaxSizesFloatInput&) const override;
 

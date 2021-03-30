@@ -80,7 +80,7 @@ bool NGFragmentItems::IsSubSpan(const Span& span) const {
 }
 
 void NGFragmentItems::FinalizeAfterLayout(
-    const HeapVector<Member<const NGLayoutResult>, 1>& results) {
+    const Vector<scoped_refptr<const NGLayoutResult>, 1>& results) {
 #if DCHECK_IS_ON()
   if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
     for (const auto& result : results) {

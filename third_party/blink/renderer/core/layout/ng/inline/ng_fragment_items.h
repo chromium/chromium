@@ -63,7 +63,7 @@ class CORE_EXPORT NGFragmentItems {
   // Associate |NGFragmentItem|s with |LayoutObject|s and finalize the items
   // (set which ones are the first / last for the LayoutObject).
   static void FinalizeAfterLayout(
-      const HeapVector<Member<const NGLayoutResult>, 1>& results);
+      const Vector<scoped_refptr<const NGLayoutResult>, 1>& results);
 
   // Disassociate |NGFragmentItem|s with |LayoutObject|s. And more.
   static void ClearAssociatedFragments(LayoutObject* container);

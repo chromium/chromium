@@ -6,12 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_LAYOUT_NG_TEXT_FRAGMENT_H_
 
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_span.h"
 
 namespace blink {
 
 // This overrides the default LayoutText to reference LayoutNGInlineItems
 // instead of InlineTextBoxes.
+//
 class CORE_EXPORT LayoutNGTextFragment final : public LayoutTextFragment {
  public:
   LayoutNGTextFragment(Node* node,
@@ -27,17 +27,12 @@ class CORE_EXPORT LayoutNGTextFragment final : public LayoutTextFragment {
     return true;
   }
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(inline_items_);
-    LayoutTextFragment::Trace(visitor);
-  }
-
  private:
-  const NGInlineItemSpan* GetNGInlineItems() const final {
+  const base::span<NGInlineItem>* GetNGInlineItems() const final {
     NOT_DESTROYED();
     return &inline_items_;
   }
-  NGInlineItemSpan* GetNGInlineItems() final {
+  base::span<NGInlineItem>* GetNGInlineItems() final {
     NOT_DESTROYED();
     return &inline_items_;
   }
@@ -48,7 +43,7 @@ class CORE_EXPORT LayoutNGTextFragment final : public LayoutTextFragment {
     LayoutText::InsertedIntoTree();
   }
 
-  NGInlineItemSpan inline_items_;
+  base::span<NGInlineItem> inline_items_;
 };
 
 }  // namespace blink

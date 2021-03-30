@@ -8,7 +8,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -17,13 +16,13 @@ class NGExclusionSpace;
 struct NGPositionedFloat;
 struct NGUnpositionedFloat;
 
-typedef HeapVector<Member<NGPositionedFloat>, 8> NGPositionedFloatVector;
+typedef Vector<NGPositionedFloat, 8> NGPositionedFloatVector;
 
 // Calculate and return the inline size of the unpositioned float.
 LayoutUnit ComputeMarginBoxInlineSizeForUnpositionedFloat(NGUnpositionedFloat*);
 
 // Position and lay out a float.
-NGPositionedFloat* PositionFloat(NGUnpositionedFloat*, NGExclusionSpace*);
+NGPositionedFloat PositionFloat(NGUnpositionedFloat*, NGExclusionSpace*);
 
 }  // namespace blink
 

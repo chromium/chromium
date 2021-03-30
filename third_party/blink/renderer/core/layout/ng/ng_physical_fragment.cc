@@ -541,8 +541,8 @@ void NGPhysicalFragment::AdjustScrollableOverflowForPropagation(
   }
 }
 
-const HeapVector<NGInlineItem>&
-NGPhysicalFragment::InlineItemsOfContainingBlock() const {
+const Vector<NGInlineItem>& NGPhysicalFragment::InlineItemsOfContainingBlock()
+    const {
   DCHECK(IsInline());
   DCHECK(GetLayoutObject());
   LayoutBlockFlow* block_flow = GetLayoutObject()->ContainingNGBlockFlow();

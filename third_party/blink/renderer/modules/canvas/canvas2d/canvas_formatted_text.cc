@@ -159,7 +159,8 @@ sk_sp<PaintRecord> CanvasFormattedText::PaintFormattedText(
   LogicalSize available_size = {available_logical_width, kIndefiniteSize};
   builder.SetAvailableSize(available_size);
   NGConstraintSpace space = builder.ToConstraintSpace();
-  const NGLayoutResult* block_results = block_node.Layout(space, nullptr);
+  scoped_refptr<const NGLayoutResult> block_results =
+      block_node.Layout(space, nullptr);
   const auto& fragment =
       To<NGPhysicalBoxFragment>(block_results->PhysicalFragment());
   block->RecalcInlineChildrenVisualOverflow();

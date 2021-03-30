@@ -611,7 +611,8 @@ void NGInlineLayoutStateStack::CreateBoxFragments(
     DCHECK_GT(end, start);
     NGLogicalLineItem* child = &(*line_box)[start];
     DCHECK(box_data.item->ShouldCreateBoxFragment());
-    const NGLayoutResult* box_fragment = box_data.CreateBoxFragment(line_box);
+    scoped_refptr<const NGLayoutResult> box_fragment =
+        box_data.CreateBoxFragment(line_box);
     if (child->IsPlaceholder()) {
       child->layout_result = std::move(box_fragment);
       child->rect = box_data.rect;
@@ -629,7 +630,8 @@ void NGInlineLayoutStateStack::CreateBoxFragments(
   box_data_list_.clear();
 }
 
-const NGLayoutResult* NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
+scoped_refptr<const NGLayoutResult>
+NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
     NGLogicalLineItems* line_box) {
   DCHECK(item);
   DCHECK(item->Style());

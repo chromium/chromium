@@ -47,8 +47,9 @@ class NGBlockLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
     return algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput()).sizes;
   }
 
-  const NGLayoutResult* RunCachedLayoutResult(const NGConstraintSpace& space,
-                                              const NGBlockNode& node) {
+  scoped_refptr<const NGLayoutResult> RunCachedLayoutResult(
+      const NGConstraintSpace& space,
+      const NGBlockNode& node) {
     NGLayoutCacheStatus cache_status;
     base::Optional<NGFragmentGeometry> initial_fragment_geometry;
     return To<LayoutBlockFlow>(node.GetLayoutBox())
@@ -107,26 +108,26 @@ TEST_F(NGBlockLayoutAlgorithmTest, Caching) {
   auto* block_flow = To<LayoutBlockFlow>(GetLayoutObjectByElementId("box"));
   NGBlockNode node(block_flow);
 
-  const NGLayoutResult* result = node.Layout(space, nullptr);
+  scoped_refptr<const NGLayoutResult> result(node.Layout(space, nullptr));
   EXPECT_EQ(PhysicalSize(30, 40), result->PhysicalFragment().Size());
 
   // Test pointer-equal constraint space.
   result = RunCachedLayoutResult(space, node);
-  EXPECT_NE(result, nullptr);
+  EXPECT_NE(result.get(), nullptr);
 
   // Test identical, but not pointer-equal, constraint space.
   space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(100), LayoutUnit(100)));
   result = RunCachedLayoutResult(space, node);
-  EXPECT_NE(result, nullptr);
+  EXPECT_NE(result.get(), nullptr);
 
   // Test different constraint space.
   space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(200), LayoutUnit(100)));
   result = RunCachedLayoutResult(space, node);
-  EXPECT_NE(result, nullptr);
+  EXPECT_NE(result.get(), nullptr);
 
   // Test a different constraint space that will actually result in a different
   // sized fragment.
@@ -134,12 +135,12 @@ TEST_F(NGBlockLayoutAlgorithmTest, Caching) {
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(200), LayoutUnit(200)));
   result = RunCachedLayoutResult(space, node);
-  EXPECT_EQ(result, nullptr);
+  EXPECT_EQ(result.get(), nullptr);
 
   // Test layout invalidation
   block_flow->SetNeedsLayout("");
   result = RunCachedLayoutResult(space, node);
-  EXPECT_EQ(result, nullptr);
+  EXPECT_EQ(result.get(), nullptr);
 }
 
 TEST_F(NGBlockLayoutAlgorithmTest, MinInlineSizeCaching) {
@@ -154,26 +155,26 @@ TEST_F(NGBlockLayoutAlgorithmTest, MinInlineSizeCaching) {
   auto* block_flow = To<LayoutBlockFlow>(GetLayoutObjectByElementId("box"));
   NGBlockNode node(block_flow);
 
-  const NGLayoutResult* result = node.Layout(space, nullptr);
+  scoped_refptr<const NGLayoutResult> result(node.Layout(space, nullptr));
   EXPECT_EQ(PhysicalSize(30, 40), result->PhysicalFragment().Size());
 
   // Test pointer-equal constraint space.
   result = RunCachedLayoutResult(space, node);
-  EXPECT_NE(result, nullptr);
+  EXPECT_NE(result.get(), nullptr);
 
   // Test identical, but not pointer-equal, constraint space.
   space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(100), LayoutUnit(100)));
   result = RunCachedLayoutResult(space, node);
-  EXPECT_NE(result, nullptr);
+  EXPECT_NE(result.get(), nullptr);
 
   // Test different constraint space.
   space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(100), LayoutUnit(200)));
   result = RunCachedLayoutResult(space, node);
-  EXPECT_NE(result, nullptr);
+  EXPECT_NE(result.get(), nullptr);
 
   // Test a different constraint space that will actually result in a different
   // size.
@@ -181,7 +182,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, MinInlineSizeCaching) {
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(200), LayoutUnit(100)));
   result = RunCachedLayoutResult(space, node);
-  EXPECT_EQ(result, nullptr);
+  EXPECT_EQ(result.get(), nullptr);
 }
 
 TEST_F(NGBlockLayoutAlgorithmTest, PercentageBlockSizeQuirkDescendantsCaching) {
@@ -235,14 +236,15 @@ TEST_F(NGBlockLayoutAlgorithmTest, PercentageBlockSizeQuirkDescendantsCaching) {
   NGConstraintSpace space200 =
       create_space(LogicalSize(LayoutUnit(100), LayoutUnit(200)));
 
-  auto run_test = [&](auto id) -> const NGLayoutResult* {
+  auto run_test = [&](auto id) -> scoped_refptr<const NGLayoutResult> {
     // Grab the box under test.
     auto* box = To<LayoutBlockFlow>(GetLayoutObjectByElementId(id));
     NGBlockNode node(box);
 
     // Check that we have a cache hit with space100.
-    const NGLayoutResult* result = RunCachedLayoutResult(space100, node);
-    EXPECT_NE(result, nullptr);
+    scoped_refptr<const NGLayoutResult> result =
+        RunCachedLayoutResult(space100, node);
+    EXPECT_NE(result.get(), nullptr);
 
     // Return the result of the cache with space200.
     return RunCachedLayoutResult(space200, node);
@@ -300,12 +302,12 @@ TEST_F(NGBlockLayoutAlgorithmTest, LineOffsetCaching) {
       create_space(LogicalSize(LayoutUnit(300), LayoutUnit(100)),
                    NGBfcOffset(LayoutUnit(50), LayoutUnit()));
 
-  const NGLayoutResult* result = nullptr;
+  scoped_refptr<const NGLayoutResult> result;
   auto* box1 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("box1"));
 
   // Ensure we get a cached layout result, even if our BFC line-offset changed.
   result = RunCachedLayoutResult(space200, NGBlockNode(box1));
-  EXPECT_NE(result, nullptr);
+  EXPECT_NE(result.get(), nullptr);
 }
 
 // Verifies that two children are laid out with the correct size and position.

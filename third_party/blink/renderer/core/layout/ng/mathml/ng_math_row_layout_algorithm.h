@@ -40,7 +40,7 @@ class CORE_EXPORT NGMathRowLayoutAlgorithm
   typedef Vector<ChildWithOffsetAndMargins, 4> ChildrenVector;
 
  private:
-  const NGLayoutResult* Layout() final;
+  scoped_refptr<const NGLayoutResult> Layout() final;
 
   MinMaxSizesResult ComputeMinMaxSizes(
       const MinMaxSizesFloatInput&) const final;

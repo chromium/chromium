@@ -398,7 +398,8 @@ NGPhysicalBoxFragment::RareData::RareData(const RareData& other)
               : nullptr),
       table_cell_column_index(other.table_cell_column_index) {}
 
-const NGLayoutResult* NGPhysicalBoxFragment::CloneAsHiddenForPaint() const {
+scoped_refptr<const NGLayoutResult>
+NGPhysicalBoxFragment::CloneAsHiddenForPaint() const {
   const ComputedStyle& style = Style();
   NGBoxFragmentBuilder builder(GetMutableLayoutObject(), &style,
                                style.GetWritingDirection());

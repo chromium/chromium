@@ -27,11 +27,11 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
 
   MinMaxSizesResult ComputeMinMaxSizes(
       const MinMaxSizesFloatInput&) const override;
-  const NGLayoutResult* Layout() override;
+  scoped_refptr<const NGLayoutResult> Layout() override;
 
  private:
-  const NGLayoutResult* RelayoutIgnoringChildScrollbarChanges();
-  const NGLayoutResult* LayoutInternal();
+  scoped_refptr<const NGLayoutResult> RelayoutIgnoringChildScrollbarChanges();
+  scoped_refptr<const NGLayoutResult> LayoutInternal();
 
   bool DoesItemCrossSizeComputeToAuto(const NGBlockNode& child) const;
   bool IsItemFlexBasisDefinite(const NGBlockNode& child) const;

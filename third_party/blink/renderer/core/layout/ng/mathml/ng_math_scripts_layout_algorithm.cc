@@ -286,7 +286,7 @@ NGMathScriptsLayoutAlgorithm::LayoutAndGetMetrics(NGBlockNode child) const {
   return child_and_metrics;
 }
 
-const NGLayoutResult* NGMathScriptsLayoutAlgorithm::Layout() {
+scoped_refptr<const NGLayoutResult> NGMathScriptsLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
 
   NGBlockNode base = nullptr;

@@ -4868,7 +4868,6 @@ LayoutBlockFlow::LayoutBlockFlowRareData::~LayoutBlockFlowRareData() = default;
 
 void LayoutBlockFlow::LayoutBlockFlowRareData::Trace(Visitor* visitor) const {
   visitor->Trace(multi_column_flow_thread_);
-  visitor->Trace(offset_mapping_);
 }
 
 void LayoutBlockFlow::ClearOffsetMappingIfNeeded() {
@@ -4876,7 +4875,7 @@ void LayoutBlockFlow::ClearOffsetMappingIfNeeded() {
   DCHECK(!IsLayoutNGObject());
   if (!rare_data_)
     return;
-  rare_data_->offset_mapping_.Clear();
+  rare_data_->offset_mapping_.reset();
 }
 
 const NGOffsetMapping* LayoutBlockFlow::GetOffsetMapping() const {
@@ -4884,14 +4883,15 @@ const NGOffsetMapping* LayoutBlockFlow::GetOffsetMapping() const {
   DCHECK(!IsLayoutNGObject());
   CHECK(!SelfNeedsLayout());
   CHECK(!NeedsLayout() || ChildLayoutBlockedByDisplayLock());
-  return rare_data_ ? rare_data_->offset_mapping_ : nullptr;
+  return rare_data_ ? rare_data_->offset_mapping_.get() : nullptr;
 }
 
-void LayoutBlockFlow::SetOffsetMapping(NGOffsetMapping* offset_mapping) {
+void LayoutBlockFlow::SetOffsetMapping(
+    std::unique_ptr<NGOffsetMapping> offset_mapping) {
   NOT_DESTROYED();
   DCHECK(!IsLayoutNGObject());
   DCHECK(offset_mapping);
-  EnsureRareData().offset_mapping_ = offset_mapping;
+  EnsureRareData().offset_mapping_ = std::move(offset_mapping);
 }
 
 }  // namespace blink

@@ -91,7 +91,7 @@ class CORE_EXPORT NGLineBreaker {
 
  private:
   const String& Text() const { return text_content_; }
-  const HeapVector<NGInlineItem>& Items() const { return items_data_.items; }
+  const Vector<NGInlineItem>& Items() const { return items_data_.items; }
 
   String TextContentForLineBreak() const;
 

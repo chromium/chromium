@@ -71,10 +71,7 @@ enum class NGCacheSlot { kLayout, kMeasure };
 // The NGConstraintSpace represents a set of constraints and available space
 // which a layout algorithm may produce a NGFragment within.
 class CORE_EXPORT NGConstraintSpace final {
-  // Though some STACK_ALLOCATED classes, |NGContainerFragmentBuilder| and
-  // |NGLineBreaker|, have reference to it, DISALLOW_NEW is applied here for
-  // performance reason.
-  DISALLOW_NEW();
+  USING_FAST_MALLOC(NGConstraintSpace);
 
  public:
   // Percentages are frequently the same as the available-size, zero, or
@@ -141,8 +138,6 @@ class CORE_EXPORT NGConstraintSpace final {
     if (HasRareData())
       delete rare_data_;
   }
-
-  void Trace(Visitor* visitor) const { visitor->Trace(exclusion_space_); }
 
   // Creates NGConstraintSpace representing LayoutObject's containing block.
   // This should live on NGBlockNode or another layout bridge and probably take

@@ -23,7 +23,7 @@ class CORE_EXPORT NGFieldsetLayoutAlgorithm
  public:
   NGFieldsetLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
-  const NGLayoutResult* Layout() override;
+  scoped_refptr<const NGLayoutResult> Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(
       const MinMaxSizesFloatInput&) const override;

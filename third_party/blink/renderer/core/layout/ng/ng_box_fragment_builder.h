@@ -381,14 +381,15 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     lines_until_clamp_ = value;
   }
 
-  void SetEarlyBreak(const NGEarlyBreak* breakpoint, NGBreakAppeal appeal) {
+  void SetEarlyBreak(scoped_refptr<const NGEarlyBreak> breakpoint,
+                     NGBreakAppeal appeal) {
     early_break_ = breakpoint;
     break_appeal_ = appeal;
   }
-  bool HasEarlyBreak() const { return early_break_; }
+  bool HasEarlyBreak() const { return early_break_.get(); }
   const NGEarlyBreak& EarlyBreak() const {
-    DCHECK(early_break_);
-    return *early_break_;
+    DCHECK(early_break_.get());
+    return *early_break_.get();
   }
 
   // Set the highest break appeal found so far. This is either:
@@ -402,11 +403,11 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // do not provide a setter here.
 
   // Creates the fragment. Can only be called once.
-  const NGLayoutResult* ToBoxFragment() {
+  scoped_refptr<const NGLayoutResult> ToBoxFragment() {
     DCHECK_NE(BoxType(), NGPhysicalFragment::kInlineBox);
     return ToBoxFragment(GetWritingMode());
   }
-  const NGLayoutResult* ToInlineBoxFragment() {
+  scoped_refptr<const NGLayoutResult> ToInlineBoxFragment() {
     // The logical coordinate for inline box uses line-relative writing-mode,
     // not
     // flow-relative.
@@ -414,7 +415,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     return ToBoxFragment(ToLineWritingMode(GetWritingMode()));
   }
 
-  const NGLayoutResult* Abort(NGLayoutResult::EStatus);
+  scoped_refptr<const NGLayoutResult> Abort(NGLayoutResult::EStatus);
 
   NGPhysicalFragment::NGBoxType BoxType() const;
   void SetBoxType(NGPhysicalFragment::NGBoxType box_type) {
@@ -583,7 +584,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     minimal_space_shortage_ = LayoutUnit::Max();
   }
 
-  const NGLayoutResult* ToBoxFragment(WritingMode);
+  scoped_refptr<const NGLayoutResult> ToBoxFragment(WritingMode);
 
   const NGFragmentGeometry* initial_fragment_geometry_ = nullptr;
   NGBoxStrut border_padding_;

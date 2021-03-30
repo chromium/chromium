@@ -281,7 +281,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   NGBreakTokenVector child_break_tokens_;
   scoped_refptr<const NGInlineBreakToken> last_inline_break_token_;
 
-  const NGEarlyBreak* early_break_ = nullptr;
+  scoped_refptr<const NGEarlyBreak> early_break_;
   NGBreakAppeal break_appeal_ = kBreakAppealLastResort;
 
   // See NGLayoutResult::AnnotationOverflow().

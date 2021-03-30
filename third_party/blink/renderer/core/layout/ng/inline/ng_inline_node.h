@@ -33,9 +33,10 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   }
   NGLayoutInputNode NextSibling() const { return nullptr; }
 
-  const NGLayoutResult* Layout(const NGConstraintSpace&,
-                               const NGBreakToken*,
-                               NGInlineChildLayoutContext* context) const;
+  scoped_refptr<const NGLayoutResult> Layout(
+      const NGConstraintSpace&,
+      const NGBreakToken*,
+      NGInlineChildLayoutContext* context) const;
 
   // Computes the value of min-content and max-content for this anonymous block
   // box. min-content is the inline size when lines wrap at every break
@@ -135,7 +136,7 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   // Prepare inline and text content for layout. Must be called before
   // calling the Layout method.
   void PrepareLayoutIfNeeded() const;
-  void PrepareLayout(NGInlineNodeData* previous_data) const;
+  void PrepareLayout(std::unique_ptr<NGInlineNodeData> previous_data) const;
 
   void CollectInlines(NGInlineNodeData*,
                       NGInlineNodeData* previous_data = nullptr) const;
@@ -143,10 +144,9 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   void SegmentScriptRuns(NGInlineNodeData*) const;
   void SegmentFontOrientation(NGInlineNodeData*) const;
   void SegmentBidiRuns(NGInlineNodeData*) const;
-  void ShapeText(
-      NGInlineItemsData*,
-      const String* previous_text = nullptr,
-      const HeapVector<NGInlineItem>* previous_items = nullptr) const;
+  void ShapeText(NGInlineItemsData*,
+                 const String* previous_text = nullptr,
+                 const Vector<NGInlineItem>* previous_items = nullptr) const;
   void ShapeTextForFirstLineIfNeeded(NGInlineNodeData*) const;
   void AssociateItemsWithInlines(NGInlineNodeData*) const;
 

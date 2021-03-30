@@ -38,7 +38,7 @@ NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
 
-  const NGLayoutResult* result =
+  scoped_refptr<const NGLayoutResult> result =
       NGBlockLayoutAlgorithm(
           {node, fragment_geometry, space, To<NGBlockBreakToken>(break_token)})
           .Layout();
@@ -55,7 +55,7 @@ NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithmForElement(Element* element) {
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
 
-  const NGLayoutResult* result =
+  scoped_refptr<const NGLayoutResult> result =
       NGBlockLayoutAlgorithm({node, fragment_geometry, space}).Layout();
   return std::make_pair(To<NGPhysicalBoxFragment>(&result->PhysicalFragment()),
                         std::move(space));
@@ -69,7 +69,7 @@ NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
 
-  const NGLayoutResult* result =
+  scoped_refptr<const NGLayoutResult> result =
       NGFieldsetLayoutAlgorithm(
           {node, fragment_geometry, space, To<NGBlockBreakToken>(break_token)})
           .Layout();

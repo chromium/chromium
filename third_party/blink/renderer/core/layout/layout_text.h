@@ -39,8 +39,7 @@ namespace blink {
 class AbstractInlineTextBox;
 class ContentCaptureManager;
 class InlineTextBox;
-struct NGInlineItemsData;
-struct NGInlineItemSpan;
+class NGInlineItem;
 class NGOffsetMapping;
 
 enum class OnlyWhitespaceOrNbsp : unsigned { kUnknown = 0, kNo = 1, kYes = 2 };
@@ -370,13 +369,13 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     return node_id_ != kInvalidDOMNodeId;
   }
 
-  void SetInlineItems(NGInlineItemsData* data, size_t begin, size_t size);
+  void SetInlineItems(NGInlineItem* begin, NGInlineItem* end);
   void ClearInlineItems();
   bool HasValidInlineItems() const {
     NOT_DESTROYED();
     return valid_ng_items_;
   }
-  const NGInlineItemSpan& InlineItems() const;
+  const base::span<NGInlineItem>& InlineItems() const;
   // Inline items depends on context. It needs to be invalidated not only when
   // it was inserted/changed but also it was moved.
   void InvalidateInlineItems() {
@@ -397,11 +396,11 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     has_bidi_control_items_ = false;
   }
 
-  virtual const NGInlineItemSpan* GetNGInlineItems() const {
+  virtual const base::span<NGInlineItem>* GetNGInlineItems() const {
     NOT_DESTROYED();
     return nullptr;
   }
-  virtual NGInlineItemSpan* GetNGInlineItems() {
+  virtual base::span<NGInlineItem>* GetNGInlineItems() {
     NOT_DESTROYED();
     return nullptr;
   }

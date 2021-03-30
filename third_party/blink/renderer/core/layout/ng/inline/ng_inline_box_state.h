@@ -256,7 +256,7 @@ class CORE_EXPORT NGInlineLayoutStateStack {
 
     void UpdateFragmentEdges(Vector<BoxData, 4>& list);
 
-    const NGLayoutResult* CreateBoxFragment(NGLogicalLineItems*);
+    scoped_refptr<const NGLayoutResult> CreateBoxFragment(NGLogicalLineItems*);
   };
 
   Vector<NGInlineBoxState, 4> stack_;

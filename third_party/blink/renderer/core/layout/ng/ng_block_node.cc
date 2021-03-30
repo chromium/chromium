@@ -196,9 +196,9 @@ NOINLINE void DetermineAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
   }
 }
 
-inline const NGLayoutResult* LayoutWithAlgorithm(
+inline scoped_refptr<const NGLayoutResult> LayoutWithAlgorithm(
     const NGLayoutAlgorithmParams& params) {
-  const NGLayoutResult* result = nullptr;
+  scoped_refptr<const NGLayoutResult> result;
   DetermineAlgorithmAndRun(params,
                            [&result](NGLayoutAlgorithmOperations* algorithm) {
                              result = algorithm->Layout();
@@ -380,7 +380,7 @@ inline LayoutPoint ToLayoutPoint(
 
 }  // namespace
 
-const NGLayoutResult* NGBlockNode::Layout(
+scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
     const NGConstraintSpace& constraint_space,
     const NGBlockBreakToken* break_token,
     const NGEarlyBreak* early_break) const {
@@ -404,7 +404,7 @@ const NGLayoutResult* NGBlockNode::Layout(
   // (calculating that isn't necessarily very cheap). So, start off without it.
   base::Optional<NGFragmentGeometry> fragment_geometry;
 
-  const NGLayoutResult* layout_result =
+  scoped_refptr<const NGLayoutResult> layout_result =
       box_->CachedLayoutResult(constraint_space, break_token, early_break,
                                &fragment_geometry, &cache_status);
   if (UNLIKELY(DevtoolsReadonlyLayoutScope::InDevtoolsLayout())) {
@@ -479,7 +479,7 @@ const NGLayoutResult* NGBlockNode::Layout(
       !GetFlowThread(block_flow)) {
     DCHECK(layout_result);
 #if DCHECK_IS_ON()
-    const NGLayoutResult* previous_result = layout_result;
+    scoped_refptr<const NGLayoutResult> previous_result = layout_result;
 #endif
 
     // A child may have changed size while performing "simplified" layout (it
@@ -495,7 +495,7 @@ const NGLayoutResult* NGBlockNode::Layout(
     }
 #endif
   } else if (cache_status == NGLayoutCacheStatus::kCanReuseLines) {
-    params.previous_result = layout_result;
+    params.previous_result = layout_result.get();
     layout_result = nullptr;
   } else {
     layout_result = nullptr;
@@ -571,9 +571,10 @@ const NGLayoutResult* NGBlockNode::Layout(
   return layout_result;
 }
 
-const NGLayoutResult* NGBlockNode::SimplifiedLayout(
+scoped_refptr<const NGLayoutResult> NGBlockNode::SimplifiedLayout(
     const NGPhysicalFragment& previous_fragment) const {
-  const NGLayoutResult* previous_result = box_->GetCachedLayoutResult();
+  scoped_refptr<const NGLayoutResult> previous_result =
+      box_->GetCachedLayoutResult();
   DCHECK(previous_result);
 
   // We might be be trying to perform simplfied layout on a fragment in the
@@ -590,7 +591,8 @@ const NGLayoutResult* NGBlockNode::SimplifiedLayout(
   // Perform layout on ourselves using the previous constraint space.
   const NGConstraintSpace space(
       previous_result->GetConstraintSpaceForCaching());
-  const NGLayoutResult* result = Layout(space, /* break_token */ nullptr);
+  scoped_refptr<const NGLayoutResult> result =
+      Layout(space, /* break_token */ nullptr);
 
   const auto& old_fragment =
       To<NGPhysicalBoxFragment>(previous_result->PhysicalFragment());
@@ -616,7 +618,8 @@ const NGLayoutResult* NGBlockNode::SimplifiedLayout(
   return result;
 }
 
-const NGLayoutResult* NGBlockNode::CachedLayoutResultForOutOfFlowPositioned(
+scoped_refptr<const NGLayoutResult>
+NGBlockNode::CachedLayoutResultForOutOfFlowPositioned(
     LogicalSize container_content_size) const {
   DCHECK(IsOutOfFlowPositioned());
 
@@ -671,10 +674,11 @@ void NGBlockNode::PrepareForLayout() const {
     To<LayoutNGListItem>(box_.Get())->UpdateMarkerTextIfNeeded();
 }
 
-void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
-                               const NGConstraintSpace& constraint_space,
-                               const NGBlockBreakToken* break_token,
-                               const NGLayoutResult* layout_result) const {
+void NGBlockNode::FinishLayout(
+    LayoutBlockFlow* block_flow,
+    const NGConstraintSpace& constraint_space,
+    const NGBlockBreakToken* break_token,
+    scoped_refptr<const NGLayoutResult> layout_result) const {
   // If we abort layout and don't clear the cached layout-result, we can end
   // up in a state where the layout-object tree doesn't match fragment tree
   // referenced by this layout-result.
@@ -787,7 +791,8 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
                                /* depends_on_block_constraints */ false);
     }
 
-    const NGLayoutResult* layout_result = Layout(constraint_space);
+    scoped_refptr<const NGLayoutResult> layout_result =
+        Layout(constraint_space);
     DCHECK_EQ(layout_result->Status(), NGLayoutResult::kSuccess);
     sizes = NGFragment({container_writing_mode, TextDirection::kLtr},
                        layout_result->PhysicalFragment())
@@ -1559,7 +1564,7 @@ bool NGBlockNode::HasIndex() const {
   return To<MathMLRadicalElement>(GetDOMNode())->HasIndex();
 }
 
-const NGLayoutResult* NGBlockNode::LayoutAtomicInline(
+scoped_refptr<const NGLayoutResult> NGBlockNode::LayoutAtomicInline(
     const NGConstraintSpace& parent_constraint_space,
     const ComputedStyle& parent_style,
     bool use_first_line_style,
@@ -1580,14 +1585,14 @@ const NGLayoutResult* NGBlockNode::LayoutAtomicInline(
   builder.SetReplacedPercentageResolutionSize(
       parent_constraint_space.ReplacedPercentageResolutionSize());
   NGConstraintSpace constraint_space = builder.ToConstraintSpace();
-  const NGLayoutResult* result = Layout(constraint_space);
+  scoped_refptr<const NGLayoutResult> result = Layout(constraint_space);
   // TODO(kojii): Investigate why ClearNeedsLayout() isn't called automatically
   // when it's being laid out.
   GetLayoutBox()->ClearNeedsLayout();
   return result;
 }
 
-const NGLayoutResult* NGBlockNode::RunLegacyLayout(
+scoped_refptr<const NGLayoutResult> NGBlockNode::RunLegacyLayout(
     const NGConstraintSpace& constraint_space) const {
   // This is an exit-point from LayoutNG to the legacy engine. This means that
   // we need to be at a formatting context boundary, since NG and legacy don't
@@ -1601,7 +1606,8 @@ const NGLayoutResult* NGBlockNode::RunLegacyLayout(
   DCHECK(!constraint_space.HasBlockFragmentation() ||
          box_->GetNGPaginationBreakability() == LayoutBox::kForbidBreaks);
 
-  const NGLayoutResult* layout_result = box_->GetCachedLayoutResult();
+  scoped_refptr<const NGLayoutResult> layout_result =
+      box_->GetCachedLayoutResult();
 
   if (UNLIKELY(DevtoolsReadonlyLayoutScope::InDevtoolsLayout())) {
     DCHECK(layout_result);
@@ -1699,10 +1705,10 @@ const NGLayoutResult* NGBlockNode::RunLegacyLayout(
         constraint_space.PercentageResolutionSize() !=
             old_space.PercentageResolutionSize();
     if (needs_cached_result_update) {
-      layout_result = MakeGarbageCollected<NGLayoutResult>(
+      layout_result = base::AdoptRef(new NGLayoutResult(
           *layout_result, constraint_space, layout_result->EndMarginStrut(),
           layout_result->BfcLineOffset(), layout_result->BfcBlockOffset(),
-          LayoutUnit() /* block_offset_delta */);
+          LayoutUnit() /* block_offset_delta */));
       box_->SetCachedLayoutResult(layout_result);
     }
   }
@@ -1713,7 +1719,7 @@ const NGLayoutResult* NGBlockNode::RunLegacyLayout(
   return layout_result;
 }
 
-const NGLayoutResult* NGBlockNode::RunSimplifiedLayout(
+scoped_refptr<const NGLayoutResult> NGBlockNode::RunSimplifiedLayout(
     const NGLayoutAlgorithmParams& params,
     const NGLayoutResult& previous_result) const {
   NGSimplifiedLayoutAlgorithm algorithm(params, previous_result);
@@ -1816,20 +1822,21 @@ void NGBlockNode::StoreMargins(const NGPhysicalBoxStrut& physical_margins) {
 }
 
 void NGBlockNode::AddColumnResult(
-    const NGLayoutResult* result,
+    scoped_refptr<const NGLayoutResult> result,
     const NGBlockBreakToken* incoming_break_token) const {
   wtf_size_t index = FragmentIndex(incoming_break_token);
   GetFlowThread(To<LayoutBlockFlow>(box_.Get()))
       ->AddLayoutResult(result, index);
 }
 
-void NGBlockNode::AddColumnResult(const NGLayoutResult* result) const {
+void NGBlockNode::AddColumnResult(
+    scoped_refptr<const NGLayoutResult> result) const {
   GetFlowThread(To<LayoutBlockFlow>(box_.Get()))
       ->AddLayoutResult(std::move(result));
 }
 
 void NGBlockNode::ReplaceColumnResult(
-    const NGLayoutResult* result,
+    scoped_refptr<const NGLayoutResult> result,
     const NGPhysicalBoxFragment& old_fragment) const {
   GetFlowThread(To<LayoutBlockFlow>(box_.Get()))
       ->ReplaceLayoutResult(std::move(result), old_fragment);
