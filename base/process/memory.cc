@@ -17,6 +17,7 @@
 #include "base/immediate_crash.h"
 #include "base/logging.h"
 #include "base/partition_alloc_buildflags.h"
+#include "base/stl_util.h"
 #if BUILDFLAG(USE_PARTITION_ALLOC)
 #include "base/allocator/partition_allocator/page_allocator.h"
 #endif
