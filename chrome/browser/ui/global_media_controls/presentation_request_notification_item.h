@@ -58,6 +58,9 @@ class PresentationRequestNotificationItem final
   // presentation request.
   std::unique_ptr<media_router::StartPresentationContext> context_;
   const content::PresentationRequest request_;
+
+  media_message_center::MediaNotificationView* view_ = nullptr;
+
   base::WeakPtrFactory<PresentationRequestNotificationItem> weak_ptr_factory_{
       this};
 };
