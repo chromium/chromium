@@ -25,6 +25,7 @@ const {
   sendCDPMessage,
   setCommandCallback,
   setClearPauseDataCallback,
+  getCurrentError,
   ignoreScript,
   dump,
 } = __RECORD_REPLAY_ARGUMENTS__;
@@ -142,6 +143,21 @@ function onConsoleAPICall(params) {
 }
 
 function Target_getCurrentMessageContents() {
+  const error = getCurrentError();
+
+  if (error) {
+    const { message, filename, line, column, scriptId } = error;
+    return {
+      source: "PageError",
+      level: "error",
+      text: message,
+      url: filename,
+      sourceId: scriptId ? scriptId.toString() : undefined,
+      line,
+      column,
+    };
+  }
+
   // Look for the "args" variable on an onConsoleMessage frame.
   // The arguments are also stored on the last console API call, though
   // if we use that we need to be careful because the pause state could have
@@ -739,6 +755,11 @@ function createProtocolScope(scopeId) {
 
 )"""";
 
+static v8::Local<v8::String> ToV8String(v8::Isolate* isolate, const char* value) {
+  return v8::String::NewFromUtf8(isolate, value,
+                                 v8::NewStringType::kInternalized).ToLocalChecked();
+}
+
 static void SetFunctionProperty(v8::Isolate* isolate, v8::Local<v8::Object> obj,
                                 const char* name, v8::FunctionCallback callback) {
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
@@ -750,15 +771,12 @@ static void SetFunctionProperty(v8::Isolate* isolate, v8::Local<v8::Object> obj,
   v8::Local<v8::Function> function =
     function_template->GetFunction(context).ToLocalChecked();
 
-  v8::Local<v8::String> name_string =
-    v8::String::NewFromUtf8(isolate, name,
-                            v8::NewStringType::kInternalized).ToLocalChecked();
-
+  v8::Local<v8::String> name_string = ToV8String(isolate, name);
   obj->Set(context, name_string, function).Check();
   function->SetName(name_string);
 }
 
-static void RecordReplayLog(const v8::FunctionCallbackInfo<v8::Value>& args) {
+static void LogCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(args.Length() == 1 && args[0]->IsString() &&
         "must be called with a single string");
   v8::String::Utf8Value text(args.GetIsolate(), args[0]);
@@ -768,7 +786,7 @@ static void RecordReplayLog(const v8::FunctionCallbackInfo<v8::Value>& args) {
 // Function to invoke on CDP responses and events.
 static v8::Eternal<v8::Function>* gCDPMessageCallback;
 
-static void RecordReplaySetCDPMessageCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
+static void SetCDPMessageCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(!gCDPMessageCallback);
   v8::Isolate* isolate = args.GetIsolate();
   CHECK(args[0]->IsFunction());
@@ -817,7 +835,7 @@ const int CONTEXT_GROUP_ID = 1;
 static v8_inspector::V8Inspector* gInspector;
 static v8_inspector::V8InspectorSession* gInspectorSession;
 
-static void RecordReplaySendCDPMessage(const v8::FunctionCallbackInfo<v8::Value>& args) {
+static void SendCDPMessage(const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(args.Length() == 1 && args[0]->IsString() &&
         "must be called with a single string");
   v8::String::Utf8Value message(args.GetIsolate(), args[0]);
@@ -840,11 +858,13 @@ static void RecordReplaySendCDPMessage(const v8::FunctionCallbackInfo<v8::Value>
   gInspectorSession->dispatchProtocolMessage(messageView);
 }
 
+static void GetCurrentError(const v8::FunctionCallbackInfo<v8::Value>& args);
+
 extern "C" void V8RecordReplayFinishRecording();
 
 // Mimic the gecko test runner behavior when using window.dump() to signal that the
 // recording is finished. This is pretty hacky.
-static void RecordReplayDump(const v8::FunctionCallbackInfo<v8::Value>& args) {
+static void DumpCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
   if (args.Length() == 1 && args[0]->IsString()) {
     v8::String::Utf8Value message(args.GetIsolate(), args[0]);
     if (!strcmp(*message, "RecReplaySendAsyncMessage Example__Finished")) {
@@ -857,42 +877,74 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
   v8::Local<v8::String> args_name_string =
-    v8::String::NewFromUtf8(isolate, "__RECORD_REPLAY_ARGUMENTS__",
-                            v8::NewStringType::kInternalized).ToLocalChecked();
+    ToV8String(isolate, "__RECORD_REPLAY_ARGUMENTS__");
 
   v8::Local<v8::Object> args = v8::Object::New(isolate);
   context->Global()->Set(context, args_name_string, args).Check();
 
   SetFunctionProperty(isolate, args, "log",
-                      RecordReplayLog);
+                      LogCallback);
   SetFunctionProperty(isolate, args, "setCDPMessageCallback",
-                      RecordReplaySetCDPMessageCallback);
+                      SetCDPMessageCallback);
   SetFunctionProperty(isolate, args, "sendCDPMessage",
-                      RecordReplaySendCDPMessage);
+                      SendCDPMessage);
   SetFunctionProperty(isolate, args, "setCommandCallback",
                       v8::FunctionCallbackRecordReplaySetCommandCallback);
   SetFunctionProperty(isolate, args, "setClearPauseDataCallback",
                       v8::FunctionCallbackRecordReplaySetClearPauseDataCallback);
   SetFunctionProperty(isolate, args, "ignoreScript",
                       v8::FunctionCallbackRecordReplayIgnoreScript);
+  SetFunctionProperty(isolate, args, "getCurrentError",
+                      GetCurrentError);
   SetFunctionProperty(isolate, args, "dump",
-                      RecordReplayDump);
+                      DumpCallback);
 
-  v8::Local<v8::String> source =
-    v8::String::NewFromUtf8(isolate, gRecordReplayScript,
-                            v8::NewStringType::kInternalized).ToLocalChecked();
-
-  v8::Local<v8::String> filename =
-    v8::String::NewFromUtf8(isolate, "record-replay-internal",
-                            v8::NewStringType::kInternalized).ToLocalChecked();
+  v8::Local<v8::String> source = ToV8String(isolate, gRecordReplayScript);
+  v8::Local<v8::String> filename = ToV8String(isolate, "record-replay-internal");
 
   v8::ScriptOrigin origin(filename);
   v8::Local<v8::Script> script = v8::Script::Compile(context, source, &origin).ToLocalChecked();
   script->Run(context).ToLocalChecked();
 }
 
+extern "C" void V8RecordReplayOnConsoleMessage(size_t bookmark);
+
+static ErrorEvent* gCurrentErrorEvent;
+
 void RecordReplayOnErrorEvent(ErrorEvent* error_event) {
-  recordreplay::Print("ON_ERROR_EVENT %d", error_event->record_replay_bookmark());
+  CHECK(!gCurrentErrorEvent);
+  gCurrentErrorEvent = error_event;
+
+  size_t bookmark = error_event->record_replay_bookmark();
+  V8RecordReplayOnConsoleMessage(bookmark);
+
+  gCurrentErrorEvent = nullptr;
+}
+
+static void SetDataProperty(v8::Isolate* isolate, v8::Local<v8::Object> obj,
+                            const char* property, v8::Local<v8::Value> value) {
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  obj->Set(context, ToV8String(isolate, property), value).Check();
+}
+
+static void GetCurrentError(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (!gCurrentErrorEvent) {
+    return;
+  }
+
+  v8::Isolate* isolate = args.GetIsolate();
+  v8::Local<v8::Object> rv = v8::Object::New(isolate);
+
+  SetDataProperty(isolate, rv, "message",
+                  ToV8String(isolate, gCurrentErrorEvent->message().Utf8().c_str()));
+  SetDataProperty(isolate, rv, "filename",
+                  ToV8String(isolate, gCurrentErrorEvent->filename().Utf8().c_str()));
+  SetDataProperty(isolate, rv, "line", v8::Number::New(isolate, gCurrentErrorEvent->lineno()));
+  SetDataProperty(isolate, rv, "column", v8::Number::New(isolate, gCurrentErrorEvent->colno()));
+  SetDataProperty(isolate, rv, "scriptId",
+                  v8::Number::New(isolate, gCurrentErrorEvent->Location()->ScriptId()));
+
+  args.GetReturnValue().Set(rv);
 }
 
 } // namespace blink
