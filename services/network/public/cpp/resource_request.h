@@ -35,7 +35,7 @@
 
 namespace network {
 
-// Typemapped to network.mojom.URLRequest in url_loader.mojom.
+// Typemapped to network.mojom.URLRequest in url_request.mojom.
 //
 // Note: Please revise EqualsForTesting accordingly on any updates to this
 // struct.
@@ -104,7 +104,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool SendsCookies() const;
   bool SavesCookies() const;
 
-  // See comments in network.mojom.URLRequest in url_loader.mojom for details
+  // See comments in network.mojom.URLRequest in url_request.mojom for details
   // of each field.
   std::string method = net::HttpRequestHeaders::kGetMethod;
   GURL url;
@@ -112,7 +112,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool update_first_party_url_on_redirect = false;
 
   // SECURITY NOTE: |request_initiator| is a security-sensitive field.  Please
-  // consult the doc comment for |request_initiator| in url_loader.mojom.
+  // consult the doc comment for |request_initiator| in url_request.mojom.
   base::Optional<url::Origin> request_initiator;
 
   base::Optional<url::Origin> isolated_world_origin;
