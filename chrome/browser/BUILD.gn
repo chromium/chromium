@@ -5176,17 +5176,17 @@ static_library("browser") {
     }
 
     if (use_x11) {
-      sources += [
-        "fullscreen_aurax11.cc",
-        "media/webrtc/window_icon_util_x11.cc",
-      ]
+      sources += [ "media/webrtc/window_icon_util_x11.cc" ]
     }
 
     if (use_ozone) {
-      sources += [
-        "fullscreen_ozone.cc",
-        "media/webrtc/window_icon_util_ozone.cc",
-      ]
+      sources += [ "media/webrtc/window_icon_util_ozone.cc" ]
+    }
+
+    if (is_linux) {
+      sources += [ "fullscreen_linux.cc" ]
+    } else if (use_ozone) {
+      sources += [ "fullscreen_ozone.cc" ]
     }
 
     if (rtc_use_pipewire) {
