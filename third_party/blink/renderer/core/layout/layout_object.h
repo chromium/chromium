@@ -75,7 +75,6 @@ class AffineTransform;
 class HitTestLocation;
 class HitTestRequest;
 class InlineBox;
-class LayoutBoxModelObject;
 class LayoutBlock;
 class LayoutBlockFlow;
 class LayoutFlowThread;
@@ -344,7 +343,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
  protected:
   void EnsureIdForTesting() {
     NOT_DESTROYED();
-    fragment_.EnsureId();
+    fragment_->EnsureId();
   }
 
  private:
@@ -591,7 +590,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   UniqueObjectId UniqueId() const {
     NOT_DESTROYED();
-    return fragment_.UniqueId();
+    return fragment_->UniqueId();
   }
 
   inline bool ShouldApplyPaintContainment(const ComputedStyle& style) const {
@@ -2979,7 +2978,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // See ../paint/README.md for more on fragments.
   const FragmentData& FirstFragment() const {
     NOT_DESTROYED();
-    return fragment_;
+    return *fragment_;
   }
 
   // Attempt to return the top/left fragment, to be used in block-fragmentation-
@@ -3004,8 +3003,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
     if (LIKELY(!HasFlippedBlocksWritingMode() || !IsLayoutNGObject()))
-      return fragment_;
-    return fragment_.LastFragment();
+      return *fragment_;
+    return fragment_->LastFragment();
   }
 
   enum OverflowRecalcType {
@@ -3177,9 +3176,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           .SetShouldAssumePaintOffsetTranslationForLayoutShiftTracking(b);
     }
 
-    FragmentData& FirstFragment() { return layout_object_.fragment_; }
+    FragmentData& FirstFragment() { return *layout_object_.fragment_; }
 
-    void EnsureId() { layout_object_.fragment_.EnsureId(); }
+    void EnsureId() { layout_object_.fragment_->EnsureId(); }
 
    protected:
     friend class LayoutBoxModelObject;
@@ -4301,11 +4300,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   Member<LayoutObject> parent_;
   Member<LayoutObject> previous_;
   Member<LayoutObject> next_;
+  Member<FragmentData> fragment_;
 
   // Store state between styleWillChange and styleDidChange
   static bool affects_parent_block_;
-
-  FragmentData fragment_;
 
 #if DCHECK_IS_ON()
   bool is_destroyed_ = false;

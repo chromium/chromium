@@ -389,7 +389,7 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
 
   std::unique_ptr<ViewFragmentationContext> fragmentation_context_;
   std::unique_ptr<NamedPagesMapper> named_pages_mapper_;
-  std::unique_ptr<PaintLayerCompositor> compositor_;
+  Member<PaintLayerCompositor> compositor_;
   scoped_refptr<IntervalArena> interval_arena_;
 
   Member<LayoutQuote> layout_quote_head_;

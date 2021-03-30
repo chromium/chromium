@@ -102,7 +102,7 @@ LayoutView::LayoutView(Document* document)
       layout_state_(nullptr),
       compositor_(RuntimeEnabledFeatures::CompositeAfterPaintEnabled()
                       ? nullptr
-                      : std::make_unique<PaintLayerCompositor>(*this)),
+                      : MakeGarbageCollected<PaintLayerCompositor>(*this)),
       layout_quote_head_(nullptr),
       layout_counter_count_(0),
       hit_test_count_(0),
@@ -129,6 +129,7 @@ LayoutView::~LayoutView() = default;
 
 void LayoutView::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
+  visitor->Trace(compositor_);
   visitor->Trace(layout_quote_head_);
   visitor->Trace(hit_test_cache_);
   LayoutBlockFlow::Trace(visitor);
@@ -848,7 +849,7 @@ bool LayoutView::UsesCompositing() const {
 
 PaintLayerCompositor* LayoutView::Compositor() {
   NOT_DESTROYED();
-  return compositor_.get();
+  return compositor_;
 }
 
 void LayoutView::CleanUpCompositor() {
@@ -884,7 +885,7 @@ void LayoutView::WillBeDestroyed() {
   if (PaintLayer* layer = Layer())
     layer->SetNeedsRepaint();
   LayoutBlockFlow::WillBeDestroyed();
-  compositor_.reset();
+  compositor_.Clear();
 }
 
 void LayoutView::UpdateFromStyle() {

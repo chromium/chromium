@@ -214,10 +214,7 @@ struct SameSizeAsLayoutObject : ImageResourceObserver, DisplayItemClient {
   unsigned bitfields_;
   unsigned bitfields2_;
   unsigned bitfields3_;
-  Member<void*> members[5];
-  // The following fields are in FragmentData.
-  PhysicalOffset paint_offset_;
-  std::unique_ptr<int> rare_data_;
+  Member<void*> members[6];
 #if DCHECK_IS_ON()
   bool is_destroyed_;
 #endif
@@ -326,7 +323,8 @@ LayoutObject::LayoutObject(Node* node)
       node_(node),
       parent_(nullptr),
       previous_(nullptr),
-      next_(nullptr) {
+      next_(nullptr),
+      fragment_(MakeGarbageCollected<FragmentData>()) {
   InstanceCounters::IncrementCounter(InstanceCounters::kLayoutObjectCounter);
   if (node_)
     GetFrameView()->IncrementLayoutObjectCount();
@@ -346,6 +344,7 @@ void LayoutObject::Trace(Visitor* visitor) const {
   visitor->Trace(parent_);
   visitor->Trace(previous_);
   visitor->Trace(next_);
+  visitor->Trace(fragment_);
 }
 
 bool LayoutObject::IsDescendantOf(const LayoutObject* obj) const {
@@ -4465,7 +4464,7 @@ void LayoutObject::ClearPaintInvalidationFlags() {
 #if DCHECK_IS_ON()
   DCHECK(!ShouldCheckForPaintInvalidation() || PaintInvalidationStateIsDirty());
 #endif
-  fragment_.SetPartialInvalidationLocalRect(PhysicalRect());
+  fragment_->SetPartialInvalidationLocalRect(PhysicalRect());
   if (!ShouldDelayFullPaintInvalidation()) {
     full_paint_invalidation_reason_ = PaintInvalidationReason::kNone;
     bitfields_.SetBackgroundNeedsFullPaintInvalidation(false);
@@ -4489,7 +4488,7 @@ bool LayoutObject::PaintInvalidationStateIsDirty() const {
          ShouldDoFullPaintInvalidation() ||
          SubtreeShouldDoFullPaintInvalidation() ||
          MayNeedPaintInvalidationAnimatedBackgroundImage() ||
-         !fragment_.PartialInvalidationLocalRect().IsEmpty();
+         !fragment_->PartialInvalidationLocalRect().IsEmpty();
 }
 #endif
 
@@ -4701,7 +4700,7 @@ bool LayoutObject::CanBeSelectionLeaf() const {
 void LayoutObject::InvalidateClipPathCache() {
   NOT_DESTROYED();
   SetNeedsPaintPropertyUpdate();
-  for (auto* fragment = &fragment_; fragment;
+  for (FragmentData* fragment = fragment_; fragment;
        fragment = fragment->NextFragment())
     fragment->InvalidateClipPathCache();
 }
