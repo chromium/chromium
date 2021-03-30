@@ -24,8 +24,9 @@
 #include "ui/wm/public/tooltip_client.h"
 
 using views::corewm::TooltipController;
-using views::corewm::test::TooltipTestView;
+using views::corewm::TooltipTrigger;
 using views::corewm::test::TooltipControllerTestHelper;
+using views::corewm::test::TooltipTestView;
 
 // The tests in this file exercise bits of TooltipController that are hard to
 // test outside of ash. Meaning these tests require the shell and related things
@@ -120,14 +121,14 @@ TEST_F(TooltipControllerTest, HideTooltipWhenCursorHidden) {
   Shell::Get()->cursor_manager()->DisableMouseEvents();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(Shell::Get()->cursor_manager()->IsCursorVisible());
-  helper_->UpdateIfRequired();
+  helper_->UpdateIfRequired(TooltipTrigger::kCursor);
   EXPECT_FALSE(helper_->IsTooltipVisible());
 
   // Enable mouse event which shows the cursor and re-check.
   Shell::Get()->cursor_manager()->EnableMouseEvents();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
-  helper_->UpdateIfRequired();
+  helper_->UpdateIfRequired(TooltipTrigger::kCursor);
   EXPECT_TRUE(helper_->IsTooltipVisible());
 }
 

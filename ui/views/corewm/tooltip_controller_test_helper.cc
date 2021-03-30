@@ -34,8 +34,12 @@ const gfx::Point& TooltipControllerTestHelper::GetTooltipPosition() {
   return controller_->state_manager_->position_;
 }
 
-void TooltipControllerTestHelper::UpdateIfRequired() {
-  controller_->UpdateIfRequired();
+void TooltipControllerTestHelper::HideAndReset() {
+  controller_->HideAndReset();
+}
+
+void TooltipControllerTestHelper::UpdateIfRequired(TooltipTrigger trigger) {
+  controller_->UpdateIfRequired(trigger);
 }
 
 void TooltipControllerTestHelper::FireHideTooltipTimer() {

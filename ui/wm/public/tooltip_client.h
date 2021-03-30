@@ -29,6 +29,13 @@ class WM_PUBLIC_EXPORT TooltipClient {
   // Informs the shell tooltip manager of change in tooltip for window |target|.
   virtual void UpdateTooltip(aura::Window* target) = 0;
 
+  // Informs the shell tooltip manager of change in tooltip for window |target|,
+  // triggered by a keyboard and passing the bounds of the newly focused item
+  // within the target. The bounds are relative to the window in which it is
+  // contained.
+  virtual void UpdateTooltipFromKeyboard(const gfx::Rect& bounds,
+                                         aura::Window* target) = 0;
+
   // Sets the time after which the tooltip is hidden for Window |target|. If
   // |timeout_in_ms| is <= 0, the tooltip is shown indefinitely.
   virtual void SetHideTooltipTimeout(aura::Window* target,

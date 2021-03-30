@@ -30,6 +30,11 @@ namespace test {
 class TooltipControllerTestHelper;
 }  // namespace test
 
+enum class TooltipTrigger {
+  kCursor,
+  kKeyboard,
+};
+
 // TooltipController listens for events that can have an impact on the
 // tooltip state.
 class VIEWS_EXPORT TooltipController
@@ -44,6 +49,8 @@ class VIEWS_EXPORT TooltipController
   // Overridden from wm::TooltipClient.
   int GetMaxWidth(const gfx::Point& location) const override;
   void UpdateTooltip(aura::Window* target) override;
+  void UpdateTooltipFromKeyboard(const gfx::Rect& bounds,
+                                 aura::Window* target) override;
   void SetHideTooltipTimeout(aura::Window* target,
                              base::TimeDelta timeout) override;
   void SetTooltipsEnabled(bool enable) override;
@@ -73,7 +80,7 @@ class VIEWS_EXPORT TooltipController
 
   // Updates the tooltip if required (if there is any change in the tooltip
   // text, tooltip id or the aura::Window).
-  void UpdateIfRequired();
+  void UpdateIfRequired(TooltipTrigger trigger);
 
   // Returns true if there's a drag-and-drop in progress.
   bool IsDragDropInProgress() const;
@@ -101,18 +108,25 @@ class VIEWS_EXPORT TooltipController
   void RemoveHideTooltipTimeoutFromMap(aura::Window* window);
 
   // Stop tracking the window on which the cursor was when the mouse was pressed
-  // if we're on another window.
-  void ResetWindowAtMousePressedIfNeeded(aura::Window* target);
+  // if we're on another window or if a new tooltip is triggered by keyboard.
+  void ResetWindowAtMousePressedIfNeeded(aura::Window* target,
+                                         bool force_reset);
 
   // To prevent the tooltip to show again after a mouse press event, we want
   // to hide it until the cursor moves to another window.
   bool ShouldHideBecauseMouseWasOncePressed();
 
-  // The window on which we are currently listening for events. For the moment,
-  // the |observed_window_| follows the window on which the mouse is.
-  // TODO(bebeaudr): Update comment above when we'll have keyboard-triggered
-  // tooltip because it won't always follow the cursor anymore.
+  // The window on which we are currently listening for events. When there's a
+  // keyboard-triggered visible tooltip, its value is set to the tooltip parent
+  // window. Otherwise, it's following the cursor.
   aura::Window* observed_window_ = nullptr;
+
+  // This is the position our controller will use to position the tooltip. When
+  // the tooltip is triggered by a keyboard action resulting in a view gaining
+  // focus, the point is set from the bounds of the view that gained focus.
+  // When the tooltip is triggered by the cursor, the |anchor_point_| is set to
+  // the |last_mouse_loc_|.
+  gfx::Point anchor_point_;
 
   // These fields are for tracking state when the user presses a mouse button.
   // The tooltip should stay hidden after a mouse press event on the view until

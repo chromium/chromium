@@ -53,6 +53,7 @@ void TooltipStateManager::HideAndReset() {
 void TooltipStateManager::Show(aura::Window* window,
                                const std::u16string& tooltip_text,
                                const gfx::Point& position,
+                               TooltipTrigger trigger,
                                const base::TimeDelta hide_delay) {
   HideAndReset();
 
@@ -60,6 +61,7 @@ void TooltipStateManager::Show(aura::Window* window,
   tooltip_id_ = wm::GetTooltipId(window);
   tooltip_text_ = tooltip_text;
   tooltip_parent_window_ = window;
+  tooltip_trigger_ = trigger;
 
   std::u16string truncated_text =
       gfx::TruncateString(tooltip_text_, kMaxTooltipLength, gfx::WORD_BREAK);
@@ -108,10 +110,13 @@ void TooltipStateManager::ShowNow(const std::u16string& trimmed_text,
   gfx::Point anchor_point =
       position_ +
       tooltip_parent_window_->GetBoundsInScreen().OffsetFromOrigin();
-  // TODO(bebeaudr): Don't always pass kRelativeToCursor once we have
-  // keyboard-triggered tooltips.
+
+  TooltipPositionBehavior behavior =
+      tooltip_trigger_ == TooltipTrigger::kCursor
+          ? TooltipPositionBehavior::kRelativeToCursor
+          : TooltipPositionBehavior::kCentered;
   tooltip_->Update(tooltip_parent_window_, trimmed_text,
-                   {anchor_point, TooltipPositionBehavior::kRelativeToCursor});
+                   {anchor_point, behavior});
   tooltip_->Show();
   if (!hide_delay.is_zero()) {
     will_hide_tooltip_timer_.Start(FROM_HERE, hide_delay, this,

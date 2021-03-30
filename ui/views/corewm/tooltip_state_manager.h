@@ -12,6 +12,7 @@
 #include "base/timer/timer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/corewm/tooltip.h"
+#include "ui/views/corewm/tooltip_controller.h"
 #include "ui/views/views_export.h"
 
 namespace aura {
@@ -53,6 +54,7 @@ class VIEWS_EXPORT TooltipStateManager {
   void Show(aura::Window* window,
             const std::u16string& tooltip_text,
             const gfx::Point& position,
+            TooltipTrigger trigger,
             const base::TimeDelta hide_delay);
 
   void StopWillHideTooltipTimer();
@@ -69,6 +71,8 @@ class VIEWS_EXPORT TooltipStateManager {
   const aura::Window* tooltip_parent_window() const {
     return tooltip_parent_window_;
   }
+
+  TooltipTrigger tooltip_trigger() const { return tooltip_trigger_; }
 
   // Update the |position_| if we're about to show the tooltip. This is to
   // ensure that the tooltip's position is aligned with the latest cursor
@@ -111,6 +115,8 @@ class VIEWS_EXPORT TooltipStateManager {
 
   // The window on which the tooltip is added.
   aura::Window* tooltip_parent_window_ = nullptr;
+
+  TooltipTrigger tooltip_trigger_ = TooltipTrigger::kCursor;
 
   // Two timers for the tooltip: one to hide an on-screen tooltip after a delay,
   // and one to display the tooltip when the timer fires.

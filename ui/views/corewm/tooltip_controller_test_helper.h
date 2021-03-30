@@ -41,7 +41,8 @@ class TooltipControllerTestHelper {
   const aura::Window* GetTooltipParentWindow();
   const aura::Window* GetObservedWindow();
   const gfx::Point& GetTooltipPosition();
-  void UpdateIfRequired();
+  void HideAndReset();
+  void UpdateIfRequired(TooltipTrigger trigger);
   void FireHideTooltipTimer();
   bool IsHideTooltipTimerRunning();
   bool IsTooltipVisible();
