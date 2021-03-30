@@ -2802,6 +2802,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.LoadDataWithBaseUrl.BaseUrl"
     enum="WebViewUrlScheme" expires_after="2021-05-05">
+  <obsolete>
+    Removed Mar 2021; we're not planning any short-term work in this area.
+  </obsolete>
   <owner>ntfschr@chromium.org</owner>
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
