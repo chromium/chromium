@@ -1811,7 +1811,7 @@ void NavigationRequest::ResetForCrossDocumentRestart() {
           commit_entry->GetFrameEntry(render_frame_host_->frame_tree_node());
     }
     if (rfh_entry) {
-      request_frame_entry =
+      rfh_frame_entry =
           rfh_entry->GetFrameEntry(render_frame_host_->frame_tree_node());
     }
 
@@ -1824,16 +1824,16 @@ void NavigationRequest::ResetForCrossDocumentRestart() {
                             reinterpret_cast<uintptr_t>(rfh_frame_entry));
 
     // Dump stuff from each FrameNavigationEntry.
-    int request_entry_doc_seq = 0;
-    int request_entry_item_seq = 0;
+    int64_t request_entry_doc_seq = 0;
+    int64_t request_entry_item_seq = 0;
     int32_t request_entry_site_instance_id = 0;
     int32_t request_entry_browsing_instance_id = 0;
-    int commit_entry_doc_seq = 0;
-    int commit_entry_item_seq = 0;
+    int64_t commit_entry_doc_seq = 0;
+    int64_t commit_entry_item_seq = 0;
     int32_t commit_entry_site_instance_id = 0;
     int32_t commit_entry_browsing_instance_id = 0;
-    int rfh_entry_doc_seq = 0;
-    int rfh_entry_item_seq = 0;
+    int64_t rfh_entry_doc_seq = 0;
+    int64_t rfh_entry_item_seq = 0;
     int32_t rfh_entry_site_instance_id = 0;
     int32_t rfh_entry_browsing_instance_id = 0;
 
