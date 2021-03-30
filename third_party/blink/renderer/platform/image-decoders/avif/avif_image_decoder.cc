@@ -342,7 +342,6 @@ uint8_t AVIFImageDecoder::GetYUVBitDepth() const {
 void AVIFImageDecoder::DecodeToYUV() {
   DCHECK(image_planes_);
   DCHECK(CanDecodeToYUV());
-  DCHECK(IsAllDataReceived());
 
   if (Failed())
     return;
@@ -353,8 +352,10 @@ void AVIFImageDecoder::DecodeToYUV() {
   // libavif cannot decode to an external buffer. So we need to copy from
   // libavif's internal buffer to |image_planes_|.
   // TODO(crbug.com/1099825): Enhance libavif to decode to an external buffer.
-  if (DecodeImage(0) != AVIF_RESULT_OK) {
-    SetFailed();
+  auto ret = DecodeImage(0);
+  if (ret != AVIF_RESULT_OK) {
+    if (ret != AVIF_RESULT_WAITING_ON_IO)
+      SetFailed();
     return;
   }
 
