@@ -376,6 +376,7 @@
 - (std::unique_ptr<Browser>)buildBrowserForBrowserState:
                                 (ChromeBrowserState*)browserState
                                          restoreSession:(BOOL)restoreSession {
+  DCHECK(browserState);
   auto browser = Browser::Create(browserState);
   DCHECK_EQ(browser->GetBrowserState(), browserState);
 
