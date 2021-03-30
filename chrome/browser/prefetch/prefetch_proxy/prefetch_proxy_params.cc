@@ -202,6 +202,13 @@ bool PrefetchProxyStartsSpareRenderer() {
                                                  "start_spare_renderer", false);
 }
 
+bool PrefetchProxyUseSpeculationRules() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             "isolated-prerender-use-speculation-rules") ||
+         base::GetFieldTrialParamByFeatureAsBool(
+             features::kIsolatePrerenders, "use_speculation_rules", false);
+}
+
 bool PrefetchProxyShouldPrefetchPosition(size_t position) {
   std::string csv = base::GetFieldTrialParamValueByFeature(
       features::kIsolatePrerenders, "prefetch_positions");

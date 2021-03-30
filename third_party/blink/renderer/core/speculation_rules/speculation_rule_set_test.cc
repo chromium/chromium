@@ -259,8 +259,7 @@ class StubSpeculationHost : public mojom::blink::SpeculationHost {
         &StubSpeculationHost::OnConnectionLost, base::Unretained(this)));
   }
 
-  void UpdateSpeculationCandidates_PendingSecurityReview(
-      Candidates candidates) override {
+  void UpdateSpeculationCandidates(Candidates candidates) override {
     candidates_ = std::move(candidates);
     if (done_closure_)
       std::move(done_closure_).Run();

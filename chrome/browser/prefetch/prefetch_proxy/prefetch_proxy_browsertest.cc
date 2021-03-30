@@ -512,6 +512,7 @@ class PrefetchProxyBrowserTest
     cmd->AppendSwitch("force-enable-metrics-reporting");
     cmd->AppendSwitchASCII("isolated-prerender-tunnel-proxy",
                            GetProxyURL().spec());
+    cmd->AppendSwitchASCII(switches::kEnableBlinkFeatures, "SpeculationRules");
   }
 
   void SetDataSaverEnabled(bool enabled) {
@@ -532,6 +533,37 @@ class PrefetchProxyBrowserTest
             NavigationPredictorKeyedService::PredictionSource::
                 kAnchorElementsParsedFromWebPage,
             predicted_urls);
+  }
+
+  void InsertSpeculation(bool subresources,
+                         const std::vector<GURL>& prefetch_urls) {
+    ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+
+    std::string speculation_script = R"(
+      var script = document.createElement('script');
+      script.type = 'speculationrules';
+      script.text = `{)";
+    if (subresources)
+      speculation_script.append(R"("prefetch_with_subresources": [{)");
+    else
+      speculation_script.append(R"("prefetch": [{)");
+    speculation_script.append(R"("source": "list",
+          "urls": [)");
+
+    bool first = true;
+    for (const GURL& url : prefetch_urls) {
+      if (!first)
+        speculation_script.append(",");
+      first = false;
+      speculation_script.append("\"").append(url.spec()).append("\"");
+    }
+    speculation_script.append(R"(],
+          "requires": ["anonymous-client-ip-when-cross-origin"]
+        }]
+      }`;
+      document.head.appendChild(script);)");
+
+    EXPECT_TRUE(ExecuteScript(GetWebContents(), speculation_script));
   }
 
   std::unique_ptr<prerender::NoStatePrefetchHandle> StartPrerender(
@@ -4075,4 +4107,240 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                          ukm::builders::PrefetchProxy_AfterSRPClick::
                              kSRPClickPrefetchStatusName));
+}
+
+class SpeculationPrefetchProxyTest : public PrefetchProxyBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    PrefetchProxyBrowserTest::SetUpCommandLine(cmd);
+    cmd->AppendSwitch("isolated-prerender-nsp-enabled");
+  }
+
+  void SetFeatures() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kIsolatePrerenders,
+          {
+              {"use_speculation_rules", "true"},
+          }},
+         {blink::features::kLightweightNoStatePrefetch, {}},
+         {blink::features::kSpeculationRulesPrefetchProxy, {}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(SuccessfulNSPEndToEnd)) {
+  base::HistogramTester histogram_tester;
+
+  SetDataSaverEnabled(true);
+  GURL starting_page = GetOriginServerURL("/simple.html");
+  ui_test_utils::NavigateToURL(browser(), starting_page);
+  WaitForUpdatedCustomProxyConfig();
+
+  ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
+      browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS));
+
+  PrefetchProxyTabHelper* tab_helper =
+      PrefetchProxyTabHelper::FromWebContents(GetWebContents());
+
+  GURL eligible_link =
+      GetOriginServerURL("/prefetch/prefetch_proxy/prefetch_page.html");
+
+  TestTabHelperObserver tab_helper_observer(tab_helper);
+  tab_helper_observer.SetExpectedSuccessfulURLs({eligible_link});
+
+  base::RunLoop prefetch_run_loop;
+  base::RunLoop nsp_run_loop;
+  tab_helper_observer.SetOnPrefetchSuccessfulClosure(
+      prefetch_run_loop.QuitClosure());
+
+  tab_helper_observer.SetOnNSPFinishedClosure(nsp_run_loop.QuitClosure());
+
+  GURL doc_url("https://www.google.com/search?q=test");
+  InsertSpeculation(true, {eligible_link});
+
+  // This run loop will quit when all the prefetch responses have been
+  // successfully done and processed.
+  prefetch_run_loop.Run();
+
+  std::vector<net::test_server::HttpRequest> origin_requests_before_prerender =
+      origin_server_requests();
+  std::vector<net::test_server::HttpRequest> proxy_requests_before_prerender =
+      proxy_server_requests();
+
+  // This run loop will quit when a NSP finishes.
+  nsp_run_loop.Run();
+
+  // Regression test for crbug/1131712.
+  WaitForHistoryBackendToRun(browser()->profile());
+  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+  EXPECT_FALSE(base::Contains(enumerator.urls(), eligible_link));
+
+  std::vector<net::test_server::HttpRequest> origin_requests_after_prerender =
+      origin_server_requests();
+  std::vector<net::test_server::HttpRequest> proxy_requests_after_prerender =
+      proxy_server_requests();
+
+  EXPECT_GT(proxy_requests_after_prerender.size(),
+            proxy_requests_before_prerender.size());
+
+  for (const net::test_server::HttpRequest& request :
+       origin_requests_after_prerender) {
+    EXPECT_FALSE(RequestHasClientHints(request));
+  }
+
+  // Check that the page's Javascript was NSP'd, but not the mainframe.
+  bool found_nsp_javascript = false;
+  bool found_nsp_mainframe = false;
+  bool found_image = false;
+  for (size_t i = origin_requests_before_prerender.size();
+       i < origin_requests_after_prerender.size(); ++i) {
+    net::test_server::HttpRequest request = origin_requests_after_prerender[i];
+
+    // prefetch_page.html sets a cookie on its response and we should see it
+    // here.
+    auto cookie_iter = request.headers.find("Cookie");
+    ASSERT_FALSE(cookie_iter == request.headers.end());
+    EXPECT_EQ(cookie_iter->second, "type=ChocolateChip");
+
+    GURL nsp_url = request.GetURL();
+    found_nsp_javascript |=
+        nsp_url.path() == "/prefetch/prefetch_proxy/prefetch.js";
+    found_nsp_mainframe |= nsp_url.path() == eligible_link.path();
+    found_image |= nsp_url.path() == "/prefetch/prefetch_proxy/image.png";
+  }
+  EXPECT_TRUE(found_nsp_javascript);
+  EXPECT_FALSE(found_nsp_mainframe);
+  EXPECT_FALSE(found_image);
+
+  VerifyOriginRequestsAreIsolated({
+      "/prefetch/prefetch_proxy/prefetch.js",
+      eligible_link.path(),
+  });
+
+  // Verify the resource load was reported to the subresource manager.
+  PrefetchProxyService* service =
+      PrefetchProxyServiceFactory::GetForProfile(browser()->profile());
+  PrefetchProxySubresourceManager* manager =
+      service->GetSubresourceManagerForURL(eligible_link);
+  ASSERT_TRUE(manager);
+
+  base::RunLoop().RunUntilIdle();
+
+  std::set<GURL> expected_subresources = {
+      GetOriginServerURL("/prefetch/prefetch_proxy/prefetch.js"),
+      GetOriginServerURL("/prefetch/prefetch_proxy/prefetch-redirect-start.js"),
+      GetOriginServerURL(
+          "/prefetch/prefetch_proxy/prefetch-redirect-middle.js"),
+      GetOriginServerURL("/prefetch/prefetch_proxy/prefetch-redirect-end.js"),
+  };
+  EXPECT_EQ(expected_subresources, manager->successfully_loaded_subresources());
+
+  EXPECT_TRUE(CheckForResourceInIsolatedCache(
+      GetOriginServerURL("/prefetch/prefetch_proxy/prefetch.js")));
+  EXPECT_TRUE(CheckForResourceInIsolatedCache(
+      GetOriginServerURL("/prefetch/prefetch_proxy/prefetch-redirect-end.js")));
+
+  // Navigate to the predicted site. We expect:
+  // * The mainframe HTML will not be requested from the origin server.
+  // * The JavaScript will not be requested from the origin server.
+  // * The prefetched JavaScript will be executed.
+  // * The image will be fetched.
+  ui_test_utils::NavigateToURL(browser(), eligible_link);
+
+  std::vector<net::test_server::HttpRequest> proxy_requests_after_click =
+      proxy_server_requests();
+
+  // Nothing should have gone through the proxy.
+  EXPECT_EQ(proxy_requests_after_prerender.size(),
+            proxy_requests_after_click.size());
+
+  std::vector<net::test_server::HttpRequest> origin_requests_after_click =
+      origin_server_requests();
+
+  // Only one request for the image is expected, and it should have cookies.
+  ASSERT_EQ(origin_requests_after_prerender.size() + 1,
+            origin_requests_after_click.size());
+  net::test_server::HttpRequest request =
+      origin_requests_after_click[origin_requests_after_click.size() - 1];
+  EXPECT_EQ(request.GetURL().path(), "/prefetch/prefetch_proxy/image.png");
+  auto cookie_iter = request.headers.find("Cookie");
+  ASSERT_FALSE(cookie_iter == request.headers.end());
+  EXPECT_EQ(cookie_iter->second, "type=ChocolateChip");
+
+  // The cookie from prefetch should also be present in the CookieManager API.
+  EXPECT_EQ("type=ChocolateChip",
+            content::GetCookies(
+                browser()->profile(), eligible_link,
+                net::CookieOptions::SameSiteCookieContext::MakeInclusive()));
+
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.CookiesToCopy", 1, 1);
+
+  // Check that the JavaScript ran.
+  EXPECT_EQ(base::ASCIIToUTF16("JavaScript Executed"),
+            GetWebContents()->GetTitle());
+
+  // Navigate one more time to destroy the SubresourceManager so that its UMA is
+  // recorded and to trigger UKM recording.
+  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+
+  // 16 = |kPrefetchUsedNoProbeWithNSP|.
+  EXPECT_EQ(base::Optional<int64_t>(16),
+            GetUKMMetric(eligible_link,
+                         ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
+                         ukm::builders::PrefetchProxy_AfterSRPClick::
+                             kSRPClickPrefetchStatusName));
+
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Subresources.NetError", net::OK, 2);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Subresources.Quantity", 4, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Subresources.RespCode", 200, 2);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.AfterClick.Subresources.UsedCache", true, 2);
+}
+
+IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(ConnectProxyEndtoEnd)) {
+  SetDataSaverEnabled(true);
+  ui_test_utils::NavigateToURL(browser(), GetOriginServerURL("/simple.html"));
+  WaitForUpdatedCustomProxyConfig();
+
+  PrefetchProxyTabHelper* tab_helper =
+      PrefetchProxyTabHelper::FromWebContents(GetWebContents());
+  TestTabHelperObserver tab_helper_observer(tab_helper);
+
+  GURL prefetch_url = GetOriginServerURL("/title2.html");
+
+  base::RunLoop run_loop;
+  tab_helper_observer.SetOnPrefetchSuccessfulClosure(run_loop.QuitClosure());
+  tab_helper_observer.SetExpectedSuccessfulURLs({prefetch_url});
+
+  GURL doc_url("https://www.google.com/search?q=test");
+  InsertSpeculation(false, {prefetch_url});
+
+  // This run loop will quit when the prefetch response has been successfully
+  // done and processed.
+  run_loop.Run();
+
+  EXPECT_EQ(tab_helper->srp_metrics().prefetch_attempted_count_, 1U);
+  EXPECT_EQ(tab_helper->srp_metrics().prefetch_successful_count_, 1U);
+
+  size_t starting_origin_request_count = OriginServerRequestCount();
+
+  ui_test_utils::NavigateToURL(browser(), prefetch_url);
+  EXPECT_EQ(base::UTF8ToUTF16("Title Of Awesomeness"),
+            GetWebContents()->GetTitle());
+
+  VerifyOriginRequestsAreIsolated({prefetch_url.path()});
+
+  // The origin server should not have served this request.
+  EXPECT_EQ(starting_origin_request_count, OriginServerRequestCount());
 }

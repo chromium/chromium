@@ -1334,6 +1334,8 @@ static_library("browser") {
     "prefetch/search_prefetch/streaming_search_prefetch_request.h",
     "prefetch/search_prefetch/streaming_search_prefetch_url_loader.cc",
     "prefetch/search_prefetch/streaming_search_prefetch_url_loader.h",
+    "prefetch/speculation_host_impl.cc",
+    "prefetch/speculation_host_impl.h",
     "prefs/browser_prefs.cc",
     "prefs/browser_prefs.h",
     "prefs/chrome_command_line_pref_store.cc",

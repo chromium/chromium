@@ -175,6 +175,13 @@ class PrefetchProxyTabHelper
   base::Optional<PrefetchProxyTabHelper::AfterSRPMetrics> after_srp_metrics()
       const;
 
+  // Fetches |private_prefetches| (up to a limit) and upon completion of each
+  // prefetch, fetches subresources if the prefetch URL is in
+  // |private_prefetches_with_subresources| (up to a limit).
+  void PrefetchSpeculationCandidates(
+      const std::vector<GURL>& private_prefetches_with_subresources,
+      const std::vector<GURL>& private_prefetches);
+
   // content::WebContentsObserver implementation.
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -281,6 +288,11 @@ class PrefetchProxyTabHelper
 
     // An ordered list of the URLs to prefetch.
     std::vector<GURL> urls_to_prefetch_;
+
+    // Subset of |urls_to_prefetch_| that is allowed to have subresources
+    // fetched. These are still subject to an overall limit restricting how many
+    // prefetches can fetch subresources.
+    std::set<GURL> allowed_to_prefetch_subresources_;
 
     // A set of all urls that were decoy requests.
     std::set<GURL> decoy_urls_;
@@ -415,6 +427,12 @@ class PrefetchProxyTabHelper
   void OnPredictionUpdated(
       const base::Optional<NavigationPredictorKeyedService::Prediction>
           prediction) override;
+
+  // Fetches the |prefetch_targets|, and considers fetching subresources for
+  // |allowed_to_prefetch_subresources_| based on limits on per page subresource
+  // fetching.
+  void PrefetchUrls(const std::vector<GURL>& prefetch_targets,
+                    const std::set<GURL>& allowed_to_prefetch_subresources);
 
   // Used as a callback for when the eligibility of |url| is determined.
   void OnGotEligibilityResult(

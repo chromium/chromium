@@ -19,13 +19,7 @@ import "url/mojom/url.mojom";
 interface SpeculationHost {
   // Pushes a new set of speculation candidates, which replaces any previously
   // sent.
-  //
-  // [[[ WARNING ]]]
-  // Not yet implemented in the browser process.
-  // Security reviewer approval for this has not yet been granted.
-  // The CL which lands a browser process implementation of this should rename
-  // this and seek ipc/SECURITY_OWNERS approval.
-  UpdateSpeculationCandidates_PendingSecurityReview(
+  UpdateSpeculationCandidates(
       array<SpeculationCandidate> candidates);
 };
 

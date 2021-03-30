@@ -85,6 +85,14 @@ size_t PrefetchProxyMaxSubresourcesPerPrerender();
 // complete.
 bool PrefetchProxyStartsSpareRenderer();
 
+// Whether the proxy should decide prefetches based on speculation rules API.
+// The default (false) uses Navigation Predictor. When false, prefetch proxy
+// can only be used for links from default search to links that are not Google.
+// When true, any origin in the origin trial (see
+// blink::features::kSpeculationRulesPrefetchProxy) can request a proxied
+// prefetch for any cross origin link.
+bool PrefetchProxyUseSpeculationRules();
+
 // Whether the given position of a predicted link should be prefetched.
 bool PrefetchProxyShouldPrefetchPosition(size_t position);
 

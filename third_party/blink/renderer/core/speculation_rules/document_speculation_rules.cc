@@ -96,8 +96,7 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
                     rule_set->prefetch_with_subresources_rules());
   }
 
-  host->UpdateSpeculationCandidates_PendingSecurityReview(
-      std::move(candidates));
+  host->UpdateSpeculationCandidates(std::move(candidates));
 }
 
 }  // namespace blink

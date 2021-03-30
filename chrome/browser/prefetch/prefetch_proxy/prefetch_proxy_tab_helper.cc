@@ -1004,6 +1004,10 @@ void PrefetchProxyTabHelper::MaybeDoNoStatePrefetch(const GURL& url) {
     return;
   }
 
+  // Not all prefetches are eligible for NSP, which fetches subresources.
+  if (!base::Contains(page_->allowed_to_prefetch_subresources_, url))
+    return;
+
   page_->urls_to_no_state_prefetch_.push_back(url);
   DoNoStatePrefetch();
 }
@@ -1144,22 +1148,31 @@ void PrefetchProxyTabHelper::StartSpareRenderer() {
   content::RenderProcessHost::WarmupSpareRenderProcessHost(profile_);
 }
 
+void PrefetchProxyTabHelper::PrefetchSpeculationCandidates(
+    const std::vector<GURL>& private_prefetches_with_subresources,
+    const std::vector<GURL>& private_prefetches) {
+  // Use navigation predictor by default.
+  if (!PrefetchProxyUseSpeculationRules())
+    return;
+
+  std::vector<GURL> prefetches = private_prefetches;
+  std::set<GURL> allowed_to_prefetch_subresources;
+  for (auto url : private_prefetches_with_subresources) {
+    prefetches.push_back(url);
+    allowed_to_prefetch_subresources.insert(url);
+  }
+
+  PrefetchUrls(prefetches, allowed_to_prefetch_subresources);
+}
+
 void PrefetchProxyTabHelper::OnPredictionUpdated(
     const base::Optional<NavigationPredictorKeyedService::Prediction>
         prediction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!PrefetchProxyIsEnabled()) {
-    return;
-  }
 
-  if (!IsProfileEligible()) {
+  // Use speculation rules API instead of navigation predictor.
+  if (PrefetchProxyUseSpeculationRules())
     return;
-  }
-
-  // This checks whether the user has enabled pre* actions in the settings UI.
-  if (!chrome_browser_net::CanPreresolveAndPreconnectUI(profile_->GetPrefs())) {
-    return;
-  }
 
   if (!prediction.has_value()) {
     return;
@@ -1186,6 +1199,31 @@ void PrefetchProxyTabHelper::OnPredictionUpdated(
     return;
   }
 
+  // For the navigation predictor approach, we assume all predicted URLs are
+  // eligible for NSP.
+  std::set<GURL> allowed_to_prefetch_subresources(
+      prediction.value().sorted_predicted_urls().begin(),
+      prediction.value().sorted_predicted_urls().end());
+  PrefetchUrls(prediction.value().sorted_predicted_urls(),
+               allowed_to_prefetch_subresources);
+}
+
+void PrefetchProxyTabHelper::PrefetchUrls(
+    const std::vector<GURL>& prefetch_targets,
+    const std::set<GURL>& allowed_to_prefetch_subresources) {
+  if (!PrefetchProxyIsEnabled()) {
+    return;
+  }
+
+  if (!IsProfileEligible()) {
+    return;
+  }
+
+  // This checks whether the user has enabled pre* actions in the settings UI.
+  if (!chrome_browser_net::CanPreresolveAndPreconnectUI(profile_->GetPrefs())) {
+    return;
+  }
+
   if (!page_->prefetch_metrics_collector_) {
     page_->prefetch_metrics_collector_ =
         base::MakeRefCounted<PrefetchProxyPrefetchMetricsCollector>(
@@ -1197,8 +1235,7 @@ void PrefetchProxyTabHelper::OnPredictionUpdated(
   // start tracking metrics.
   InformPLMOfLikelyPrefetching(web_contents());
 
-  page_->srp_metrics_->predicted_urls_count_ +=
-      prediction.value().sorted_predicted_urls().size();
+  page_->srp_metrics_->predicted_urls_count_ += prefetch_targets.size();
 
   // It is possible, since it is not stipulated by the API contract, that the
   // navigation predictor will issue multiple predictions during a single page
@@ -1207,9 +1244,12 @@ void PrefetchProxyTabHelper::OnPredictionUpdated(
   size_t original_prediction_ordering_starting_size =
       page_->original_prediction_ordering_.size();
 
-  for (size_t i = 0; i < prediction.value().sorted_predicted_urls().size();
-       ++i) {
-    GURL url = prediction.value().sorted_predicted_urls()[i];
+  page_->allowed_to_prefetch_subresources_.insert(
+      allowed_to_prefetch_subresources.begin(),
+      allowed_to_prefetch_subresources.end());
+
+  for (size_t i = 0; i < prefetch_targets.size(); ++i) {
+    GURL url = prefetch_targets[i];
 
     size_t url_index = original_prediction_ordering_starting_size + i;
     page_->original_prediction_ordering_.emplace(url, url_index);
@@ -1238,7 +1278,8 @@ PrefetchProxyTabHelper::CheckEligibilityOfURLSansUserData(Profile* profile,
     return std::make_pair(false, base::nullopt);
   }
 
-  if (google_util::IsGoogleAssociatedDomainUrl(url)) {
+  if (!PrefetchProxyUseSpeculationRules() &&
+      google_util::IsGoogleAssociatedDomainUrl(url)) {
     return std::make_pair(
         false, PrefetchProxyPrefetchStatus::kPrefetchNotEligibleGoogleDomain);
   }
