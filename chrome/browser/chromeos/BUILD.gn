@@ -3479,6 +3479,8 @@ static_library("test_support") {
     "//chromeos/dbus/cryptohome",
     "//chromeos/dbus/cryptohome:cryptohome_proto",
     "//chromeos/dbus/session_manager",
+    "//chromeos/dbus/userdataauth:userdataauth",
+    "//chromeos/dbus/userdataauth:userdataauth_proto",
     "//chromeos/login/auth",
     "//chromeos/services/ime:test_support",
     "//chromeos/services/multidevice_setup/public/cpp:test_support",
