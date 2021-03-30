@@ -40,10 +40,12 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
  public:
   explicit SubresourceRedirectLoginRobotsBrowserTest(
       bool enable_lite_mode = true,
-      bool enable_login_robots_compression_feature = true)
+      bool enable_login_robots_compression_feature = true,
+      bool enable_login_robots_for_low_memory = false)
       : enable_lite_mode_(enable_lite_mode),
         enable_login_robots_compression_feature_(
             enable_login_robots_compression_feature),
+        enable_login_robots_for_low_memory_(enable_login_robots_for_low_memory),
         https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   ~SubresourceRedirectLoginRobotsBrowserTest() override = default;
@@ -78,6 +80,8 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
       // Allow first 5 images to be loaded faster.
       params["first_k_subresource_limit"] = "5";
       params["robots_rules_receive_first_k_timeout_ms"] = "1000";
+      if (enable_login_robots_for_low_memory_)
+        params["enable_login_robots_for_low_memory"] = "true";
       enabled_features.emplace_back(blink::features::kSubresourceRedirect,
                                     params);
       login_detection_params["logged_in_sites"] = "https://loggedin.com";
@@ -138,6 +142,7 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
  protected:
   bool enable_lite_mode_;
   bool enable_login_robots_compression_feature_;
+  bool enable_login_robots_for_low_memory_ = false;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -149,6 +154,31 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
 
   base::HistogramTester histogram_tester_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+};
+
+class SubresourceRedirectLoginRobotsLowMemoryBrowserTest
+    : public SubresourceRedirectLoginRobotsBrowserTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  SubresourceRedirectLoginRobotsLowMemoryBrowserTest()
+      : SubresourceRedirectLoginRobotsBrowserTest(
+            true, /* enable_lite_mode */
+            true, /* enable_login_robots_compression_feature */
+            is_login_robots_for_low_memory_feature_enabled()) {}
+
+  ~SubresourceRedirectLoginRobotsLowMemoryBrowserTest() override = default;
+
+  bool is_low_end_device() const { return std::get<0>(GetParam()); }
+
+  bool is_login_robots_for_low_memory_feature_enabled() const {
+    return std::get<1>(GetParam());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SubresourceRedirectLoginRobotsBrowserTest::SetUpCommandLine(command_line);
+    if (is_low_end_device())
+      command_line->AppendSwitch("enable-low-end-device-mode");
+  }
 };
 
 // Enable tests for linux since LiteMode is enabled only for Android.
@@ -905,5 +935,82 @@ IN_PROC_BROWSER_TEST_F(
       "SubresourceRedirect.CompressionAttempt.ServerResponded", 0);
   VerifyImageCompressionPageInfoState(true);
 }
+
+// Verifies that the image is only compressed in low memory device with the low
+// memory feature flag enabled, and in non-low memory devices.
+IN_PROC_BROWSER_TEST_P(SubresourceRedirectLoginRobotsLowMemoryBrowserTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(TestLowMemoryDisableMode)) {
+  CreateUkmRecorder();
+  robots_rules_server_.AddRobotsRules(GetHttpsTestURL("/"),
+                                      {{kRuleTypeAllow, ""}});
+  NavigateAndWaitForLoad(browser(), GetHttpsTestURL("/load_image/image.html"));
+
+  if (!is_login_robots_for_low_memory_feature_enabled() &&
+      is_low_end_device()) {
+    // No compression when the low memory feature is disabled on low memory
+    // device
+    histogram_tester_.ExpectTotalCount(
+        "SubresourceRedirect.CompressionAttempt.ResponseCode", 0);
+    histogram_tester_.ExpectTotalCount(
+        "SubresourceRedirect.CompressionAttempt.ServerResponded", 0);
+    histogram_tester_.ExpectTotalCount(
+        "SubresourceRedirect.RobotsRulesFetcher.ResponseCode", 0);
+    histogram_tester_.ExpectTotalCount(
+        "SubresourceRedirect.RobotsRules.Browser.InMemoryCacheHit", 0);
+    histogram_tester_.ExpectTotalCount(
+        "SubresourceRedirect.ImageCompressionNotificationInfoBar", 0);
+
+    robots_rules_server_.VerifyRequestedOrigins({});
+    image_compression_server_.VerifyRequestedImagePaths({});
+    VerifyImageCompressionPageInfoState(false);
+    return;
+  }
+
+  // Compression happens in all the other cases:
+  //  1. Low end device with low memory feature flag enabled.
+  //  3. Non-low end device.
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.CompressionAttempt.ResponseCode", net::HTTP_OK, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.CompressionAttempt.ResponseCode",
+      net::HTTP_TEMPORARY_REDIRECT, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SubresourceRedirect.CompressionAttempt.ServerResponded", true, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.RobotsRulesFetcher.ResponseCode", net::HTTP_OK, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.RobotsRules.Browser.InMemoryCacheHit", false, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SubresourceRedirect.ImageCompressionNotificationInfoBar", 0);
+
+  robots_rules_server_.VerifyRequestedOrigins({GetHttpsTestURL("/").spec()});
+  image_compression_server_.VerifyRequestedImagePaths(
+      {"/load_image/image.png"});
+
+  using ImageCompressionUkm = ukm::builders::PublicImageCompressionImageLoad;
+  auto ukm_metrics = GetImageCompressionUkmMetrics();
+  EXPECT_LT(100U, ukm_metrics[ImageCompressionUkm::kOriginalBytesNameHash]);
+  EXPECT_LT(10U,
+            ukm_metrics[ImageCompressionUkm::kCompressionPercentageNameHash]);
+  EXPECT_THAT(ukm_metrics,
+              testing::Contains(testing::Key(
+                  ImageCompressionUkm::kNavigationToRequestStartNameHash)));
+  EXPECT_THAT(ukm_metrics,
+              testing::Contains(testing::Key(
+                  ImageCompressionUkm::kNavigationToRequestSentNameHash)));
+  EXPECT_THAT(ukm_metrics,
+              testing::Contains(testing::Key(
+                  ImageCompressionUkm::kNavigationToResponseReceivedNameHash)));
+  EXPECT_THAT(ukm_metrics,
+              testing::Contains(testing::Key(
+                  ImageCompressionUkm::kRobotsRulesFetchLatencyNameHash)));
+  EXPECT_THAT(ukm_metrics, testing::Contains(testing::Key(
+                               ImageCompressionUkm::kRedirectResultNameHash)));
+  VerifyImageCompressionPageInfoState(true);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SubresourceRedirectLoginRobotsLowMemoryBrowserTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 }  // namespace subresource_redirect
