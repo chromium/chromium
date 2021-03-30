@@ -86,6 +86,12 @@ class UsageScenarioDataStore
 
     // The visibility time for |source_id_for_longest_visible_origin|.
     base::TimeDelta source_id_for_longest_visible_origin_duration;
+
+    // The visibility time for the Origin associated with
+    // |source_id_for_longest_visible_origin|. This could be greater than
+    // |source_id_for_longest_visible_origin_duration| if there's multiple tabs
+    // for the longest visible origin visible during the interval.
+    base::TimeDelta longest_visible_origin_duration;
   };
 
   // Reset the interval data with the current state information and returns the

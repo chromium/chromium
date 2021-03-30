@@ -12516,6 +12516,19 @@ be describing additional metrics about the same event.
       The maximum number of windows that have been visible at the same time.
     </summary>
   </metric>
+  <metric name="OriginVisibilityTimeSeconds">
+    <summary>
+      The visibility time for the origin of the URL associated with this event,
+      in seconds. This can differ from URLVisibilityTimeSeconds if there's
+      multiple tabs loaded with the same URL that are visible during the
+      interval. E.g. if there's one tab loaded with foo.com/a visible for 1
+      second during the interval and one loaded with foo.com/b visible for 2
+      seconds the report will have URLVisibilityTimeSeconds = 2 seconds and
+      OriginVisibilityTimeSeconds = 3 seconds. This can also exceed the interval
+      duration (e.g. 2 visibles tab with loaded the same origin during the
+      entire interval).
+    </summary>
+  </metric>
   <metric name="PackageExits">
     <summary>
       Sum of package exits from all Chrome processes (Mac-only).

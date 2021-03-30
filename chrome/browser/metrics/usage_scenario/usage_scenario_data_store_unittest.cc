@@ -311,6 +311,7 @@ TEST_F(UsageScenarioDataStoreTest, VisibleSourceIDsDuringIntervalSingleURL) {
   data = ResetIntervalData();
   EXPECT_EQ(kSource1, data.source_id_for_longest_visible_origin);
   EXPECT_EQ(kShortDelay, data.source_id_for_longest_visible_origin_duration);
+  EXPECT_EQ(kShortDelay, data.longest_visible_origin_duration);
 
   // Interval with 2 different visible SourceID, |kSource1| is visible the
   // longest.
@@ -323,6 +324,7 @@ TEST_F(UsageScenarioDataStoreTest, VisibleSourceIDsDuringIntervalSingleURL) {
   EXPECT_EQ(kSource1, data.source_id_for_longest_visible_origin);
   EXPECT_EQ(2 * kShortDelay,
             data.source_id_for_longest_visible_origin_duration);
+  EXPECT_EQ(3 * kShortDelay, data.longest_visible_origin_duration);
 
   // Interval with 3 different visible SourceID, |kSource1| and |kSource2| are
   // visible for the same amount of time.
@@ -336,6 +338,7 @@ TEST_F(UsageScenarioDataStoreTest, VisibleSourceIDsDuringIntervalSingleURL) {
               data.source_id_for_longest_visible_origin == kSource2);
   EXPECT_EQ(2 * kShortDelay,
             data.source_id_for_longest_visible_origin_duration);
+  EXPECT_EQ(5 * kShortDelay, data.longest_visible_origin_duration);
 
   // Interval with only |kSource3| being visible.
   data_store()->OnUkmSourceBecameHidden(kSource1, kOrigin);
@@ -344,6 +347,7 @@ TEST_F(UsageScenarioDataStoreTest, VisibleSourceIDsDuringIntervalSingleURL) {
   data = ResetIntervalData();
   EXPECT_EQ(kSource3, data.source_id_for_longest_visible_origin);
   EXPECT_EQ(kShortDelay, data.source_id_for_longest_visible_origin_duration);
+  EXPECT_EQ(kShortDelay, data.longest_visible_origin_duration);
 
   // Back to no visible SourceID.
   data_store()->OnUkmSourceBecameHidden(kSource3, kOrigin);
@@ -372,6 +376,7 @@ TEST_F(UsageScenarioDataStoreTest, SourceIDVisibleMultipleTimesDuringInterval) {
   EXPECT_EQ(kSource1, data.source_id_for_longest_visible_origin);
   EXPECT_EQ(2 * kShortDelay,
             data.source_id_for_longest_visible_origin_duration);
+  EXPECT_EQ(2 * kShortDelay, data.longest_visible_origin_duration);
 }
 
 TEST_F(UsageScenarioDataStoreTest, VisibleSourceIDsMultipleOrigins) {
@@ -401,6 +406,7 @@ TEST_F(UsageScenarioDataStoreTest, VisibleSourceIDsMultipleOrigins) {
   EXPECT_TRUE(data.source_id_for_longest_visible_origin == kOrigin1SourceId1 ||
               data.source_id_for_longest_visible_origin == kOrigin1SourceId2);
   EXPECT_EQ(kShortDelay, data.source_id_for_longest_visible_origin_duration);
+  EXPECT_EQ(2 * kShortDelay, data.longest_visible_origin_duration);
 
   // All the sourceIDs associated with |kOrigin2| and |kOrigin3| visible for the
   // same time, which is greater than the cumulative visibility time for the
@@ -415,6 +421,7 @@ TEST_F(UsageScenarioDataStoreTest, VisibleSourceIDsMultipleOrigins) {
               data.source_id_for_longest_visible_origin == kOrigin3SourceId);
   EXPECT_EQ(2 * kShortDelay,
             data.source_id_for_longest_visible_origin_duration);
+  EXPECT_EQ(2 * kShortDelay, data.longest_visible_origin_duration);
 
   // The sourceID associated with |kOrigin2| is visible for 5 time units, the
   // cumulative time for the source ID associated with |kOrigin1| is also equal
@@ -429,6 +436,35 @@ TEST_F(UsageScenarioDataStoreTest, VisibleSourceIDsMultipleOrigins) {
   EXPECT_TRUE(data.source_id_for_longest_visible_origin == kOrigin2SourceId);
   EXPECT_EQ(5 * kShortDelay,
             data.source_id_for_longest_visible_origin_duration);
+  EXPECT_EQ(5 * kShortDelay, data.longest_visible_origin_duration);
+}
+
+TEST_F(UsageScenarioDataStoreTest, VisibleSourceIDsMultipleTabsSameOrigin) {
+  data_store()->OnTabAdded();
+  data_store()->OnTabAdded();
+  data_store()->OnTabAdded();
+
+  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.com/a"));
+  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://foo.com/b"));
+  const url::Origin kOrigin3 = url::Origin::Create(GURL("https://foo.com/c"));
+
+  const ukm::SourceId kOrigin1SourceId = 42;
+  const ukm::SourceId kOrigin2SourceId = 44;
+  const ukm::SourceId kOrigin3SourceId = 45;
+
+  data_store()->OnUkmSourceBecameVisible(kOrigin1SourceId, kOrigin1);
+  task_environment_.FastForwardBy(kShortDelay);
+  data_store()->OnUkmSourceBecameVisible(kOrigin2SourceId, kOrigin2);
+  task_environment_.FastForwardBy(kShortDelay);
+  data_store()->OnUkmSourceBecameHidden(kOrigin1SourceId, kOrigin1);
+  data_store()->OnUkmSourceBecameHidden(kOrigin2SourceId, kOrigin2);
+  data_store()->OnUkmSourceBecameVisible(kOrigin3SourceId, kOrigin3);
+  task_environment_.FastForwardBy(kShortDelay);
+  auto data = ResetIntervalData();
+  EXPECT_TRUE(data.source_id_for_longest_visible_origin == kOrigin1SourceId);
+  EXPECT_EQ(2 * kShortDelay,
+            data.source_id_for_longest_visible_origin_duration);
+  EXPECT_EQ(4 * kShortDelay, data.longest_visible_origin_duration);
 }
 
 TEST_F(UsageScenarioDataStoreTest, PlayingVideoInVisibleTab) {

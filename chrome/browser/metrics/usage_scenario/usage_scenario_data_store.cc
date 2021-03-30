@@ -348,6 +348,7 @@ void UsageScenarioDataStoreImpl::FinalizeIntervalData(base::TimeTicks now) {
 
     if (update_interval_data) {
       origin_visible_for_longest_time_duration = origin_visible_duration;
+      interval_data_.longest_visible_origin_duration = origin_visible_duration;
       interval_data_.source_id_for_longest_visible_origin_duration =
           longest_visible_sourceid_duration;
       interval_data_.source_id_for_longest_visible_origin =

@@ -236,6 +236,8 @@ void PowerMetricsReporter::ReportUKMs(
   builder.SetBrowserShuttingDown(browser_shutdown::HasShutdownStarted());
   builder.SetPlayingAudioSeconds(
       GetBucketForSample(usage_metrics.time_playing_audio));
+  builder.SetOriginVisibilityTimeSeconds(
+      GetBucketForSample(usage_metrics.longest_visible_origin_duration));
 
   builder.Record(ukm_recorder);
 }
