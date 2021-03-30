@@ -18,6 +18,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/browser.h"
 #include "weblayer/public/navigation.h"
@@ -504,6 +505,49 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, SetUserAgentString) {
   EXPECT_EQ(custom_ua, response_2.http_request()->headers.at(
                            net::HttpRequestHeaders::kUserAgent));
 }
+
+#if defined(OS_ANDROID)
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       SetUserAgentStringDoesntChangeViewportMetaTag) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  NavigationObserverImpl observer(GetNavigationController());
+  const std::string custom_ua = "custom-ua";
+  observer.SetStartedCallback(
+      base::BindLambdaForTesting([&](Navigation* navigation) {
+        navigation->SetUserAgentString(custom_ua);
+      }));
+
+  OneShotNavigationObserver load_observer(shell());
+  shell()->LoadURL(embedded_test_server()->GetURL("/simple_page.html"));
+  load_observer.WaitForNavigation();
+
+  // Just because we set a custom user agent doesn't mean we should ignore
+  // viewport meta tags.
+  auto* tab = static_cast<TabImpl*>(shell()->tab());
+  auto* web_contents = tab->web_contents();
+  ASSERT_TRUE(web_contents->GetOrCreateWebPreferences().viewport_meta_enabled);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       RequestDesktopSiteChangesViewportMetaTag) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  OneShotNavigationObserver load_observer(shell());
+  shell()->LoadURL(embedded_test_server()->GetURL("/simple_page.html"));
+  load_observer.WaitForNavigation();
+
+  auto* tab = static_cast<TabImpl*>(shell()->tab());
+
+  OneShotNavigationObserver load_observer2(shell());
+  tab->SetDesktopUserAgentEnabled(nullptr, true);
+  load_observer2.WaitForNavigation();
+
+  auto* web_contents = tab->web_contents();
+  ASSERT_FALSE(web_contents->GetOrCreateWebPreferences().viewport_meta_enabled);
+}
+
+#endif
 
 // Verifies changing the user agent twice in a row works.
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, UserAgentDoesntCarryThrough1) {
