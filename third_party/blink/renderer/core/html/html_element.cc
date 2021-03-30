@@ -219,11 +219,11 @@ bool HTMLElement::ShouldSerializeEndTag() const {
 static inline CSSValueID UnicodeBidiAttributeForDirAuto(HTMLElement* element) {
   if (element->HasTagName(html_names::kPreTag) ||
       element->HasTagName(html_names::kTextareaTag))
-    return CSSValueID::kWebkitPlaintext;
+    return CSSValueID::kPlaintext;
   // FIXME: For bdo element, dir="auto" should result in "bidi-override isolate"
   // but we don't support having multiple values in unicode-bidi yet.
   // See https://bugs.webkit.org/show_bug.cgi?id=73164.
-  return CSSValueID::kWebkitIsolate;
+  return CSSValueID::kIsolate;
 }
 
 unsigned HTMLElement::ParseBorderWidthAttribute(

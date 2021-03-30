@@ -1205,7 +1205,7 @@ template {
 }
 
 bdi, output {
-    unicode-bidi: -webkit-isolate;
+    unicode-bidi: isolate;
 }
 
 bdo {
@@ -1213,7 +1213,7 @@ bdo {
 }
 
 textarea[dir=auto i] {
-    unicode-bidi: -webkit-plaintext;
+    unicode-bidi: plaintext;
 }
 
 dialog:not([open]) {
