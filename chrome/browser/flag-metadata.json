@@ -1222,7 +1222,7 @@
   },
   {
     "name": "enable-accelerated-video-decode",
-    "owners": [ "videostack-eng@google.com" ],
+    "owners": [ "media-dev@chromium.org" ],
     "expiry_milestone": 90
   },
   {
@@ -2036,7 +2036,7 @@
   },
   {
     "name": "enable-media-internals",
-    "owners": [ "tmathmeyer", "videostack-eng@google.com" ],
+    "owners": [ "tmathmeyer", "media-dev@chromium.org" ],
     "expiry_milestone": 92
   },
   {
