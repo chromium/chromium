@@ -22,7 +22,7 @@ const char kPermissionsHelpURLForApps[] =
     "https://developer.chrome.com/apps/declare_permissions.html";
 
 void SuggestAPIPermissionInDevToolsConsole(
-    APIPermission::ID permission,
+    mojom::APIPermissionID permission,
     const Extension* extension,
     content::RenderFrameHost* render_frame_host) {
   const APIPermissionInfo* permission_info =
@@ -47,10 +47,11 @@ void SuggestAPIPermissionInDevToolsConsole(
 }  // namespace
 
 bool IsExtensionWithPermissionOrSuggestInConsole(
-    APIPermission::ID permission,
+    mojom::APIPermissionID permission,
     const Extension* extension,
     content::RenderFrameHost* render_frame_host) {
-  if (extension && extension->permissions_data()->HasAPIPermission(permission))
+  if (extension && extension->permissions_data()->HasAPIPermission(
+                       static_cast<APIPermission::ID>(permission)))
     return true;
 
   if (extension && render_frame_host) {

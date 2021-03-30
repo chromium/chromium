@@ -31,6 +31,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace extensions {
 
 // Tests that ChromePermissionMessageProvider provides not only correct, but
@@ -266,7 +268,7 @@ TEST_F(USBDevicePermissionMessagesTest, SingleDevice) {
         UsbDevicePermissionData(0x02ad, 0x138c, -1, -1).ToValue());
 
     UsbDevicePermission permission(
-        PermissionsInfo::GetInstance()->GetByID(APIPermission::kUsbDevice));
+        PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kUsbDevice));
     ASSERT_TRUE(permission.FromValue(permission_list.get(), NULL, NULL));
 
     PermissionMessages messages = GetMessages(permission.GetPermissions());
@@ -281,7 +283,7 @@ TEST_F(USBDevicePermissionMessagesTest, SingleDevice) {
         UsbDevicePermissionData(0x02ad, 0x138d, -1, -1).ToValue());
 
     UsbDevicePermission permission(
-        PermissionsInfo::GetInstance()->GetByID(APIPermission::kUsbDevice));
+        PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kUsbDevice));
     ASSERT_TRUE(permission.FromValue(permission_list.get(), NULL, NULL));
 
     PermissionMessages messages = GetMessages(permission.GetPermissions());
@@ -296,7 +298,7 @@ TEST_F(USBDevicePermissionMessagesTest, SingleDevice) {
         UsbDevicePermissionData(0x02ae, 0x138d, -1, -1).ToValue());
 
     UsbDevicePermission permission(
-        PermissionsInfo::GetInstance()->GetByID(APIPermission::kUsbDevice));
+        PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kUsbDevice));
     ASSERT_TRUE(permission.FromValue(permission_list.get(), NULL, NULL));
 
     PermissionMessages messages = GetMessages(permission.GetPermissions());
@@ -331,7 +333,7 @@ TEST_F(USBDevicePermissionMessagesTest, MultipleDevice) {
       UsbDevicePermissionData(0x02af, 0x138d, -1, -1).ToValue());
 
   UsbDevicePermission permission(
-      PermissionsInfo::GetInstance()->GetByID(APIPermission::kUsbDevice));
+      PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kUsbDevice));
   ASSERT_TRUE(permission.FromValue(permission_list.get(), NULL, NULL));
 
   PermissionMessages messages = GetMessages(permission.GetPermissions());

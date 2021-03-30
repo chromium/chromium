@@ -68,7 +68,8 @@ bool StorageSchemaManifestHandler::Parse(Extension* extension,
 
   // If an extension declares the "storage.managed_schema" key then it gets
   // the "storage" permission implicitly.
-  PermissionsParser::AddAPIPermission(extension, APIPermission::kStorage);
+  PermissionsParser::AddAPIPermission(extension,
+                                      mojom::APIPermissionID::kStorage);
 
   return true;
 }

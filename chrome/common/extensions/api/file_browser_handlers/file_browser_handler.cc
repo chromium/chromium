@@ -279,7 +279,7 @@ bool FileBrowserHandlerParser::Parse(extensions::Extension* extension,
   }
 
   if (!extensions::PermissionsParser::HasAPIPermission(
-          extension, extensions::APIPermission::ID::kFileBrowserHandler)) {
+          extension, extensions::mojom::APIPermissionID::kFileBrowserHandler)) {
     extension->AddInstallWarning(extensions::InstallWarning(
         errors::kInvalidFileBrowserHandlerMissingPermission));
     return true;

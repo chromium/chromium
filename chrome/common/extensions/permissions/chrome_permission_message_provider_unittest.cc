@@ -125,8 +125,9 @@ TEST_F(ChromePermissionMessageProviderUnittest,
   permissions.insert(APIPermissionID::kTab);
   permissions.insert(APIPermissionID::kTopSites);
   // The USB device permission message has a non-empty details string.
-  std::unique_ptr<UsbDevicePermission> usb(new UsbDevicePermission(
-      PermissionsInfo::GetInstance()->GetByID(APIPermission::kUsbDevice)));
+  std::unique_ptr<UsbDevicePermission> usb(
+      new UsbDevicePermission(PermissionsInfo::GetInstance()->GetByID(
+          mojom::APIPermissionID::kUsbDevice)));
   std::unique_ptr<base::ListValue> devices_list(new base::ListValue());
   devices_list->Append(
       UsbDevicePermissionData(0x02ad, 0x138c, -1, -1).ToValue());

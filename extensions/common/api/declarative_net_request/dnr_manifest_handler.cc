@@ -35,7 +35,7 @@ bool DNRManifestHandler::Parse(Extension* extension, std::u16string* error) {
       dnr_api::ManifestKeys::kDeclarativeNetRequest));
 
   if (!PermissionsParser::HasAPIPermission(
-          extension, APIPermission::kDeclarativeNetRequest)) {
+          extension, mojom::APIPermissionID::kDeclarativeNetRequest)) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
         errors::kDeclarativeNetRequestPermissionNeeded, kAPIPermission,
         dnr_api::ManifestKeys::kDeclarativeNetRequest);

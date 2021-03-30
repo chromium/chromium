@@ -31,8 +31,9 @@ void PermissionsInfo::RegisterPermissions(
     RegisterAlias(alias);
 }
 
-const APIPermissionInfo* PermissionsInfo::GetByID(APIPermission::ID id) const {
-  auto i = id_map_.find(id);
+const APIPermissionInfo* PermissionsInfo::GetByID(
+    mojom::APIPermissionID id) const {
+  auto i = id_map_.find(static_cast<APIPermission::ID>(id));
   return (i == id_map_.end()) ? nullptr : i->second.get();
 }
 

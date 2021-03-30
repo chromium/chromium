@@ -270,19 +270,19 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_HostSeparation) {
 // Tests that host permissions are properly partitioned according to the
 // required/optional permission sets.
 TEST(ExtensionPermissionsAPIHelpers, Unpack_APISeparation) {
-  constexpr APIPermission::ID kRequired1 = APIPermission::kTab;
-  constexpr APIPermission::ID kRequired2 = APIPermission::kStorage;
-  constexpr APIPermission::ID kOptional1 = APIPermission::kCookie;
-  constexpr APIPermission::ID kOptional2 = APIPermission::kAlarms;
-  constexpr APIPermission::ID kUnlisted1 = APIPermission::kIdle;
+  constexpr APIPermissionID kRequired1 = APIPermissionID::kTab;
+  constexpr APIPermissionID kRequired2 = APIPermissionID::kStorage;
+  constexpr APIPermissionID kOptional1 = APIPermissionID::kCookie;
+  constexpr APIPermissionID kOptional2 = APIPermissionID::kAlarms;
+  constexpr APIPermissionID kUnlisted1 = APIPermissionID::kIdle;
 
   APIPermissionSet required_apis;
-  required_apis.insert(static_cast<APIPermissionID>(kRequired1));
-  required_apis.insert(static_cast<APIPermissionID>(kRequired2));
+  required_apis.insert(kRequired1);
+  required_apis.insert(kRequired2);
 
   APIPermissionSet optional_apis;
-  optional_apis.insert(static_cast<APIPermissionID>(kOptional1));
-  optional_apis.insert(static_cast<APIPermissionID>(kOptional2));
+  optional_apis.insert(kOptional1);
+  optional_apis.insert(kOptional2);
 
   PermissionSet required_permissions(std::move(required_apis),
                                      ManifestPermissionSet(), URLPatternSet(),
@@ -303,11 +303,14 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_APISeparation) {
   EXPECT_TRUE(error.empty()) << error;
 
   EXPECT_EQ(1u, unpack_result->required_apis.size());
-  EXPECT_TRUE(unpack_result->required_apis.count(kRequired1));
+  EXPECT_TRUE(unpack_result->required_apis.count(
+      static_cast<APIPermission::ID>(kRequired1)));
   EXPECT_EQ(1u, unpack_result->optional_apis.size());
-  EXPECT_TRUE(unpack_result->optional_apis.count(kOptional1));
+  EXPECT_TRUE(unpack_result->optional_apis.count(
+      static_cast<APIPermission::ID>(kOptional1)));
   EXPECT_EQ(1u, unpack_result->unlisted_apis.size());
-  EXPECT_TRUE(unpack_result->unlisted_apis.count(kUnlisted1));
+  EXPECT_TRUE(unpack_result->unlisted_apis.count(
+      static_cast<APIPermission::ID>(kUnlisted1)));
 }
 
 // Tests that unpacking works correctly with wildcard schemes (which are
@@ -475,7 +478,8 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_UsbDevicePermission) {
   ASSERT_TRUE(device_list) << "Failed to parse device list JSON.";
 
   auto usb_device_permission = std::make_unique<UsbDevicePermission>(
-      PermissionsInfo::GetInstance()->GetByID(APIPermission::ID::kUsbDevice));
+      PermissionsInfo::GetInstance()->GetByID(
+          mojom::APIPermissionID::kUsbDevice));
   std::string error;
   std::vector<std::string> unhandled_permissions;
   bool from_value_result = usb_device_permission->FromValue(

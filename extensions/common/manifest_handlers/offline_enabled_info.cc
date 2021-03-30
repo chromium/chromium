@@ -46,8 +46,8 @@ bool OfflineEnabledHandler::Parse(Extension* extension, std::u16string* error) {
     // permission requested and false when webview permission is present.
     DCHECK(extension->is_platform_app());
 
-    const bool has_webview_permission =
-        PermissionsParser::HasAPIPermission(extension, APIPermission::kWebView);
+    const bool has_webview_permission = PermissionsParser::HasAPIPermission(
+        extension, mojom::APIPermissionID::kWebView);
     extension->SetManifestData(
         keys::kOfflineEnabled,
         std::make_unique<OfflineEnabledInfo>(!has_webview_permission));

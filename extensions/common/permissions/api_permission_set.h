@@ -132,22 +132,24 @@ class PermissionIDSet {
 
   // Check if the set contains a permission with the given ID.
   bool ContainsID(PermissionID permission_id) const;
-  bool ContainsID(APIPermission::ID permission_id) const;
+  bool ContainsID(mojom::APIPermissionID permission_id) const;
 
   // Check if the set contains permissions with all the given IDs.
-  bool ContainsAllIDs(const std::set<APIPermission::ID>& permission_ids) const;
+  bool ContainsAllIDs(
+      const std::set<mojom::APIPermissionID>& permission_ids) const;
 
   // Check if the set contains any permission with one of the given IDs.
-  bool ContainsAnyID(const std::set<APIPermission::ID>& permission_ids) const;
+  bool ContainsAnyID(
+      const std::set<mojom::APIPermissionID>& permission_ids) const;
   bool ContainsAnyID(const PermissionIDSet& other) const;
 
   // Returns all the permissions in this set with the given ID.
   PermissionIDSet GetAllPermissionsWithID(
-      APIPermission::ID permission_id) const;
+      mojom::APIPermissionID permission_id) const;
 
   // Returns all the permissions in this set with one of the given IDs.
   PermissionIDSet GetAllPermissionsWithIDs(
-      const std::set<APIPermission::ID>& permission_ids) const;
+      const std::set<mojom::APIPermissionID>& permission_ids) const;
 
   // Convenience functions for common set operations.
   bool Includes(const PermissionIDSet& subset) const;

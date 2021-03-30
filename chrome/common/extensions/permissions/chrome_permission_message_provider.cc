@@ -165,8 +165,8 @@ bool ChromePermissionMessageProvider::IsAPIOrManifestPrivilegeIncrease(
   AddAPIPermissions(granted_permissions, &granted_ids);
   AddManifestPermissions(granted_permissions, &granted_ids);
 
-  // <all_urls> is processed as APIPermission::kHostsAll and should be included
-  // when checking permission messages.
+  // <all_urls> is processed as mojom::APIPermissionID::kHostsAll and should be
+  // included when checking permission messages.
   if (granted_permissions.ShouldWarnAllHosts())
     granted_ids.insert(APIPermissionID::kHostsAll);
 

@@ -88,7 +88,8 @@ bool DevToolsPageHandler::Parse(Extension* extension, std::u16string* error) {
   }
   manifest_url->url_ = std::move(url);
   extension->SetManifestData(keys::kDevToolsPage, std::move(manifest_url));
-  PermissionsParser::AddAPIPermission(extension, APIPermission::kDevtools);
+  PermissionsParser::AddAPIPermission(extension,
+                                      mojom::APIPermissionID::kDevtools);
   return true;
 }
 
@@ -156,8 +157,8 @@ bool URLOverridesHandler::Parse(Extension* extension, std::u16string* error) {
 
   // If this is an NTP override extension, add the NTP override permission.
   if (url_overrides->chrome_url_overrides_.count(chrome::kChromeUINewTabHost)) {
-    PermissionsParser::AddAPIPermission(extension,
-                                        APIPermission::kNewTabPageOverride);
+    PermissionsParser::AddAPIPermission(
+        extension, mojom::APIPermissionID::kNewTabPageOverride);
   }
 
   extension->SetManifestData(keys::kChromeURLOverrides,

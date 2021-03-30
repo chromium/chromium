@@ -59,8 +59,7 @@ size_t IndexOf(const PermissionMessages& warnings, const std::string& warning) {
   return warnings.size();
 }
 
-PermissionIDSet MakePermissionIDSet(APIPermission::ID id1,
-                                    APIPermission::ID id2) {
+PermissionIDSet MakePermissionIDSet(APIPermissionID id1, APIPermissionID id2) {
   PermissionIDSet set;
   set.insert(static_cast<APIPermissionID>(id1));
   set.insert(static_cast<APIPermissionID>(id2));
@@ -170,14 +169,14 @@ TEST(PermissionsTest, Aliases) {
   PermissionsInfo* info = PermissionsInfo::GetInstance();
   // tabs: tabs, windows
   std::string tabs_name = "tabs";
-  EXPECT_EQ(tabs_name, info->GetByID(APIPermission::kTab)->name());
+  EXPECT_EQ(tabs_name, info->GetByID(APIPermissionID::kTab)->name());
   EXPECT_EQ(APIPermission::kTab, info->GetByName("tabs")->id());
   EXPECT_EQ(APIPermission::kTab, info->GetByName("windows")->id());
 
   // unlimitedStorage: unlimitedStorage, unlimited_storage
   std::string storage_name = "unlimitedStorage";
-  EXPECT_EQ(storage_name, info->GetByID(
-      APIPermission::kUnlimitedStorage)->name());
+  EXPECT_EQ(storage_name,
+            info->GetByID(APIPermissionID::kUnlimitedStorage)->name());
   EXPECT_EQ(APIPermission::kUnlimitedStorage,
             info->GetByName("unlimitedStorage")->id());
   EXPECT_EQ(APIPermission::kUnlimitedStorage,
@@ -339,7 +338,7 @@ TEST(PermissionsTest, CreateUnion) {
   std::unique_ptr<const PermissionSet> union_set;
 
   const APIPermissionInfo* permission_info =
-    PermissionsInfo::GetInstance()->GetByID(APIPermission::kSocket);
+      PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kSocket);
   std::unique_ptr<APIPermission> permission =
       permission_info->CreateAPIPermission();
   {
@@ -459,7 +458,7 @@ TEST(PermissionsTest, CreateIntersection) {
   std::unique_ptr<const PermissionSet> new_set;
 
   const APIPermissionInfo* permission_info =
-    PermissionsInfo::GetInstance()->GetByID(APIPermission::kSocket);
+      PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kSocket);
 
   // Intersection with an empty set.
   apis1.insert(APIPermissionID::kTab);
@@ -570,7 +569,7 @@ TEST(PermissionsTest, CreateDifference) {
   std::unique_ptr<const PermissionSet> new_set;
 
   const APIPermissionInfo* permission_info =
-    PermissionsInfo::GetInstance()->GetByID(APIPermission::kSocket);
+      PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kSocket);
 
   // Difference with an empty set.
   apis1.insert(APIPermissionID::kTab);
@@ -932,7 +931,7 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
                               URLPatternSet());
     EXPECT_TRUE(PermissionSetProducesMessage(
         permissions, Manifest::TYPE_EXTENSION,
-        MakePermissionIDSet(APIPermission::kTab, APIPermission::kFavicon)));
+        MakePermissionIDSet(APIPermissionID::kTab, APIPermissionID::kFavicon)));
   }
   {
     // History warning suppresses favicon warning.
@@ -945,7 +944,8 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
                               std::move(hosts), URLPatternSet());
     EXPECT_TRUE(PermissionSetProducesMessage(
         permissions, Manifest::TYPE_EXTENSION,
-        MakePermissionIDSet(APIPermission::kHistory, APIPermission::kFavicon)));
+        MakePermissionIDSet(APIPermissionID::kHistory,
+                            APIPermissionID::kFavicon)));
   }
   {
     // All sites warning suppresses tabs warning.
@@ -958,7 +958,8 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
                               URLPatternSet());
     EXPECT_TRUE(PermissionSetProducesMessage(
         permissions, Manifest::TYPE_EXTENSION,
-        MakePermissionIDSet(APIPermission::kHostsAll, APIPermission::kTab)));
+        MakePermissionIDSet(APIPermissionID::kHostsAll,
+                            APIPermissionID::kTab)));
   }
   {
     // All sites warning suppresses topSites warning.
@@ -971,8 +972,8 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
                               URLPatternSet());
     EXPECT_TRUE(PermissionSetProducesMessage(
         permissions, Manifest::TYPE_EXTENSION,
-        MakePermissionIDSet(APIPermission::kHostsAll,
-                            APIPermission::kTopSites)));
+        MakePermissionIDSet(APIPermissionID::kHostsAll,
+                            APIPermissionID::kTopSites)));
   }
   {
     // All sites warning suppresses declarativeWebRequest warning.
@@ -985,8 +986,8 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
                               URLPatternSet());
     EXPECT_TRUE(PermissionSetProducesMessage(
         permissions, Manifest::TYPE_EXTENSION,
-        MakePermissionIDSet(APIPermission::kHostsAll,
-                            APIPermission::kDeclarativeWebRequest)));
+        MakePermissionIDSet(APIPermissionID::kHostsAll,
+                            APIPermissionID::kDeclarativeWebRequest)));
   }
   {
     // BrowsingHistory warning suppresses all history read/write warnings.

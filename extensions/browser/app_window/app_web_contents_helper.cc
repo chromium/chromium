@@ -88,7 +88,8 @@ void AppWebContentsHelper::RequestToLockMouse() const {
     return;
 
   bool has_permission = IsExtensionWithPermissionOrSuggestInConsole(
-      APIPermission::kPointerLock, extension, web_contents_->GetMainFrame());
+      mojom::APIPermissionID::kPointerLock, extension,
+      web_contents_->GetMainFrame());
 
   if (has_permission)
     web_contents_->GotResponseToLockMouseRequest(

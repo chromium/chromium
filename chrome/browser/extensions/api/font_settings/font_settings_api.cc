@@ -169,8 +169,8 @@ void FontSettingsEventRouter::OnFontNamePrefChanged(
 
   extensions::preference_helpers::DispatchEventToExtensions(
       profile_, events::FONT_SETTINGS_ON_FONT_CHANGED,
-      fonts::OnFontChanged::kEventName, &args, APIPermission::kFontSettings,
-      false, pref_name);
+      fonts::OnFontChanged::kEventName, &args,
+      extensions::mojom::APIPermissionID::kFontSettings, false, pref_name);
 }
 
 void FontSettingsEventRouter::OnFontPrefChanged(
@@ -189,7 +189,7 @@ void FontSettingsEventRouter::OnFontPrefChanged(
 
   extensions::preference_helpers::DispatchEventToExtensions(
       profile_, histogram_value, event_name, &args,
-      APIPermission::kFontSettings, false, pref_name);
+      extensions::mojom::APIPermissionID::kFontSettings, false, pref_name);
 }
 
 FontSettingsAPI::FontSettingsAPI(content::BrowserContext* context)

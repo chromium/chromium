@@ -83,10 +83,14 @@ void PublicSessionMediaAccessHandler::ChainHandleRequest(
 
   // If the user denies audio or video capture, here it gets filtered out from
   // the request before being passed on to the actual implementation.
-  if (!allowed_permissions.ContainsID(extensions::APIPermission::kAudioCapture))
+  if (!allowed_permissions.ContainsID(
+          extensions::mojom::APIPermissionID::kAudioCapture)) {
     request_copy.audio_type = blink::mojom::MediaStreamType::NO_SERVICE;
-  if (!allowed_permissions.ContainsID(extensions::APIPermission::kVideoCapture))
+  }
+  if (!allowed_permissions.ContainsID(
+          extensions::mojom::APIPermissionID::kVideoCapture)) {
     request_copy.video_type = blink::mojom::MediaStreamType::NO_SERVICE;
+  }
 
   // Pass the request through to the original class.
   extension_media_access_handler_.HandleRequest(web_contents, request_copy,

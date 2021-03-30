@@ -199,7 +199,8 @@ void PageCaptureSaveAsMHTMLFunction::OnServiceWorkerAck() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void PageCaptureSaveAsMHTMLFunction::ResolvePermissionRequest(
     const PermissionIDSet& allowed_permissions) {
-  if (allowed_permissions.ContainsID(APIPermission::kPageCapture)) {
+  if (allowed_permissions.ContainsID(
+          extensions::mojom::APIPermissionID::kPageCapture)) {
     base::ThreadPool::PostTask(
         FROM_HERE, kCreateTemporaryFileTaskTraits,
         base::BindOnce(&PageCaptureSaveAsMHTMLFunction::CreateTemporaryFile,

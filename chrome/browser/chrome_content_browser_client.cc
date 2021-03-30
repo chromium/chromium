@@ -700,6 +700,7 @@ using extensions::APIPermission;
 using extensions::ChromeContentBrowserClientExtensionsPart;
 using extensions::Extension;
 using extensions::Manifest;
+using extensions::mojom::APIPermissionID;
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -1064,12 +1065,13 @@ bool URLHasExtensionPermission(extensions::ProcessMap* process_map,
                                extensions::ExtensionRegistry* registry,
                                const GURL& url,
                                int render_process_id,
-                               APIPermission::ID permission) {
+                               APIPermissionID permission) {
   // Includes web URLs that are part of an extension's web extent.
   const Extension* extension =
       registry->enabled_extensions().GetExtensionOrAppByURL(url);
   return extension &&
-         extension->permissions_data()->HasAPIPermission(permission) &&
+         extension->permissions_data()->HasAPIPermission(
+             static_cast<APIPermission::ID>(permission)) &&
          process_map->Contains(extension->id(), render_process_id);
 }
 
@@ -3191,7 +3193,7 @@ bool ChromeContentBrowserClient::CanCreateWindow(
     auto* registry = extensions::ExtensionRegistry::Get(profile);
     if (!URLHasExtensionPermission(process_map, registry, opener_url,
                                    opener->GetProcess()->GetID(),
-                                   APIPermission::ID::kBackground)) {
+                                   APIPermissionID::kBackground)) {
       return false;
     }
 
@@ -5724,7 +5726,7 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
     auto* registry = extensions::ExtensionRegistry::Get(profile);
     is_extension_paste_allowed = URLHasExtensionPermission(
         process_map, registry, url, render_frame_host->GetProcess()->GetID(),
-        APIPermission::ID::kClipboardRead);
+        APIPermissionID::kClipboardRead);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   if (!is_extension_paste_allowed && !is_content_script_paste_allowed &&

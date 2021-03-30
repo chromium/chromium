@@ -320,7 +320,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
   for (const PermissionMessage& message :
        extension->permissions_data()->GetPermissionMessages()) {
     if (!message.permissions().ContainsID(
-            extensions::APIPermission::kHostReadWrite)) {
+            extensions::mojom::APIPermissionID::kHostReadWrite)) {
       messages.push_back(message);
     }
   }

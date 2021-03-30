@@ -67,7 +67,7 @@ bool ExternallyConnectableHandler::Parse(Extension* extension,
   CHECK(extension->manifest()->Get(keys::kExternallyConnectable,
                                    &externally_connectable));
   bool allow_all_urls = PermissionsParser::HasAPIPermission(
-      extension, APIPermission::kExternallyConnectableAllUrls);
+      extension, mojom::APIPermissionID::kExternallyConnectableAllUrls);
 
   std::vector<InstallWarning> install_warnings;
   std::unique_ptr<ExternallyConnectableInfo> info =

@@ -25,6 +25,7 @@
 #include "url/gurl.h"
 
 using extensions::api::manifest_types::ChromeSettingsOverrides;
+using extensions::mojom::APIPermissionID;
 
 namespace extensions {
 namespace {
@@ -175,7 +176,7 @@ bool SettingsOverridesHandler::Parse(Extension* extension,
     PermissionsParser::AddAPIPermission(
         extension, new SettingsOverrideAPIPermission(
                        PermissionsInfo::GetInstance()->GetByID(
-                           APIPermission::kSearchProvider),
+                           APIPermissionID::kSearchProvider),
                        FormatUrlForDisplay(*CreateManifestURL(
                            info->search_engine->search_url))));
   }
@@ -184,7 +185,7 @@ bool SettingsOverridesHandler::Parse(Extension* extension,
         extension,
         new SettingsOverrideAPIPermission(
             PermissionsInfo::GetInstance()->GetByID(
-                APIPermission::kStartupPages),
+                APIPermissionID::kStartupPages),
             // We only support one startup page even though the type of the
             // manifest property is a list, only the first one is used.
             FormatUrlForDisplay(info->startup_pages[0])));
@@ -193,7 +194,7 @@ bool SettingsOverridesHandler::Parse(Extension* extension,
     PermissionsParser::AddAPIPermission(
         extension,
         new SettingsOverrideAPIPermission(
-            PermissionsInfo::GetInstance()->GetByID(APIPermission::kHomepage),
+            PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kHomepage),
             FormatUrlForDisplay(*(info->homepage))));
   }
   extension->SetManifestData(manifest_keys::kSettingsOverride, std::move(info));

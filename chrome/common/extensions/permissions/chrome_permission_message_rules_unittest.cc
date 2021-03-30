@@ -18,10 +18,10 @@ namespace extensions {
 
 namespace {
 
-std::string PermissionIDsToString(const std::set<APIPermission::ID>& ids) {
+std::string PermissionIDsToString(const std::set<mojom::APIPermissionID>& ids) {
   std::vector<std::string> strs;
   for (auto id : ids)
-    strs.push_back(base::NumberToString(id));
+    strs.push_back(base::NumberToString(static_cast<int>(id)));
   return base::JoinString(strs, " ");
 }
 

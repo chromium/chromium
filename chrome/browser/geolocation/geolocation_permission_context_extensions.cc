@@ -77,7 +77,7 @@ bool GeolocationPermissionContextExtensions::DecidePermission(
         extension_registry->enabled_extensions().GetExtensionOrAppByURL(
             requesting_frame_origin);
     if (IsExtensionWithPermissionOrSuggestInConsole(
-            APIPermission::kGeolocation, extension,
+            extensions::mojom::APIPermissionID::kGeolocation, extension,
             web_contents->GetMainFrame())) {
       // Make sure the extension is in the calling process.
       if (extensions::ProcessMap::Get(profile_)->Contains(

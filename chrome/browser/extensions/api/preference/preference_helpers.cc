@@ -87,7 +87,7 @@ void DispatchEventToExtensions(Profile* profile,
                                events::HistogramValue histogram_value,
                                const std::string& event_name,
                                base::ListValue* args,
-                               APIPermission::ID permission,
+                               mojom::APIPermissionID permission,
                                bool incognito,
                                const std::string& browser_pref) {
   EventRouter* router = EventRouter::Get(profile);
@@ -98,7 +98,8 @@ void DispatchEventToExtensions(Profile* profile,
        ExtensionRegistry::Get(profile)->enabled_extensions()) {
     // TODO(bauerb): Only iterate over registered event listeners.
     if (router->ExtensionHasEventListener(extension->id(), event_name) &&
-        extension->permissions_data()->HasAPIPermission(permission) &&
+        extension->permissions_data()->HasAPIPermission(
+            static_cast<APIPermission::ID>(permission)) &&
         (!incognito || util::IsIncognitoEnabled(extension->id(), profile))) {
       // Inject level of control key-value.
       base::DictionaryValue* dict;

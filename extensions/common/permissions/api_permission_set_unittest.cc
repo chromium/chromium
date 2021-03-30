@@ -41,7 +41,7 @@ TEST(APIPermissionSetTest, CreateUnion) {
   APIPermissionSet result;
 
   const APIPermissionInfo* permission_info =
-    PermissionsInfo::GetInstance()->GetByID(APIPermission::kSocket);
+      PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kSocket);
   std::unique_ptr<APIPermission> permission =
       permission_info->CreateAPIPermission();
   {
@@ -123,7 +123,7 @@ TEST(APIPermissionSetTest, CreateIntersection) {
   APIPermissionSet result;
 
   const APIPermissionInfo* permission_info =
-    PermissionsInfo::GetInstance()->GetByID(APIPermission::kSocket);
+      PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kSocket);
 
   // Intersection with an empty set.
   apis1.insert(APIPermissionID::kAudioCapture);
@@ -196,7 +196,7 @@ TEST(APIPermissionSetTest, CreateDifference) {
   APIPermissionSet result;
 
   const APIPermissionInfo* permission_info =
-    PermissionsInfo::GetInstance()->GetByID(APIPermission::kSocket);
+      PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kSocket);
 
   // Difference with an empty set.
   apis1.insert(APIPermissionID::kAudioCapture);
@@ -259,7 +259,7 @@ TEST(APIPermissionSetTest, IPC) {
   APIPermissionSet expected_apis;
 
   const APIPermissionInfo* permission_info =
-    PermissionsInfo::GetInstance()->GetByID(APIPermission::kSocket);
+      PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kSocket);
 
   apis.insert(APIPermissionID::kAudioCapture);
   apis.insert(APIPermissionID::kDns);

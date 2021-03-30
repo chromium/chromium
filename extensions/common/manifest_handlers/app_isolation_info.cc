@@ -53,8 +53,8 @@ bool AppIsolationHandler::Parse(Extension* extension, std::u16string* error) {
   // Other apps only get it if it is requested _and_ experimental APIs are
   // enabled.
   if (!extension->is_app() ||
-      !PermissionsParser::HasAPIPermission(extension,
-                                           APIPermission::kExperimental)) {
+      !PermissionsParser::HasAPIPermission(
+          extension, mojom::APIPermissionID::kExperimental)) {
     return true;
   }
 

@@ -195,7 +195,8 @@ class ExtensionPrefsGrantedPermissions : public ExtensionPrefsTest {
  public:
   void Initialize() override {
     const APIPermissionInfo* permission_info =
-      PermissionsInfo::GetInstance()->GetByID(APIPermission::kSocket);
+        PermissionsInfo::GetInstance()->GetByID(
+            mojom::APIPermissionID::kSocket);
 
     extension_id_ = prefs_.AddExtensionAndReturnId("test");
 

@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/callback_forward.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/api_permission_set.h"
 
@@ -63,7 +64,7 @@ bool HandlePermissionRequest(const Extension& extension,
 
 // Returns true if user granted this permission to the extension.
 bool PermissionAllowed(const Extension* extension,
-                       APIPermission::ID permission);
+                       mojom::APIPermissionID permission);
 
 // Used to completely reset state in between tests.
 void ResetPermissionsForTesting();

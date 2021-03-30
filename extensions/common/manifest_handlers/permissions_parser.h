@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permission_set.h"
 
@@ -36,10 +37,10 @@ class PermissionsParser {
   // Modify the manifest permissions. These methods should only be used
   // during initialization and will DCHECK() for safety.
   static void AddAPIPermission(Extension* extension,
-                               APIPermission::ID permission);
+                               mojom::APIPermissionID permission);
   static void AddAPIPermission(Extension* extension, APIPermission* permission);
   static bool HasAPIPermission(const Extension* extension,
-                               APIPermission::ID permission);
+                               mojom::APIPermissionID permission);
   static void SetScriptableHosts(Extension* extension,
                                  const URLPatternSet& scriptable_hosts);
 

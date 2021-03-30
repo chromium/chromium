@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_SUGGEST_PERMISSION_UTIL_H_
 #define EXTENSIONS_BROWSER_SUGGEST_PERMISSION_UTIL_H_
 
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 
 namespace content {
@@ -19,7 +20,7 @@ class Extension;
 // |extension| is NULL, just returns false. If an extension without |permission|
 // returns false and suggests |permision| in the developer tools console.
 bool IsExtensionWithPermissionOrSuggestInConsole(
-    APIPermission::ID permission,
+    mojom::APIPermissionID permission,
     const Extension* extension,
     content::RenderFrameHost* render_frame_host);
 

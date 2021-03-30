@@ -31,6 +31,7 @@ using extensions::APIPermission;
 using extensions::Extension;
 using extensions::Manifest;
 using Result = ExtensionInstallPrompt::Result;
+using extensions::mojom::APIPermissionID;
 
 namespace extensions {
 namespace permission_helper {
@@ -269,20 +270,26 @@ TEST_F(PublicSessionPermissionHelperTest, TestTwoPromptsDeny) {
 TEST_F(PublicSessionPermissionHelperTest, WhitelistedExtension) {
   auto extension = LoadManifestHelper(kWhitelistedId);
   // Whitelisted extension can use any permission.
-  EXPECT_TRUE(PermissionAllowed(extension.get(), permission_a));
-  EXPECT_TRUE(PermissionAllowed(extension.get(), permission_b));
+  EXPECT_TRUE(PermissionAllowed(extension.get(),
+                                static_cast<APIPermissionID>(permission_a)));
+  EXPECT_TRUE(PermissionAllowed(extension.get(),
+                                static_cast<APIPermissionID>(permission_b)));
   // Whitelisted extension is already handled (no permission prompt needed).
   EXPECT_TRUE(HandlePermissionRequest(*extension, {permission_a},
                                       web_contents(), RequestResolvedCallback(),
                                       PromptFactory()));
-  EXPECT_TRUE(PermissionAllowed(extension.get(), permission_a));
-  EXPECT_TRUE(PermissionAllowed(extension.get(), permission_b));
+  EXPECT_TRUE(PermissionAllowed(extension.get(),
+                                static_cast<APIPermissionID>(permission_a)));
+  EXPECT_TRUE(PermissionAllowed(extension.get(),
+                                static_cast<APIPermissionID>(permission_b)));
 }
 
 TEST_F(PublicSessionPermissionHelperTest, NonWhitelistedExtension) {
   auto extension = LoadManifestHelper(kNonWhitelistedId);
-  EXPECT_FALSE(PermissionAllowed(extension.get(), permission_a));
-  EXPECT_FALSE(PermissionAllowed(extension.get(), permission_b));
+  EXPECT_FALSE(PermissionAllowed(extension.get(),
+                                 static_cast<APIPermissionID>(permission_a)));
+  EXPECT_FALSE(PermissionAllowed(extension.get(),
+                                 static_cast<APIPermissionID>(permission_b)));
   // Prompt for permission_a, grant it, verify.
   {
     ScopedTestDialogAutoConfirm auto_confirm(
@@ -293,8 +300,10 @@ TEST_F(PublicSessionPermissionHelperTest, NonWhitelistedExtension) {
                                          web_contents(), BindQuitLoop(&loop),
                                          PromptFactory()));
     loop.Run();
-    EXPECT_TRUE(PermissionAllowed(extension.get(), permission_a));
-    EXPECT_FALSE(PermissionAllowed(extension.get(), permission_b));
+    EXPECT_TRUE(PermissionAllowed(extension.get(),
+                                  static_cast<APIPermissionID>(permission_a)));
+    EXPECT_FALSE(PermissionAllowed(extension.get(),
+                                   static_cast<APIPermissionID>(permission_b)));
   }
   // Already handled (allow), doesn't show a prompt.
   EXPECT_TRUE(HandlePermissionRequest(*extension, {permission_a},
@@ -310,8 +319,10 @@ TEST_F(PublicSessionPermissionHelperTest, NonWhitelistedExtension) {
                                          web_contents(), BindQuitLoop(&loop),
                                          PromptFactory()));
     loop.Run();
-    EXPECT_TRUE(PermissionAllowed(extension.get(), permission_a));
-    EXPECT_FALSE(PermissionAllowed(extension.get(), permission_b));
+    EXPECT_TRUE(PermissionAllowed(extension.get(),
+                                  static_cast<APIPermissionID>(permission_a)));
+    EXPECT_FALSE(PermissionAllowed(extension.get(),
+                                   static_cast<APIPermissionID>(permission_b)));
   }
   // Already handled (deny), doesn't show a prompt.
   EXPECT_TRUE(HandlePermissionRequest(*extension, {permission_b},

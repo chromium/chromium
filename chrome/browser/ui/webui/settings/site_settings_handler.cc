@@ -74,6 +74,8 @@
 #include "components/user_manager/user_manager.h"
 #endif
 
+using extensions::mojom::APIPermissionID;
+
 namespace settings {
 
 namespace {
@@ -107,35 +109,39 @@ enum class AllSitesAction2 {
 };
 
 // Return an appropriate API Permission ID for the given string name.
-extensions::APIPermission::APIPermission::ID APIPermissionFromGroupName(
-    std::string type) {
+APIPermissionID APIPermissionFromGroupName(std::string type) {
   // Once there are more than two groups to consider, this should be changed to
   // something better than if's.
 
   if (site_settings::ContentSettingsTypeFromGroupName(type) ==
-      ContentSettingsType::GEOLOCATION)
-    return extensions::APIPermission::APIPermission::kGeolocation;
+      ContentSettingsType::GEOLOCATION) {
+    return APIPermissionID::kGeolocation;
+  }
 
   if (site_settings::ContentSettingsTypeFromGroupName(type) ==
-      ContentSettingsType::NOTIFICATIONS)
-    return extensions::APIPermission::APIPermission::kNotifications;
+      ContentSettingsType::NOTIFICATIONS) {
+    return APIPermissionID::kNotifications;
+  }
 
-  return extensions::APIPermission::APIPermission::kInvalid;
+  return APIPermissionID::kInvalid;
 }
 
 // Asks the |profile| for hosted apps which have the |permission| set, and
 // adds their web extent and launch URL to the |exceptions| list.
-void AddExceptionsGrantedByHostedApps(
-    content::BrowserContext* context,
-    extensions::APIPermission::APIPermission::ID permission,
-    base::ListValue* exceptions) {
+void AddExceptionsGrantedByHostedApps(content::BrowserContext* context,
+                                      APIPermissionID permission,
+                                      base::ListValue* exceptions) {
   const extensions::ExtensionSet& extensions =
       extensions::ExtensionRegistry::Get(context)->enabled_extensions();
   for (extensions::ExtensionSet::const_iterator extension = extensions.begin();
        extension != extensions.end(); ++extension) {
     if (!(*extension)->is_hosted_app() ||
-        !(*extension)->permissions_data()->HasAPIPermission(permission))
+        !(*extension)
+             ->permissions_data()
+             ->HasAPIPermission(
+                 static_cast<extensions::APIPermission::ID>(permission))) {
       continue;
+    }
 
     const extensions::URLPatternSet& web_extent = (*extension)->web_extent();
     // Add patterns from web extent.

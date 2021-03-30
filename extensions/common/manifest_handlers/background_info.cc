@@ -25,6 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using base::ASCIIToUTF16;
+using extensions::mojom::APIPermissionID;
 
 namespace extensions {
 
@@ -210,7 +211,7 @@ bool BackgroundInfo::LoadBackgroundPage(const Extension* extension,
     background_url_ = GURL(background_str);
 
     if (!PermissionsParser::HasAPIPermission(extension,
-                                             APIPermission::kBackground)) {
+                                             APIPermissionID::kBackground)) {
       *error = ASCIIToUTF16(errors::kBackgroundPermissionNeeded);
       return false;
     }
@@ -324,14 +325,14 @@ bool BackgroundManifestHandler::Parse(Extension* extension,
   // Lazy background pages are incompatible with the webRequest API.
   if (info->has_lazy_background_page() &&
       PermissionsParser::HasAPIPermission(extension,
-                                          APIPermission::kWebRequest)) {
+                                          APIPermissionID::kWebRequest)) {
     *error = ASCIIToUTF16(errors::kWebRequestConflictsWithLazyBackground);
     return false;
   }
 
   if (!info->has_lazy_background_page() &&
       PermissionsParser::HasAPIPermission(
-          extension, APIPermission::kTransientBackground)) {
+          extension, APIPermissionID::kTransientBackground)) {
     *error = ASCIIToUTF16(
         errors::kTransientBackgroundConflictsWithPersistentBackground);
     return false;

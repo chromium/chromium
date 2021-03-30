@@ -47,7 +47,7 @@ bool ActiveTabPermissionGranterDelegateChromeOS::ShouldGrantActiveTabOrPrompt(
       std::move(callback), permission_helper::PromptFactory());
 
   return already_handled && permission_helper::PermissionAllowed(
-                                extension, APIPermission::kActiveTab);
+                                extension, mojom::APIPermissionID::kActiveTab);
 }
 
 }  // namespace extensions

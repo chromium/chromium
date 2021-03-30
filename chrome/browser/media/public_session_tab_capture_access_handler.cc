@@ -77,7 +77,8 @@ void PublicSessionTabCaptureAccessHandler::ChainHandleRequest(
 
   // If the user denied tab capture, here the request gets filtered out before
   // being passed on to the actual implementation.
-  if (!allowed_permissions.ContainsID(extensions::APIPermission::kTabCapture)) {
+  if (!allowed_permissions.ContainsID(
+          extensions::mojom::APIPermissionID::kTabCapture)) {
     request_copy.audio_type = blink::mojom::MediaStreamType::NO_SERVICE;
     request_copy.video_type = blink::mojom::MediaStreamType::NO_SERVICE;
   }

@@ -27,6 +27,7 @@ using extensions::ManifestPermission;
 using extensions::ManifestPermissionSet;
 using extensions::PermissionSet;
 using extensions::URLPatternSet;
+using extensions::mojom::APIPermissionID;
 using extensions::mojom::ManifestLocation;
 
 ExtensionMsg_PermissionSetStruct::ExtensionMsg_PermissionSetStruct() {
@@ -218,7 +219,8 @@ bool ParamTraits<APIPermissionSet>::Read(const base::Pickle* m,
     if (!ReadParam(m, iter, &id))
       return false;
     const APIPermissionInfo* permission_info =
-      extensions::PermissionsInfo::GetInstance()->GetByID(id);
+        extensions::PermissionsInfo::GetInstance()->GetByID(
+            static_cast<APIPermissionID>(id));
     if (!permission_info)
       return false;
     std::unique_ptr<APIPermission> p(permission_info->CreateAPIPermission());

@@ -110,7 +110,7 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
 
       if (keybindings_found > kMaxCommandsWithKeybindingPerExtension &&
           !PermissionsParser::HasAPIPermission(
-              extension, APIPermission::kCommandsAccessibility)) {
+              extension, mojom::APIPermissionID::kCommandsAccessibility)) {
         *error = ErrorUtils::FormatErrorMessageUTF16(
             manifest_errors::kInvalidKeyBindingTooMany,
             base::NumberToString(kMaxCommandsWithKeybindingPerExtension));
