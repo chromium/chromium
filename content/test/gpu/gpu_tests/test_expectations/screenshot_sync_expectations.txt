@@ -60,3 +60,6 @@
 
 crbug.com/1174350 [ fuchsia fuchsia-board-qemu-x64 ] ScreenshotSync_GPURasterWithCanvas [ RetryOnFailure ]
 crbug.com/1174350 [ fuchsia fuchsia-board-qemu-x64 ] ScreenshotSync_SWRasterWithCanvas [ RetryOnFailure ]
+
+crbug.com/1166379 [ android android-pixel-4 ] ScreenshotSync_GPURasterWithDivs [ RetryOnFailure ]
+crbug.com/1166379 [ android android-pixel-4 ] ScreenshotSync_SWRasterWithDivs [ RetryOnFailure ]
