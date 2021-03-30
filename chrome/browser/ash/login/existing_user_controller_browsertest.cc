@@ -60,9 +60,9 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/login/auth/key.h"
 #include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "chromeos/login/auth/user_context.h"
@@ -884,7 +884,7 @@ class ExistingUserControllerActiveDirectoryTest
     AuthPolicyClient::InitializeFake();
     FakeAuthPolicyClient::Get()->DisableOperationDelayForTesting();
     // Required for tpm_util. Will be destroyed in browser shutdown.
-    chromeos::CryptohomeClient::InitializeFake();
+    chromeos::UserDataAuthClient::InitializeFake();
 
     RefreshDevicePolicy();
     ON_CALL(policy_provider_, IsInitializationComplete(_))
@@ -1292,10 +1292,10 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
 
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
                        CryptohomeUnavailable) {
-  FakeCryptohomeClient::Get()->SetServiceIsAvailable(false);
+  FakeUserDataAuthClient::Get()->SetServiceIsAvailable(false);
   SetUpStubAuthenticatorAndAttemptLogin(AuthFailure::NONE);
 
-  FakeCryptohomeClient::Get()->ReportServiceIsNotAvailable();
+  FakeUserDataAuthClient::Get()->ReportServiceIsNotAvailable();
   WaitForAuthErrorMessage();
 }
 

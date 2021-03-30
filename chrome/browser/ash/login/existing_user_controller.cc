@@ -87,6 +87,7 @@
 #include "chromeos/cryptohome/cryptohome_util.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/login/auth/key.h"
 #include "chromeos/login/session/session_termination_manager.h"
 #include "chromeos/settings/cros_settings_names.h"
@@ -1616,7 +1617,7 @@ void ExistingUserController::ContinueLoginIfDeviceNotDisabled(
     return;
   }
 
-  CryptohomeClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
+  UserDataAuthClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
       &ExistingUserController::ContinueLoginWhenCryptohomeAvailable,
       weak_factory_.GetWeakPtr(), std::move(split_continuation.second)));
 }
