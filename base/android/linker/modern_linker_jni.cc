@@ -20,6 +20,7 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/syscall.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -38,6 +39,16 @@
 
 #define PAGE_START(x) ((x)&PAGE_MASK)
 #define PAGE_END(x) PAGE_START((x) + (PAGE_SIZE - 1))
+
+// Copied from //base/posix/eintr_wrapper.h to avoid depending on //base.
+#define HANDLE_EINTR(x)                                     \
+  ({                                                        \
+    decltype(x) eintr_wrapper_result;                       \
+    do {                                                    \
+      eintr_wrapper_result = (x);                           \
+    } while (eintr_wrapper_result == -1 && errno == EINTR); \
+    eintr_wrapper_result;                                   \
+  })
 
 extern "C" {
 // <android/dlext.h> does not declare android_dlopen_ext() if __ANDROID_API__
@@ -117,27 +128,127 @@ ScopedAnonymousMmap ScopedAnonymousMmap::ReserveAtAddress(void* address,
   return {actual_address, size};
 }
 
-// Starting with API level 26, the following functions from
-// libandroid.so should be used to create shared memory regions.
+bool MapReadOnlyWithFlags(int fd, size_t size, int flags, void** out_address) {
+  void* address = mmap(nullptr, size, PROT_READ, flags, fd, 0);
+  if (address == MAP_FAILED) {
+    PLOG_ERROR("mmap");
+    return false;
+  }
+  *out_address = address;
+  return true;
+}
+
+bool MapReadOnlyAshmem(int fd, size_t size, void** out_address) {
+  return MapReadOnlyWithFlags(fd, size, MAP_SHARED, out_address);
+}
+
+bool MapReadOnlyMemfd(int fd, size_t size, void** out_address) {
+  return MapReadOnlyWithFlags(fd, size, MAP_PRIVATE, out_address);
+}
+
+bool MapReadOnlyFixedWithFlags(int fd, size_t address, size_t size, int flags) {
+  void* new_addr = mmap(reinterpret_cast<void*>(address), size, PROT_READ,
+                        MAP_FIXED | flags, fd, 0);
+  if (new_addr == MAP_FAILED) {
+    PLOG_ERROR("mmap(MAP_FIXED, ...)");
+    return false;
+  }
+  return true;
+}
+
+bool MapReadOnlyFixedAshmem(int fd, size_t address, size_t size) {
+  return MapReadOnlyFixedWithFlags(fd, address, size, MAP_SHARED);
+}
+
+bool MapReadOnlyFixedMemfd(int fd, size_t address, size_t size) {
+  return MapReadOnlyFixedWithFlags(fd, address, size, MAP_PRIVATE);
+}
+
+// Creates a named memfd region of a given size. Returns the FD of this region.
+// On error returns -1. The interface is modeled after ASharedMemory_create().
+int CreateMemfd(const char* name, size_t size) {
+  int fd = syscall(__NR_memfd_create, name, 0x0002U /* MFD_ALLOW_SEALING */);
+  if (fd == -1) {
+    PLOG_ERROR("memfd_create");
+    return -1;
+  }
+  if (HANDLE_EINTR(ftruncate(fd, size)) == -1) {
+    PLOG_ERROR("memfd ftruncate");
+    close(fd);
+    return -1;
+  }
+  return fd;
+}
+
+// Sets protection flags on a memfd region denoted by |fd|. The |prot| can be
+// either PROT_READ or (PROT_READ|PROT_WRITE). Access rights can only be
+// removed, but not added back. The region must be unmapped for changes to take
+// effect. Returns 0 on success, -1 on failure. The interface is modeled after
+// ASharedMemory_setProt().
+int SetProtectionMemfd(int fd, int prot) {
+  if (prot & ~(PROT_READ | PROT_WRITE))
+    abort();
+
+  int flags = F_SEAL_GROW | F_SEAL_SHRINK;
+  if ((prot & PROT_WRITE) == 0) {
+    LOG_INFO("Adding F_SEAL_WRITE");
+    flags |= F_SEAL_WRITE;
+  }
+  if (fcntl(fd, F_ADD_SEALS, flags) == -1) {
+    PLOG_ERROR("apply RELRO seals");
+    return -1;
+  }
+  return 0;
+}
+
+}  // namespace
+
+// Starting with API level 26 (Android O) the following functions from
+// libandroid.so should be used to create shared memory regions to ensure
+// compatibility with the future versions:
+// * ASharedMemory_create()
+// * ASharedMemory_setProt()
 //
-// This ensures compatibility with post-Q versions of Android that may not rely
-// on ashmem for shared memory.
+// Starting from API level 30 (Android 11) Chrome would instead prefer to use
+// `memfd_create(2)` because these FDs survive forking from the App Zygote. The
+// system library on this version is still using ashmem. One important
+// difference that `memfd_create` makes is that the sealed mappings should be
+// made with the MAP_PRIVATE flag for `mmap(2)` (otherwise returns an error),
+// while it should remain MAP_SHARED for ashmem (otherwise the region is
+// zero-filled).
 //
-// This is heavily inspired from //third_party/ashmem/ashmem-dev.c, which we
-// cannot reference directly to avoid increasing binary size. Also, we don't
-// need to support API level <26.
+// Because of this difference mapping as read-only is added as two more
+// functions:
+//    map_read_only_fixed for MAP_FIXED mappings (only allowed to replace a part
+//        of a previously reserved address range)
+//    map_read_only() for reserving a new address range
+//
+// This is inspired by //third_party/ashmem/ashmem-dev.c, which cannot be
+// referenced from the linker library to avoid increasing binary size. Also
+// there is no need to support API level <26 for ModernLinker.
 //
 // *Not* threadsafe.
 struct SharedMemoryFunctions {
-  SharedMemoryFunctions() {
-    library_handle = dlopen("libandroid.so", RTLD_NOW);
-    create = reinterpret_cast<CreateFunction>(
-        dlsym(library_handle, "ASharedMemory_create"));
-    set_protection = reinterpret_cast<SetProtectionFunction>(
-        dlsym(library_handle, "ASharedMemory_setProt"));
+  SharedMemoryFunctions(bool use_memfd) {
+    if (!use_memfd) {
+      library_handle = dlopen("libandroid.so", RTLD_NOW);
+      create = reinterpret_cast<CreateFunction>(
+          dlsym(library_handle, "ASharedMemory_create"));
+      set_protection = reinterpret_cast<SetProtectionFunction>(
+          dlsym(library_handle, "ASharedMemory_setProt"));
+      map_read_only = MapReadOnlyAshmem;
+      map_read_only_fixed = MapReadOnlyFixedAshmem;
+    } else {
+      create = CreateMemfd;
+      set_protection = SetProtectionMemfd;
+      map_read_only = MapReadOnlyMemfd;
+      map_read_only_fixed = MapReadOnlyFixedMemfd;
+    }
   }
 
   bool IsWorking() const {
+    if (create == CreateMemfd)
+      return true;
     if (!create || !set_protection) {
       LOG_ERROR("Cannot get the shared memory functions from libandroid");
       return false;
@@ -152,12 +263,18 @@ struct SharedMemoryFunctions {
 
   typedef int (*CreateFunction)(const char*, size_t);
   typedef int (*SetProtectionFunction)(int fd, int prot);
+  typedef bool (*MapReadOnlyFunction)(int fd, size_t size, void** out_address);
+  typedef bool (*MapReadOnlyFixedFunction)(int fd, size_t address, size_t size);
 
   CreateFunction create;
   SetProtectionFunction set_protection;
+  MapReadOnlyFunction map_read_only;
+  MapReadOnlyFixedFunction map_read_only_fixed;
 
-  void* library_handle;
+  void* library_handle = nullptr;
 };
+
+namespace {
 
 // android_dlopen_ext() wrapper.
 // Returns false if no android_dlopen_ext() is available, otherwise true with
@@ -379,17 +496,17 @@ bool NativeLibInfo::LoadWithDlopenExt(const String& path, void** handle) {
   return true;
 }
 
-bool NativeLibInfo::CreateSharedRelroFd() {
+bool NativeLibInfo::CreateSharedRelroFd(
+    const SharedMemoryFunctions& functions) {
   LOG_INFO("Entering");
+  if (!use_memfd_initialized_)
+    abort();
   if (!relro_start_ || !relro_size_) {
     LOG_ERROR("RELRO region is not populated");
     return false;
   }
 
   // Create a writable shared memory region.
-  SharedMemoryFunctions functions;
-  if (!functions.IsWorking())
-    return false;
   int shared_mem_fd = functions.create("cr_relro", relro_size_);
   if (shared_mem_fd == -1) {
     LOG_ERROR("Cannot create the shared memory file");
@@ -430,8 +547,11 @@ bool NativeLibInfo::CreateSharedRelroFd() {
   return true;
 }
 
-bool NativeLibInfo::ReplaceRelroWithSharedOne() const {
+bool NativeLibInfo::ReplaceRelroWithSharedOne(
+    const SharedMemoryFunctions& functions) const {
   LOG_INFO("Entering");
+  if (!use_memfd_initialized_)
+    abort();
   if (relro_fd_ == -1 || !relro_start_ || !relro_size_) {
     LOG_ERROR("Replacement RELRO not ready");
     return false;
@@ -440,10 +560,7 @@ bool NativeLibInfo::ReplaceRelroWithSharedOne() const {
   // Map as read-only to *atomically* replace the RELRO region provided by the
   // dynamic linker. To avoid memory corruption it is important that the
   // contents of both memory regions is identical.
-  void* new_addr = mmap(reinterpret_cast<void*>(relro_start_), relro_size_,
-                        PROT_READ, MAP_FIXED | MAP_SHARED, relro_fd_, 0);
-  if (new_addr == MAP_FAILED) {
-    PLOG_ERROR("mmap() over RELRO");
+  if (!functions.map_read_only_fixed(relro_fd_, relro_start_, relro_size_)) {
     return false;
   }
 
@@ -479,11 +596,14 @@ bool NativeLibInfo::LoadLibrary(const String& library_path,
 
   // Spawn RELRO to a shared memory region by copying and remapping on top of
   // itself.
-  if (!CreateSharedRelroFd()) {
+  SharedMemoryFunctions functions(use_memfd_);
+  if (!functions.IsWorking())
+    return false;
+  if (!CreateSharedRelroFd(functions)) {
     LOG_ERROR("Failed to create shared RELRO");
     return false;
   }
-  if (!ReplaceRelroWithSharedOne()) {
+  if (!ReplaceRelroWithSharedOne(functions)) {
     LOG_ERROR("Failed to convert RELRO to shared memory");
     CloseRelroFd();
     return false;
@@ -498,7 +618,11 @@ bool NativeLibInfo::LoadLibrary(const String& library_path,
 }
 
 bool NativeLibInfo::RelroIsIdentical(
-    const NativeLibInfo& other_lib_info) const {
+    const NativeLibInfo& other_lib_info,
+    const SharedMemoryFunctions& functions) const {
+  if (!use_memfd_initialized_)
+    abort();
+
   // Abandon sharing if contents of the incoming RELRO region does not match the
   // current one. This can be useful for debugging, but should never happen in
   // the field.
@@ -508,11 +632,10 @@ bool NativeLibInfo::RelroIsIdentical(
     LOG_ERROR("Incoming RELRO size does not match RELRO of the loaded library");
     return false;
   }
-  void* shared_relro_address =
-      mmap(nullptr, other_lib_info.relro_size_, PROT_READ, MAP_SHARED,
-           other_lib_info.relro_fd_, 0);
-  if (shared_relro_address == MAP_FAILED) {
-    PLOG_ERROR("mmap relro_fd");
+  void* shared_relro_address;
+  if (!functions.map_read_only(other_lib_info.relro_fd_,
+                               other_lib_info.relro_size_,
+                               &shared_relro_address)) {
     return false;
   }
   void* current_relro_address = reinterpret_cast<void*>(relro_start_);
@@ -539,7 +662,10 @@ bool NativeLibInfo::CompareRelroAndReplaceItBy(
     return false;
   }
 
-  if (!RelroIsIdentical(other_lib_info)) {
+  SharedMemoryFunctions functions(use_memfd_);
+  if (!functions.IsWorking())
+    return false;
+  if (!RelroIsIdentical(other_lib_info, functions)) {
     LOG_ERROR("RELRO is not identical");
     s_relro_sharing_status = RelroSharingStatus::NOT_IDENTICAL;
     return false;
@@ -553,7 +679,7 @@ bool NativeLibInfo::CompareRelroAndReplaceItBy(
   //  * It does not rely on disallowing mprotect(PROT_WRITE)
   //  * This way |ReplaceRelroWithSharedOne()| is reused across spawning RELRO
   //    and receiving it
-  if (!other_lib_info.ReplaceRelroWithSharedOne()) {
+  if (!other_lib_info.ReplaceRelroWithSharedOne(functions)) {
     LOG_ERROR("Failed to use relro_fd");
     // TODO(pasko): Introduce RelroSharingStatus::OTHER for rare RELRO sharing
     // failures like this one.
@@ -564,9 +690,20 @@ bool NativeLibInfo::CompareRelroAndReplaceItBy(
   return true;
 }
 
+bool NativeLibInfo::CreateSharedRelroFdForTesting() {
+  if (!use_memfd_initialized_)
+    abort();
+  // The library providing these functions will be dlclose()-ed after returning
+  // from this context. The extra overhead of dlopen() is OK for testing.
+  SharedMemoryFunctions functions(use_memfd_);
+  if (!functions.IsWorking())
+    abort();
+  return CreateSharedRelroFd(functions);
+}
+
 // static
 bool NativeLibInfo::SharedMemoryFunctionsSupportedForTesting() {
-  SharedMemoryFunctions functions;
+  SharedMemoryFunctions functions(false);
   return functions.IsWorking();
 }
 
@@ -577,7 +714,8 @@ Java_org_chromium_base_library_1loader_ModernLinker_nativeLoadLibrary(
     jstring jdlopen_ext_path,
     jlong load_address,
     jobject lib_info_obj,
-    jboolean spawn_relro_region) {
+    jboolean spawn_relro_region,
+    jboolean use_memfd) {
   LOG_INFO("Entering");
 
   if (!IsValidAddress(load_address)) {
@@ -590,6 +728,7 @@ Java_org_chromium_base_library_1loader_ModernLinker_nativeLoadLibrary(
   // library gets loaded, RELRO rets extracted as shared memory, etc.
   NativeLibInfo lib_info = {static_cast<size_t>(load_address), env,
                             lib_info_obj};
+  lib_info.set_use_memfd(use_memfd);
   if (!lib_info.LoadLibrary(library_path, spawn_relro_region)) {
     return false;
   }
@@ -600,16 +739,19 @@ JNI_GENERATOR_EXPORT jboolean
 Java_org_chromium_base_library_1loader_ModernLinker_nativeUseRelros(
     JNIEnv* env,
     jclass clazz,
-    jobject lib_info_obj) {
+    jobject lib_info_obj,
+    jboolean use_memfd) {
   LOG_INFO("Entering");
   // Copy all contents from the Java-side LibInfo object.
   NativeLibInfo incoming_lib_info(env, lib_info_obj);
+  incoming_lib_info.set_use_memfd(use_memfd);
 
   // Create an empty NativeLibInfo to extract the current information about the
   // loaded library and later compare with the contents of the
   // |incoming_lib_info|.
   NativeLibInfo lib_info = {incoming_lib_info.load_address(), env,
                             lib_info_obj};
+  lib_info.set_use_memfd(use_memfd);
 
   if (!IsValidAddress(incoming_lib_info.load_address())) {
     LOG_ERROR("Invalid address 0x%zx", incoming_lib_info.load_address());
