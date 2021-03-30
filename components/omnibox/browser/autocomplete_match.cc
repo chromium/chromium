@@ -5,8 +5,6 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 
 #include <algorithm>
-#include <string>
-#include <utility>
 
 #include "base/check_op.h"
 #include "base/debug/crash_logging.h"
@@ -14,6 +12,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -27,10 +26,8 @@
 #include "components/omnibox/browser/document_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_pedal.h"
-#include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engine_utils.h"
-#include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "inline_autocompletion_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -75,6 +72,24 @@ bool WordMatchesURLContent(
       return true;
   }
   return false;
+}
+
+// Check if title or non-prefix rich autocompletion is possible. I.e.:
+// 1) Enabled for all providers OR for the shortcut provider if the suggestion
+//    is from the shortcut provider.
+// 2) The input is longer than the threshold.
+// 3) Enabled for inputs containing spaces OR the input contains no spaces.
+bool RichAutocompletionApplicable(bool enabled_all_providers,
+                                  bool enabled_shortcut_provider,
+                                  size_t min_char,
+                                  bool no_inputs_with_spaces,
+                                  bool shortcut_provider,
+                                  const std::u16string& input_text) {
+  return (enabled_all_providers ||
+          (shortcut_provider && enabled_shortcut_provider)) &&
+         input_text.size() >= min_char &&
+         (!no_inputs_with_spaces ||
+          base::ranges::none_of(input_text, &base::IsAsciiWhitespace<char>));
 }
 
 }  // namespace
@@ -1248,26 +1263,21 @@ bool AutocompleteMatch::TryRichAutocompletion(
     return true;
   }
 
-  // Check if title autocompletion is possible. I.e., the input must be longer
-  // than the threshold |...TitleMinChar|.
-  const bool can_autocomplete_titles =
-      OmniboxFieldTrial::RichAutocompletionAutocompleteTitles() &&
-      input.text().size() >=
-          OmniboxFieldTrial::RichAutocompletionAutocompleteTitlesMinChar();
-
-  // Check if non-prefix autocompletion is possible. I.e., these 2 conditions
-  // must be truthy:
-  // 1) Non-prefix autocompletion must be enabled through either param:
-  //   - EITHER |...NonPrefixAll|
-  //   - OR, for shortcut provider suggestions, |...NonPrefixShortcutProvider|
-  // 2) AND input must be longer than the threshold |...NonPrefixMinChar|
-  const bool can_autocomplete_non_prefix =
-      (OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixAll() ||
-       (shortcut_provider &&
-        OmniboxFieldTrial::
-            RichAutocompletionAutocompleteNonPrefixShortcutProvider())) &&
-      input.text().size() >=
-          OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixMinChar();
+  const bool can_autocomplete_titles = RichAutocompletionApplicable(
+      OmniboxFieldTrial::RichAutocompletionAutocompleteTitles(),
+      OmniboxFieldTrial::RichAutocompletionAutocompleteTitlesShortcutProvider(),
+      OmniboxFieldTrial::RichAutocompletionAutocompleteTitlesMinChar(),
+      OmniboxFieldTrial::
+          RichAutocompletionAutocompleteTitlesNoInputsWithSpaces(),
+      shortcut_provider, input.text());
+  const bool can_autocomplete_non_prefix = RichAutocompletionApplicable(
+      OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixAll(),
+      OmniboxFieldTrial::
+          RichAutocompletionAutocompleteNonPrefixShortcutProvider(),
+      OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixMinChar(),
+      OmniboxFieldTrial::
+          RichAutocompletionAutocompleteNonPrefixNoInputsWithSpaces(),
+      shortcut_provider, input.text());
 
   // All else equal, prefer matching primary over secondary texts and prefixes
   // over non-prefixes. |prefer_primary_non_prefix_over_secondary_prefix|

@@ -302,7 +302,7 @@ int MaxNumHQPUrlsIndexedAtStartup();
 // bundled omnibox field trial.
 
 // Returns the number of visits HQP should use when computing frequency
-// scores.  Returns 10 if the epxeriment isn't active.
+// scores.  Returns 10 if the experiment isn't active.
 size_t HQPMaxVisitsToScore();
 
 // Returns the score that should be given to typed transitions.  (The score
@@ -411,9 +411,12 @@ bool IsRefinedFocusStateEnabled();
 // Rich autocompletion.
 bool IsRichAutocompletionEnabled();
 bool RichAutocompletionAutocompleteTitles();
+bool RichAutocompletionAutocompleteTitlesShortcutProvider();
+bool RichAutocompletionAutocompleteTitlesNoInputsWithSpaces();
 size_t RichAutocompletionAutocompleteTitlesMinChar();
 bool RichAutocompletionAutocompleteNonPrefixAll();
 bool RichAutocompletionAutocompleteNonPrefixShortcutProvider();
+bool RichAutocompletionAutocompleteNonPrefixNoInputsWithSpaces();
 size_t RichAutocompletionAutocompleteNonPrefixMinChar();
 bool RichAutocompletionShowAdditionalText();
 bool RichAutocompletionSplitTitleCompletion();
@@ -564,10 +567,15 @@ extern const char kShortBookmarkSuggestionsByTotalInputLengthThresholdParam[];
 
 // Parameter names used for rich autocompletion variations.
 extern const char kRichAutocompletionAutocompleteTitlesParam[];
+extern const char kRichAutocompletionAutocompleteTitlesShortcutProviderParam[];
+extern const char
+    kRichAutocompletionAutocompleteTitlesNoInputsWithSpacesParam[];
 extern const char kRichAutocompletionAutocompleteTitlesMinCharParam[];
 extern const char kRichAutocompletionAutocompleteNonPrefixAllParam[];
 extern const char
     kRichAutocompletionAutocompleteNonPrefixShortcutProviderParam[];
+extern const char
+    kRichAutocompletionAutocompleteNonPrefixNoInputsWithSpacesParam[];
 extern const char kRichAutocompletionAutocompleteNonPrefixMinCharParam[];
 extern const char kRichAutocompletionShowAdditionalTextParam[];
 extern const char kRichAutocompletionSplitTitleCompletionParam[];

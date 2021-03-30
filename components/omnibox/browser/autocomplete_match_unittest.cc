@@ -501,7 +501,8 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
   auto test = [](const std::string input_text,
                  bool input_prevent_inline_autocomplete,
                  const std::string primary_text,
-                 const std::string secondary_text, bool expected_return,
+                 const std::string secondary_text, bool shortcut_provider,
+                 bool expected_return,
                  bool expected_rich_autocompletion_triggered,
                  const std::string expected_inline_autocompletion,
                  const std::string expected_prefix_autocompletion,
@@ -513,10 +514,10 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
     input.set_prevent_inline_autocomplete(input_prevent_inline_autocomplete);
 
     AutocompleteMatch match;
-    EXPECT_EQ(
-        match.TryRichAutocompletion(base::UTF8ToUTF16(primary_text),
-                                    base::UTF8ToUTF16(secondary_text), input),
-        expected_return);
+    EXPECT_EQ(match.TryRichAutocompletion(base::UTF8ToUTF16(primary_text),
+                                          base::UTF8ToUTF16(secondary_text),
+                                          input, shortcut_provider),
+              expected_return);
 
     EXPECT_EQ(match.rich_autocompletion_triggered,
               expected_rich_autocompletion_triggered);
@@ -532,10 +533,10 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
               expected_allowed_to_be_default_match);
   };
 
+  // We won't test every possible combination of rich autocompletion parameters,
+  // but for now, only the state with all enabled. If we decide to launch a
+  // different combination, we can update these tests.
   {
-    // We won't test every possible combination of rich autocompletion
-    // parameters, but for now, only the state were all are enabled. If we
-    // decide to launch a different combination, we can update these tests.
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         omnibox::kRichAutocompletion,
@@ -550,29 +551,29 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
     // |rich_autocompletion_triggered|.
     {
       SCOPED_TRACE("primary prefix");
-      test("x", false, "x_mixd_x_primary", "x_mixd_x_secondary", true, false,
-           "_mixd_x_primary", "", "", true);
+      test("x", false, "x_mixd_x_primary", "x_mixd_x_secondary", false, true,
+           false, "_mixd_x_primary", "", "", true);
     }
 
     // Otherwise, prefer secondary text prefix.
     {
       SCOPED_TRACE("secondary prefix");
-      test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", true, true,
-           "_mixd_x_secondary", "", "y_mixd_x_primary", true);
+      test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, true,
+           true, "_mixd_x_secondary", "", "y_mixd_x_primary", true);
     }
 
     // Otherwise, prefer primary text non-prefix (wordbreak).
     {
       SCOPED_TRACE("primary non-prefix");
-      test("x", false, "y_mixd_x_primary", "y_mixd_x_secondary", true, true,
-           "_primary", "y_mixd_", "", true);
+      test("x", false, "y_mixd_x_primary", "y_mixd_x_secondary", false, true,
+           true, "_primary", "y_mixd_", "", true);
     }
 
     // Otherwise, prefer secondary text non-prefix (wordbreak).
     {
       SCOPED_TRACE("secondary non-prefix");
-      test("x", false, "y_mid_y_primary", "y_mixd_x_secondary", true, true,
-           "_secondary", "y_mixd_", "y_mid_y_primary", true);
+      test("x", false, "y_mid_y_primary", "y_mixd_x_secondary", false, true,
+           true, "_secondary", "y_mixd_", "y_mid_y_primary", true);
     }
 
     // We don't explicitly test that non-wordbreak matches aren't autocompleted,
@@ -582,18 +583,18 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
     // We test split autocompletion in separate test below since it has a few
     // edge cases.
 
-    // Otherwise, don't autocomplete but still set |additional_text|
+    // Otherwise, don't autocomplete but still set |additional_text|.
     {
       SCOPED_TRACE("no autocompletion applicable");
-      test("x", false, "y_mid_y_primary", "y_mid_y_secondary", false, false, "",
-           "", "", false);
+      test("x", false, "y_mid_y_primary", "y_mid_y_secondary", false, false,
+           false, "", "", "", false);
     }
 
     // Don't autocomplete if |prevent_inline_autocomplete| is true.
     {
       SCOPED_TRACE("prevent inline autocomplete");
       test("x", true, "x_mixd_x_primary", "x_mixd_x_secondary", false, false,
-           "", "", "", false);
+           false, "", "", "", false);
     }
   }
 
@@ -613,8 +614,8 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
     // Do autocomplete title if input is greater than limits.
     {
       SCOPED_TRACE("min char shorter than input");
-      test("x_prim", false, "y_mixd_x_primary", "x_mixd_x_secondary", true,
-           true, "ary", "y_mixd_", "", true);
+      test("x_prim", false, "y_mixd_x_primary", "x_mixd_x_secondary", false,
+           true, true, "ary", "y_mixd_", "", true);
     }
 
     // Usually, title autocompletion is preferred to non-prefix. Autocomplete
@@ -622,23 +623,23 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
     {
       SCOPED_TRACE(
           "title min char longer & non-prefix min char shorter than input");
-      test("x_", false, "y_mixd_x_primary", "x_mixd_x_secondary", true, true,
-           "primary", "y_mixd_", "", true);
+      test("x_", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, true,
+           true, "primary", "y_mixd_", "", true);
     }
 
     // Don't autocomplete title and non-prefix if input is less than limits.
     {
       SCOPED_TRACE("min char longer than input");
       test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, false,
-           "", "", "", false);
+           false, "", "", "", false);
     }
   }
 
   // Don't autocomplete if IsRichAutocompletionEnabled is disabled
   {
     SCOPED_TRACE("feature disabled");
-    test("x", false, "x_mixd_x_primary", "x_mixd_x_secondary", false, false, "",
-         "", "", false);
+    test("x", false, "x_mixd_x_primary", "x_mixd_x_secondary", false, false,
+         false, "", "", "", false);
   }
 
   // Don't autocomplete if the RichAutocompletionCounterfactual param is
@@ -661,28 +662,28 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
     {
       SCOPED_TRACE("min char shorter than input, counterfactual");
       test("x_prim", false, "y_mixd_x_primary", "x_mixd_x_secondary", false,
-           true, "", "", "", false);
+           false, true, "", "", "", false);
     }
 
     {
       SCOPED_TRACE(
           "title min char longer & non-prefix min char shorter than input, "
           "counterfactual");
-      test("x_", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, true,
-           "", "", "", false);
+      test("x_", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, false,
+           true, "", "", "", false);
     }
 
     // Don't trigger if input is less than limits.
     {
       SCOPED_TRACE("min char longer than input, counterfactual");
       test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, false,
-           "", "", "", false);
+           false, "", "", "", false);
     }
   }
 
+  // Prefer non-prefix URLs to prefix title autocompletion only if the
+  // appropriate param is set.
   {
-    // Prefer non-prefix URLs to prefix title autocompletion only if the
-    // RichAutocompletionCounterfactual param is enabled.
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         omnibox::kRichAutocompletion,
@@ -694,8 +695,63 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
 
     {
       SCOPED_TRACE("prefer URLs over prefixes");
-      test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", true, true,
-           "_primary", "y_mixd_", "", true);
+      test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, true,
+           true, "_primary", "y_mixd_", "", true);
+    }
+  }
+
+  // Autocomplete only shortcut suggestions and only inputs without spaces if
+  // appropriate params are set.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kRichAutocompletion,
+        {
+            {"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
+            {"RichAutocompletionAutocompleteTitlesNoInputsWithSpaces", "true"},
+            {"RichAutocompletionAutocompleteNonPrefixShortcutProvider", "true"},
+            {"RichAutocompletionAutocompleteNonPrefixNoInputsWithSpaces",
+             "true"},
+        });
+    // Trigger if the suggestion is from the shortcut provider and the input
+    // contains no spaces.
+    {
+      SCOPED_TRACE("shortcut, input contains no spaces");
+      test("x", false, "primary x x", "x x secondary", true, true, true,
+           " x secondary", "", "primary x x", true);
+    }
+
+    // Don't trigger if the suggestion is not from the shortcut provider.
+    {
+      SCOPED_TRACE("not shortcut");
+      test("x", false, "primary x x", "x x secondary", false, false, false, "",
+           "", "", false);
+    }
+
+    // Don't trigger if the input contains spaces.
+    {
+      SCOPED_TRACE("input contains spaces");
+      test("x x", false, "primary x x", "x x secondary", true, false, false, "",
+           "", "", false);
+    }
+  }
+
+  // Autocomplete inputs with spaces if the appropriate params are set.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kRichAutocompletion,
+        {
+            {"RichAutocompletionAutocompleteTitles", "true"},
+            {"RichAutocompletionAutocompleteTitlesNoInputsWithSpaces", "false"},
+            {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
+            {"RichAutocompletionAutocompleteNonPrefixNoInputsWithSpaces",
+             "false"},
+        });
+    {
+      SCOPED_TRACE("input with spaces");
+      test("x x", false, "primary x x", "secondary x x", true, true, true, "",
+           "primary ", "", true);
     }
   }
 }

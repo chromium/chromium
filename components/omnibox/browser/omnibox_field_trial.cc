@@ -714,6 +714,19 @@ bool OmniboxFieldTrial::RichAutocompletionAutocompleteTitles() {
       false);
 }
 
+bool OmniboxFieldTrial::RichAutocompletionAutocompleteTitlesShortcutProvider() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      omnibox::kRichAutocompletion,
+      kRichAutocompletionAutocompleteTitlesShortcutProviderParam, false);
+}
+
+bool OmniboxFieldTrial::
+    RichAutocompletionAutocompleteTitlesNoInputsWithSpaces() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      omnibox::kRichAutocompletion,
+      kRichAutocompletionAutocompleteTitlesNoInputsWithSpacesParam, false);
+}
+
 size_t OmniboxFieldTrial::RichAutocompletionAutocompleteTitlesMinChar() {
   return base::GetFieldTrialParamByFeatureAsInt(
       omnibox::kRichAutocompletion,
@@ -731,6 +744,13 @@ bool OmniboxFieldTrial::
   return base::GetFieldTrialParamByFeatureAsBool(
       omnibox::kRichAutocompletion,
       kRichAutocompletionAutocompleteNonPrefixShortcutProviderParam, false);
+}
+
+bool OmniboxFieldTrial::
+    RichAutocompletionAutocompleteNonPrefixNoInputsWithSpaces() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      omnibox::kRichAutocompletion,
+      kRichAutocompletionAutocompleteNonPrefixNoInputsWithSpacesParam, false);
 }
 
 size_t OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixMinChar() {
@@ -994,6 +1014,12 @@ const char OmniboxFieldTrial::
 
 const char OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesParam[] =
     "RichAutocompletionAutocompleteTitles";
+const char OmniboxFieldTrial::
+    kRichAutocompletionAutocompleteTitlesShortcutProviderParam[] =
+        "RichAutocompletionAutocompleteTitlesShortcutProvider";
+const char OmniboxFieldTrial::
+    kRichAutocompletionAutocompleteTitlesNoInputsWithSpacesParam[] =
+        "RichAutocompletionAutocompleteTitlesNoInputsWithSpaces";
 const char
     OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesMinCharParam[] =
         "RichAutocompletionAutocompleteTitlesMinChar";
@@ -1003,6 +1029,9 @@ const char
 const char OmniboxFieldTrial::
     kRichAutocompletionAutocompleteNonPrefixShortcutProviderParam[] =
         "RichAutocompletionAutocompleteNonPrefixShortcutProvider";
+const char OmniboxFieldTrial::
+    kRichAutocompletionAutocompleteNonPrefixNoInputsWithSpacesParam[] =
+        "RichAutocompletionAutocompleteNonPrefixNoInputsWithSpaces";
 const char
     OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixMinCharParam[] =
         "RichAutocompletionAutocompleteNonPrefixMinChar";
