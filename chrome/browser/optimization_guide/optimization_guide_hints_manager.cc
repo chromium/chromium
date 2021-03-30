@@ -253,9 +253,7 @@ OptimizationGuideHintsManager::OptimizationGuideHintsManager(
     optimization_guide::TopHostProvider* top_host_provider,
     optimization_guide::TabUrlProvider* tab_url_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
-      profile_(profile),
+    : profile_(profile),
       pref_service_(pref_service),
       hint_cache_(std::make_unique<optimization_guide::HintCache>(
           hint_store,
@@ -274,7 +272,9 @@ OptimizationGuideHintsManager::OptimizationGuideHintsManager(
               ExternalAppPackageNamesApprovedForFetch()),
       top_host_provider_(top_host_provider),
       tab_url_provider_(tab_url_provider),
-      clock_(base::DefaultClock::GetInstance()) {
+      clock_(base::DefaultClock::GetInstance()),
+      background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
   g_browser_process->network_quality_tracker()
       ->AddEffectiveConnectionTypeObserver(this);
 
@@ -305,10 +305,6 @@ void OptimizationGuideHintsManager::Shutdown() {
       NavigationPredictorKeyedServiceFactory::GetForProfile(profile_);
   if (navigation_predictor_service)
     navigation_predictor_service->RemoveObserver(this);
-
-  // Try to cancel all tasks if we've been shutdown so it doesn't call back to
-  // us.
-  hints_component_processing_task_tracker_.TryCancelAll();
 }
 
 // static
@@ -343,10 +339,6 @@ void OptimizationGuideHintsManager::OnHintsComponentAvailable(
     const optimization_guide::HintsComponentInfo& info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // We received a new component, so cancel any previous attempts that may not
-  // have finished yet.
-  hints_component_processing_task_tracker_.TryCancelAll();
-
   // Check for if hint component is disabled. This check is needed because the
   // optimization guide still registers with the service as an observer for
   // components as a signal during testing.
@@ -374,11 +366,10 @@ void OptimizationGuideHintsManager::OnHintsComponentAvailable(
   // case where the component's version is not newer than the optimization guide
   // store's component version, StoreUpdateData will be a nullptr and hint
   // processing will be skipped.
-  // base::Unretained(this) is safe since |this| owns
-  // |hints_component_processing_task_tracker| and the callback will be canceled
-  // if destroyed.
-  hints_component_processing_task_tracker_.PostTaskAndReplyWithResult(
-      background_task_runner_.get(), FROM_HERE,
+  // base::Unretained(this) is safe since |this| owns |background_task_runner_|
+  // and the callback will be canceled if destroyed.
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&OptimizationGuideHintsManager::ProcessHintsComponent,
                      base::Unretained(this), info,
                      registered_optimization_types_, std::move(update_data)),
@@ -539,8 +530,8 @@ void OptimizationGuideHintsManager::OnHintCacheInitialized() {
     // background thread.
     if (manual_config->optimization_allowlists_size() > 0 ||
         manual_config->optimization_blacklists_size() > 0) {
-      hints_component_processing_task_tracker_.PostTask(
-          background_task_runner_.get(), FROM_HERE,
+      background_task_runner_->PostTask(
+          FROM_HERE,
           base::BindOnce(
               &OptimizationGuideHintsManager::ProcessOptimizationFilters,
               base::Unretained(this), manual_config->optimization_allowlists(),
