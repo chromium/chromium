@@ -394,7 +394,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   plane_config_ = SkYUVAInfo::PlaneConfig::kUnknown;
   reader.Read(&plane_config_);
   if (plane_config_ != SkYUVAInfo::PlaneConfig::kUnknown) {
-    SkYUVAInfo::Subsampling subsampling;
+    SkYUVAInfo::Subsampling subsampling = SkYUVAInfo::Subsampling::kUnknown;
     reader.Read(&subsampling);
     if (subsampling == SkYUVAInfo::Subsampling::kUnknown)
       return false;
@@ -432,7 +432,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
           plane_stride == 0)
         return false;
 
-      size_t plane_bytes;
+      size_t plane_bytes = 0;
       reader.ReadSize(&plane_bytes);
       SkImageInfo plane_pixmap_info =
           SkImageInfo::Make(plane_width, plane_height, yuv_plane_color_type,
