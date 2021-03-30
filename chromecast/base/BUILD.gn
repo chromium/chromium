@@ -383,6 +383,7 @@ if (is_android) {
       "$java_test_dir/org/chromium/chromecast/base/ObservableAndTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableAndThenTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableFilterTest.java",
+      "$java_test_dir/org/chromium/chromecast/base/ObservableFlatMapTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableMapTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableMiscellaneousTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableNotTest.java",
