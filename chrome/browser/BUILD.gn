@@ -6867,6 +6867,8 @@ static_library("test_support") {
       "sessions/tab_loader_tester.h",
       "sessions/tab_restore_service_load_waiter.cc",
       "sessions/tab_restore_service_load_waiter.h",
+      "speech/fake_speech_recognition_service.cc",
+      "speech/fake_speech_recognition_service.h",
       "ui/tabs/tab_activity_simulator.cc",
       "ui/tabs/tab_activity_simulator.h",
     ]

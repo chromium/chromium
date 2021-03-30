@@ -27,6 +27,7 @@ class CrosSpeechRecognitionServiceFactory
 
  private:
   friend class base::NoDestructor<CrosSpeechRecognitionServiceFactory>;
+  friend class OnDeviceSpeechRecognizerBrowsertest;
   static CrosSpeechRecognitionServiceFactory* GetInstance();
 
   CrosSpeechRecognitionServiceFactory();
