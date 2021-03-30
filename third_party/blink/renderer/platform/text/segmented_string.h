@@ -35,29 +35,33 @@ class PLATFORM_EXPORT SegmentedSubstring {
   DISALLOW_NEW();
 
  public:
-  SegmentedSubstring() { data_.string8_ptr = nullptr; }
+  SegmentedSubstring() { Clear(); }
 
-  SegmentedSubstring(const String& str)
-      : length_(str.length()),
-        string_(str) {
-    if (length_) {
+  explicit SegmentedSubstring(const String& str) : string_(str) {
+    unsigned len = str.length();
+    if (len) {
       if (string_.Is8Bit()) {
         is_8bit_ = true;
         data_.string8_ptr = string_.Characters8();
+        data_last_char_ = data_.string8_ptr + len - 1;
       } else {
         is_8bit_ = false;
         data_.string16_ptr = string_.Characters16();
+        data_last_char_ =
+            reinterpret_cast<const LChar*>(data_.string16_ptr + len - 1);
       }
     } else {
       is_8bit_ = true;
       data_.string8_ptr = nullptr;
+      data_last_char_ = nullptr;
     }
+    data_start_ = data_.string8_ptr;
   }
 
   void Clear() {
-    length_ = 0;
     is_8bit_ = true;
     data_.string8_ptr = nullptr;
+    data_start_ = data_last_char_ = nullptr;
   }
 
   bool ExcludeLineNumbers() const { return !do_not_exclude_line_numbers_; }
@@ -65,27 +69,24 @@ class PLATFORM_EXPORT SegmentedSubstring {
 
   void SetExcludeLineNumbers() { do_not_exclude_line_numbers_ = false; }
 
-  int NumberOfCharactersConsumed() const { return string_.length() - length_; }
+  int NumberOfCharactersConsumed() const { return offset(); }
 
   void AppendTo(StringBuilder& builder) const {
-    int offset = string_.length() - length_;
+    int off = offset();
+    int len = length();
 
-    if (!offset) {
-      if (length_)
+    if (!off) {
+      if (len)
         builder.Append(string_);
     } else {
-      builder.Append(string_.Substring(offset, length_));
+      builder.Append(string_.Substring(off, len));
     }
   }
 
   bool PushIfPossible(UChar c) {
-    if (!length_)
-      return false;
-
     // This checks if either 8 or 16 bit strings are in the first character
-    // (where we can't rewind). Since length_ is greater than zero, we can check
-    // the Impl() directly and avoid a branch here.
-    if (data_.void_ptr == string_.Impl()->Bytes())
+    // or they are both nullptr (where we can't rewind).
+    if (data_.string8_ptr == data_start_)
       return false;
 
     if (is_8bit_) {
@@ -100,7 +101,6 @@ class PLATFORM_EXPORT SegmentedSubstring {
       --data_.string16_ptr;
     }
 
-    ++length_;
     return true;
   }
 
@@ -110,25 +110,45 @@ class PLATFORM_EXPORT SegmentedSubstring {
     return *data_.string16_ptr;
   }
 
-  ALWAYS_INLINE UChar IncrementAndDecrementLength() {
-    --length_;
+  ALWAYS_INLINE bool CanAdvance() {
+    return data_.string8_ptr < data_last_char_;
+  }
+
+  ALWAYS_INLINE UChar Advance() {
     return is_8bit_ ? *++data_.string8_ptr : *++data_.string16_ptr;
   }
 
-  String CurrentSubString(unsigned length) {
-    int offset = string_.length() - length_;
-    return string_.Substring(offset, length);
+  String CurrentSubString(unsigned len) const {
+    return string_.Substring(offset(), len);
   }
 
-  ALWAYS_INLINE int length() const { return length_; }
+  ALWAYS_INLINE int offset() const {
+    DCHECK_LE(data_start_, data_.string8_ptr);
+    return static_cast<int>(data_.string8_ptr - data_start_) >> !is_8bit_;
+  }
+
+  ALWAYS_INLINE int length() const {
+    DCHECK_LE(data_.string8_ptr, data_last_char_);
+    return static_cast<int>(data_end() - data_.string8_ptr) >> !is_8bit_;
+  }
 
  private:
+  ALWAYS_INLINE const LChar* data_end() const {
+    if (!data_last_char_)
+      return nullptr;
+    return data_last_char_ + 1 + !is_8bit_;
+  }
+
   union {
     const LChar* string8_ptr;
     const UChar* string16_ptr;
     const void* void_ptr;
   } data_;
-  int length_ = 0;
+  const LChar* data_start_;
+  // |data_last_char_| points to the last character (or nullptr). This is to
+  // avoid extra computation in |CanAdvance|, which is in the critical path of
+  // HTMLTokenizer.
+  const LChar* data_last_char_;
   bool do_not_exclude_line_numbers_ = true;
   bool is_8bit_ = true;
   String string_;
@@ -189,8 +209,8 @@ class PLATFORM_EXPORT SegmentedString {
   }
 
   ALWAYS_INLINE UChar Advance() {
-    if (LIKELY(current_string_.length() > 1)) {
-      return current_string_.IncrementAndDecrementLength();
+    if (LIKELY(current_string_.CanAdvance())) {
+      return current_string_.Advance();
     }
     return AdvanceSubstring();
   }

@@ -125,9 +125,9 @@ void SegmentedString::Prepend(const SegmentedString& s, PrependType type) {
 }
 
 UChar SegmentedString::AdvanceSubstring() {
+  number_of_characters_consumed_prior_to_current_string_ +=
+      current_string_.NumberOfCharactersConsumed() + 1;
   if (IsComposite()) {
-    number_of_characters_consumed_prior_to_current_string_ +=
-        current_string_.NumberOfCharactersConsumed() + 1;
     current_string_ = substrings_.TakeFirst();
     // If we've previously consumed some characters of the non-current
     // string, we now account for those characters as part of the current
