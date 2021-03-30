@@ -55,25 +55,13 @@ class InputStreamPreprocessor {
   // characters in |source| (after collapsing \r\n, etc).
   ALWAYS_INLINE bool Peek(SegmentedString& source) {
     next_input_character_ = source.CurrentChar();
-
-    // Every branch in this function is expensive, so we have a
-    // fast-reject branch for characters that don't require special
-    // handling. Please run the parser benchmark whenever you touch
-    // this function. It's very hot.
-    static const UChar kSpecialCharacterMask = '\n' | '\r' | '\0';
-    if (next_input_character_ & ~kSpecialCharacterMask) {
-      skip_next_new_line_ = false;
-      return true;
-    }
     return ProcessNextInputCharacter(source);
   }
 
   // Returns whether there are more characters in |source| after advancing.
   ALWAYS_INLINE bool Advance(SegmentedString& source) {
-    source.AdvanceAndUpdateLineNumber();
-    if (source.IsEmpty())
-      return false;
-    return Peek(source);
+    next_input_character_ = source.AdvanceAndUpdateLineNumber();
+    return ProcessNextInputCharacter(source);
   }
 
   bool SkipNextNewLine() const { return skip_next_new_line_; }
@@ -84,16 +72,32 @@ class InputStreamPreprocessor {
   }
 
  private:
-  bool ProcessNextInputCharacter(SegmentedString& source) {
+  ALWAYS_INLINE bool ProcessNextInputCharacter(SegmentedString& source) {
+    // Every branch in this function is expensive, so we have a
+    // fast-reject branch for characters that don't require special
+    // handling. Please run the parser benchmark whenever you touch
+    // this function. It's very hot.
+    static const UChar kSpecialCharacterMask = '\n' | '\r' | '\0';
+    if (next_input_character_ & ~kSpecialCharacterMask) {
+      skip_next_new_line_ = false;
+      return true;
+    }
+    // |source| will only be empty if it returns a null character
+    // after advancing.
+    if (source.IsEmpty())
+      return false;
+    return ProcessNextInputSpecialCharacter(source);
+  }
+
+  bool ProcessNextInputSpecialCharacter(SegmentedString& source) {
   ProcessAgain:
     DCHECK_EQ(next_input_character_, source.CurrentChar());
 
     if (next_input_character_ == '\n' && skip_next_new_line_) {
       skip_next_new_line_ = false;
-      source.AdvancePastNewlineAndUpdateLineNumber();
+      next_input_character_ = source.AdvancePastNewlineAndUpdateLineNumber();
       if (source.IsEmpty())
         return false;
-      next_input_character_ = source.CurrentChar();
     }
     if (next_input_character_ == '\r') {
       next_input_character_ = '\n';
@@ -108,10 +112,9 @@ class InputStreamPreprocessor {
       if (next_input_character_ == '\0' &&
           !ShouldTreatNullAsEndOfFileMarker(source)) {
         if (tokenizer_->ShouldSkipNullCharacters()) {
-          source.AdvancePastNonNewline();
+          next_input_character_ = source.AdvancePastNonNewline();
           if (source.IsEmpty())
             return false;
-          next_input_character_ = source.CurrentChar();
           goto ProcessAgain;
         }
         next_input_character_ = 0xFFFD;

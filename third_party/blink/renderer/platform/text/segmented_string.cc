@@ -124,7 +124,7 @@ void SegmentedString::Prepend(const SegmentedString& s, PrependType type) {
   Prepend(s.current_string_, type);
 }
 
-void SegmentedString::AdvanceSubstring() {
+UChar SegmentedString::AdvanceSubstring() {
   if (IsComposite()) {
     number_of_characters_consumed_prior_to_current_string_ +=
         current_string_.NumberOfCharactersConsumed() + 1;
@@ -134,9 +134,11 @@ void SegmentedString::AdvanceSubstring() {
     // string, not as part of "prior to current string."
     number_of_characters_consumed_prior_to_current_string_ -=
         current_string_.NumberOfCharactersConsumed();
+    return CurrentChar();
   } else {
     current_string_.Clear();
     empty_ = true;
+    return 0;
   }
 }
 

@@ -44,11 +44,9 @@ class PLATFORM_EXPORT SegmentedSubstring {
       if (string_.Is8Bit()) {
         is_8bit_ = true;
         data_.string8_ptr = string_.Characters8();
-        current_char_ = *data_.string8_ptr;
       } else {
         is_8bit_ = false;
         data_.string16_ptr = string_.Characters16();
-        current_char_ = *data_.string16_ptr;
       }
     } else {
       is_8bit_ = true;
@@ -60,7 +58,6 @@ class PLATFORM_EXPORT SegmentedSubstring {
     length_ = 0;
     is_8bit_ = true;
     data_.string8_ptr = nullptr;
-    current_char_ = 0;
   }
 
   bool ExcludeLineNumbers() const { return !do_not_exclude_line_numbers_; }
@@ -103,16 +100,19 @@ class PLATFORM_EXPORT SegmentedSubstring {
       --data_.string16_ptr;
     }
 
-    current_char_ = c;
     ++length_;
     return true;
   }
 
-  ALWAYS_INLINE UChar GetCurrentChar() const { return current_char_; }
+  ALWAYS_INLINE UChar GetCurrentChar() const {
+    if (is_8bit_)
+      return *data_.string8_ptr;
+    return *data_.string16_ptr;
+  }
 
-  ALWAYS_INLINE void IncrementAndDecrementLength() {
-    current_char_ = is_8bit_ ? *++data_.string8_ptr : *++data_.string16_ptr;
+  ALWAYS_INLINE UChar IncrementAndDecrementLength() {
     --length_;
+    return is_8bit_ ? *++data_.string8_ptr : *++data_.string16_ptr;
   }
 
   String CurrentSubString(unsigned length) {
@@ -129,7 +129,6 @@ class PLATFORM_EXPORT SegmentedSubstring {
     const void* void_ptr;
   } data_;
   int length_ = 0;
-  UChar current_char_ = 0;
   bool do_not_exclude_line_numbers_ = true;
   bool is_8bit_ = true;
   String string_;
@@ -189,12 +188,11 @@ class PLATFORM_EXPORT SegmentedString {
     return LookAheadInline(string, kTextCaseASCIIInsensitive);
   }
 
-  ALWAYS_INLINE void Advance() {
+  ALWAYS_INLINE UChar Advance() {
     if (LIKELY(current_string_.length() > 1)) {
-      current_string_.IncrementAndDecrementLength();
-    } else {
-      AdvanceSubstring();
+      return current_string_.IncrementAndDecrementLength();
     }
+    return AdvanceSubstring();
   }
 
   ALWAYS_INLINE void UpdateLineNumber() {
@@ -207,46 +205,34 @@ class PLATFORM_EXPORT SegmentedString {
     }
   }
 
-  ALWAYS_INLINE void AdvanceAndUpdateLineNumber() {
+  ALWAYS_INLINE UChar AdvanceAndUpdateLineNumber() {
     DCHECK_GE(current_string_.length(), 1);
-
     if (current_string_.GetCurrentChar() == '\n')
       UpdateLineNumber();
-
-    if (LIKELY(current_string_.length() > 1)) {
-      current_string_.IncrementAndDecrementLength();
-    } else {
-      AdvanceSubstring();
-    }
+    return Advance();
   }
 
-  ALWAYS_INLINE void AdvanceAndASSERT(UChar expected_character) {
+  ALWAYS_INLINE UChar AdvanceAndASSERT(UChar expected_character) {
     DCHECK_EQ(expected_character, CurrentChar());
-    Advance();
+    return Advance();
   }
 
-  ALWAYS_INLINE void AdvanceAndASSERTIgnoringCase(UChar expected_character) {
+  ALWAYS_INLINE UChar AdvanceAndASSERTIgnoringCase(UChar expected_character) {
     DCHECK_EQ(WTF::unicode::FoldCase(CurrentChar()),
               WTF::unicode::FoldCase(expected_character));
-    Advance();
+    return Advance();
   }
 
-  ALWAYS_INLINE void AdvancePastNonNewline() {
+  ALWAYS_INLINE UChar AdvancePastNonNewline() {
     DCHECK_NE(CurrentChar(), '\n');
-    Advance();
+    return Advance();
   }
 
-  ALWAYS_INLINE void AdvancePastNewlineAndUpdateLineNumber() {
+  ALWAYS_INLINE UChar AdvancePastNewlineAndUpdateLineNumber() {
     DCHECK_EQ(CurrentChar(), '\n');
     DCHECK_GE(current_string_.length(), 1);
-
     UpdateLineNumber();
-
-    if (LIKELY(current_string_.length() > 1)) {
-      current_string_.IncrementAndDecrementLength();
-    } else {
-      AdvanceSubstring();
-    }
+    return Advance();
   }
 
   // Writes the consumed characters into consumedCharacters, which must
@@ -280,7 +266,7 @@ class PLATFORM_EXPORT SegmentedString {
   void Append(const SegmentedSubstring&);
   void Prepend(const SegmentedSubstring&, PrependType);
 
-  void AdvanceSubstring();
+  UChar AdvanceSubstring();
 
   inline LookAheadResult LookAheadInline(const String& string,
                                          TextCaseSensitivity case_sensitivity) {
