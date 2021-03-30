@@ -102,6 +102,19 @@ struct CORE_EXPORT InspectorFlexContainerHighlightConfig {
   base::Optional<LineStyle> cross_alignment;
 };
 
+struct CORE_EXPORT InspectorScrollSnapContainerHighlightConfig {
+  USING_FAST_MALLOC(InspectorScrollSnapContainerHighlightConfig);
+
+ public:
+  InspectorScrollSnapContainerHighlightConfig() = default;
+
+  base::Optional<LineStyle> snapport_border;
+  base::Optional<LineStyle> snap_area_border;
+
+  Color scroll_margin_color;
+  Color scroll_padding_color;
+};
+
 struct CORE_EXPORT InspectorFlexItemHighlightConfig {
   USING_FAST_MALLOC(InspectorFlexItemHighlightConfig);
 
@@ -252,6 +265,14 @@ std::unique_ptr<protocol::DictionaryValue> InspectorGridHighlight(
 std::unique_ptr<protocol::DictionaryValue> InspectorFlexContainerHighlight(
     Node* node,
     const InspectorFlexContainerHighlightConfig& config);
+
+std::unique_ptr<protocol::DictionaryValue> InspectorScrollSnapHighlight(
+    Node* node,
+    const InspectorScrollSnapContainerHighlightConfig& config);
+
+// CORE_EXPORT is required to make the function available for unit tests.
+std::unique_ptr<protocol::DictionaryValue> CORE_EXPORT
+BuildSnapContainerInfo(Node* node);
 
 }  // namespace blink
 

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
+#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
@@ -581,6 +583,49 @@ PhysicalOffset LocalToAbsolutePoint(Node* node,
       PhysicalOffset::FromFloatPointRound(abs_point_in_viewport);
   scaled_abs_point.Scale(scale);
   return scaled_abs_point;
+}
+
+FloatQuad ToFloatQuad(const gfx::RectF& rect) {
+  return FloatRect(rect);
+}
+
+String SnapAlignToString(const cc::SnapAlignment& value) {
+  switch (value) {
+    case cc::SnapAlignment::kNone:
+      return "none";
+    case cc::SnapAlignment::kStart:
+      return "start";
+    case cc::SnapAlignment::kEnd:
+      return "end";
+    case cc::SnapAlignment::kCenter:
+      return "center";
+  }
+}
+
+std::unique_ptr<protocol::ListValue> BuildPathFromQuad(
+    const blink::LocalFrameView* containing_view,
+    FloatQuad quad) {
+  FrameQuadToViewport(containing_view, quad);
+  PathBuilder builder;
+  builder.AppendPath(QuadToPath(quad),
+                     DeviceScaleFromFrameView(containing_view));
+  return builder.Release();
+}
+
+void BuildSnapAlignment(const cc::ScrollSnapType& snap_type,
+                        const cc::SnapAlignment& alignment_block,
+                        const cc::SnapAlignment& alignment_inline,
+                        std::unique_ptr<protocol::DictionaryValue>& result) {
+  if (snap_type.axis == cc::SnapAxis::kBlock ||
+      snap_type.axis == cc::SnapAxis::kBoth ||
+      snap_type.axis == cc::SnapAxis::kY) {
+    result->setString("alignBlock", SnapAlignToString(alignment_block));
+  }
+  if (snap_type.axis == cc::SnapAxis::kInline ||
+      snap_type.axis == cc::SnapAxis::kBoth ||
+      snap_type.axis == cc::SnapAxis::kX) {
+    result->setString("alignInline", SnapAlignToString(alignment_inline));
+  }
 }
 
 std::unique_ptr<protocol::DictionaryValue> BuildPosition(
@@ -2019,6 +2064,109 @@ std::unique_ptr<protocol::DictionaryValue> InspectorFlexContainerHighlight(
   }
 
   return BuildFlexContainerInfo(node, config, scale);
+}
+
+std::unique_ptr<protocol::DictionaryValue> BuildSnapContainerInfo(Node* node) {
+  if (!node)
+    return nullptr;
+
+  LayoutBox* layout_box = node->GetLayoutBox();
+
+  if (!layout_box)
+    return nullptr;
+
+  auto* snap_areas = layout_box->SnapAreas();
+  if (!snap_areas)
+    return nullptr;
+
+  LocalFrameView* containing_view = node->GetDocument().View();
+
+  if (!containing_view)
+    return nullptr;
+
+  std::unique_ptr<protocol::DictionaryValue> scroll_snap_info =
+      protocol::DictionaryValue::create();
+  auto scroll_position = layout_box->GetScrollableArea()->ScrollPosition();
+  auto* container_data =
+      layout_box->GetScrollableArea()->GetSnapContainerData();
+
+  FloatQuad snapport_quad =
+      layout_box->LocalToAbsoluteQuad(ToFloatQuad(container_data->rect()));
+  scroll_snap_info->setValue("snapport",
+                             BuildPathFromQuad(containing_view, snapport_quad));
+
+  auto padding_box = layout_box->PhysicalPaddingBoxRect();
+  FloatQuad padding_box_quad = layout_box->LocalRectToAbsoluteQuad(padding_box);
+  scroll_snap_info->setValue(
+      "paddingBox", BuildPathFromQuad(containing_view, padding_box_quad));
+
+  auto snap_type = container_data->scroll_snap_type();
+  std::unique_ptr<protocol::ListValue> result_areas =
+      protocol::ListValue::create();
+  DCHECK_EQ(snap_areas->size(), container_data->size());
+  std::vector<cc::SnapAreaData> snap_area_items;
+  snap_area_items.reserve(container_data->size());
+  for (size_t i = 0; i < container_data->size(); i++) {
+    cc::SnapAreaData data = container_data->at(i);
+    data.rect.Offset(-scroll_position.X(), -scroll_position.Y());
+    snap_area_items.push_back(std::move(data));
+  }
+
+  std::sort(snap_area_items.begin(), snap_area_items.end(),
+            [](const cc::SnapAreaData& a, const cc::SnapAreaData& b) -> bool {
+              return a.rect.origin() < b.rect.origin();
+            });
+
+  for (const auto& data : snap_area_items) {
+    std::unique_ptr<protocol::DictionaryValue> result_area =
+        protocol::DictionaryValue::create();
+
+    FloatQuad area_quad =
+        layout_box->LocalToAbsoluteQuad(ToFloatQuad(data.rect));
+    result_area->setValue("path",
+                          BuildPathFromQuad(containing_view, area_quad));
+
+    Node* area_node = DOMNodeIds::NodeForId(
+        DOMNodeIdFromCompositorElementId(data.element_id));
+    DCHECK(area_node);
+    if (!area_node)
+      continue;
+
+    auto* area_layout_box = area_node->GetLayoutBox();
+    FloatQuad area_box_quad = area_layout_box->LocalRectToAbsoluteQuad(
+        area_layout_box->PhysicalBorderBoxRect());
+    result_area->setValue("borderBox",
+                          BuildPathFromQuad(containing_view, area_box_quad));
+
+    BuildSnapAlignment(snap_type, data.scroll_snap_align.alignment_block,
+                       data.scroll_snap_align.alignment_inline, result_area);
+
+    result_areas->pushValue(std::move(result_area));
+  }
+  scroll_snap_info->setArray("snapAreas", std::move(result_areas));
+
+  return scroll_snap_info;
+}
+
+std::unique_ptr<protocol::DictionaryValue> InspectorScrollSnapHighlight(
+    Node* node,
+    const InspectorScrollSnapContainerHighlightConfig& config) {
+  std::unique_ptr<protocol::DictionaryValue> scroll_snap_info =
+      BuildSnapContainerInfo(node);
+
+  if (!scroll_snap_info)
+    return nullptr;
+
+  AppendLineStyleConfig(config.snapport_border, scroll_snap_info,
+                        "snapportBorder");
+  AppendLineStyleConfig(config.snap_area_border, scroll_snap_info,
+                        "snapAreaBorder");
+  scroll_snap_info->setString("scrollMarginColor",
+                              config.scroll_margin_color.Serialized());
+  scroll_snap_info->setString("scrollPaddingColor",
+                              config.scroll_padding_color.Serialized());
+
+  return scroll_snap_info;
 }
 
 // static
