@@ -33,7 +33,7 @@ const base::Feature kEnterpriseConnectorsEnabled{
     "EnterpriseConnectorsEnabled", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kPerProfileConnectorsEnabled{
-    "PerProfileConnectorsEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+    "PerProfileConnectorsEnabled", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const char kServiceProviderConfig[] = R"({
   "version": "1",
