@@ -177,9 +177,6 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
   void OnGetTokenFailure(const GoogleServiceAuthError& error) override;
 
  private:
-  // TODO(https://crbug.com/1186630): remove after the crash is investigated.
-  enum class FetchResult { kSuccess, kFailure, kCanceled };
-
   Fetcher(OAuth2AccessTokenManager* oauth2_access_token_manager,
           const CoreAccountId& account_id,
           scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -189,7 +186,7 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
           base::WeakPtr<RequestImpl> waiting_request);
   void Start();
   void InformWaitingRequests();
-  void InformWaitingRequestsAndDelete(FetchResult result);
+  void InformWaitingRequestsAndDelete();
   bool ShouldRetry(const GoogleServiceAuthError& error) const;
   int64_t ComputeExponentialBackOffMilliseconds(int retry_num);
 
@@ -222,11 +219,8 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
   std::string client_id_;
   std::string client_secret_;
 
-  // TODO(https://crbug.com/1186630): remove after the crash is investigated.
-  base::Optional<FetchResult>
-      called_inform_waiting_requests_and_delete_with_result_;
-  base::Optional<FetchResult> informed_manager_with_result_;
-  base::Optional<FetchResult> scheduled_for_deletion_with_result_;
+  // Ensures that the fetcher is deleted only once.
+  bool scheduled_for_deletion_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(Fetcher);
 };
@@ -304,7 +298,7 @@ void OAuth2AccessTokenManager::Fetcher::OnGetTokenSuccess(
   // tasks. https://chromiumcodereview.appspot.com/11312124/
   oauth2_access_token_manager_->RegisterTokenResponse(client_id_, account_id_,
                                                       scopes_, token_response_);
-  InformWaitingRequestsAndDelete(FetchResult::kSuccess);
+  InformWaitingRequestsAndDelete();
 }
 
 void OAuth2AccessTokenManager::Fetcher::OnGetTokenFailure(
@@ -318,7 +312,7 @@ void OAuth2AccessTokenManager::Fetcher::OnGetTokenFailure(
   RecordOAuth2TokenFetchResult(error.state());
 
   error_ = error;
-  InformWaitingRequestsAndDelete(FetchResult::kFailure);
+  InformWaitingRequestsAndDelete();
 }
 
 // Returns an exponential backoff in milliseconds including randomness less than
@@ -371,41 +365,15 @@ void OAuth2AccessTokenManager::Fetcher::InformWaitingRequests() {
   waiting_requests_.clear();
 }
 
-void OAuth2AccessTokenManager::Fetcher::InformWaitingRequestsAndDelete(
-    FetchResult result) {
-  // Fetcher shouldn't return a result more than once. Triggering crashes on
-  // different lines of code depending on FetchResult.
-  // TODO(https://crbug.com/1186630): remove after the crash is investigated.
-  if (scheduled_for_deletion_with_result_.has_value()) {
-    CHECK_NE(scheduled_for_deletion_with_result_.value(),
-             FetchResult::kCanceled);
-    CHECK_NE(scheduled_for_deletion_with_result_.value(),
-             FetchResult::kFailure);
-    CHECK_NE(scheduled_for_deletion_with_result_.value(),
-             FetchResult::kSuccess);
-  }
-  if (informed_manager_with_result_.has_value()) {
-    CHECK_NE(informed_manager_with_result_.value(), FetchResult::kCanceled);
-    CHECK_NE(informed_manager_with_result_.value(), FetchResult::kFailure);
-    CHECK_NE(informed_manager_with_result_.value(), FetchResult::kSuccess);
-  }
-  if (called_inform_waiting_requests_and_delete_with_result_.has_value()) {
-    CHECK_NE(called_inform_waiting_requests_and_delete_with_result_.value(),
-             FetchResult::kCanceled);
-    CHECK_NE(called_inform_waiting_requests_and_delete_with_result_.value(),
-             FetchResult::kFailure);
-    CHECK_NE(called_inform_waiting_requests_and_delete_with_result_.value(),
-             FetchResult::kSuccess);
-  }
+void OAuth2AccessTokenManager::Fetcher::InformWaitingRequestsAndDelete() {
+  CHECK(!scheduled_for_deletion_);
+  scheduled_for_deletion_ = true;
 
-  called_inform_waiting_requests_and_delete_with_result_ = result;
   // Deregisters itself from the manager to prevent more waiting requests to
   // be added when it calls back the waiting requests.
   oauth2_access_token_manager_->OnFetchComplete(this);
-  informed_manager_with_result_ = result;
   InformWaitingRequests();
   base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
-  scheduled_for_deletion_with_result_ = result;
 }
 
 void OAuth2AccessTokenManager::Fetcher::AddWaitingRequest(
@@ -423,7 +391,7 @@ void OAuth2AccessTokenManager::Fetcher::Cancel() {
   fetcher_.reset();
   retry_timer_.Stop();
   error_ = GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED);
-  InformWaitingRequestsAndDelete(FetchResult::kCanceled);
+  InformWaitingRequestsAndDelete();
 }
 
 const OAuth2AccessTokenManager::ScopeSet&
@@ -768,16 +736,14 @@ void OAuth2AccessTokenManager::OnFetchComplete(
       fetcher->GetClientId(), fetcher->GetAccountId(), fetcher->GetScopeSet());
 
   auto iter = pending_fetchers_.find(request_param);
-  // TODO(https://crbug.com/1186630): convert to DCHECK once the crash is
-  // investigated.
-  CHECK(iter != pending_fetchers_.end());
-  CHECK_EQ(fetcher, iter->second.get());
+  DCHECK(iter != pending_fetchers_.end());
+  DCHECK_EQ(fetcher, iter->second.get());
 
   // The Fetcher deletes itself.
   iter->second.release();
   pending_fetchers_.erase(iter);
 
-  // `delegate_` might cancel all pending fetchers, so it's imporant to call it
+  // `delegate_` might cancel all pending fetchers, so it's important to call it
   // only after `fetcher` was removed from the map. See
   // https://crbug.com/1186630.
   delegate_->OnAccessTokenFetched(fetcher->GetAccountId(), fetcher->error());
