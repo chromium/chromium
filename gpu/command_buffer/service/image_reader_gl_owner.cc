@@ -272,7 +272,7 @@ void ImageReaderGLOwner::UpdateTexImage() {
   AImage* image = nullptr;
   int acquire_fence_fd = -1;
   media_status_t return_code = AMEDIA_OK;
-  DCHECK_GT(max_images_, static_cast<int32_t>(image_refs_.size()));
+
   if (max_images_ - image_refs_.size() < 2) {
     // acquireNextImageAsync is required here since as per the spec calling
     // AImageReader_acquireLatestImage with less than two images of margin, that
