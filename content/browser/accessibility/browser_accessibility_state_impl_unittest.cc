@@ -1,0 +1,94 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/browser/accessibility/browser_accessibility_state_impl.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_tick_clock.h"
+#include "content/public/test/browser_task_environment.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
+#include "ui/events/base_event_utils.h"
+
+namespace content {
+
+class BrowserAccessibilityStateImplTest : public testing::Test {
+ public:
+  BrowserAccessibilityStateImplTest() = default;
+  BrowserAccessibilityStateImplTest(const BrowserAccessibilityStateImplTest&) =
+      delete;
+  ~BrowserAccessibilityStateImplTest() override = default;
+
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutoDisableAccessibility);
+    ui::SetEventTickClockForTesting(&clock_);
+    state_ = BrowserAccessibilityStateImpl::GetInstance();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::SimpleTestTickClock clock_;
+  BrowserAccessibilityStateImpl* state_;
+  BrowserTaskEnvironment task_environment_;
+};
+
+TEST_F(BrowserAccessibilityStateImplTest,
+       DisableAccessibilityBasedOnUserEvents) {
+  // Initially, accessibility should be disabled.
+  EXPECT_FALSE(state_->IsAccessibleBrowser());
+
+  // Enable accessibility based on usage of accessibility APIs.
+  state_->OnScreenReaderDetected();
+  EXPECT_TRUE(state_->IsAccessibleBrowser());
+
+  // Send user input, wait 31 seconds, then send another user input event.
+  // Don't simulate any accessibility APIs in that time.
+  state_->OnUserInputEvent();
+  state_->OnUserInputEvent();
+  clock_.Advance(base::TimeDelta::FromSeconds(31));
+  state_->OnUserInputEvent();
+
+  // Accessibility should now be disabled.
+  EXPECT_FALSE(state_->IsAccessibleBrowser());
+}
+
+TEST_F(BrowserAccessibilityStateImplTest,
+       AccessibilityApiUsagePreventsAutoDisableAccessibility) {
+  // Initially, accessibility should be disabled.
+  EXPECT_FALSE(state_->IsAccessibleBrowser());
+
+  // Enable accessibility based on usage of accessibility APIs.
+  state_->OnScreenReaderDetected();
+  EXPECT_TRUE(state_->IsAccessibleBrowser());
+
+  // Send user input, wait 31 seconds, then send another user input event -
+  // but simulate accessibility APIs in that time.
+  state_->OnUserInputEvent();
+  state_->OnUserInputEvent();
+  clock_.Advance(base::TimeDelta::FromSeconds(31));
+  state_->OnAccessibilityApiUsage();
+  state_->OnUserInputEvent();
+
+  // Accessibility should still be enabled.
+  EXPECT_TRUE(state_->IsAccessibleBrowser());
+
+  // Same test, but simulate accessibility API usage after the first
+  // user input event, before the delay.
+  state_->OnUserInputEvent();
+  state_->OnAccessibilityApiUsage();
+  clock_.Advance(base::TimeDelta::FromSeconds(31));
+  state_->OnUserInputEvent();
+  state_->OnUserInputEvent();
+
+  // Accessibility should still be enabled.
+  EXPECT_TRUE(state_->IsAccessibleBrowser());
+
+  // Advance another 31 seconds and simulate another user input event;
+  // now accessibility should be disabled.
+  clock_.Advance(base::TimeDelta::FromSeconds(31));
+  state_->OnUserInputEvent();
+  EXPECT_FALSE(state_->IsAccessibleBrowser());
+}
+
+}  // namespace content

@@ -83,6 +83,13 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // AXModeObserver
   void OnAXModeAdded(ui::AXMode mode) override;
 
+  // The global accessibility mode is automatically enabled based on
+  // usage of accessibility APIs. When we detect a significant amount
+  // of user inputs within a certain time period, but no accessibility
+  // API usage, we automatically disable accessibility.
+  void OnUserInputEvent();
+  void OnAccessibilityApiUsage();
+
   // Accessibility objects can have the "hot tracked" state set when
   // the mouse is hovering over them, but this makes tests flaky because
   // the test behaves differently when the mouse happens to be over an
@@ -127,11 +134,22 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   bool other_thread_done_ = false;
   base::RepeatingClosure background_thread_done_callback_;
 
-  bool disable_hot_tracking_;
+  // Whether the force-renderer-accessibility flag is enabled.
+  // Cached here so that we don't have to check base::CommandLine in
+  // a function that's called frequently.
+  bool force_renderer_accessibility_ = false;
+
+  // Disable hot tracking, i.e. hover state - needed just to avoid flaky tests.
+  bool disable_hot_tracking_ = false;
 
   // Keeps track of whether caret browsing is enabled for the most
   // recently used profile.
   bool caret_browsing_enabled_ = false;
+
+  // The time of the first user input event; if we receive multiple
+  // user input events within a 30-second period and no
+  base::TimeTicks first_user_input_event_time_;
+  int user_input_event_count_ = 0;
 
   base::RepeatingCallbackList<void(const FocusedNodeDetails&)>
       focus_changed_callbacks_;

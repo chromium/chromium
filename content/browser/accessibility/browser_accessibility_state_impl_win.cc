@@ -43,6 +43,7 @@ class WindowsAccessibilityEnabler
     // detected later when specific more advanced APIs are accessed.)
     BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
         ui::kAXModeBasic);
+    BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
   }
 
   void OnScreenReaderHoneyPotQueried() override {
@@ -56,6 +57,7 @@ class WindowsAccessibilityEnabler
       BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
           ui::kAXModeBasic);
     }
+    BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
   }
 
   void OnAccNameCalled() override {
@@ -67,6 +69,7 @@ class WindowsAccessibilityEnabler
       BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
           ui::kAXModeBasic);
     }
+    BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
   }
 
   void OnUIAutomationUsed() override {
@@ -75,6 +78,7 @@ class WindowsAccessibilityEnabler
     // a full-fledged accessibility technology and enable full support.
     BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
         ui::kAXModeComplete);
+    BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
   }
 
   bool screen_reader_honeypot_queried_ = false;

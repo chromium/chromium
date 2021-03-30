@@ -61,6 +61,13 @@ AX_BASE_EXPORT extern const base::Feature kAccessibilityFocusHighlight;
 // briefly whenever focus changes.
 AX_BASE_EXPORT bool IsAccessibilityFocusHighlightEnabled();
 
+AX_BASE_EXPORT extern const base::Feature kAutoDisableAccessibility;
+
+// Returns true if accessibility will be auto-disabled after a certain
+// number of user input events spanning a minimum amount of time with no
+// accessibility API usage in that time.
+AX_BASE_EXPORT bool IsAutoDisableAccessibilityEnabled();
+
 #if defined(OS_WIN)
 // Enables an experimental Chrome-specific accessibility COM API
 AX_BASE_EXPORT extern const base::Feature kIChromeAccessible;
