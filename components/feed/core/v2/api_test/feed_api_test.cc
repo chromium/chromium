@@ -577,6 +577,11 @@ void FeedApiTest::TearDown() {
   store_.reset();
   persistent_key_value_store_.reset();
   task_environment_.RunUntilIdle();
+  // FeedStoreTest.OvewriteStream and OverwriteStreamWebFeed depends on
+  // kTestTimeEpoch == UnixEpoch(). i.e. using MakeTypicalInitialModelState
+  // with default arguments. Need to reset kTestTimeEpoch to avoid the tests'
+  // flaky failure.
+  kTestTimeEpoch = base::Time::UnixEpoch();
 }
 bool FeedApiTest::IsEulaAccepted() {
   return is_eula_accepted_;

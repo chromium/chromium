@@ -124,6 +124,8 @@ TEST_F(FeedStoreTest, InitFailure) {
 TEST_F(FeedStoreTest, OverwriteStream) {
   MakeFeedStore({});
   CallbackReceiver<bool> receiver;
+  // TODO(harringtond): find a long term fix for assumptions about
+  // kTestTimeEpoch value.
   store_->OverwriteStream(kForYouStream, MakeTypicalInitialModelState(),
                           receiver.Bind());
   fake_db_->UpdateCallback(true);
@@ -243,6 +245,8 @@ TEST_F(FeedStoreTest, OverwriteStream) {
 TEST_F(FeedStoreTest, OverwriteStreamWebFeed) {
   MakeFeedStore({});
   CallbackReceiver<bool> receiver;
+  // TODO(harringtond): find a long term fix for assumptions about
+  // kTestTimeEpoch value.
   store_->OverwriteStream(kWebFeedStream, MakeTypicalInitialModelState(),
                           receiver.Bind());
   fake_db_->UpdateCallback(true);
