@@ -75,6 +75,7 @@ char kTestQueryURL[] = "/search";
 char kTestQueryURLParams[] = "?q={searchTerms}";
 char kTestQueryResponse[] = "Query: testquery";
 char kTestQueryEditedResponse[] = "Query: testqueredited";
+char kTestURLForbiddenCharacters[] = "test\u2028\u2029\u0085url";
 
 char kTestDataURL[] = "data:dataURL";
 char kTestSanitizedDataURL[] = "\"data:dataURL\"";
@@ -766,6 +767,16 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Test that the correct page is loaded if the scanner result is a URL.
 - (void)testReceivingQRScannerURLResult {
   [self doTestReceivingResult:_testURL.GetContent()
+                     response:kTestURLResponse
+                         edit:nil];
+}
+
+// Test that the URL is sanitized and the correct page is loaded if the scanner
+// result is a URL with forbidden characters.
+- (void)testForbiddenCharactersRemoved {
+  [self doTestReceivingResult:self.testServer->base_url().GetContent() +
+                              kTestURLForbiddenCharacters
+              sanitizedResult:_testURL.GetContent()
                      response:kTestURLResponse
                          edit:nil];
 }

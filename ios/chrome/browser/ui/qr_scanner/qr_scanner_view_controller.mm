@@ -84,6 +84,8 @@ using base::UserMetricsAction;
 #pragma mark - QRScannerCameraControllerDelegate
 
 - (void)receiveQRScannerResult:(NSString*)result loadImmediately:(BOOL)load {
+  result = [self sanitizedStringWithString:result];
+
   GURL url = GURL(base::SysNSStringToUTF8(result));
   if (url.is_valid() && !url.SchemeIsHTTPOrHTTPS()) {
     // Only HTTP(S) URLs are supported.
@@ -91,6 +93,7 @@ using base::UserMetricsAction;
     // of URLs.
     result = [NSString stringWithFormat:@"\"%@\"", result];
   }
+
   if ([self isVoiceOverActive]) {
     // Post a notification announcing that a code was scanned. QR scanner will
     // be dismissed when the UIAccessibilityAnnouncementDidFinishNotification is
@@ -133,6 +136,20 @@ using base::UserMetricsAction;
 // Returns whether voice over is active.
 - (BOOL)isVoiceOverActive {
   return UIAccessibilityIsVoiceOverRunning() || self.voiceOverCheckOverridden;
+}
+
+// Remove characters that might confuse users when originating from a QR code.
+- (NSString*)sanitizedStringWithString:(NSString*)string {
+  NSMutableCharacterSet* badCharacters =
+      [NSMutableCharacterSet controlCharacterSet];
+  [badCharacters
+      formUnionWithCharacterSet:[NSCharacterSet newlineCharacterSet]];
+  [badCharacters
+      formUnionWithCharacterSet:[NSCharacterSet nonBaseCharacterSet]];
+  [badCharacters
+      formUnionWithCharacterSet:[NSCharacterSet illegalCharacterSet]];
+  return [[string componentsSeparatedByCharactersInSet:badCharacters]
+      componentsJoinedByString:@""];
 }
 
 #pragma mark - Testing Additions
