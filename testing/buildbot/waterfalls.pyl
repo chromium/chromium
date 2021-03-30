@@ -5167,6 +5167,15 @@
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
         },
       },
+      'Mac10.15 Tests (dbg)': {
+        'mixins': [
+            'mac_10.15',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_mac_gtests',
+          'isolated_scripts': 'chromium_dbg_isolated_scripts',
+        },
+      },
       'ios-device': {
         'additional_compile_targets': [
           'all',
