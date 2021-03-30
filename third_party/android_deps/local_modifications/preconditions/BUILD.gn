@@ -5,12 +5,33 @@
 import("//build/config/android/rules.gni")
 
 # Stub versions of Preconditions classes used when dchecks are off.
-# TODO(pkotwicz): Remove separate libraries once internal Chrome
-# uses :preconditions_stub_java
-android_library("preconditions_stub_java") {
+#
+# Each preconditions class is in a separate android_library() to make it easier
+# for third party non-Chromium projects to use the Chromium version of some
+# libraries but not others (ex: androidx version used by Chromium and custom
+# guava version).
+java_group("preconditions_stub_java") {
+  deps = [
+    ":androidx_stub_preconditions_java",
+    ":gms_stub_preconditions_java",
+    ":guava_stub_preconditions_java",
+  ]
+}
+
+android_library("androidx_stub_preconditions_java") {
   sources = [
     "java/androidx/core/util/Preconditions.java",
+  ]
+}
+
+android_library("gms_stub_preconditions_java") {
+  sources = [
     "java/com/google/android/gms/common/internal/Preconditions.java",
+  ]
+}
+
+android_library("guava_stub_preconditions_java") {
+  sources = [
     "java/com/google/common/base/Preconditions.java",
   ]
 }

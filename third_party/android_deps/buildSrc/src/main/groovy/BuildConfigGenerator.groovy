@@ -628,6 +628,8 @@ class BuildConfigGenerator extends DefaultTask {
                   // com_google_guava_guava_android is java_prebuilt().
                   sb.append("bypass_platform_checks = true")
               }
+              def libraryDep = "//third_party/android_deps/local_modifications/preconditions:" +
+                  computePreconditionsStubLibraryForDep(dependencyId)
               sb.append("""
                 |
                 | jar_excluded_patterns = []
@@ -637,11 +639,24 @@ class BuildConfigGenerator extends DefaultTask {
                 |     "${computePreconditionsClassForDep(dependencyId)}",
                 |   ]
                 |   deps += [
-                |     "//third_party/android_deps/local_modifications/preconditions:preconditions_stub_java",
+                |     "${libraryDep}",
                 |   ]
                 | }
                 |""".stripMargin())
          }
+    }
+
+    private static String computePreconditionsStubLibraryForDep(String dependencyId) {
+        def targetName = translateTargetName(dependencyId)
+        switch (targetName) {
+            case "androidx_core_core":
+              return "androidx_stub_preconditions_java"
+            case "com_google_guava_guava_android":
+              return "guava_stub_preconditions_java"
+            case "google_play_services_basement":
+              return "gms_stub_preconditions_java"
+        }
+        return null
     }
 
     private static String computePreconditionsClassForDep(String dependencyId) {
