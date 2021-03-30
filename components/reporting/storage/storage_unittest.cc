@@ -4,6 +4,7 @@
 
 #include "components/reporting/storage/storage.h"
 
+#include <atomic>
 #include <cstdint>
 #include <tuple>
 #include <utility>
@@ -38,6 +39,7 @@
 using ::testing::_;
 using ::testing::Between;
 using ::testing::Eq;
+using ::testing::HasSubstr;
 using ::testing::Invoke;
 using ::testing::Ne;
 using ::testing::NotNull;
@@ -347,9 +349,7 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
     ~SetEmpty() {
       EXPECT_CALL(*client_, UploadRecord(_, _, _)).Times(0);
       EXPECT_CALL(*client_, UploadRecordFailure(_, _, _)).Times(0);
-      EXPECT_CALL(*client_, UploadComplete(Property(&Status::error_code,
-                                                    Eq(error::OUT_OF_RANGE))))
-          .Times(1);
+      EXPECT_CALL(*client_, UploadComplete(Eq(Status::StatusOK()))).Times(1);
     }
 
    private:
@@ -559,6 +559,24 @@ class StorageTest
     expect_to_need_key_ = false;
   }
 
+  StatusOr<scoped_refptr<Storage>> CreateTestStorageWithFailedKeyDelivery(
+      const StorageOptions& options,
+      size_t failures_count,
+      scoped_refptr<EncryptionModuleInterface> encryption_module =
+          EncryptionModule::Create(
+              /*renew_encryption_key_period=*/base::TimeDelta::FromMinutes(
+                  30))) {
+    // Initialize Storage with no key.
+    test::TestEvent<StatusOr<scoped_refptr<Storage>>> e;
+    Storage::Create(
+        options,
+        base::BindRepeating(&StorageTest::AsyncStartMockUploaderFailing,
+                            base::Unretained(this), failures_count),
+        encryption_module, e.cb());
+    ASSIGN_OR_RETURN(auto storage, e.result());
+    return storage;
+  }
+
   StorageOptions BuildTestStorageOptions() const {
     auto options = StorageOptions()
                        .set_directory(base::FilePath(location_.GetPath()))
@@ -581,6 +599,20 @@ class StorageTest
     set_mock_uploader_expectations_.Call(priority, need_encryption_key,
                                          uploader.get());
     std::move(start_uploader_cb).Run(std::move(uploader));
+  }
+
+  void AsyncStartMockUploaderFailing(
+      size_t failures_count,
+      Priority priority,
+      bool need_encryption_key,
+      UploaderInterface::UploaderInterfaceResultCb start_uploader_cb) {
+    if (key_delivery_failure_count_.fetch_add(1) < failures_count) {
+      std::move(start_uploader_cb)
+          .Run(Status(error::FAILED_PRECONDITION, "Test cannot start upload"));
+      return;
+    }
+    AsyncStartMockUploader(priority, need_encryption_key,
+                           std::move(start_uploader_cb));
   }
 
   Status WriteString(Priority priority, base::StringPiece data) {
@@ -667,6 +699,7 @@ class StorageTest
   scoped_refptr<test::Decryptor> decryptor_;
   scoped_refptr<Storage> storage_;
   bool expect_to_need_key_{false};
+  std::atomic<size_t> key_delivery_failure_count_{0};
 
   // Test-wide global mapping of <generation id, sequencing id> to record
   // digest. Serves all MockUploadClients created by test fixture.
@@ -1355,6 +1388,118 @@ TEST_P(StorageTest, ForceConfirm) {
           })));
   // Forward time to trigger upload
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+}
+
+TEST_P(StorageTest, KayDeliveryFailureOnNewStorage) {
+  static constexpr size_t kFailuresCount = 3;
+
+  if (!is_encryption_enabled()) {
+    return;  // Test only makes sense with encryption enabled.
+  }
+
+  // Initialize Storage with failure to deliver key.
+  ASSERT_FALSE(storage_) << "StorageTest already assigned";
+  StatusOr<scoped_refptr<Storage>> storage_result =
+      CreateTestStorageWithFailedKeyDelivery(BuildTestStorageOptions(),
+                                             kFailuresCount);
+  ASSERT_OK(storage_result)
+      << "Failed to create StorageTest, error=" << storage_result.status();
+  storage_ = std::move(storage_result.ValueOrDie());
+
+  for (size_t failure = 1; failure < kFailuresCount; ++failure) {
+    // Failing attempt to write
+    const Status write_result = WriteString(FAST_BATCH, kData[0]);
+    EXPECT_FALSE(write_result.ok());
+    EXPECT_THAT(write_result.error_code(), Eq(error::NOT_FOUND));
+    EXPECT_THAT(write_result.message(),
+                HasSubstr("Cannot encrypt record - no key"));
+
+    // Forward time to trigger upload
+    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  }
+
+  // This time key delivery is to succeed.
+  // Set uploader expectations for any queue; expect no records and need
+  // key. Make sure no uploads happen, and key is requested.
+  {
+    test::TestCallbackWaiter waiter;
+    waiter.Attach();
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(_, /*need_encryption_key=*/Eq(true), NotNull()))
+        .WillOnce(
+            WithArg<2>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
+              MockUploadClient::SetKeyDelivery client(mock_upload_client);
+              waiter.Signal();
+            })))
+        .RetiresOnSaturation();
+
+    // Forward time to trigger upload
+    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    waiter.Wait();
+  }
+
+  // Provision the storage with a key.
+  // Key delivery must have been requested above.
+  GenerateAndDeliverKey(storage_.get());
+
+  // Successfully write data
+  WriteStringOrDie(FAST_BATCH, kData[0]);
+  WriteStringOrDie(FAST_BATCH, kData[1]);
+  WriteStringOrDie(FAST_BATCH, kData[2]);
+
+  // Set uploader expectations.
+  {
+    test::TestCallbackWaiter waiter;
+    waiter.Attach();
+    EXPECT_CALL(
+        set_mock_uploader_expectations_,
+        Call(Eq(FAST_BATCH), /*need_encryption_key=*/Eq(false), NotNull()))
+        .WillOnce(WithArgs<0, 2>(Invoke(
+            [&waiter](Priority priority, MockUploadClient* mock_upload_client) {
+              MockUploadClient::SetUp(priority, mock_upload_client)
+                  .Required(0, kData[0])
+                  .Required(1, kData[1])
+                  .Required(2, kData[2]);
+              waiter.Signal();
+            })))
+        .RetiresOnSaturation();
+
+    // Trigger successful upload.
+    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    waiter.Wait();
+  }
+
+  ResetTestStorage();
+
+  // Reopen and write more data.
+  CreateTestStorageOrDie(BuildTestStorageOptions());
+  WriteStringOrDie(FAST_BATCH, kMoreData[0]);
+  WriteStringOrDie(FAST_BATCH, kMoreData[1]);
+  WriteStringOrDie(FAST_BATCH, kMoreData[2]);
+
+  // Set uploader expectations.
+  {
+    test::TestCallbackWaiter waiter;
+    waiter.Attach();
+    EXPECT_CALL(
+        set_mock_uploader_expectations_,
+        Call(Eq(FAST_BATCH), /*need_encryption_key=*/Eq(false), NotNull()))
+        .WillOnce(WithArgs<0, 2>(Invoke(
+            [&waiter](Priority priority, MockUploadClient* mock_upload_client) {
+              MockUploadClient::SetUp(priority, mock_upload_client)
+                  .Required(0, kData[0])
+                  .Required(1, kData[1])
+                  .Required(2, kData[2])
+                  .Required(3, kMoreData[0])
+                  .Required(4, kMoreData[1])
+                  .Required(5, kMoreData[2]);
+              waiter.Signal();
+            })));
+
+    // Trigger upload.
+    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    waiter.Wait();
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
