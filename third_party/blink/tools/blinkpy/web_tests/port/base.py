@@ -40,6 +40,7 @@ import re
 import sys
 import tempfile
 
+import six
 from six.moves import zip_longest
 
 from blinkpy.common import exit_codes
@@ -843,7 +844,10 @@ class Port(object):
         baseline_path = self.expected_filename(test_name, '.txt')
         if not self._filesystem.exists(baseline_path):
             return None
-        text = self._filesystem.read_binary_file(baseline_path)
+        if six.PY2:
+            text = self._filesystem.read_binary_file(baseline_path)
+        else:
+            text = self._filesystem.read_text_file(baseline_path)
         return text.replace('\r\n', '\n')
 
     def reference_files(self, test_name):

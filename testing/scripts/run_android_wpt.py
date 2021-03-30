@@ -171,12 +171,10 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
          os.path.join(wpt_common.BLINK_TOOLS_DIR, 'build_wpt_metadata.py'),
          '--android-product',
          self.options.product,
-         '--ignore-default-expectations',
          '--metadata-output-dir',
          self._metadata_dir,
          '--additional-expectations',
          ANDROID_DISABLED_TESTS,
-         "--no-process-baselines",
     ]
     metadata_builder_cmd.extend(self._extra_metadata_builder_args())
     return common.run_command(metadata_builder_cmd)
