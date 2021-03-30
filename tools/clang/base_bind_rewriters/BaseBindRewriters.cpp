@@ -231,14 +231,14 @@ class PassByValueRewriter : public MatchFinder::MatchCallback, public Rewriter {
 // Adds std::move() to base::RepeatingCallback<> where it looks relevant.
 // Example:
 //   // Before
-//   void Foo(base::Callback<void(int)> cb1) {
-//     base::Closure cb2 = base::Bind(cb1, 42);
+//   void Foo(base::RepeatingCallback<void(int)> cb1) {
+//     base::RepeatingClosure cb2 = base::BindRepeating(cb1, 42);
 //     PostTask(FROM_HERE, cb2);
 //   }
 //
 //   // After
-//   void Foo(base::Callback<void(int)> cb1) {
-//     base::Closure cb2 = base::Bind(std::move(cb1), 42);
+//   void Foo(base::RepeatingCallback<void(int)> cb1) {
+//     base::RepeatingClosure cb2 = base::BindRepeating(std::move(cb1), 42);
 //     PostTask(FROM_HERE, std::move(cb2));
 //   }
 class AddStdMoveRewriter : public MatchFinder::MatchCallback, public Rewriter {

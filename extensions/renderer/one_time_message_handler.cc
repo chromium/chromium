@@ -291,12 +291,6 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
     return handled;
   }
 
-  // We shouldn't need to monitor context invalidation here. We store the ports
-  // for the context in PerContextData (cleaned up on context destruction), and
-  // the browser watches for frame navigation or destruction, and cleans up
-  // orphaned channels.
-  base::Closure on_context_invalidated;
-
   new GCCallback(
       script_context, response_function,
       base::BindOnce(&OneTimeMessageHandler::OnResponseCallbackCollected,

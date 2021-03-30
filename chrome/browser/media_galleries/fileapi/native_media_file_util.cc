@@ -60,7 +60,7 @@ void DidOpenSnapshot(storage::AsyncFileUtil::CreateOrOpenCallback callback,
                      base::File file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (!file.IsValid()) {
-    std::move(callback).Run(std::move(file), base::Closure());
+    std::move(callback).Run(std::move(file), base::OnceClosure());
     return;
   }
   std::move(callback).Run(std::move(file),
@@ -215,7 +215,7 @@ void NativeMediaFileUtil::CreatedSnapshotFileForCreateOrOpen(
     scoped_refptr<storage::ShareableFileReference> file_ref) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (result != base::File::FILE_OK) {
-    std::move(callback).Run(base::File(), base::Closure());
+    std::move(callback).Run(base::File(), base::OnceClosure());
     return;
   }
   base::PostTaskAndReplyWithResult(
@@ -236,8 +236,7 @@ void NativeMediaFileUtil::CreateOrOpen(
   if (file_flags & ~(base::File::FLAG_OPEN |
                      base::File::FLAG_READ |
                      base::File::FLAG_WRITE_ATTRIBUTES)) {
-    std::move(callback).Run(base::File(base::File::FILE_ERROR_SECURITY),
-                            base::Closure());
+    std::move(callback).Run(base::File(base::File::FILE_ERROR_SECURITY), base::OnceClosure());
     return;
   }
   scoped_refptr<base::SequencedTaskRunner> task_runner = context->task_runner();
