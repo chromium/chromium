@@ -139,7 +139,7 @@ AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url) {
   WaitUntilReady(provider);
   provider->install_manager().InstallWebAppFromManifestWithFallback(
       browser->tab_strip_model()->GetActiveWebContents(),
-      /*force_shortcut_app=*/true,
+      /*force_shortcut_app=*/false,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(&AutoAcceptDialogCallback),
       base::BindLambdaForTesting(
