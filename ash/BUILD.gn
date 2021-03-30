@@ -25,6 +25,7 @@ component("ash") {
   # All targets in this file are allowed to access any the headers in ash.
   friend = [
     ":*",
+    "//ash/app_list:*",
     "//components/exo:*",
     "//components/exo/wayland:*",
   ]
@@ -239,15 +240,6 @@ component("ash") {
     "ambient/util/ambient_util.cc",
     "ambient/util/ambient_util.h",
     "animation/animation_change_type.h",
-
-    # TODO(https://crbug.com/942564): Move into //ash/app_list/BUILD.gn.
-    "app_list/app_list_color_provider_impl.cc",
-    "app_list/app_list_color_provider_impl.h",
-    "app_list/app_list_controller_impl.cc",
-    "app_list/app_list_controller_impl.h",
-    "app_list/app_list_presenter_delegate_impl.cc",
-    "app_list/app_list_presenter_delegate_impl.h",
-    "app_list/home_launcher_animation_info.h",
     "ash_export.h",
     "ash_interfaces.cc",
     "ash_prefs.cc",
@@ -2051,16 +2043,6 @@ test("ash_unittests") {
     "ambient/ui/ambient_container_view_unittest.cc",
     "ambient/ui/media_string_view_unittest.cc",
     "ambient/ui/photo_view_unittest.cc",
-
-    # TODO(https://crbug.com/942564): Move into //ash/app_list/BUILD.gn.
-    "app_list/app_list_controller_impl_unittest.cc",
-    "app_list/app_list_metrics_unittest.cc",
-    "app_list/app_list_presenter_delegate_unittest.cc",
-    "app_list/app_list_presenter_impl_unittest.cc",
-    "app_list/app_list_unittest.cc",
-    "app_list/model/app_list_item_list_unittest.cc",
-    "app_list/model/app_list_model_unittest.cc",
-    "app_list/views/assistant/assistant_page_view_unittest.cc",
     "app_menu/notification_menu_controller_unittest.cc",
     "app_menu/notification_menu_view_unittest.cc",
     "app_menu/notification_overflow_view_unittest.cc",
@@ -2226,8 +2208,6 @@ test("ash_unittests") {
     "shelf/shelf_drag_handle_unittest.cc",
     "shelf/shelf_layout_manager_unittest.cc",
     "shelf/shelf_locking_manager_unittest.cc",
-    "shelf/shelf_test_util.cc",
-    "shelf/shelf_test_util.h",
     "shelf/shelf_tooltip_manager_unittest.cc",
     "shelf/shelf_unittest.cc",
     "shelf/shelf_view_unittest.cc",
@@ -2454,7 +2434,8 @@ test("ash_unittests") {
     "//ash/app_menu",
     "//ash/assistant/model",
     "//ash/assistant/ui",
-    "//ash/assistant/ui:constants",
+
+    ###"//ash/assistant/ui:constants",
     "//ash/assistant/ui/test_support",
     "//ash/assistant/util",
     "//ash/components:unit_tests",
@@ -2569,7 +2550,6 @@ test("ash_unittests") {
     "//ui/resources",
     "//ui/snapshot",
     "//ui/strings",
-    "//ui/touch_selection:touch_selection",
     "//ui/views",
     "//ui/views:test_support",
     "//ui/views/window/vector_icons",
@@ -2631,6 +2611,7 @@ static_library("test_support") {
   testonly = true
   friend = [
     ":*",
+    "//ash/app_list:*",
     "//ash/shortcut_viewer:*",
     "//components/exo:*",
     "//components/exo/wayland:*",
@@ -2723,6 +2704,8 @@ static_library("test_support") {
     "shelf/shelf_button_pressed_metric_tracker_test_api.h",
     "shelf/shelf_focus_cycler.cc",
     "shelf/shelf_focus_cycler.h",
+    "shelf/shelf_test_util.cc",
+    "shelf/shelf_test_util.h",
     "shelf/shelf_view_test_api.cc",
     "shelf/shelf_view_test_api.h",
     "shelf/test/widget_animation_waiter.cc",

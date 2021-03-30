@@ -5,6 +5,7 @@
 #ifndef ASH_STYLE_DEFAULT_COLORS_H_
 #define ASH_STYLE_DEFAULT_COLORS_H_
 
+#include "ash/ash_export.h"
 #include "ash/style/ash_color_provider.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -14,17 +15,20 @@ namespace ash {
 // dark/light mode. |default_color| will be returned if the dark mode feature is
 // not enabled. Use these functions if the |default_color| can't be found in
 // AshColorProvider. And move |default_color| to default_color_constants.h file
-// to benefit future maintenance.
-SkColor DeprecatedGetShieldLayerColor(AshColorProvider::ShieldLayerType type,
-                                      SkColor default_color);
-SkColor DeprecatedGetBackgroundColor(SkColor default_color);
-SkColor DeprecatedGetBaseLayerColor(AshColorProvider::BaseLayerType type,
-                                    SkColor default_color);
-SkColor DeprecatedGetControlsLayerColor(
-    AshColorProvider::ControlsLayerType type,
-    SkColor default_color);
-SkColor DeprecatedGetContentLayerColor(AshColorProvider::ContentLayerType type,
-                                       SkColor default_color);
+// to benefit future maintenance. Exported for testing.
+ASH_EXPORT SkColor
+DeprecatedGetShieldLayerColor(AshColorProvider::ShieldLayerType type,
+                              SkColor default_color);
+ASH_EXPORT SkColor DeprecatedGetBackgroundColor(SkColor default_color);
+ASH_EXPORT SkColor
+DeprecatedGetBaseLayerColor(AshColorProvider::BaseLayerType type,
+                            SkColor default_color);
+ASH_EXPORT SkColor
+DeprecatedGetControlsLayerColor(AshColorProvider::ControlsLayerType type,
+                                SkColor default_color);
+ASH_EXPORT SkColor
+DeprecatedGetContentLayerColor(AshColorProvider::ContentLayerType type,
+                               SkColor default_color);
 
 }  // namespace ash
 
