@@ -32,9 +32,7 @@ ContentCaptureReceiverManager* GetContentCaptureReceiverManager(
 ContentCaptureReceiver::ContentCaptureReceiver(content::RenderFrameHost* rfh)
     : rfh_(rfh), id_(GetIdFrom(rfh)) {}
 
-ContentCaptureReceiver::~ContentCaptureReceiver() {
-  RemoveSession();
-}
+ContentCaptureReceiver::~ContentCaptureReceiver() = default;
 
 int64_t ContentCaptureReceiver::GetIdFrom(content::RenderFrameHost* rfh) {
   return static_cast<int64_t>(rfh->GetProcess()->GetID()) << 32 |

@@ -109,7 +109,9 @@ ContentCaptureReceiverManagerAndroid::ContentCaptureReceiverManagerAndroid(
     JNIEnv* env,
     content::WebContents* web_contents)
     : ContentCaptureReceiverManager(web_contents),
-      java_ref_(Java_ContentCaptureReceiverManager_Constructor(env)) {}
+      java_ref_(Java_ContentCaptureReceiverManager_Constructor(env)) {
+  AddConsumer(*this);
+}
 
 ContentCaptureReceiverManagerAndroid::~ContentCaptureReceiverManagerAndroid() =
     default;
