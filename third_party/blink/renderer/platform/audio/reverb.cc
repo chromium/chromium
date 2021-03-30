@@ -134,7 +134,7 @@ void Reverb::Initialize(AudioBus* impulse_response_buffer,
   // repeatedly allocating it in the process() method.  It can be bad to
   // allocate memory in a real-time thread.
   if (number_of_response_channels_ == 4)
-    temp_buffer_ = AudioBus::Create(2, kMaxFrameSize);
+    temp_buffer_ = AudioBus::Create(2, render_slice_size);
 }
 
 void Reverb::Process(const AudioBus* source_bus,
@@ -147,7 +147,6 @@ void Reverb::Process(const AudioBus* source_bus,
   DCHECK(destination_bus);
   DCHECK_GT(source_bus->NumberOfChannels(), 0u);
   DCHECK_GT(destination_bus->NumberOfChannels(), 0u);
-  DCHECK_LE(frames_to_process, kMaxFrameSize);
   DCHECK_LE(frames_to_process, source_bus->length());
   DCHECK_LE(frames_to_process, destination_bus->length());
 
