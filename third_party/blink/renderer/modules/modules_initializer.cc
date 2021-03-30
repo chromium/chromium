@@ -166,7 +166,7 @@ void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
   frame.GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
       &WebLaunchServiceImpl::Create, WrapWeakPersistent(&frame)));
   frame.GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
-      &FileHandlingExpiryImpl::Create, WrapWeakPersistent(&frame)));
+      &FileHandlingExpiryImpl::BindReceiver, WrapWeakPersistent(&frame)));
 
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
       &InstallationServiceImpl::BindReceiver, WrapWeakPersistent(&frame)));

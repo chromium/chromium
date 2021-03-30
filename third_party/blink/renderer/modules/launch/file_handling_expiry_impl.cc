@@ -6,41 +6,65 @@
 
 #include <memory>
 
-#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/modules/launch/dom_window_launch_queue.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
 namespace blink {
 
-void FileHandlingExpiryImpl::Create(
+// static
+const char FileHandlingExpiryImpl::kSupplementName[] = "FileHandlingExpiryImpl";
+
+// static
+FileHandlingExpiryImpl* FileHandlingExpiryImpl::From(LocalDOMWindow& window) {
+  return Supplement<LocalDOMWindow>::From<FileHandlingExpiryImpl>(window);
+}
+
+// static
+void FileHandlingExpiryImpl::BindReceiver(
     LocalFrame* frame,
     mojo::PendingAssociatedReceiver<mojom::blink::FileHandlingExpiry>
         receiver) {
-  DCHECK(frame);
+  DCHECK(frame && frame->DomWindow());
 
-  mojo::MakeSelfOwnedAssociatedReceiver(
-      std::make_unique<FileHandlingExpiryImpl>(*frame->DomWindow()),
-      std::move(receiver));
+  auto* expiry_service = FileHandlingExpiryImpl::From(*frame->DomWindow());
+  if (!expiry_service) {
+    expiry_service = MakeGarbageCollected<FileHandlingExpiryImpl>(
+        base::PassKey<FileHandlingExpiryImpl>(), frame->DomWindow());
+    Supplement<LocalDOMWindow>::ProvideTo(*frame->DomWindow(), expiry_service);
+  }
+  expiry_service->Bind(std::move(receiver));
 }
 
-FileHandlingExpiryImpl::FileHandlingExpiryImpl(LocalDOMWindow& window)
-    : window_(window) {}
+FileHandlingExpiryImpl::FileHandlingExpiryImpl(
+    base::PassKey<FileHandlingExpiryImpl>,
+    LocalDOMWindow* window)
+    : Supplement<LocalDOMWindow>(*window), receivers_(this, window) {}
+
+void FileHandlingExpiryImpl::Bind(
+    mojo::PendingAssociatedReceiver<mojom::blink::FileHandlingExpiry>
+        receiver) {
+  receivers_.Add(std::move(receiver),
+                 GetSupplementable()->GetFrame()->GetTaskRunner(
+                     TaskType::kMiscPlatformAPI));
+}
+
+void FileHandlingExpiryImpl::Trace(Visitor* visitor) const {
+  visitor->Trace(receivers_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
+}
 
 FileHandlingExpiryImpl::~FileHandlingExpiryImpl() = default;
 
 void FileHandlingExpiryImpl::RequestOriginTrialExpiryTime(
     RequestOriginTrialExpiryTimeCallback callback) {
-  if (!window_)
-    return;
-
-  auto* origin_trials = window_->GetExecutionContext()->GetOriginTrialContext();
+  auto* origin_trials =
+      GetSupplementable()->GetExecutionContext()->GetOriginTrialContext();
 
   base::Time expiry_time =
       origin_trials->GetFeatureExpiry(OriginTrialFeature::kFileHandling);
