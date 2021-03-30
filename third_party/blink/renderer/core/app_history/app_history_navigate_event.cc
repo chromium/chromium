@@ -119,6 +119,13 @@ bool AppHistoryNavigateEvent::Fire(AppHistory* app_history,
 void AppHistoryNavigateEvent::respondWith(ScriptState* script_state,
                                           ScriptPromise newNavigationAction,
                                           ExceptionState& exception_state) {
+  if (!DomWindow()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "respondWith may not be called in a "
+                                      "detached window");
+    return;
+  }
+
   if (!isTrusted()) {
     exception_state.ThrowSecurityError(
         "respondWith may only be called on a "
