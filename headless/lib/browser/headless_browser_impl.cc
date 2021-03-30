@@ -192,6 +192,12 @@ HeadlessBrowserImpl::CreateDevToolsChannel() {
   return std::make_unique<HeadlessDevToolsAgentHostClient>(agent_host_);
 }
 
+#if defined(HEADLESS_USE_PREFS)
+PrefService* HeadlessBrowserImpl::GetPrefs() {
+  return browser_main_parts_ ? browser_main_parts_->GetPrefs() : nullptr;
+}
+#endif
+
 void HeadlessBrowserImpl::AttachClient(HeadlessDevToolsClient* client) {
   client->AttachToChannel(CreateDevToolsChannel());
 }

@@ -24047,6 +24047,7 @@ Called by update_document_policy_enum.py.-->
   <int value="839" label="ForcedLanguages"/>
   <int value="840" label="BrowserThemeColor"/>
   <int value="841" label="CECPQ2Enabled"/>
+  <int value="842" label="HeadlessMode"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

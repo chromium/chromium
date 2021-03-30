@@ -21,6 +21,9 @@ headless_fontconfig_utils = true
 # Don't use Prefs component, disabling access to Local State prefs.
 headless_use_prefs = false
 
+# Don't use Policy component, disabling all policies.
+headless_use_policy = false
+
 # Remove a dependency on a system fontconfig library.
 use_bundled_fontconfig = true
 

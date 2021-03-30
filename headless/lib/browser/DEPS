@@ -20,10 +20,11 @@ include_rules = [
   "+ui/events/keycodes/dom",
 ]
 specific_include_rules = {
-  "headless_browser_main_parts.h": [
+  "headless_browser_main_parts.*": [
+    "+components/policy",
     "+components/prefs",
   ],
-  "headless_browser_main_parts.cc": [
-    "+components/prefs",
+  "headless_browser_policy_connector.*": [
+    "+components/policy",
   ],
 }

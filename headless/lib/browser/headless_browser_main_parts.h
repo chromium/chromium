@@ -18,6 +18,10 @@
 #include "components/prefs/pref_service.h"
 #endif
 
+#if defined(HEADLESS_USE_POLICY)
+#include "headless/lib/browser/policy/headless_browser_policy_connector.h"
+#endif
+
 namespace headless {
 
 class HeadlessBrowserImpl;
@@ -42,13 +46,20 @@ class HeadlessBrowserMainParts : public content::BrowserMainParts {
 #endif
   void QuitMainMessageLoop();
 
+#if defined(HEADLESS_USE_PREFS)
+  PrefService* GetPrefs() { return local_state_.get(); }
+#endif
+
  private:
 #if defined(HEADLESS_USE_PREFS)
   void CreatePrefService();
 #endif
-
   const content::MainFunctionParams parameters_;  // For running browser tests.
   HeadlessBrowserImpl* browser_;  // Not owned.
+
+#if defined(HEADLESS_USE_POLICY)
+  std::unique_ptr<policy::HeadlessBrowserPolicyConnector> policy_connector_;
+#endif
 
 #if defined(HEADLESS_USE_PREFS)
   std::unique_ptr<PrefService> local_state_;

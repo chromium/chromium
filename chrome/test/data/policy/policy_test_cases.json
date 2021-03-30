@@ -1655,6 +1655,8 @@
     ]
   },
 
+  "HeadlessMode": {},
+
   "RestoreOnStartup": {
     "os": ["win", "linux", "mac", "chromeos"],
     "can_be_recommended": true,

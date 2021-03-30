@@ -5180,6 +5180,39 @@
       'arc_support': '''This policy also controls access to Android Developer Options. If you set this policy to 'DeveloperToolsDisallowed' (value 2), users cannot access Developer Options. If you set this policy to another value or leave it unset, users can access Developer Options by tapping seven times on the build number in the Android settings app.''',
     },
     {
+      'name': 'HeadlessMode',
+      'owners': ['file://headless/OWNERS'],
+      'type': 'int-enum',
+      'schema': {
+        'type': 'integer',
+        'enum': [ 1, 2 ],
+      },
+      'items': [
+        {
+          'name': 'Enabled',
+          'value': 1,
+          'caption': '''Allow use of the Headless Mode''',
+        },
+        {
+          'name': 'Disabled',
+          'value': 2,
+          'caption': '''Do not allow use of the Headless Mode''',
+        },
+      ],
+      'supported_on': ['chrome.*:91-', 'chrome_os:91-'],
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': False,
+        'platform_only': True,  # No cloud-policy support for now.
+      },
+      'example_value': 2,
+      'default': 1,
+      'id': 842,
+      'caption': '''Control use of the Headless Mode''',
+      'tags': [],
+      'desc': '''Setting this policy to <ph name="ENABLED">Enabled</ph> or leaving the policy unset allows use of the headless mode. Setting this policy to <ph name="DISABLED">Disabled</ph> denies use of the headless mode.''',
+    },
+    {
       'name': 'RestoreOnStartup',
       'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
@@ -26155,6 +26188,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 841,
+  'highest_id_currently_used': 842,
   'highest_atomic_group_id_currently_used': 40
 }

@@ -17,6 +17,24 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 
+if (headless_use_policy) {
+  assert(headless_use_prefs,
+         "'headless_use_policy' requires 'headless_use_prefs'.")
+}
+
+# Headless Policy config applied to every target below.
+config("headless_policy_config") {
+  defines = []
+
+  if (headless_use_prefs) {
+    defines += [ "HEADLESS_USE_PREFS" ]
+  }
+
+  if (headless_use_policy) {
+    defines += [ "HEADLESS_USE_POLICY" ]
+  }
+}
+
 # For code inside the build component "headless".
 config("inside_headless_component") {
   defines = [ "HEADLESS_IMPLEMENTATION" ]
@@ -299,10 +317,7 @@ source_set("headless_shared_sources") {
   }
 
   configs += [ ":inside_headless_component" ]
-
-  if (headless_use_prefs) {
-    defines += [ "HEADLESS_USE_PREFS" ]
-  }
+  configs += [ ":headless_policy_config" ]
 }
 
 # Code that is needed in a renderer process.
@@ -368,6 +383,15 @@ component("headless_non_renderer") {
     sources += [ "lib/browser/headless_browser_main_parts_linux.cc" ]
   }
 
+  if (headless_use_policy) {
+    sources += [
+      "lib/browser/policy/headless_browser_policy_connector.cc",
+      "lib/browser/policy/headless_browser_policy_connector.h",
+      "lib/browser/policy/headless_mode_policy.cc",
+      "lib/browser/policy/headless_mode_policy.h",
+    ]
+  }
+
   if (use_aura) {
     sources += [
       "lib/browser/headless_browser_impl_aura.cc",
@@ -419,6 +443,7 @@ component("headless_non_renderer") {
     "//ui/compositor",
     "//ui/display",
     "//ui/events/devices",
+    "//ui/gfx",
     "//url",
   ]
 
@@ -513,10 +538,6 @@ component("headless_non_renderer") {
     deps += [ ":pak" ]
   }
 
-  if (headless_use_prefs) {
-    defines += [ "HEADLESS_USE_PREFS" ]
-  }
-
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
@@ -531,6 +552,7 @@ component("headless_non_renderer") {
   }
 
   configs += [ ":inside_headless_component" ]
+  configs += [ ":headless_policy_config" ]
 }
 
 # Headless renderer is a convenience library for non component builds that
@@ -557,10 +579,6 @@ if (!is_component_build) {
       defines += [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
     }
 
-    if (headless_use_prefs) {
-      defines += [ "HEADLESS_USE_PREFS" ]
-    }
-
     if (enable_basic_printing) {
       sources += [
         "lib/renderer/headless_print_render_frame_helper_delegate.cc",
@@ -582,6 +600,7 @@ if (!is_component_build) {
         "//components/services/print_compositor/public/mojom",
       ]
     }
+    configs += [ ":headless_policy_config" ]
   }
 } else {
   # For component builds all dependencies are already included in the headless
@@ -624,10 +643,6 @@ test("headless_unittests") {
     deps += [ "//components/crash/core/app:crash_export_thunks" ]
   }
 
-  if (headless_use_prefs) {
-    defines += [ "HEADLESS_USE_PREFS" ]
-  }
-
   if (enable_basic_printing) {
     sources += [ "lib/browser/headless_printing_unittest.cc" ]
     deps += [
@@ -635,6 +650,8 @@ test("headless_unittests") {
       "//third_party/blink/public:blink",
     ]
   }
+
+  configs += [ ":headless_policy_config" ]
 }
 
 if (is_mac) {
@@ -689,10 +706,6 @@ test("headless_browsertests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  if (headless_use_prefs) {
-    defines += [ "HEADLESS_USE_PREFS" ]
-  }
-
   deps = [
     ":headless_shell_lib",
     "//base",
@@ -715,6 +728,12 @@ test("headless_browsertests") {
       "//pdf",
     ]
   }
+
+  if (headless_use_policy) {
+    deps += [ "//components/policy/core/common:test_support" ]
+  }
+
+  configs += [ ":headless_policy_config" ]
 }
 
 if (is_win) {
@@ -737,9 +756,7 @@ if (is_win) {
       "//net",
       "//sandbox",
     ]
-    if (headless_use_prefs) {
-      defines = [ "HEADLESS_USE_PREFS" ]
-    }
+    configs += [ ":headless_policy_config" ]
   }
 }
 
@@ -806,9 +823,7 @@ static_library("headless_shell_lib") {
     deps += [ "//components/os_crypt" ]
   }
 
-  if (headless_use_prefs) {
-    defines += [ "HEADLESS_USE_PREFS" ]
-  }
+  configs += [ ":headless_policy_config" ]
 }
 
 if (is_fuchsia) {
@@ -842,9 +857,7 @@ executable("headless_shell") {
     deps += [ "//sandbox/mac:seatbelt" ]
   }
 
-  if (headless_use_prefs) {
-    defines += [ "HEADLESS_USE_PREFS" ]
-  }
+  configs += [ ":headless_policy_config" ]
 }
 
 process_version("version_header") {
@@ -865,7 +878,5 @@ executable("headless_example") {
     "//skia",  # we need this to override font render hinting in headless build
   ]
 
-  if (headless_use_prefs) {
-    defines += [ "HEADLESS_USE_PREFS" ]
-  }
+  configs += [ ":headless_policy_config" ]
 }

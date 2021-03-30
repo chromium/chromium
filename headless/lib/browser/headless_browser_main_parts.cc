@@ -17,6 +17,10 @@
 #include "components/prefs/pref_service_factory.h"
 #endif
 
+#if defined(HEADLESS_USE_POLICY)
+#include "headless/lib/browser/policy/headless_mode_policy.h"
+#endif
+
 namespace headless {
 
 namespace {
@@ -99,6 +103,17 @@ void HeadlessBrowserMainParts::CreatePrefService() {
 #endif
 
   PrefServiceFactory factory;
+
+#if defined(HEADLESS_USE_POLICY)
+  policy::HeadlessModePolicy::RegisterLocalPrefs(pref_registry.get());
+
+  policy_connector_ =
+      std::make_unique<policy::HeadlessBrowserPolicyConnector>();
+
+  factory.set_managed_prefs(
+      policy_connector_->CreatePrefStore(policy::POLICY_LEVEL_MANDATORY));
+#endif  // defined(HEADLESS_USE_POLICY)
+
   factory.set_user_prefs(pref_store);
   local_state_ = factory.Create(std::move(pref_registry));
 
@@ -108,7 +123,7 @@ void HeadlessBrowserMainParts::CreatePrefService() {
     if (!OSCrypt::Init(local_state_.get()))
       LOG(ERROR) << "Failed to initialize OSCrypt";
   }
-#endif
+#endif  // defined(OS_WIN)
 }
 #endif  // defined(HEADLESS_USE_PREFS)
 
