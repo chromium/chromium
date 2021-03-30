@@ -50,7 +50,9 @@ Polymer({
                               .getMojoServiceRemote();
     networkConfig.getNetworkState(guid).then(response => {
       if (response.result.type !==
-          chromeos.networkConfig.mojom.NetworkType.kCellular) {
+              chromeos.networkConfig.mojom.NetworkType.kCellular ||
+          !response.result.typeState.cellular.eid ||
+          !response.result.typeState.cellular.iccid) {
         return;
       }
       this.networkState_ = response.result;
