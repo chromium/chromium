@@ -129,7 +129,7 @@ NetworkChangeNotifierMac::CalculateConnectionType(
         service_current_radio_access_technology =
             [info serviceCurrentRadioAccessTechnology];
     NSSet<NSString*>* technologies_2g = [NSSet
-        setWithObjects:CTRadioAccessTechnologyGPRS, CTRadioAccessTechnologyGPRS,
+        setWithObjects:CTRadioAccessTechnologyGPRS, CTRadioAccessTechnologyEdge,
                        CTRadioAccessTechnologyCDMA1x, nil];
     NSSet<NSString*>* technologies_3g =
         [NSSet setWithObjects:CTRadioAccessTechnologyWCDMA,
@@ -164,7 +164,7 @@ NetworkChangeNotifierMac::CalculateConnectionType(
         current_network = 5;
       } else {
         // New technology?
-        NOTREACHED();
+        NOTREACHED() << "Unknown network technology: " << network_type;
         return CONNECTION_UNKNOWN;
       }
       if (current_network > best_network) {
