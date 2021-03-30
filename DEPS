@@ -1424,28 +1424,6 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/zstd-linux-arm64': {
-      'packages': [
-          {
-              'package': 'fuchsia/third_party/zstd/linux-arm64',
-              'version': '3_wH3L3VWelJ8aIDSabZ0P9oMqHrKnuVUyXVBvjaE9UC'
-          },
-      ],
-      'condition': 'host_os == "linux" and checkout_fuchsia and checkout_fuchsia_for_arm64_host',
-      'dep_type': 'cipd',
-  },
-
-  'src/third_party/zstd-linux-x64': {
-      'packages': [
-          {
-              'package': 'fuchsia/third_party/zstd/linux-amd64',
-              'version': 'nVy-mclpAVYv0eyAe8SDxiE1g2UuafhnjOx2wr6vd_IC'
-          },
-      ],
-      'condition': 'host_os == "linux" and checkout_fuchsia',
-      'dep_type': 'cipd',
-  },
-
   'src/third_party/re2/src':
     Var('chromium_git') + '/external/github.com/google/re2.git' + '@' + '13ebb377c6ad763ca61d12dd6f88b1126bd0b911',
 

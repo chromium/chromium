@@ -33,7 +33,6 @@ template("compute_fuchsia_package_sizes") {
       "//fuchsia/release/size_tests/",
       "//third_party/fuchsia-sdk/sdk/arch/",
       "//third_party/fuchsia-sdk/sdk/tools/${target_cpu}/",
-      "//third_party/zstd-linux-${target_cpu}/",
     ]
 
     executable_args = [
