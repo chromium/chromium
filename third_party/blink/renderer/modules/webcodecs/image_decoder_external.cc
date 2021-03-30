@@ -28,10 +28,61 @@
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/skia/include/core/SkYUVAPixmaps.h"
 
 namespace blink {
 
 namespace {
+
+media::VideoPixelFormat YUVSubsamplingToMediaPixelFormat(
+    cc::YUVSubsampling sampling,
+    int depth) {
+  // TODO(crbug.com/1073995): Add support for high bit depth format.
+  if (depth != 8)
+    return media::PIXEL_FORMAT_UNKNOWN;
+
+  switch (sampling) {
+    case cc::YUVSubsampling::k420:
+      return media::PIXEL_FORMAT_I420;
+    case cc::YUVSubsampling::k422:
+      return media::PIXEL_FORMAT_I422;
+    case cc::YUVSubsampling::k444:
+      return media::PIXEL_FORMAT_I444;
+    default:
+      return media::PIXEL_FORMAT_UNKNOWN;
+  }
+}
+
+gfx::ColorSpace YUVColorSpaceToGfxColorSpace(SkYUVColorSpace yuv_cs,
+                                             const gfx::ColorSpace& rgb_cs) {
+  switch (yuv_cs) {
+    case kJPEG_Full_SkYUVColorSpace:
+      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::SMPTE170M,
+                                          gfx::ColorSpace::RangeID::FULL);
+    case kRec601_Limited_SkYUVColorSpace:
+      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::SMPTE170M,
+                                          gfx::ColorSpace::RangeID::LIMITED);
+    case kRec709_Full_SkYUVColorSpace:
+      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::BT709,
+                                          gfx::ColorSpace::RangeID::FULL);
+    case kRec709_Limited_SkYUVColorSpace:
+      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::BT709,
+                                          gfx::ColorSpace::RangeID::LIMITED);
+    case kBT2020_8bit_Full_SkYUVColorSpace:
+    case kBT2020_10bit_Full_SkYUVColorSpace:
+    case kBT2020_12bit_Full_SkYUVColorSpace:
+      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::BT2020_NCL,
+                                          gfx::ColorSpace::RangeID::FULL);
+    case kBT2020_8bit_Limited_SkYUVColorSpace:
+    case kBT2020_10bit_Limited_SkYUVColorSpace:
+    case kBT2020_12bit_Limited_SkYUVColorSpace:
+      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::BT2020_NCL,
+                                          gfx::ColorSpace::RangeID::LIMITED);
+    case kIdentity_SkYUVColorSpace:
+      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::GBR,
+                                          gfx::ColorSpace::RangeID::FULL);
+  };
+}
 
 bool IsTypeSupportedInternal(String type) {
   return type.ContainsOnlyASCIIOrEmpty() &&
@@ -417,56 +468,74 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
       continue;
     }
 
-    auto* image = decoder_->DecodeFrameBufferAtIndex(request->frame_index);
-    if (decoder_->Failed() || !image) {
-      request->exception = CreateDecodeFailure(request->frame_index);
-      continue;
-    }
+    bool is_complete = true;
+    sk_sp<SkImage> sk_image;
+    scoped_refptr<media::VideoFrame> frame;
 
-    // Only satisfy fully complete decode requests.
-    const bool is_complete = image->GetStatus() == ImageFrame::kFrameComplete;
-    if (!is_complete && request->complete_frames_only)
-      continue;
-
-    if (!is_complete && image->GetStatus() != ImageFrame::kFramePartial)
-      continue;
-
-    // Prefer FinalizePixelsAndGetImage() since that will mark the underlying
-    // bitmap as immutable, which allows copies to be avoided.
-    auto sk_image = is_complete ? image->FinalizePixelsAndGetImage()
-                                : SkImage::MakeFromBitmap(image->Bitmap());
-    if (!sk_image) {
-      request->exception = MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, "Failed to access frame");
-      continue;
-    }
-
-    if (!is_complete) {
-      auto generation_id = image->Bitmap().getGenerationID();
-      auto it = incomplete_frames_.find(request->frame_index);
-      if (it == incomplete_frames_.end()) {
-        incomplete_frames_.Set(request->frame_index, generation_id);
-      } else {
-        // Don't fulfill the promise until a new bitmap is seen.
-        if (it->value == generation_id)
-          continue;
-
-        it->value = generation_id;
+    // Due to implementation limitations YUV support for some formats is only
+    // known once all data is received. Animated images are never supported.
+    if (decoder_->CanDecodeToYUV()) {
+      DCHECK(!tracks_->selectedTrack().value()->animated());
+      DCHECK_EQ(request->frame_index, 0u);
+      frame = MaybeDecodeToYuv();
+      if (decoder_->Failed()) {
+        request->exception = CreateDecodeFailure(request->frame_index);
+        continue;
       }
-    } else {
-      incomplete_frames_.erase(request->frame_index);
     }
 
-    const auto duration = decoder_->FrameDurationAtIndex(request->frame_index);
+    if (!frame) {
+      auto* image = decoder_->DecodeFrameBufferAtIndex(request->frame_index);
+      if (decoder_->Failed() || !image) {
+        request->exception = CreateDecodeFailure(request->frame_index);
+        continue;
+      }
 
-    // TODO(crbug.com/1073995): Add timestamp support to ImageDecoder if we end
-    // up encountering a lot of variable duration images.
-    const auto timestamp = duration * request->frame_index;
+      // Only satisfy fully complete decode requests.
+      is_complete = image->GetStatus() == ImageFrame::kFrameComplete;
+      if (!is_complete && request->complete_frames_only)
+        continue;
 
-    // This is zero copy; the VideoFrame points into the SkBitmap.
-    const gfx::Size coded_size(sk_image->width(), sk_image->height());
-    auto frame = media::CreateFromSkImage(sk_image, gfx::Rect(coded_size),
-                                          coded_size, timestamp);
+      if (!is_complete && image->GetStatus() != ImageFrame::kFramePartial)
+        continue;
+
+      // Prefer FinalizePixelsAndGetImage() since that will mark the underlying
+      // bitmap as immutable, which allows copies to be avoided.
+      sk_image = is_complete ? image->FinalizePixelsAndGetImage()
+                             : SkImage::MakeFromBitmap(image->Bitmap());
+      if (!sk_image) {
+        request->exception = MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kOperationError, "Failed to access frame");
+        continue;
+      }
+
+      if (!is_complete) {
+        auto generation_id = image->Bitmap().getGenerationID();
+        auto it = incomplete_frames_.find(request->frame_index);
+        if (it == incomplete_frames_.end()) {
+          incomplete_frames_.Set(request->frame_index, generation_id);
+        } else {
+          // Don't fulfill the promise until a new bitmap is seen.
+          if (it->value == generation_id)
+            continue;
+
+          it->value = generation_id;
+        }
+      } else {
+        incomplete_frames_.erase(request->frame_index);
+      }
+
+      // TODO(crbug.com/1073995): Add timestamp support to ImageDecoder if we
+      // end up encountering a lot of variable duration images.
+      const auto timestamp =
+          decoder_->FrameDurationAtIndex(request->frame_index) *
+          request->frame_index;
+
+      // This is zero copy; the VideoFrame points into the SkBitmap.
+      const gfx::Size coded_size(sk_image->width(), sk_image->height());
+      frame = media::CreateFromSkImage(sk_image, gfx::Rect(coded_size),
+                                       coded_size, timestamp);
+    }
 
     if (!frame) {
       request->exception = MakeGarbageCollected<DOMException>(
@@ -611,6 +680,53 @@ void ImageDecoderExternal::AbortPendingDecodes(DOMException* exception) {
   for (auto& request : local_pending_decodes)
     request->resolver->Reject(exception);
   incomplete_frames_.clear();
+}
+
+scoped_refptr<media::VideoFrame> ImageDecoderExternal::MaybeDecodeToYuv() {
+  const auto format = YUVSubsamplingToMediaPixelFormat(
+      decoder_->GetYUVSubsampling(), decoder_->GetYUVBitDepth());
+  if (format == media::PIXEL_FORMAT_UNKNOWN)
+    return nullptr;
+
+  const auto coded_size = gfx::Size(decoder_->DecodedYUVSize(cc::YUVIndex::kY));
+
+  // Plane sizes are guaranteed to fit in an int32_t by ImageDecoder::SetSize();
+  // since YUV is 1 byte-per-channel, we can just check width * height.
+  DCHECK(coded_size.GetCheckedArea().IsValid());
+  auto layout = media::VideoFrameLayout::CreateWithStrides(
+      format, coded_size,
+      {static_cast<int32_t>(decoder_->DecodedYUVWidthBytes(cc::YUVIndex::kY)),
+       static_cast<int32_t>(decoder_->DecodedYUVWidthBytes(cc::YUVIndex::kU)),
+       static_cast<int32_t>(decoder_->DecodedYUVWidthBytes(cc::YUVIndex::kV))});
+  if (!layout)
+    return nullptr;
+
+  auto frame = media::VideoFrame::CreateFrameWithLayout(
+      *layout, gfx::Rect(coded_size), coded_size, base::TimeDelta(),
+      /*zero_initialize_memory=*/false);
+  if (!frame)
+    return nullptr;
+
+  void* planes[cc::kNumYUVPlanes] = {frame->data(0), frame->data(1),
+                                     frame->data(2)};
+  size_t row_bytes[cc::kNumYUVPlanes] = {frame->stride(0), frame->stride(1),
+                                         frame->stride(2)};
+
+  // TODO(crbug.com/1073995): Add support for high bit depth format.
+  const auto color_type = kGray_8_SkColorType;
+
+  auto image_planes =
+      std::make_unique<ImagePlanes>(planes, row_bytes, color_type);
+  decoder_->SetImagePlanes(std::move(image_planes));
+  decoder_->DecodeToYUV();
+  if (decoder_->Failed() || !decoder_->HasDisplayableYUVData())
+    return nullptr;
+
+  frame->set_color_space(YUVColorSpaceToGfxColorSpace(
+      decoder_->GetYUVColorSpace(),
+      gfx::ColorSpace(*decoder_->ColorSpaceForSkImages())));
+
+  return frame;
 }
 
 }  // namespace blink

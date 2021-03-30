@@ -8,6 +8,12 @@ enum VideoPixelFormat {
     // 4:2:0 subsampled 3 plane Y,U,V or 4 plane Y,U,V,A
     "I420",
 
+    // 4:2:2 subsampled 3 plane Y,U,V
+    "I422",
+
+    // 4:4:4 subsampled 3 plane Y,U,V
+    "I444",
+
     // 4:2:0 subsampled 2 plane Y,UV
     "NV12",
 

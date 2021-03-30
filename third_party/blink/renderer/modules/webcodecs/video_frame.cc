@@ -75,6 +75,10 @@ media::VideoPixelFormat ToMediaPixelFormat(V8VideoPixelFormat::Enum fmt) {
   switch (fmt) {
     case V8VideoPixelFormat::Enum::kI420:
       return media::PIXEL_FORMAT_I420;
+    case V8VideoPixelFormat::Enum::kI422:
+      return media::PIXEL_FORMAT_I422;
+    case V8VideoPixelFormat::Enum::kI444:
+      return media::PIXEL_FORMAT_I444;
     case V8VideoPixelFormat::Enum::kNV12:
       return media::PIXEL_FORMAT_NV12;
     case V8VideoPixelFormat::Enum::kABGR:
@@ -175,6 +179,8 @@ bool IsSupportedPlanarFormat(const media::VideoFrame& frame) {
   const size_t num_planes = frame.layout().num_planes();
   switch (frame.format()) {
     case media::PIXEL_FORMAT_I420:
+    case media::PIXEL_FORMAT_I422:
+    case media::PIXEL_FORMAT_I444:
       return num_planes == 3;
     case media::PIXEL_FORMAT_I420A:
       return num_planes == 4;
@@ -547,6 +553,10 @@ String VideoFrame::format() const {
     case media::PIXEL_FORMAT_I420:
     case media::PIXEL_FORMAT_I420A:
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI420);
+    case media::PIXEL_FORMAT_I422:
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI422);
+    case media::PIXEL_FORMAT_I444:
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI444);
     case media::PIXEL_FORMAT_NV12:
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kNV12);
     case media::PIXEL_FORMAT_ABGR:

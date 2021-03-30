@@ -1088,6 +1088,9 @@ _CONFIG = [
         'allowed': [
             'base::PlatformThreadRef',
             'base::WrapRefCounted',
+            'cc::kNumYUVPlanes',
+            'cc::YUVIndex',
+            'cc::YUVSubsampling',
             'gpu::kNullSurfaceHandle',
             'gpu::SHARED_IMAGE_.+',
             'gpu::raster::RasterInterface',

@@ -84,6 +84,8 @@ class MODULES_EXPORT ImageDecoderExternal final
 
   void AbortPendingDecodes(DOMException* exception);
 
+  scoped_refptr<media::VideoFrame> MaybeDecodeToYuv();
+
   Member<ScriptState> script_state_;
 
   // Used when a ReadableStream is provided.
