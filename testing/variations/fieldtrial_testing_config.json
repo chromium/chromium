@@ -4920,6 +4920,7 @@
     "PartitionAllocLargeThreadCacheSize": [
         {
             "platforms": [
+                "android",
                 "linux",
                 "windows"
             ],

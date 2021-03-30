@@ -247,9 +247,17 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
   if (process_type == switches::kRendererProcess &&
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocLargeThreadCacheSize)) {
+#if defined(OS_ANDROID) && !defined(ARCH_CPU_64_BITS)
+    // Don't use a higher threshold on Android 32 bits, as long as memory usage
+    // is not carefully tuned. Only control the threshold here to avoid changing
+    // the rest of the code below.
+    // As of 2021, 64 bits Android devices are not memory constrained.
+    largest_cached_size_ = base::internal::ThreadCache::kDefaultSizeThreshold;
+#else
     largest_cached_size_ = base::internal::ThreadCache::kLargeSizeThreshold;
     base::internal::ThreadCache::SetLargestCachedSize(
         base::internal::ThreadCache::kLargeSizeThreshold);
+#endif  // defined(OS_ANDROID) && !defined(ARCH_CPU_64_BITS)
   }
 
 #endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&
