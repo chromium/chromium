@@ -47,9 +47,6 @@ FAKE_TRY_BUILDERS = {
         'Optional Mac Retina Release (AMD)',
         'Optional Mac Retina Release (NVIDIA)',
     ],
-    'win-angle-rel-32': [
-        'Win7 ANGLE Tryserver (AMD)',
-    ],
     'win_optional_gpu_tests_rel': [
         'Optional Win10 x64 Release (Intel HD 630)',
         'Optional Win10 x64 Release (NVIDIA)',
