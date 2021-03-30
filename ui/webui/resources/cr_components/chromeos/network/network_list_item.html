@@ -156,8 +156,8 @@
           </cr-policy-indicator>
         </template>
         <template is="dom-if"
-            if="[[isSubpageButtonVisible_(networkState, showButtons, disabled_)]]"
-            restamp>
+            if="[[isSubpageButtonVisible_(networkState, showButtons, disabled_,
+              networkState.typeState.cellular.simLocked)]]" restamp>
           <div>
             <cr-icon-button class="subpage-arrow"
                 id="subpage-button"
@@ -169,10 +169,12 @@
             </cr-icon-button>
           </div>
         </template>
-        <template is="dom-if" if="[[shouldShowUnlockButton_(networkState)]]" restamp>
+        <template is="dom-if" if="[[shouldShowUnlockButton_(networkState,
+          networkState.typeState.cellular.simLocked)]]" restamp>
           <cr-button id="unlockButton"
               aria-label$="[[getUnlockBtnA11yLabel_(item)]]"
-              on-click="onUnlockButtonClick_">
+              on-click="onUnlockButtonClick_"
+              disabled="[[disabled_]]">
               [[i18n('networkListItemUnlock')]]
           </cr-button>
         </template>

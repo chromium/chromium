@@ -39,6 +39,7 @@ suite('NetworkListItemTest', function() {
     eSimManagerRemote = new FakeESimManagerRemote();
     setESimManagerRemoteForTesting(eSimManagerRemote);
     listItem = document.createElement('network-list-item');
+    listItem.showButtons = true;
     setEventListeners();
     eventTriggered = false;
     document.body.appendChild(listItem);
@@ -224,13 +225,21 @@ suite('NetworkListItemTest', function() {
 
     let unlockBtn = listItem.$$('#unlockButton');
 
+    // Arrow button should be visible when unlock button is not visible.
+    let arrow = listItem.$$('#subpage-button');
+    assertTrue(!!arrow);
+
     assertFalse(!!unlockBtn);
     let networkStateText = listItem.$$('#networkStateText');
     assertTrue(!!networkStateText);
     assertNotEquals(
         networkStateLockedText, networkStateText.textContent.trim());
 
-    listItem.item = initCellularNetwork(iccid, eid, /*simlocked=*/ true);
+    listItem.set('networkState.typeState.cellular.simLocked', true);
+    await flushAsync();
+    // Arrow button should be hidden when unlock button is visible.
+    arrow = listItem.$$('#subpage-button');
+    assertFalse(!!arrow);
 
     await flushAsync();
     unlockBtn = listItem.$$('#unlockButton');
@@ -246,6 +255,23 @@ suite('NetworkListItemTest', function() {
     networkStateText = listItem.$$('#networkStateText');
     assertTrue(!!networkStateText);
     assertEquals(networkStateLockedText, networkStateText.textContent.trim());
+  });
+
+  test('Disable sim lock button when device is inhibited', async () => {
+    const iccid = '11111111111111111111';
+    const eid = '1';
+    eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
+
+    listItem.item = initCellularNetwork(iccid, eid, /*simlocked=*/ true);
+    listItem.deviceState = {
+      type: mojom.NetworkType.kCellular,
+      inhibitedReason: mojom.InhibitReason.kInstallingProfile,
+    };
+
+    await flushAsync();
+
+    let unlockBtn = listItem.$$('#unlockButton');
+    assertTrue(!!unlockBtn.disabled);
   });
 
   test('Network disabled, Pending eSIM, install button visible', async () => {
@@ -291,7 +317,6 @@ suite('NetworkListItemTest', function() {
   test(
       'Network disabled, no arrow and enter and click does not fire events',
       async () => {
-        listItem.showButtons = true;
         listItem.networkState =
             OncMojo.getDefaultNetworkState(mojom.NetworkType.kCellular, name);
         listItem.deviceState = {
