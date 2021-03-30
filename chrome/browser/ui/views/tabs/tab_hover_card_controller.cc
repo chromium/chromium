@@ -509,7 +509,10 @@ const views::View* TabHoverCardController::GetTargetAnchorView() const {
 void TabHoverCardController::OnFadeAnimationEnded(
     views::WidgetFadeAnimator* animator,
     views::WidgetFadeAnimator::FadeType fade_type) {
-  if (fade_type == views::WidgetFadeAnimator::FadeType::kFadeIn)
+  // There's a potential race condition where we get the fade in complete signal
+  // just as we've decided to fade out, so check for null.
+  // See: crbug.com/1192451
+  if (target_tab_ && fade_type == views::WidgetFadeAnimator::FadeType::kFadeIn)
     metrics_->CardFullyVisibleOnTab(target_tab_, target_tab_->IsActive());
 
   metrics_->CardFadeComplete();
