@@ -237,5 +237,8 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
 
   static_cast<views::View*>(glass_frame_view_)->Layout();
 
-  EXPECT_EQ(glass_frame_view_->NonClientHitTest(gfx::Point(50, 50)), HTCAPTION);
+  constexpr gfx::Point kPoint(50, 50);
+  EXPECT_EQ(glass_frame_view_->NonClientHitTest(kPoint), HTCAPTION);
+  EXPECT_FALSE(browser_view_->ShouldDescendIntoChildForEventHandling(
+      browser_view_->GetNativeWindow(), kPoint));
 }

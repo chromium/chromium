@@ -528,6 +528,9 @@ class BrowserView : public BrowserWindow,
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
   void GetAccessiblePanes(std::vector<View*>* panes) override;
+  bool ShouldDescendIntoChildForEventHandling(
+      gfx::NativeView child,
+      const gfx::Point& location) override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
