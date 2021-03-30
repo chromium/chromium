@@ -49,6 +49,9 @@ class ToolbarIconContainerView : public views::View,
 
   bool GetHighlighted() const;
 
+  // views::View:
+  void OnThemeChanged() override;
+
   // views::ViewObserver:
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
@@ -101,6 +104,9 @@ class ToolbarIconContainerView : public views::View,
 
   // Determine whether the container shows its highlight border.
   const bool uses_highlight_;
+
+  // Hacky; see comments in UpdateHighlight().
+  bool ever_painted_highlight_ = false;
 
   // The main view is nominally always present and is last child in the view
   // hierarchy.

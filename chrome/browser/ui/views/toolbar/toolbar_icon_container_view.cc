@@ -199,6 +199,11 @@ bool ToolbarIconContainerView::GetHighlighted() const {
   return false;
 }
 
+void ToolbarIconContainerView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  border_.layer()->SchedulePaint(GetLocalBounds());
+}
+
 void ToolbarIconContainerView::OnViewFocused(views::View* observed_view) {
   UpdateHighlight();
 }
@@ -224,9 +229,9 @@ views::FlexLayout* ToolbarIconContainerView::GetTargetLayoutManager() {
 
 void ToolbarIconContainerView::OnBoundsChanged(
     const gfx::Rect& previous_bounds) {
-  const gfx::Rect bounds = ConvertRectToWidget(GetLocalBounds());
-  border_.layer()->SetBounds(bounds);
-  border_.layer()->SchedulePaint(gfx::Rect(bounds.size()));
+  const gfx::Rect bounds = GetLocalBounds();
+  border_.layer()->SetBounds(ConvertRectToWidget(bounds));
+  border_.layer()->SchedulePaint(bounds);
 }
 
 void ToolbarIconContainerView::OnMouseEntered(const ui::MouseEvent& event) {
@@ -249,6 +254,16 @@ void ToolbarIconContainerView::UpdateHighlight() {
   {
     ui::ScopedLayerAnimationSettings settings(border_.layer()->GetAnimator());
     border_.layer()->SetOpacity(GetHighlighted() ? 1 : 0);
+  }
+
+  // TODO(crbug.com/1194150): For some reason, the SchedulePaint() calls that
+  // happen initially -- in OnThemeChanged() and OnBoundsChanged() -- do not
+  // result in the layer getting painted for the first time. Calling
+  // SchedulePaint() here works. Without this, the highlight will not appear
+  // until an extension icon is added or removed or the theme is changed.
+  if (!ever_painted_highlight_ && GetHighlighted()) {
+    ever_painted_highlight_ = true;
+    border_.layer()->SchedulePaint(GetLocalBounds());
   }
 
   if (showing_before == (border_.layer()->GetTargetOpacity() == 1))
