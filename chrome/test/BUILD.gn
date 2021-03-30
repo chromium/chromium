@@ -731,6 +731,7 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//base:base_java_test_support",
+      "//build/android/gtest_apk:native_test_instrumentation_test_runner_java",
       "//chrome/android:base_module_java",
       "//chrome/android:chrome_all_java",
       "//chrome/browser/tabmodel:java",

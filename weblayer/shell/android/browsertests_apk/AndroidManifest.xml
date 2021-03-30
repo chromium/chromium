@@ -38,7 +38,7 @@
                    android:value="org.chromium.weblayer_browsertests_apk"/>
     </application>
 
-    <instrumentation android:name="org.chromium.native_test.NativeTestInstrumentationTestRunner"
+    <instrumentation android:name="org.chromium.build.gtest_apk.NativeTestInstrumentationTestRunner"
             android:label="WebLayerBrowserTests"
             android:targetPackage="org.chromium.weblayer_browsertests_apk"/>
 </manifest>

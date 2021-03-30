@@ -3900,7 +3900,12 @@ if (enable_java_templates) {
     if (!defined(invoker.android_manifest)) {
       jinja_template("${target_name}_manifest") {
         _native_library_name = get_label_info(invoker.shared_library, "name")
-        input = "//testing/android/native_test/java/AndroidManifest.xml.jinja2"
+        if (defined(invoker.android_manifest_template)) {
+          input = invoker.android_manifest_template
+        } else {
+          input =
+              "//testing/android/native_test/java/AndroidManifest.xml.jinja2"
+        }
         output = _android_manifest
         variables = [
           "is_component_build=${is_component_build}",

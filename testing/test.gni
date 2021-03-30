@@ -129,6 +129,7 @@ template("test") {
       _apk_specific_vars = [
         "android_manifest",
         "android_manifest_dep",
+        "android_manifest_template",
         "app_as_shared_lib",
         "enable_multidex",
         "product_config_java_packages",

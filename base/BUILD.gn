@@ -4006,7 +4006,6 @@ if (is_android) {
     deps = [
       ":base_java",
       ":jni_java",
-      "//testing/android/reporter:reporter_java",
       "//third_party/android_sdk:android_support_chromium_java",
       "//third_party/android_sdk:android_test_base_java",
       "//third_party/android_sdk:android_test_mock_java",

@@ -2,23 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.test.reporter;
+package org.chromium.build.gtest_apk;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-
-import org.chromium.base.Log;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/** Receives test status broadcasts send from
+/**
+   Receives test status broadcasts sent from
     {@link org.chromium.test.reporter.TestStatusReporter}.
  */
 public class TestStatusReceiver extends BroadcastReceiver {
-
     private static final String TAG = "test_reporter";
 
     private final List<TestRunCallback> mTestRunCallbacks = new ArrayList<TestRunCallback>();
@@ -27,11 +26,11 @@ public class TestStatusReceiver extends BroadcastReceiver {
     private static final IntentFilter INTENT_FILTER;
     static {
         IntentFilter filter = new IntentFilter();
-        filter.addAction(TestStatusReporter.ACTION_TEST_RUN_STARTED);
-        filter.addAction(TestStatusReporter.ACTION_TEST_RUN_FINISHED);
-        filter.addAction(TestStatusReporter.ACTION_UNCAUGHT_EXCEPTION);
+        filter.addAction(TestStatusIntent.ACTION_TEST_RUN_STARTED);
+        filter.addAction(TestStatusIntent.ACTION_TEST_RUN_FINISHED);
+        filter.addAction(TestStatusIntent.ACTION_UNCAUGHT_EXCEPTION);
         try {
-            filter.addDataType(TestStatusReporter.DATA_TYPE_RESULT);
+            filter.addDataType(TestStatusIntent.DATA_TYPE_RESULT);
         } catch (IntentFilter.MalformedMimeTypeException e) {
             Log.wtf(TAG, "Invalid MIME type", e);
         }
@@ -55,37 +54,36 @@ public class TestStatusReceiver extends BroadcastReceiver {
         c.registerReceiver(this, INTENT_FILTER);
     }
 
-    /** Receive a broadcast intent.
+    /**
+     * Receive a broadcast intent.
      *
      * @param context The Context in which the receiver is running.
      * @param intent The intent received.
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        int pid = intent.getIntExtra(TestStatusReporter.EXTRA_PID, 0);
-        String stackTrace = intent.getStringExtra(TestStatusReporter.EXTRA_STACK_TRACE);
+        int pid = intent.getIntExtra(TestStatusIntent.EXTRA_PID, 0);
+        String stackTrace = intent.getStringExtra(TestStatusIntent.EXTRA_STACK_TRACE);
 
         switch (intent.getAction()) {
-            case TestStatusReporter.ACTION_TEST_RUN_STARTED:
-                for (TestRunCallback c: mTestRunCallbacks) {
+            case TestStatusIntent.ACTION_TEST_RUN_STARTED:
+                for (TestRunCallback c : mTestRunCallbacks) {
                     c.testRunStarted(pid);
                 }
                 break;
-            case TestStatusReporter.ACTION_TEST_RUN_FINISHED:
-                for (TestRunCallback c: mTestRunCallbacks) {
+            case TestStatusIntent.ACTION_TEST_RUN_FINISHED:
+                for (TestRunCallback c : mTestRunCallbacks) {
                     c.testRunFinished(pid);
                 }
                 break;
-            case TestStatusReporter.ACTION_UNCAUGHT_EXCEPTION:
-                for (TestRunCallback c: mTestRunCallbacks) {
+            case TestStatusIntent.ACTION_UNCAUGHT_EXCEPTION:
+                for (TestRunCallback c : mTestRunCallbacks) {
                     c.uncaughtException(pid, stackTrace);
                 }
                 break;
             default:
-                Log.e(TAG, "Unrecognized intent received: %s", intent.toString());
+                Log.e(TAG, "Unrecognized intent received: " + intent.toString());
                 break;
         }
     }
-
 }
-
