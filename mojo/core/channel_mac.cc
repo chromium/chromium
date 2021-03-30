@@ -52,7 +52,8 @@ class ChannelMac : public Channel,
       : Channel(delegate, handle_policy, DispatchBufferPolicy::kUnmanaged),
         self_(this),
         io_task_runner_(io_task_runner),
-        watch_controller_(FROM_HERE) {
+        watch_controller_(FROM_HERE),
+        write_lock_("ChannelMac.write_lock_") {
     PlatformHandle channel_handle;
     if (connection_params.server_endpoint().is_valid()) {
       channel_handle =

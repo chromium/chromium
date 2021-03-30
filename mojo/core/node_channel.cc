@@ -512,7 +512,8 @@ NodeChannel::NodeChannel(
     const ProcessErrorCallback& process_error_callback)
     : base::RefCountedDeleteOnSequence<NodeChannel>(io_task_runner),
       delegate_(delegate),
-      process_error_callback_(process_error_callback)
+      process_error_callback_(process_error_callback),
+      channel_lock_("NodeChannel.channel_lock_")
 #if !defined(OS_NACL_SFI)
       ,
       channel_(Channel::Create(this,
