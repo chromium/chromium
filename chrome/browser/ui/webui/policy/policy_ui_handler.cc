@@ -30,6 +30,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -219,19 +220,28 @@ void GetStatusFromCore(const policy::CloudPolicyCore* core,
                   GetTimeSinceLastRefreshString(last_refresh_time));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Adds a new entry to |dict| with the affiliation status of the user associated
 // with |profile|. This method shouldn't be called for device scope status.
 void GetUserAffiliationStatus(base::DictionaryValue* dict, Profile* profile) {
   CHECK(profile);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
     return;
   dict->SetBoolean("isAffiliated", user->IsAffiliated());
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+  // Don't show affiliation status if the browser isn't enrolled in CBCM.
+  if (!policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid())
+    return;
+
+  dict->SetBoolean("isAffiliated",
+                   chrome::enterprise_util::IsProfileAffiliated(profile));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void GetOffHoursStatus(base::DictionaryValue* dict) {
   policy::off_hours::DeviceOffHoursController* off_hours_controller =
       ash::DeviceSettingsService::Get()->device_off_hours_controller();
@@ -312,13 +322,15 @@ class CloudPolicyCoreStatusProvider
 // A cloud policy status provider for user policy.
 class UserCloudPolicyStatusProvider : public CloudPolicyCoreStatusProvider {
  public:
-  explicit UserCloudPolicyStatusProvider(policy::CloudPolicyCore* core);
+  explicit UserCloudPolicyStatusProvider(policy::CloudPolicyCore* core,
+                                         Profile* profile);
   ~UserCloudPolicyStatusProvider() override;
 
   // CloudPolicyCoreStatusProvider implementation.
   void GetStatus(base::DictionaryValue* dict) override;
 
  private:
+  Profile* profile_;
   DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStatusProvider);
 };
 
@@ -514,8 +526,9 @@ void CloudPolicyCoreStatusProvider::OnStoreError(
 }
 
 UserCloudPolicyStatusProvider::UserCloudPolicyStatusProvider(
-    policy::CloudPolicyCore* core)
-    : CloudPolicyCoreStatusProvider(core) {}
+    policy::CloudPolicyCore* core,
+    Profile* profile)
+    : CloudPolicyCoreStatusProvider(core), profile_(profile) {}
 
 UserCloudPolicyStatusProvider::~UserCloudPolicyStatusProvider() {}
 
@@ -524,13 +537,14 @@ void UserCloudPolicyStatusProvider::GetStatus(base::DictionaryValue* dict) {
     return;
   GetStatusFromCore(core_, dict);
   ExtractDomainFromUsername(dict);
+  GetUserAffiliationStatus(dict, profile_);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 UserCloudPolicyStatusProviderChromeOS::UserCloudPolicyStatusProviderChromeOS(
     policy::CloudPolicyCore* core,
     Profile* profile)
-    : UserCloudPolicyStatusProvider(core) {
+    : UserCloudPolicyStatusProvider(core, profile) {
   profile_ = profile;
 }
 
@@ -913,7 +927,7 @@ void PolicyUIHandler::RegisterMessages() {
       profile->GetUserCloudPolicyManager();
   if (user_cloud_policy_manager) {
     user_status_provider_ = std::make_unique<UserCloudPolicyStatusProvider>(
-        user_cloud_policy_manager->core());
+        user_cloud_policy_manager->core(), profile);
   }
 
 #if !defined(OS_ANDROID)
