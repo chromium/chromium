@@ -211,7 +211,7 @@ int UDPSocketPosix::Open(AddressFamily address_family) {
   return OK;
 }
 
-void UDPSocketPosix::ActivityMonitor::Increment(uint32_t bytes) {
+void UDPSocketPosix::ReceivedActivityMonitor::Increment(uint32_t bytes) {
   if (!bytes)
     return;
   bool timer_running = timer_.IsRunning();
@@ -228,23 +228,23 @@ void UDPSocketPosix::ActivityMonitor::Increment(uint32_t bytes) {
   }
   if (!timer_running) {
     timer_.Start(FROM_HERE, kActivityMonitorMsThreshold, this,
-                 &UDPSocketPosix::ActivityMonitor::OnTimerFired);
+                 &UDPSocketPosix::ReceivedActivityMonitor::OnTimerFired);
   }
 }
 
-void UDPSocketPosix::ActivityMonitor::Update() {
+void UDPSocketPosix::ReceivedActivityMonitor::Update() {
   if (!bytes_)
     return;
-  NetworkActivityMonitorIncrement(bytes_);
+  NetworkActivityMonitor::GetInstance()->IncrementBytesReceived(bytes_);
   bytes_ = 0;
 }
 
-void UDPSocketPosix::ActivityMonitor::OnClose() {
+void UDPSocketPosix::ReceivedActivityMonitor::OnClose() {
   timer_.Stop();
   Update();
 }
 
-void UDPSocketPosix::ActivityMonitor::OnTimerFired() {
+void UDPSocketPosix::ReceivedActivityMonitor::OnTimerFired() {
   increments_ = 0;
   if (!bytes_) {
     // Can happen if the socket has been idle and have had no
@@ -254,16 +254,6 @@ void UDPSocketPosix::ActivityMonitor::OnTimerFired() {
     return;
   }
   Update();
-}
-
-void UDPSocketPosix::SentActivityMonitor::NetworkActivityMonitorIncrement(
-    uint32_t bytes) {
-  NetworkActivityMonitor::GetInstance()->IncrementBytesSent(bytes);
-}
-
-void UDPSocketPosix::ReceivedActivityMonitor::NetworkActivityMonitorIncrement(
-    uint32_t bytes) {
-  NetworkActivityMonitor::GetInstance()->IncrementBytesReceived(bytes);
 }
 
 void UDPSocketPosix::Close() {
@@ -311,7 +301,6 @@ void UDPSocketPosix::Close() {
   tag_ = SocketTag();
 
   write_async_timer_.Stop();
-  sent_activity_monitor_.OnClose();
   received_activity_monitor_.OnClose();
 }
 
@@ -783,8 +772,6 @@ void UDPSocketPosix::LogWrite(int result,
     NetLogUDPDataTransfer(net_log_, NetLogEventType::UDP_BYTES_SENT, result,
                           bytes, address);
   }
-
-  sent_activity_monitor_.Increment(result);
 }
 
 int UDPSocketPosix::InternalRecvFrom(IOBuffer* buf,

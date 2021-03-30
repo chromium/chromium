@@ -756,8 +756,6 @@ void UDPSocketWin::LogWrite(int result,
     NetLogUDPDataTransfer(net_log_, NetLogEventType::UDP_BYTES_SENT, result,
                           bytes, address);
   }
-
-  NetworkActivityMonitor::GetInstance()->IncrementBytesSent(result);
 }
 
 int UDPSocketWin::InternalRecvFromOverlapped(IOBuffer* buf,

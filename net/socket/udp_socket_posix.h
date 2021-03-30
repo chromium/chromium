@@ -126,10 +126,10 @@ class NET_EXPORT UDPSocketPosix {
   // timer (100 ms), whichever comes first.  The batching is subject
   // to a minimum number of samples (2) required by NQE to update its
   // throughput estimate.
-  class ActivityMonitor {
+  class ReceivedActivityMonitor {
    public:
-    ActivityMonitor() : bytes_(0), increments_(0) {}
-    virtual ~ActivityMonitor() {}
+    ReceivedActivityMonitor() : bytes_(0), increments_(0) {}
+    ~ReceivedActivityMonitor() = default;
     // Provided by sent/received subclass.
     // Update throughput, but batch to limit overhead of NetworkActivityMonitor.
     void Increment(uint32_t bytes);
@@ -137,30 +137,13 @@ class NET_EXPORT UDPSocketPosix {
     void OnClose();
 
    private:
-    virtual void NetworkActivityMonitorIncrement(uint32_t bytes) = 0;
     void Update();
     void OnTimerFired();
 
     uint32_t bytes_;
     uint32_t increments_;
     base::RepeatingTimer timer_;
-    DISALLOW_COPY_AND_ASSIGN(ActivityMonitor);
-  };
-
-  class SentActivityMonitor : public ActivityMonitor {
-   public:
-    ~SentActivityMonitor() override {}
-
-   private:
-    void NetworkActivityMonitorIncrement(uint32_t bytes) override;
-  };
-
-  class ReceivedActivityMonitor : public ActivityMonitor {
-   public:
-    ~ReceivedActivityMonitor() override {}
-
-   private:
-    void NetworkActivityMonitorIncrement(uint32_t bytes) override;
+    DISALLOW_COPY_AND_ASSIGN(ReceivedActivityMonitor);
   };
 
   UDPSocketPosix(DatagramSocket::BindType bind_type,
@@ -620,8 +603,7 @@ class NET_EXPORT UDPSocketPosix {
   // Network that this socket is bound to via BindToNetwork().
   NetworkChangeNotifier::NetworkHandle bound_network_;
 
-  // These are used to lower the overhead updating activity monitor.
-  SentActivityMonitor sent_activity_monitor_;
+  // Used to lower the overhead updating activity monitor.
   ReceivedActivityMonitor received_activity_monitor_;
 
   // Current socket tag if |socket_| is valid, otherwise the tag to apply when

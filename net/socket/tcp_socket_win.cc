@@ -580,7 +580,6 @@ int TCPSocketWin::Write(
       }
       net_log_.AddByteTransferEvent(NetLogEventType::SOCKET_BYTES_SENT, rv,
                                     buf->data());
-      NetworkActivityMonitor::GetInstance()->IncrementBytesSent(rv);
       return rv;
     }
   } else {
@@ -998,7 +997,6 @@ void TCPSocketWin::DidCompleteWrite() {
     } else {
       net_log_.AddByteTransferEvent(NetLogEventType::SOCKET_BYTES_SENT,
                                     num_bytes, core_->write_iobuffer_->data());
-      NetworkActivityMonitor::GetInstance()->IncrementBytesSent(num_bytes);
     }
   }
 

@@ -13,9 +13,7 @@ base::LazyInstance<NetworkActivityMonitor>::Leaky g_network_activity_monitor =
 
 }  // namespace
 
-NetworkActivityMonitor::NetworkActivityMonitor()
-    : bytes_received_(0), bytes_sent_(0) {
-}
+NetworkActivityMonitor::NetworkActivityMonitor() : bytes_received_(0) {}
 
 NetworkActivityMonitor::~NetworkActivityMonitor() = default;
 
@@ -29,19 +27,9 @@ void NetworkActivityMonitor::IncrementBytesReceived(uint64_t bytes_received) {
   bytes_received_ += bytes_received;
 }
 
-void NetworkActivityMonitor::IncrementBytesSent(uint64_t bytes_sent) {
-  base::AutoLock lock(lock_);
-  bytes_sent_ += bytes_sent;
-}
-
 uint64_t NetworkActivityMonitor::GetBytesReceived() const {
   base::AutoLock lock(lock_);
   return bytes_received_;
-}
-
-uint64_t NetworkActivityMonitor::GetBytesSent() const {
-  base::AutoLock lock(lock_);
-  return bytes_sent_;
 }
 
 }  // namespace net

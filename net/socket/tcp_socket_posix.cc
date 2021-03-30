@@ -621,7 +621,6 @@ int TCPSocketPosix::HandleWriteCompleted(IOBuffer* buf, int rv) {
 
   net_log_.AddByteTransferEvent(NetLogEventType::SOCKET_BYTES_SENT, rv,
                                 buf->data());
-  NetworkActivityMonitor::GetInstance()->IncrementBytesSent(rv);
   return rv;
 }
 
