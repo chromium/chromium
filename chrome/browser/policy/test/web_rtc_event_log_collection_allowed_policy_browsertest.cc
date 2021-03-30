@@ -30,21 +30,19 @@
 using testing::_;
 using webrtc_event_logging::WebRtcEventLogManager;
 
-namespace policy {
-
 namespace {
 constexpr size_t kWebAppId = 42;
 }  // namespace
 
 class WebRtcEventLogCollectionAllowedPolicyTest
-    : public PolicyTest,
-      public testing::WithParamInterface<PolicyTest::BooleanPolicy> {
+    : public policy::PolicyTest,
+      public testing::WithParamInterface<policy::PolicyTest::BooleanPolicy> {
  public:
   ~WebRtcEventLogCollectionAllowedPolicyTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
-    PolicyTest::SetUpInProcessBrowserTestFixture();
-    PolicyMap policies;
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+    policy::PolicyMap policies;
 
     const BooleanPolicy policy = GetParam();
     if (policy == BooleanPolicy::kFalse || policy == BooleanPolicy::kTrue) {
@@ -141,8 +139,6 @@ IN_PROC_BROWSER_TEST_P(WebRtcEventLogCollectionAllowedPolicyTest, RunTest) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebRtcEventLogCollectionAllowedPolicyTest,
-    ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
-                      PolicyTest::BooleanPolicy::kFalse,
-                      PolicyTest::BooleanPolicy::kTrue));
-
-}  // namespace policy
+    ::testing::Values(policy::PolicyTest::BooleanPolicy::kNotConfigured,
+                      policy::PolicyTest::BooleanPolicy::kFalse,
+                      policy::PolicyTest::BooleanPolicy::kTrue));

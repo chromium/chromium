@@ -403,11 +403,10 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
         web_contents()->GetMainFrame()->GetGlobalFrameRoutingId();
     const int lid = 0;
 
-    manager->OnPeerConnectionAdded(frame_id, lid, base::NullCallback());
+    manager->OnPeerConnectionAdded(frame_id, lid);
 
     if (!session_id.empty()) {
-      manager->OnPeerConnectionSessionIdSet(frame_id, lid, session_id,
-                                            base::NullCallback());
+      manager->OnPeerConnectionSessionIdSet(frame_id, lid, session_id);
     }
   }
 
