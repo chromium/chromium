@@ -49,7 +49,7 @@ class WebRtcVideoTrackSourceTest
     track_source_->AddOrUpdateSink(&mock_sink_, rtc::VideoSinkWants());
   }
 
-  void ProcessFeedback(const media::VideoFrameFeedback& feedback) {
+  void ProcessFeedback(const media::VideoCaptureFeedback& feedback) {
     feedback_ = feedback;
   }
 
@@ -138,7 +138,7 @@ class WebRtcVideoTrackSourceTest
  protected:
   MockVideoSink mock_sink_;
   scoped_refptr<WebRtcVideoTrackSource> track_source_;
-  media::VideoFrameFeedback feedback_;
+  media::VideoCaptureFeedback feedback_;
 };
 
 namespace {

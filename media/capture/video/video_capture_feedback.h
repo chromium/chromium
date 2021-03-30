@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAPTURE_VIDEO_FRAME_FEEDBACK_H_
-#define MEDIA_CAPTURE_VIDEO_FRAME_FEEDBACK_H_
+#ifndef MEDIA_CAPTURE_VIDEO_VIDEO_CAPTURE_FEEDBACK_H_
+#define MEDIA_CAPTURE_VIDEO_VIDEO_CAPTURE_FEEDBACK_H_
 
 #include <limits>
 #include <vector>
@@ -14,25 +14,25 @@
 
 namespace media {
 
-struct VideoFrameFeedback;
+struct VideoCaptureFeedback;
 
 using VideoCaptureFeedbackCB =
-    base::RepeatingCallback<void(const VideoFrameFeedback&)>;
+    base::RepeatingCallback<void(const VideoCaptureFeedback&)>;
 
 // Feedback from the frames consumer.
 // This class is passed from the frames sink to the capturer to limit
 // incoming video feed frame-rate and/or resolution.
-struct CAPTURE_EXPORT VideoFrameFeedback {
-  VideoFrameFeedback();
-  VideoFrameFeedback(const VideoFrameFeedback& other);
-  ~VideoFrameFeedback();
+struct CAPTURE_EXPORT VideoCaptureFeedback {
+  VideoCaptureFeedback();
+  VideoCaptureFeedback(const VideoCaptureFeedback& other);
+  ~VideoCaptureFeedback();
 
-  explicit VideoFrameFeedback(
+  explicit VideoCaptureFeedback(
       double resource_utilization,
       float max_framerate_fps = std::numeric_limits<float>::infinity(),
       int max_pixels = std::numeric_limits<int>::max());
 
-  bool operator==(const VideoFrameFeedback& other) const {
+  bool operator==(const VideoCaptureFeedback& other) const {
     return resource_utilization == other.resource_utilization &&
            max_pixels == other.max_pixels &&
            max_framerate_fps == other.max_framerate_fps &&
@@ -40,19 +40,19 @@ struct CAPTURE_EXPORT VideoFrameFeedback {
            mapped_sizes == other.mapped_sizes;
   }
 
-  bool operator!=(const VideoFrameFeedback& other) const {
+  bool operator!=(const VideoCaptureFeedback& other) const {
     return !(*this == other);
   }
 
-  VideoFrameFeedback& WithUtilization(float utilization);
-  VideoFrameFeedback& WithMaxFramerate(float max_framerate_fps);
-  VideoFrameFeedback& WithMaxPixels(int max_pixels);
-  VideoFrameFeedback& RequireMapped(bool require);
-  VideoFrameFeedback& WithMappedSizes(std::vector<gfx::Size> mapped_sizes);
+  VideoCaptureFeedback& WithUtilization(float utilization);
+  VideoCaptureFeedback& WithMaxFramerate(float max_framerate_fps);
+  VideoCaptureFeedback& WithMaxPixels(int max_pixels);
+  VideoCaptureFeedback& RequireMapped(bool require);
+  VideoCaptureFeedback& WithMappedSizes(std::vector<gfx::Size> mapped_sizes);
 
   // Combine constraints of two different sinks resulting in constraints fitting
   // both of them.
-  void Combine(const VideoFrameFeedback& other);
+  void Combine(const VideoCaptureFeedback& other);
 
   // True if no actionable feedback is present (no resource utilization recorded
   // and all constraints are infinite or absent).
@@ -101,4 +101,4 @@ struct CAPTURE_EXPORT VideoFrameFeedback {
 };
 
 }  // namespace media
-#endif  // MEDIA_CAPTURE_VIDEO_FRAME_FEEDBACK_H_
+#endif  // MEDIA_CAPTURE_VIDEO_VIDEO_CAPTURE_FEEDBACK_H_

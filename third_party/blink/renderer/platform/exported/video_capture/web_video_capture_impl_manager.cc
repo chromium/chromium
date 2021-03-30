@@ -330,14 +330,14 @@ VideoCaptureFeedbackCB WebVideoCaptureImplManager::GetFeedbackCallback(
 // static
 void WebVideoCaptureImplManager::ProcessFeedback(
     VideoCaptureFeedbackCB callback_to_io_thread,
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   // process feedback can be called on any thread by the client.
   callback_to_io_thread.Run(feedback);
 }
 
 void WebVideoCaptureImplManager::ProcessFeedbackInternal(
     const media::VideoCaptureSessionId& id,
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());
   const auto it = std::find_if(
       devices_.begin(), devices_.end(),

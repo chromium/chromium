@@ -148,7 +148,7 @@ void VideoCaptureClient::OnBufferReady(
   // Scaled buffers are currently ignored by VideoCaptureClient.
   for (media::mojom::ReadyBufferPtr& scaled_buffer : scaled_buffers) {
     video_capture_host_->ReleaseBuffer(DeviceId(), scaled_buffer->buffer_id,
-                                       media::VideoFrameFeedback());
+                                       media::VideoCaptureFeedback());
   }
   scaled_buffers.clear();
 
@@ -162,7 +162,7 @@ void VideoCaptureClient::OnBufferReady(
   }
   if (!consume_buffer) {
     video_capture_host_->ReleaseBuffer(DeviceId(), buffer->buffer_id,
-                                       media::VideoFrameFeedback());
+                                       media::VideoCaptureFeedback());
     return;
   }
 
@@ -219,7 +219,7 @@ void VideoCaptureClient::OnBufferReady(
           buffer_iter->second->get_shared_buffer_handle()->Map(buffer_size);
       if (!mapping) {
         video_capture_host_->ReleaseBuffer(DeviceId(), buffer->buffer_id,
-                                           media::VideoFrameFeedback());
+                                           media::VideoCaptureFeedback());
         return;
       }
       mapping_iter = mapped_buffers_
@@ -257,7 +257,7 @@ void VideoCaptureClient::OnBufferReady(
   if (!frame) {
     LOG(DFATAL) << "Unable to wrap shared memory mapping.";
     video_capture_host_->ReleaseBuffer(DeviceId(), buffer->buffer_id,
-                                       media::VideoFrameFeedback());
+                                       media::VideoCaptureFeedback());
     OnStateChanged(media::mojom::VideoCaptureState::FAILED);
     return;
   }
@@ -297,7 +297,7 @@ void VideoCaptureClient::OnClientBufferFinished(
   }
 
   video_capture_host_->ReleaseBuffer(DeviceId(), buffer_id, feedback_);
-  feedback_ = media::VideoFrameFeedback();
+  feedback_ = media::VideoCaptureFeedback();
 }
 
 // static
@@ -310,7 +310,7 @@ void VideoCaptureClient::DidFinishConsumingFrame(
 }
 
 void VideoCaptureClient::ProcessFeedback(
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   feedback_ = feedback;
 }

@@ -298,7 +298,7 @@ void VideoCaptureHost::RequestRefreshFrame(
 void VideoCaptureHost::ReleaseBuffer(
     const base::UnguessableToken& device_id,
     int32_t buffer_id,
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   VideoCaptureControllerID controller_id(device_id);

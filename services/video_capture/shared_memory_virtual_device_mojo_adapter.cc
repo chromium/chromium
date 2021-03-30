@@ -197,7 +197,7 @@ void SharedMemoryVirtualDeviceMojoAdapter::TakePhoto(
 }
 
 void SharedMemoryVirtualDeviceMojoAdapter::ProcessFeedback(
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 

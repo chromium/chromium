@@ -48,7 +48,7 @@ class FakeLaunchedVideoCaptureDevice
     // Do nothing.
   }
   void OnUtilizationReport(int frame_feedback_id,
-                           media::VideoFrameFeedback feedback) override {
+                           media::VideoCaptureFeedback feedback) override {
     device_->OnUtilizationReport(frame_feedback_id, feedback);
   }
 

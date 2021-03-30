@@ -327,7 +327,7 @@ void VideoSender::OnEncodedVideoFrame(
     // Key frames are artificially capped to 1.0 because their actual
     // utilization is atypical compared to the other frames in the stream, and
     // this can misguide the producer of the input video frames.
-    VideoFrameFeedback feedback;
+    VideoCaptureFeedback feedback;
     feedback.resource_utilization =
         encoded_frame->dependency == EncodedFrame::KEY
             ? std::min(1.0, attenuated_utilization)

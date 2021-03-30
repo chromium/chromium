@@ -237,7 +237,7 @@ void ThreadSafeCaptureOracle::DidCaptureFrame(
 
 void ThreadSafeCaptureOracle::OnConsumerReportingUtilization(
     int frame_number,
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   base::AutoLock guard(lock_);
   oracle_.RecordConsumerFeedback(frame_number, feedback);
 }

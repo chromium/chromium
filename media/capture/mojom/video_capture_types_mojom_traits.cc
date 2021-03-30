@@ -1755,10 +1755,10 @@ bool StructTraits<media::mojom::VideoCaptureDeviceInfoDataView,
 }
 
 // static
-bool StructTraits<media::mojom::VideoFrameFeedbackDataView,
-                  media::VideoFrameFeedback>::
-    Read(media::mojom::VideoFrameFeedbackDataView data,
-         media::VideoFrameFeedback* output) {
+bool StructTraits<media::mojom::VideoCaptureFeedbackDataView,
+                  media::VideoCaptureFeedback>::
+    Read(media::mojom::VideoCaptureFeedbackDataView data,
+         media::VideoCaptureFeedback* output) {
   output->max_framerate_fps = data.max_framerate_fps();
   output->max_pixels = data.max_pixels();
   output->resource_utilization = data.resource_utilization();

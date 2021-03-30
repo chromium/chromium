@@ -71,7 +71,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   void SetPhotoOptions(mojom::PhotoSettingsPtr settings,
                        SetPhotoOptionsCallback callback) override;
   void OnUtilizationReport(int frame_feedback_id,
-                           media::VideoFrameFeedback feedback) override;
+                           media::VideoCaptureFeedback feedback) override;
 
   // Captured new video data.
   void OnIncomingCapturedData(IMFMediaBuffer* buffer,
@@ -175,7 +175,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
   base::Optional<int> camera_rotation_;
 
-  media::VideoFrameFeedback last_feedback_;
+  media::VideoCaptureFeedback last_feedback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

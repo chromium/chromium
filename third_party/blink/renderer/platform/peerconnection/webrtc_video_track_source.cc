@@ -138,7 +138,7 @@ void WebRtcVideoTrackSource::SendFeedback() {
   if (callback_.is_null()) {
     return;
   }
-  media::VideoFrameFeedback feedback;
+  media::VideoCaptureFeedback feedback;
   feedback.max_pixels = video_adapter()->GetTargetPixels();
   feedback.max_framerate_fps = video_adapter()->GetMaxFramerate();
   if (base::FeatureList::IsEnabled(kWebRtcUseModernFrameAdapter)) {

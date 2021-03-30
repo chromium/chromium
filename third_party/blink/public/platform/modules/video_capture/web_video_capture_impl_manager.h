@@ -121,10 +121,10 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
   struct DeviceEntry;
 
   static void ProcessFeedback(VideoCaptureFeedbackCB callback_to_io_thread,
-                              const media::VideoFrameFeedback& feedback);
+                              const media::VideoCaptureFeedback& feedback);
 
   void ProcessFeedbackInternal(const media::VideoCaptureSessionId& id,
-                               const media::VideoFrameFeedback& feedback);
+                               const media::VideoCaptureFeedback& feedback);
 
   void StopCapture(int client_id, const media::VideoCaptureSessionId& id);
   void UnrefDevice(const media::VideoCaptureSessionId& id);

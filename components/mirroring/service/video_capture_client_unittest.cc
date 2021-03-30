@@ -24,7 +24,7 @@ namespace mirroring {
 
 namespace {
 
-const media::VideoFrameFeedback kFeedback(0.6, 30.0, 1000);
+const media::VideoCaptureFeedback kFeedback(0.6, 30.0, 1000);
 
 media::mojom::VideoFrameInfoPtr GetVideoFrameInfo(const gfx::Size& size) {
   media::VideoFrameMetadata metadata;

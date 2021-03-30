@@ -60,7 +60,7 @@ VideoCaptureFeedbackCB PushableMediaStreamVideoSource::GetFeedbackCallback()
   if (upstream_source_) {
     return WTF::BindRepeating(
         [](const base::WeakPtr<MediaStreamVideoSource>& source,
-           const media::VideoFrameFeedback& feedback) {
+           const media::VideoCaptureFeedback& feedback) {
           if (!source)
             return;
 

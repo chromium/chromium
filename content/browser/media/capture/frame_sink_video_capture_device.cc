@@ -198,7 +198,7 @@ void FrameSinkVideoCaptureDevice::StopAndDeAllocate() {
 
 void FrameSinkVideoCaptureDevice::OnUtilizationReport(
     int frame_feedback_id,
-    media::VideoFrameFeedback feedback) {
+    media::VideoCaptureFeedback feedback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Assumption: The mojo InterfacePtr in |frame_callbacks_| should be valid at

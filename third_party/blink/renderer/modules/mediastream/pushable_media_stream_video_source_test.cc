@@ -165,8 +165,9 @@ TEST_F(PushableMediaStreamVideoSourceTest, ForwardToUpstream) {
   pushable_video_source->OnFrameDropped(
       media::VideoCaptureFrameDropReason::kResolutionAdapterFrameIsNotValid);
 
-  EXPECT_CALL(*mock_source, OnFrameFeedback(media::VideoFrameFeedback()));
-  pushable_video_source->GetFeedbackCallback().Run(media::VideoFrameFeedback());
+  EXPECT_CALL(*mock_source, OnFrameFeedback(media::VideoCaptureFeedback()));
+  pushable_video_source->GetFeedbackCallback().Run(
+      media::VideoCaptureFeedback());
 }
 
 }  // namespace blink

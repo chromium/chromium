@@ -140,12 +140,12 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromGpu(
 }
 
 void WebRtcVideoFrameAdapter::SharedResources::SetFeedback(
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   base::AutoLock auto_lock(feedback_lock_);
   last_feedback_ = feedback;
 }
 
-media::VideoFrameFeedback
+media::VideoCaptureFeedback
 WebRtcVideoFrameAdapter::SharedResources::GetFeedback() {
   base::AutoLock auto_lock(feedback_lock_);
   return last_feedback_;
@@ -259,7 +259,7 @@ WebRtcVideoFrameAdapter::WebRtcVideoFrameAdapter(
 
 WebRtcVideoFrameAdapter::~WebRtcVideoFrameAdapter() {
   if (shared_resources_) {
-    // Report mapped sizes to the media::VideoFrameFeedback of the shared
+    // Report mapped sizes to the media::VideoCaptureFeedback of the shared
     // resources. This information can be carried to the source of the frames,
     // allowing optimized mapping and scaling of future frames for these sizes.
     std::vector<gfx::Size> mapped_sizes;
@@ -279,7 +279,7 @@ WebRtcVideoFrameAdapter::~WebRtcVideoFrameAdapter() {
           std::round(natural_size.height() / kVisiblePortionY));
     }
     shared_resources_->SetFeedback(
-        media::VideoFrameFeedback()
+        media::VideoCaptureFeedback()
             .RequireMapped(!adapted_frames_.empty())
             .WithMappedSizes(std::move(mapped_sizes)));
   }

@@ -81,7 +81,7 @@ class MockMojoVideoCaptureHost : public media::mojom::blink::VideoCaptureHost {
   MOCK_METHOD3(ReleaseBuffer,
                void(const base::UnguessableToken&,
                     int32_t,
-                    const media::VideoFrameFeedback&));
+                    const media::VideoCaptureFeedback&));
   MOCK_METHOD3(GetDeviceSupportedFormatsMock,
                void(const base::UnguessableToken&,
                     const base::UnguessableToken&,

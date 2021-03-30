@@ -140,7 +140,7 @@ class MockFrameSinkVideoConsumerFrameCallbacks
   }
 
   MOCK_METHOD0(Done, void());
-  MOCK_METHOD1(ProvideFeedback, void(const media::VideoFrameFeedback&));
+  MOCK_METHOD1(ProvideFeedback, void(const media::VideoCaptureFeedback&));
 
  private:
   mojo::Receiver<viz::mojom::FrameSinkVideoConsumerFrameCallbacks> receiver_{

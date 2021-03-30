@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/capture/video_frame_feedback.h"
+#include "media/capture/video/video_capture_feedback.h"
 
 #include <cmath>
 
@@ -17,20 +17,20 @@ constexpr size_t kCombinedMappedSizesCountLimit = 6;
 
 }  // namespace
 
-VideoFrameFeedback::VideoFrameFeedback() = default;
-VideoFrameFeedback::VideoFrameFeedback(const VideoFrameFeedback& other) =
+VideoCaptureFeedback::VideoCaptureFeedback() = default;
+VideoCaptureFeedback::VideoCaptureFeedback(const VideoCaptureFeedback& other) =
     default;
 
-VideoFrameFeedback::VideoFrameFeedback(double resource_utilization,
-                                       float max_framerate_fps,
-                                       int max_pixels)
+VideoCaptureFeedback::VideoCaptureFeedback(double resource_utilization,
+                                           float max_framerate_fps,
+                                           int max_pixels)
     : resource_utilization(resource_utilization),
       max_framerate_fps(max_framerate_fps),
       max_pixels(max_pixels) {}
 
-VideoFrameFeedback::~VideoFrameFeedback() = default;
+VideoCaptureFeedback::~VideoCaptureFeedback() = default;
 
-void VideoFrameFeedback::Combine(const VideoFrameFeedback& other) {
+void VideoCaptureFeedback::Combine(const VideoCaptureFeedback& other) {
   // Take maximum of non-negative and finite |resource_utilization| values.
   if (other.resource_utilization >= 0 &&
       std::isfinite(other.resource_utilization)) {
@@ -71,34 +71,35 @@ void VideoFrameFeedback::Combine(const VideoFrameFeedback& other) {
   }
 }
 
-bool VideoFrameFeedback::Empty() const {
+bool VideoCaptureFeedback::Empty() const {
   return !std::isfinite(max_framerate_fps) &&
          max_pixels == std::numeric_limits<int>::max() &&
          (resource_utilization < 0.0) && !require_mapped_frame &&
          mapped_sizes.empty();
 }
 
-VideoFrameFeedback& VideoFrameFeedback::WithUtilization(float utilization) {
+VideoCaptureFeedback& VideoCaptureFeedback::WithUtilization(float utilization) {
   resource_utilization = utilization;
   return *this;
 }
 
-VideoFrameFeedback& VideoFrameFeedback::WithMaxFramerate(float framerate_fps) {
+VideoCaptureFeedback& VideoCaptureFeedback::WithMaxFramerate(
+    float framerate_fps) {
   max_framerate_fps = framerate_fps;
   return *this;
 }
 
-VideoFrameFeedback& VideoFrameFeedback::WithMaxPixels(int pixels) {
+VideoCaptureFeedback& VideoCaptureFeedback::WithMaxPixels(int pixels) {
   max_pixels = pixels;
   return *this;
 }
 
-VideoFrameFeedback& VideoFrameFeedback::RequireMapped(bool require) {
+VideoCaptureFeedback& VideoCaptureFeedback::RequireMapped(bool require) {
   require_mapped_frame = require;
   return *this;
 }
 
-VideoFrameFeedback& VideoFrameFeedback::WithMappedSizes(
+VideoCaptureFeedback& VideoCaptureFeedback::WithMappedSizes(
     std::vector<gfx::Size> mapped_sizes) {
   this->mapped_sizes = std::move(mapped_sizes);
   return *this;

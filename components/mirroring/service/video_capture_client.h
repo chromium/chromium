@@ -20,7 +20,7 @@
 
 namespace media {
 class VideoFrame;
-struct VideoFrameFeedback;
+struct VideoCaptureFeedback;
 }  // namespace media
 
 namespace mirroring {
@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoCaptureClient
   void Resume(FrameDeliverCallback deliver_callback);
 
   // Feedback callback.
-  void ProcessFeedback(const media::VideoFrameFeedback& feedback);
+  void ProcessFeedback(const media::VideoCaptureFeedback& feedback);
 
   // Requests to receive a refreshed captured video frame. Do nothing if the
   // capturing device is not started or the capturing is paused.
@@ -106,7 +106,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoCaptureClient
   MappingMap mapped_buffers_;
 
   // Latest received feedback.
-  media::VideoFrameFeedback feedback_;
+  media::VideoCaptureFeedback feedback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

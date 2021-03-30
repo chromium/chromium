@@ -30,7 +30,7 @@ class CONTENT_EXPORT ScreenCaptureDeviceAndroid
   void StopAndDeAllocate() override;
   void RequestRefreshFrame() override;
   void OnUtilizationReport(int frame_feedback_id,
-                           media::VideoFrameFeedback feedback) override;
+                           media::VideoCaptureFeedback feedback) override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

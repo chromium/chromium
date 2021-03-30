@@ -104,7 +104,7 @@ interface VideoCaptureHost {
 
   // Indicates that a renderer has finished using a previously shared buffer.
   ReleaseBuffer(mojo_base.mojom.UnguessableToken device_id, int32 buffer_id,
-                VideoFrameFeedback feedback);
+                VideoCaptureFeedback feedback);
 
   // Get the formats supported by a device referenced by |session_id|.
   GetDeviceSupportedFormats(mojo_base.mojom.UnguessableToken device_id,

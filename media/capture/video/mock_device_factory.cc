@@ -38,7 +38,7 @@ class RawPointerVideoCaptureDevice : public media::VideoCaptureDevice {
     device_->TakePhoto(std::move(callback));
   }
   void OnUtilizationReport(int frame_feedback_id,
-                           media::VideoFrameFeedback feedback) override {
+                           media::VideoCaptureFeedback feedback) override {
     device_->OnUtilizationReport(frame_feedback_id, feedback);
   }
 

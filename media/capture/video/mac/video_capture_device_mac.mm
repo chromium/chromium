@@ -766,7 +766,7 @@ void VideoCaptureDeviceMac::SetPhotoOptions(mojom::PhotoSettingsPtr settings,
 
 void VideoCaptureDeviceMac::OnUtilizationReport(
     int frame_feedback_id,
-    media::VideoFrameFeedback feedback) {
+    media::VideoCaptureFeedback feedback) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   if (!capture_device_)
     return;

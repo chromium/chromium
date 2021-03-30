@@ -15,7 +15,7 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_pool.h"
-#include "media/capture/video_frame_feedback.h"
+#include "media/capture/video/video_capture_feedback.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 #include "third_party/webrtc/api/video/video_frame_buffer.h"
@@ -83,10 +83,10 @@ class PLATFORM_EXPORT LegacyWebRtcVideoFrameAdapter
         scoped_refptr<media::VideoFrame> source_frame);
 
     // Used to report feedback from an adapter upon destruction.
-    void SetFeedback(const media::VideoFrameFeedback& feedback);
+    void SetFeedback(const media::VideoCaptureFeedback& feedback);
 
     // Returns the most recently stored feedback.
-    media::VideoFrameFeedback GetFeedback();
+    media::VideoCaptureFeedback GetFeedback();
 
    protected:
     friend class base::RefCountedThreadSafe<SharedResources>;
@@ -106,7 +106,7 @@ class PLATFORM_EXPORT LegacyWebRtcVideoFrameAdapter
     base::Lock feedback_lock_;
 
     // Contains feedback from the most recently destroyed Adapter.
-    media::VideoFrameFeedback last_feedback_ GUARDED_BY(feedback_lock_);
+    media::VideoCaptureFeedback last_feedback_ GUARDED_BY(feedback_lock_);
   };
 
   // Returns true if |frame| is adaptable to a webrtc::VideoFrameBuffer.

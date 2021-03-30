@@ -36,10 +36,10 @@ component("capture_base") {
     "video/video_capture_device_descriptor.h",
     "video/video_capture_device_info.cc",
     "video/video_capture_device_info.h",
+    "video/video_capture_feedback.cc",
+    "video/video_capture_feedback.h",
     "video_capture_types.cc",
     "video_capture_types.h",
-    "video_frame_feedback.cc",
-    "video_frame_feedback.h",
   ]
   deps = [
     "//base",

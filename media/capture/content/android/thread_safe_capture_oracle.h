@@ -80,7 +80,7 @@ class CAPTURE_EXPORT ThreadSafeCaptureOracle
 
   void OnConsumerReportingUtilization(
       int frame_number,
-      const media::VideoFrameFeedback& feedback);
+      const media::VideoCaptureFeedback& feedback);
 
  private:
   // Helper struct to hold the many arguments needed by DidCaptureFrame(), and

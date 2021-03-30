@@ -201,7 +201,7 @@ VideoCaptureController::BufferContext& VideoCaptureController::BufferContext::
 operator=(BufferContext&& other) = default;
 
 void VideoCaptureController::BufferContext::RecordConsumerUtilization(
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   combined_consumer_feedback_.Combine(feedback);
 }
 
@@ -218,7 +218,7 @@ void VideoCaptureController::BufferContext::DecreaseConsumerCount() {
           frame_feedback_id_, combined_consumer_feedback_);
     }
     buffer_read_permission_.reset();
-    combined_consumer_feedback_ = media::VideoFrameFeedback();
+    combined_consumer_feedback_ = media::VideoCaptureFeedback();
   }
 }
 
@@ -362,7 +362,7 @@ base::UnguessableToken VideoCaptureController::RemoveClient(
 
   for (const auto& buffer_id : client->buffers_in_use) {
     OnClientFinishedConsumingBuffer(client, buffer_id,
-                                    media::VideoFrameFeedback());
+                                    media::VideoCaptureFeedback());
   }
   client->buffers_in_use.clear();
 
@@ -452,7 +452,7 @@ void VideoCaptureController::ReturnBuffer(
     const VideoCaptureControllerID& id,
     VideoCaptureControllerEventHandler* event_handler,
     int buffer_id,
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   ControllerClient* client = FindClient(id, event_handler, controller_clients_);
@@ -864,7 +864,7 @@ VideoCaptureController::FindUnretiredBufferContextFromBufferId(int buffer_id) {
 void VideoCaptureController::OnClientFinishedConsumingBuffer(
     ControllerClient* client,
     int buffer_context_id,
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   auto buffer_context_iter =
       FindBufferContextFromBufferContextId(buffer_context_id);
   DCHECK(buffer_context_iter != buffer_contexts_.end());

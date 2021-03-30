@@ -116,7 +116,7 @@ class PLATFORM_EXPORT VideoCaptureImpl
       Vector<media::mojom::blink::ReadyBufferPtr> scaled_buffers) override;
   void OnBufferDestroyed(int32_t buffer_id) override;
 
-  void ProcessFeedback(const media::VideoFrameFeedback& feedback);
+  void ProcessFeedback(const media::VideoCaptureFeedback& feedback);
 
   // The returned weak pointer can only be dereferenced on the IO thread.
   base::WeakPtr<VideoCaptureImpl> GetWeakPtr();
@@ -278,7 +278,7 @@ class PLATFORM_EXPORT VideoCaptureImpl
 
   // Stores feedback from the clients, received in |ProcessFeedback()|.
   // Only accessed on the IO thread.
-  media::VideoFrameFeedback feedback_;
+  media::VideoCaptureFeedback feedback_;
 
   THREAD_CHECKER(io_thread_checker_);
 

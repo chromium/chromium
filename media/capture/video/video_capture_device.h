@@ -31,8 +31,8 @@
 #include "media/capture/mojom/image_capture.mojom.h"
 #include "media/capture/video/video_capture_buffer_handle.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
+#include "media/capture/video/video_capture_feedback.h"
 #include "media/capture/video_capture_types.h"
-#include "media/capture/video_frame_feedback.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace base {
@@ -64,7 +64,7 @@ class CAPTURE_EXPORT VideoFrameConsumerFeedbackObserver {
   // It is used to indicate which particular frame the reported utilization
   // corresponds to.
   virtual void OnUtilizationReport(int frame_feedback_id,
-                                   media::VideoFrameFeedback feedback) {}
+                                   media::VideoCaptureFeedback feedback) {}
 };
 
 struct CAPTURE_EXPORT CapturedExternalVideoBuffer {

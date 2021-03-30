@@ -55,7 +55,7 @@ void VideoCaptureDeviceAsh::TakePhoto(TakePhotoCallback callback) {
 }
 
 void VideoCaptureDeviceAsh::ProcessFeedback(
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   device_->ProcessFeedback(std::move(feedback));
 }
 

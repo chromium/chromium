@@ -71,7 +71,7 @@ class VideoCaptureDeviceMac
                        SetPhotoOptionsCallback callback) override;
   // VideoFrameConsumerFeedbackObserver implementation.
   void OnUtilizationReport(int frame_feedback_id,
-                           media::VideoFrameFeedback feedback) override;
+                           media::VideoCaptureFeedback feedback) override;
 
   bool Init(VideoCaptureApi capture_api_type);
 

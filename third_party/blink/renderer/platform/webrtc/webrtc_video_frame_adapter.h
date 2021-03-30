@@ -15,7 +15,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_pool.h"
 #include "media/base/video_types.h"
-#include "media/capture/video_frame_feedback.h"
+#include "media/capture/video/video_capture_feedback.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
@@ -112,10 +112,10 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
         scoped_refptr<media::VideoFrame> source_frame);
 
     // Used to report feedback from an adapter upon destruction.
-    void SetFeedback(const media::VideoFrameFeedback& feedback);
+    void SetFeedback(const media::VideoCaptureFeedback& feedback);
 
     // Returns the most recently stored feedback.
-    media::VideoFrameFeedback GetFeedback();
+    media::VideoCaptureFeedback GetFeedback();
 
    protected:
     friend class base::RefCountedThreadSafe<SharedResources>;
@@ -135,7 +135,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     base::Lock feedback_lock_;
 
     // Contains feedback from the most recently destroyed Adapter.
-    media::VideoFrameFeedback last_feedback_ GUARDED_BY(feedback_lock_);
+    media::VideoCaptureFeedback last_feedback_ GUARDED_BY(feedback_lock_);
   };
 
   struct PLATFORM_EXPORT ScaledBufferSize {

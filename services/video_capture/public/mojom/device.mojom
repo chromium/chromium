@@ -28,5 +28,5 @@ interface Device {
       => (media.mojom.Blob? blob);
   // |feedback| contains consumer feedback like resource utilization,
   // maximum requested frame-rate and resolution.
-  ProcessFeedback(media.mojom.VideoFrameFeedback feedback);
+  ProcessFeedback(media.mojom.VideoCaptureFeedback feedback);
 };

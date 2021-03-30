@@ -166,7 +166,7 @@ interface VideoCaptureDevice {
 
   TakePhoto@5() => (media.mojom.Blob? blob);
 
-  ProcessFeedback@6(media.mojom.VideoFrameFeedback feedback);
+  ProcessFeedback@6(media.mojom.VideoCaptureFeedback feedback);
 };
 
 // Similar to |video_capture.mojom.DeviceFactory| but depends on simplified

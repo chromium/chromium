@@ -127,14 +127,14 @@ class PeerVideoSender : public VideoSender {
   using VideoSender::OnReceivedCastFeedback;
   using VideoSender::OnReceivedPli;
 
-  void ProcessFeedback(const media::VideoFrameFeedback& feedback) {
+  void ProcessFeedback(const media::VideoCaptureFeedback& feedback) {
     feedback_ = feedback;
   }
 
-  VideoFrameFeedback GetFeedback() { return feedback_; }
+  VideoCaptureFeedback GetFeedback() { return feedback_; }
 
  private:
-  VideoFrameFeedback feedback_;
+  VideoCaptureFeedback feedback_;
 };
 
 class TransportClient : public CastTransport::Client {

@@ -307,8 +307,8 @@ struct VideoCaptureParams {
 //
 // |mapped_sizes| reports which sizes the video frame got mapped by the consumer
 // for CPU access. Only reported when |kWebRtcUseModernFrameAdapter| is enabled.
-[Stable]
-struct VideoFrameFeedback {
+[Stable, RenamedFrom="media.mojom.VideoFrameFeedback"]
+struct VideoCaptureFeedback {
   double resource_utilization;
 
   float max_framerate_fps;

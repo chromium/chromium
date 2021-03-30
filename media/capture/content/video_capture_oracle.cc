@@ -339,7 +339,7 @@ void VideoCaptureOracle::CancelAllCaptures() {
 
 void VideoCaptureOracle::RecordConsumerFeedback(
     int frame_number,
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   // Max frame-rate constraint.
 
   base::TimeDelta period;

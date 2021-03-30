@@ -14,7 +14,7 @@
 #include "media/capture/content/animated_content_sampler.h"
 #include "media/capture/content/capture_resolution_chooser.h"
 #include "media/capture/content/smooth_event_sampler.h"
-#include "media/capture/video_frame_feedback.h"
+#include "media/capture/video/video_capture_feedback.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace media {
@@ -106,7 +106,7 @@ class CAPTURE_EXPORT VideoCaptureOracle {
   // This method should only be called for frames where CompleteCapture()
   // returned true.
   void RecordConsumerFeedback(int frame_number,
-                              const media::VideoFrameFeedback& feedback);
+                              const media::VideoCaptureFeedback& feedback);
 
   // Sets the minimum amount of time that must pass between changes to the
   // capture size due to autothrottling. This throttles the rate of size

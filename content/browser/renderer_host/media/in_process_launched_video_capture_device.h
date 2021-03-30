@@ -34,7 +34,7 @@ class InProcessLaunchedVideoCaptureDevice : public LaunchedVideoCaptureDevice {
                                       base::OnceClosure done_cb) override;
 
   void OnUtilizationReport(int frame_feedback_id,
-                           media::VideoFrameFeedback feedback) override;
+                           media::VideoCaptureFeedback feedback) override;
 
  private:
   void SetDesktopCaptureWindowIdOnDeviceThread(

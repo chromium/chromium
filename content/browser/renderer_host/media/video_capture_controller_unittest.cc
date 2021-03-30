@@ -154,7 +154,7 @@ class MockVideoCaptureControllerEventHandler
   VideoCaptureController* controller_;
   media::VideoPixelFormat expected_pixel_format_ = media::PIXEL_FORMAT_I420;
   gfx::ColorSpace expected_color_space_ = gfx::ColorSpace::CreateREC709();
-  media::VideoFrameFeedback feedback_;
+  media::VideoCaptureFeedback feedback_;
   bool enable_auto_return_buffer_on_buffer_ready_ = true;
 };
 
@@ -443,8 +443,8 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
   client_b_->feedback_.resource_utilization = -1.0;
   // Expect VideoCaptureController to call the load observer with a
   // resource utilization of 0.5 (the largest of all reported values).
-  const media::VideoFrameFeedback kExpectedFeedback =
-      media::VideoFrameFeedback(0.5);
+  const media::VideoCaptureFeedback kExpectedFeedback =
+      media::VideoCaptureFeedback(0.5);
   EXPECT_CALL(
       *mock_launched_device_,
       OnUtilizationReport(arbitrary_frame_feedback_id, kExpectedFeedback));
@@ -471,14 +471,14 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
   auto buffer2_access = buffer2.handle_provider->GetHandleForInProcessAccess();
   memset(buffer2_access->data(), buffer_no++, buffer2_access->mapped_size());
 
-  client_a_->feedback_ = media::VideoFrameFeedback(0.5, 60, 1000);
-  client_b_->feedback_ = media::VideoFrameFeedback(3.14, 30);
+  client_a_->feedback_ = media::VideoCaptureFeedback(0.5, 60, 1000);
+  client_b_->feedback_ = media::VideoCaptureFeedback(3.14, 30);
   // Expect VideoCaptureController to call the load observer with a
   // resource utilization of 3.14 (the largest of all reported values) and
   // sink constraints being the minimum of all reported values.
   EXPECT_CALL(*mock_launched_device_,
               OnUtilizationReport(arbitrary_frame_feedback_id_2,
-                                  media::VideoFrameFeedback(3.14, 30, 1000)));
+                                  media::VideoCaptureFeedback(3.14, 30, 1000)));
 
   device_client_->OnIncomingCapturedBuffer(std::move(buffer2), device_format,
                                            arbitrary_reference_time_,
@@ -839,9 +839,9 @@ TEST_F(VideoCaptureControllerTest, FrameFeedbackIsReportedForSequenceOfFrames) {
   for (int frame_index = 0; frame_index < kTestFrameSequenceLength;
        frame_index++) {
     const int stub_frame_feedback_id = frame_index;
-    const media::VideoFrameFeedback stub_consumer_feedback =
-        media::VideoFrameFeedback(static_cast<float>(frame_index) /
-                                  kTestFrameSequenceLength);
+    const media::VideoCaptureFeedback stub_consumer_feedback =
+        media::VideoCaptureFeedback(static_cast<float>(frame_index) /
+                                    kTestFrameSequenceLength);
 
     client_a_->feedback_ = stub_consumer_feedback;
 
@@ -953,8 +953,8 @@ TEST_F(VideoCaptureControllerTest,
   // |client_a_| signals to |controller_| that it has finished consuming the
   // frame.
   EXPECT_CALL(*client_a_, DoBufferDestroyed(_, _)).Times(1);
-  const media::VideoFrameFeedback arbitrary_feedback =
-      media::VideoFrameFeedback();
+  const media::VideoCaptureFeedback arbitrary_feedback =
+      media::VideoCaptureFeedback();
   controller_->ReturnBuffer(arbitrary_route_id_, client_a_.get(),
                             buffer_id_reported_to_client, arbitrary_feedback);
   base::RunLoop().RunUntilIdle();
@@ -1012,8 +1012,8 @@ TEST_F(VideoCaptureControllerTest,
   // first frame.
   EXPECT_CALL(*client_a_, DoBufferDestroyed(_, first_buffer_id)).Times(1);
   EXPECT_CALL(*client_a_, DoBufferDestroyed(_, second_buffer_id)).Times(0);
-  const media::VideoFrameFeedback arbitrary_feedback =
-      media::VideoFrameFeedback();
+  const media::VideoCaptureFeedback arbitrary_feedback =
+      media::VideoCaptureFeedback();
   controller_->ReturnBuffer(arbitrary_route_id_, client_a_.get(),
                             first_buffer_id, arbitrary_feedback);
   base::RunLoop().RunUntilIdle();

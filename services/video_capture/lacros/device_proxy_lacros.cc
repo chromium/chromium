@@ -55,7 +55,7 @@ void DeviceProxyLacros::TakePhoto(TakePhotoCallback callback) {
 }
 
 void DeviceProxyLacros::ProcessFeedback(
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   device_->ProcessFeedback(std::move(feedback));
 }
 

@@ -20,18 +20,19 @@ class VIZ_SERVICE_EXPORT InFlightFrameDelivery final
  public:
   InFlightFrameDelivery(
       base::OnceClosure post_delivery_callback,
-      base::OnceCallback<void(const media::VideoFrameFeedback&)>
+      base::OnceCallback<void(const media::VideoCaptureFeedback&)>
           feedback_callback);
 
   ~InFlightFrameDelivery() final;
 
   // mojom::FrameSinkVideoConsumerFrameCallbacks implementation:
   void Done() final;
-  void ProvideFeedback(const media::VideoFrameFeedback&) final;
+  void ProvideFeedback(const media::VideoCaptureFeedback&) final;
 
  private:
   base::OnceClosure post_delivery_callback_;
-  base::OnceCallback<void(const media::VideoFrameFeedback&)> feedback_callback_;
+  base::OnceCallback<void(const media::VideoCaptureFeedback&)>
+      feedback_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(InFlightFrameDelivery);
 };

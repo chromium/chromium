@@ -69,7 +69,7 @@ struct SyncToken;
 
 namespace media {
 class VideoFrame;
-struct VideoFrameFeedback;
+struct VideoCaptureFeedback;
 }
 
 namespace mojo {
@@ -344,8 +344,8 @@ struct CrossThreadCopier<gfx::ColorSpace>
 };
 
 template <>
-struct CrossThreadCopier<media::VideoFrameFeedback>
-    : public CrossThreadCopierPassThrough<media::VideoFrameFeedback> {
+struct CrossThreadCopier<media::VideoCaptureFeedback>
+    : public CrossThreadCopierPassThrough<media::VideoCaptureFeedback> {
   STATIC_ONLY(CrossThreadCopier);
 };
 

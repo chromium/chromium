@@ -25,7 +25,7 @@ interface FrameSinkVideoConsumerFrameCallbacks {
 
   // |feedback| contains consumer feedback like resource utilization,
   // maximum requested frame-rate and resolution.
-  ProvideFeedback(media.mojom.VideoFrameFeedback feedback);
+  ProvideFeedback(media.mojom.VideoCaptureFeedback feedback);
 };
 
 // Interface for a consumer that receives frames and notifications related to

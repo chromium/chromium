@@ -329,9 +329,9 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
             received_frame_info.timestamp = buffer.frame_info->timestamp;
             received_frame_infos.emplace_back(received_frame_info);
 
-            const media::VideoFrameFeedback kArbitraryFeedback =
-                media::VideoFrameFeedback(0.5, 60.0,
-                                          std::numeric_limits<int>::max());
+            const media::VideoCaptureFeedback kArbitraryFeedback =
+                media::VideoCaptureFeedback(0.5, 60.0,
+                                            std::numeric_limits<int>::max());
             controller_->ReturnBuffer(id, &mock_controller_event_handler_,
                                       buffer.buffer_id, kArbitraryFeedback);
 

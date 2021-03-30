@@ -44,7 +44,7 @@ class SharedMemoryVirtualDeviceMojoAdapter
   void SetPhotoOptions(media::mojom::PhotoSettingsPtr settings,
                        SetPhotoOptionsCallback callback) override;
   void TakePhoto(TakePhotoCallback callback) override;
-  void ProcessFeedback(const media::VideoFrameFeedback& feedback) override;
+  void ProcessFeedback(const media::VideoCaptureFeedback& feedback) override;
 
   void Stop();
 

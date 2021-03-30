@@ -38,7 +38,7 @@ class MockVideoCaptureDevice final
   MOCK_METHOD0(MaybeSuspendDevice, void());
   MOCK_METHOD0(ResumeDevice, void());
   MOCK_METHOD0(RequestRefreshFrame, void());
-  MOCK_METHOD2(OnUtilizationReport, void(int, media::VideoFrameFeedback));
+  MOCK_METHOD2(OnUtilizationReport, void(int, media::VideoCaptureFeedback));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockVideoCaptureDevice);
@@ -140,7 +140,7 @@ class MockVideoCaptureObserver final
   }
 
   void FinishConsumingBuffer(int32_t buffer_id,
-                             media::VideoFrameFeedback feedback) {
+                             media::VideoCaptureFeedback feedback) {
     EXPECT_TRUE(buffers_.find(buffer_id) != buffers_.end());
     const auto iter = frame_infos_.find(buffer_id);
     EXPECT_TRUE(iter != frame_infos_.end());
@@ -231,7 +231,7 @@ class SingleClientVideoCaptureHostTest : public ::testing::Test {
 
   void FinishConsumingBuffer(int buffer_context_id,
                              int feedback_id,
-                             const media::VideoFrameFeedback& feedback) {
+                             const media::VideoCaptureFeedback& feedback) {
     base::RunLoop run_loop;
     EXPECT_CALL(*launched_device_, OnUtilizationReport(feedback_id, feedback))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
@@ -273,7 +273,7 @@ class SingleClientVideoCaptureHostTest : public ::testing::Test {
 TEST_F(SingleClientVideoCaptureHostTest, Basic) {
   CreateBuffer(1, 0);
   FrameReadyInBuffer(1, 0, 5);
-  FinishConsumingBuffer(0, 5, media::VideoFrameFeedback(1.0));
+  FinishConsumingBuffer(0, 5, media::VideoCaptureFeedback(1.0));
   RetireBuffer(1, 0);
 }
 
@@ -293,7 +293,7 @@ TEST_F(SingleClientVideoCaptureHostTest, ReuseBufferId) {
   FrameReadyInBuffer(0, 1, 7);
 
   // Finish consuming frame in the retired buffer 0.
-  FinishConsumingBuffer(0, 3, media::VideoFrameFeedback(1.0));
+  FinishConsumingBuffer(0, 3, media::VideoCaptureFeedback(1.0));
   // The retired buffer is expected to be destroyed since the consumer finished
   // consuming the frame in that buffer.
   base::RunLoop run_loop;
@@ -301,7 +301,7 @@ TEST_F(SingleClientVideoCaptureHostTest, ReuseBufferId) {
       .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   run_loop.Run();
 
-  FinishConsumingBuffer(1, 7, media::VideoFrameFeedback(0.5));
+  FinishConsumingBuffer(1, 7, media::VideoCaptureFeedback(0.5));
   RetireBuffer(0, 1);
 }
 

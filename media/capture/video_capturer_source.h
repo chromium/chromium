@@ -12,8 +12,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "media/capture/capture_export.h"
+#include "media/capture/video/video_capture_feedback.h"
 #include "media/capture/video_capture_types.h"
-#include "media/capture/video_frame_feedback.h"
 
 namespace media {
 
@@ -45,7 +45,7 @@ class CAPTURE_EXPORT VideoCapturerSource {
   //
   // |scaled_video_frames| are alternative representations of |video_frame|
   // where scaling has already been applied. Scaled frames may be produced by
-  // some capturers that listen to media::VideoFrameFeedback. However, because
+  // some capturers that listen to media::VideoCaptureFeedback. However, because
   // not all capturers support in-capturer scaling or due to delays in the
   // pipeline, listeners have to be prepared for scaled video frames not being
   // present or being present with other sizes than most recently requested.

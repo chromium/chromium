@@ -92,7 +92,7 @@ void ServiceLaunchedVideoCaptureDevice::SetDesktopCaptureWindowIdAsync(
 
 void ServiceLaunchedVideoCaptureDevice::OnUtilizationReport(
     int frame_feedback_id,
-    media::VideoFrameFeedback feedback) {
+    media::VideoCaptureFeedback feedback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   if (feedback != last_feedback_) {
     subscription_->ProcessFeedback(feedback);

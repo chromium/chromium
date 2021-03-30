@@ -10,8 +10,8 @@
 #include "media/capture/mojom/video_capture_types.mojom-shared.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video/video_capture_device_info.h"
+#include "media/capture/video/video_capture_feedback.h"
 #include "media/capture/video_capture_types.h"
-#include "media/capture/video_frame_feedback.h"
 
 namespace mojo {
 
@@ -240,32 +240,33 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
-    StructTraits<media::mojom::VideoFrameFeedbackDataView,
-                 media::VideoFrameFeedback> {
+    StructTraits<media::mojom::VideoCaptureFeedbackDataView,
+                 media::VideoCaptureFeedback> {
   static double resource_utilization(
-      const media::VideoFrameFeedback& feedback) {
+      const media::VideoCaptureFeedback& feedback) {
     return feedback.resource_utilization;
   }
 
-  static float max_framerate_fps(const media::VideoFrameFeedback& feedback) {
+  static float max_framerate_fps(const media::VideoCaptureFeedback& feedback) {
     return feedback.max_framerate_fps;
   }
 
-  static int max_pixels(const media::VideoFrameFeedback& feedback) {
+  static int max_pixels(const media::VideoCaptureFeedback& feedback) {
     return feedback.max_pixels;
   }
 
-  static bool require_mapped_frame(const media::VideoFrameFeedback& feedback) {
+  static bool require_mapped_frame(
+      const media::VideoCaptureFeedback& feedback) {
     return feedback.require_mapped_frame;
   }
 
   static const std::vector<gfx::Size>& mapped_sizes(
-      const media::VideoFrameFeedback& feedback) {
+      const media::VideoCaptureFeedback& feedback) {
     return feedback.mapped_sizes;
   }
 
-  static bool Read(media::mojom::VideoFrameFeedbackDataView data,
-                   media::VideoFrameFeedback* output);
+  static bool Read(media::mojom::VideoCaptureFeedbackDataView data,
+                   media::VideoCaptureFeedback* output);
 };
 }  // namespace mojo
 

@@ -10,7 +10,7 @@ namespace viz {
 
 InFlightFrameDelivery::InFlightFrameDelivery(
     base::OnceClosure post_delivery_callback,
-    base::OnceCallback<void(const media::VideoFrameFeedback&)>
+    base::OnceCallback<void(const media::VideoCaptureFeedback&)>
         feedback_callback)
     : post_delivery_callback_(std::move(post_delivery_callback)),
       feedback_callback_(std::move(feedback_callback)) {}
@@ -26,7 +26,7 @@ void InFlightFrameDelivery::Done() {
 }
 
 void InFlightFrameDelivery::ProvideFeedback(
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   if (!feedback_callback_.is_null()) {
     std::move(feedback_callback_).Run(feedback);
   }

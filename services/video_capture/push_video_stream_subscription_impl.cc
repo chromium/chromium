@@ -163,7 +163,7 @@ void PushVideoStreamSubscriptionImpl::OnConnectionLost() {
 }
 
 void PushVideoStreamSubscriptionImpl::ProcessFeedback(
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   switch (status_) {
     case Status::kCreationCallbackNotYetRun:  // Fall through.
     case Status::kClosed:

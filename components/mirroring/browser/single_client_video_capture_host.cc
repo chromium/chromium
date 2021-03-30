@@ -113,7 +113,7 @@ void SingleClientVideoCaptureHost::Stop(
   for (const auto& entry : buffer_context_map_)
     buffers_in_use.push_back(entry.first);
   for (int buffer_id : buffers_in_use) {
-    OnFinishedConsumingBuffer(buffer_id, media::VideoFrameFeedback());
+    OnFinishedConsumingBuffer(buffer_id, media::VideoCaptureFeedback());
   }
   DCHECK(buffer_context_map_.empty());
   observer_->OnStateChanged(media::mojom::VideoCaptureState::ENDED);
@@ -150,7 +150,7 @@ void SingleClientVideoCaptureHost::RequestRefreshFrame(
 void SingleClientVideoCaptureHost::ReleaseBuffer(
     const base::UnguessableToken& device_id,
     int32_t buffer_id,
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(3) << __func__ << ": buffer_id=" << buffer_id;
 
@@ -297,7 +297,7 @@ void SingleClientVideoCaptureHost::OnDeviceLaunchAborted() {
 
 void SingleClientVideoCaptureHost::OnFinishedConsumingBuffer(
     int buffer_context_id,
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(observer_);
   const auto buffer_context_iter = buffer_context_map_.find(buffer_context_id);

@@ -9,7 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/video_frame_pool.h"
-#include "media/capture/video_frame_feedback.h"
+#include "media/capture/video/video_capture_feedback.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/webrtc/legacy_webrtc_video_frame_adapter.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"

@@ -459,12 +459,12 @@ LegacyWebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromGpu(
 }
 
 void LegacyWebRtcVideoFrameAdapter::SharedResources::SetFeedback(
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   base::AutoLock auto_lock(feedback_lock_);
   last_feedback_ = feedback;
 }
 
-media::VideoFrameFeedback
+media::VideoCaptureFeedback
 LegacyWebRtcVideoFrameAdapter::SharedResources::GetFeedback() {
   base::AutoLock auto_lock(feedback_lock_);
   return last_feedback_;
@@ -488,7 +488,7 @@ LegacyWebRtcVideoFrameAdapter::LegacyWebRtcVideoFrameAdapter(
 LegacyWebRtcVideoFrameAdapter::~LegacyWebRtcVideoFrameAdapter() {
   if (shared_resources_) {
     shared_resources_->SetFeedback(
-        media::VideoFrameFeedback().RequireMapped(was_mapped_));
+        media::VideoCaptureFeedback().RequireMapped(was_mapped_));
   }
 }
 

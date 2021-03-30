@@ -84,7 +84,7 @@ class CONTENT_EXPORT VideoCaptureHost
   void RequestRefreshFrame(const base::UnguessableToken& device_id) override;
   void ReleaseBuffer(const base::UnguessableToken& device_id,
                      int32_t buffer_id,
-                     const media::VideoFrameFeedback& feedback) override;
+                     const media::VideoCaptureFeedback& feedback) override;
   void GetDeviceSupportedFormats(
       const base::UnguessableToken& device_id,
       const base::UnguessableToken& session_id,

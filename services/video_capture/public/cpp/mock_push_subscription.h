@@ -33,7 +33,7 @@ class MockPushSubcription
   MOCK_METHOD1(DoTakePhoto, void(TakePhotoCallback& callback));
   MOCK_METHOD1(DoClose, void(CloseCallback& callback));
   MOCK_METHOD1(ProcessFeedback,
-               void(const media::VideoFrameFeedback& feedback));
+               void(const media::VideoCaptureFeedback& feedback));
 };
 
 }  // namespace video_capture

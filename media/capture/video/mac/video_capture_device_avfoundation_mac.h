@@ -81,9 +81,10 @@ CAPTURE_EXPORT
   // When enabled, converts captured frames to NV12.
   std::unique_ptr<media::SampleBufferTransformer> _sampleBufferTransformer;
   // Transformers used to create downscaled versions of the captured image.
-  // Enabled when setScaledResolutions is called (i.e. media::VideoFrameFeedback
-  // asks for scaled frames on behalf of a consumer in the Renderer process),
-  // NV12 output is enabled and the kInCapturerScaling feature is on.
+  // Enabled when setScaledResolutions is called (i.e.
+  // media::VideoCaptureFeedback asks for scaled frames on behalf of a consumer
+  // in the Renderer process), NV12 output is enabled and the kInCapturerScaling
+  // feature is on.
   std::vector<std::unique_ptr<media::SampleBufferTransformer>>
       _scaledFrameTransformers;
 

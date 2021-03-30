@@ -744,10 +744,10 @@ void VideoCaptureImpl::OnBufferReady(
     OnFrameDropped(
         media::VideoCaptureFrameDropReason::kVideoCaptureImplNotInStartedState);
     GetVideoCaptureHost()->ReleaseBuffer(device_id_, buffer->buffer_id,
-                                         media::VideoFrameFeedback());
+                                         media::VideoCaptureFeedback());
     for (auto& scaled_buffer : scaled_buffers) {
       GetVideoCaptureHost()->ReleaseBuffer(device_id_, scaled_buffer->buffer_id,
-                                           media::VideoFrameFeedback());
+                                           media::VideoCaptureFeedback());
     }
     return;
   }
@@ -878,11 +878,11 @@ void VideoCaptureImpl::OnVideoFrameReady(
                        kVideoCaptureImplFailedToWrapDataAsMediaVideoFrame);
     // Release all buffers.
     GetVideoCaptureHost()->ReleaseBuffer(
-        device_id_, frame_preparer->buffer_id(), media::VideoFrameFeedback());
+        device_id_, frame_preparer->buffer_id(), media::VideoCaptureFeedback());
     for (const auto& scaled_frame_preparer : scaled_frame_preparers) {
       GetVideoCaptureHost()->ReleaseBuffer(device_id_,
                                            scaled_frame_preparer->buffer_id(),
-                                           media::VideoFrameFeedback());
+                                           media::VideoCaptureFeedback());
     }
     return;
   }
@@ -949,7 +949,7 @@ void VideoCaptureImpl::OnAllClientsFinishedConsumingFrame(
 #endif
 
   GetVideoCaptureHost()->ReleaseBuffer(device_id_, buffer_id, feedback_);
-  feedback_ = media::VideoFrameFeedback();
+  feedback_ = media::VideoCaptureFeedback();
 }
 
 void VideoCaptureImpl::StopDevice() {
@@ -1064,7 +1064,7 @@ void VideoCaptureImpl::DidFinishConsumingFrame(
 }
 
 void VideoCaptureImpl::ProcessFeedback(
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   feedback_ = feedback;
 }

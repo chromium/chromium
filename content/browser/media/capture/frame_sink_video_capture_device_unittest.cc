@@ -147,7 +147,7 @@ class MockFrameSinkVideoConsumerFrameCallbacks
   }
 
   MOCK_METHOD0(Done, void());
-  MOCK_METHOD1(ProvideFeedback, void(const media::VideoFrameFeedback&));
+  MOCK_METHOD1(ProvideFeedback, void(const media::VideoCaptureFeedback&));
 
  private:
   mojo::Receiver<viz::mojom::FrameSinkVideoConsumerFrameCallbacks> receiver_{
@@ -492,9 +492,9 @@ TEST_F(FrameSinkVideoCaptureDeviceTest, CapturesAndDeliversFrames) {
         MockFrameSinkVideoConsumerFrameCallbacks& callbacks =
             callbackses[frame_number - first_frame_number];
 
-        const media::VideoFrameFeedback fake_feedback =
-            media::VideoFrameFeedback(static_cast<double>(frame_number) /
-                                      kNumFramesToDeliver);
+        const media::VideoCaptureFeedback fake_feedback =
+            media::VideoCaptureFeedback(static_cast<double>(frame_number) /
+                                        kNumFramesToDeliver);
         EXPECT_CALL(callbacks, ProvideFeedback(fake_feedback));
         EXPECT_CALL(callbacks, Done());
         EXPECT_CALL(*receiver, OnBufferRetired(buffer_id));

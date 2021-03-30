@@ -869,7 +869,7 @@ void Session::SetTargetPlayoutDelay(base::TimeDelta playout_delay) {
     video_stream_->SetTargetPlayoutDelay(playout_delay);
 }
 
-void Session::ProcessFeedback(const media::VideoFrameFeedback& feedback) {
+void Session::ProcessFeedback(const media::VideoCaptureFeedback& feedback) {
   if (video_capture_client_) {
     video_capture_client_->ProcessFeedback(feedback);
   }
