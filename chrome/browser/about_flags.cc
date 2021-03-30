@@ -2064,6 +2064,12 @@ const FeatureEntry::FeatureVariation
          nullptr}};
 
 // Request Desktop Site on Tablet by default variations.
+const FeatureEntry::FeatureParam kRequestDesktopSiteForTablets100[] = {
+    {"screen_width_dp", "100"},
+    {"enabled", "true"}};
+const FeatureEntry::FeatureParam kRequestDesktopSiteForTablets600[] = {
+    {"screen_width_dp", "600"},
+    {"enabled", "true"}};
 const FeatureEntry::FeatureParam kRequestDesktopSiteForTablets768[] = {
     {"screen_width_dp", "768"},
     {"enabled", "true"}};
@@ -2080,7 +2086,11 @@ const FeatureEntry::FeatureParam kRequestDesktopSiteForTablets1920[] = {
     {"screen_width_dp", "1920"},
     {"enabled", "true"}};
 const FeatureEntry::FeatureVariation kRequestDesktopSiteForTabletsVariations[] =
-    {{"for 768dp+ screens", kRequestDesktopSiteForTablets768,
+    {{"for 100dp+ screens", kRequestDesktopSiteForTablets100,
+      base::size(kRequestDesktopSiteForTablets100), nullptr},
+     {"for 600dp+ screens", kRequestDesktopSiteForTablets600,
+      base::size(kRequestDesktopSiteForTablets600), nullptr},
+     {"for 768dp+ screens", kRequestDesktopSiteForTablets768,
       base::size(kRequestDesktopSiteForTablets768), nullptr},
      {"for 960dp+ screens", kRequestDesktopSiteForTablets960,
       base::size(kRequestDesktopSiteForTablets960), nullptr},
