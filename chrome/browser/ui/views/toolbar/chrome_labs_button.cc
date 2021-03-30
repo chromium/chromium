@@ -10,6 +10,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
@@ -19,10 +20,11 @@ ChromeLabsButton::ChromeLabsButton(Browser* browser,
                                         base::Unretained(this))),
       browser_(browser),
       model_(model) {
-  SetAccessibleName(l10n_util::GetStringUTF16(IDS_TOOLTIP_CHROMELABS_BUTTON));
+  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_CHROMELABS_BUTTON));
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_CHROMELABS_BUTTON));
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
+  GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kDialog);
 }
 
 ChromeLabsButton::~ChromeLabsButton() {

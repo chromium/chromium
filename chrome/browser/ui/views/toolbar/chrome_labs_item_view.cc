@@ -11,6 +11,7 @@
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/combobox_model.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -106,13 +107,17 @@ ChromeLabsItemView::ChromeLabsItemView(
                       DISTANCE_CONTROL_LIST_VERTICAL),
                   0)));
 
+  views::Label* experiment_name;
+  views::Label* experiment_description;
   AddChildView(views::Builder<views::Label>()
+                   .CopyAddressTo(&experiment_name)
                    .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
                    .SetText(lab.visible_name)
                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                    .Build());
   AddChildView(
       views::Builder<views::Label>()
+          .CopyAddressTo(&experiment_description)
           .SetText(lab.visible_description)
           .SetTextContext(ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
           .SetTextStyle(views::style::STYLE_SECONDARY)
@@ -129,6 +134,13 @@ ChromeLabsItemView::ChromeLabsItemView(
                           0)))
           .Build());
 
+  // It may cause confusion if screen readers read out all experiments and
+  // descriptions when the bubble first opens. Ignore for now and delay reading
+  // out experiment name and description until a user interacts with the
+  // combobox in the item view. See crbug.com/1145666 Accessibility review.
+  experiment_name->GetViewAccessibility().OverrideIsIgnored(true);
+  experiment_description->GetViewAccessibility().OverrideIsIgnored(true);
+
   AddChildView(
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -137,6 +149,9 @@ ChromeLabsItemView::ChromeLabsItemView(
                    .CopyAddressTo(&lab_state_combobox_)
                    .SetTooltipTextAndAccessibleName(l10n_util::GetStringFUTF16(
                        IDS_TOOLTIP_CHROMELABS_COMBOBOX, lab.visible_name))
+                   .SetAccessibleName(l10n_util::GetStringFUTF16(
+                       IDS_ACCNAME_CHROMELABS_COMBOBOX, lab.visible_name,
+                       lab.visible_description))
                    .SetOwnedModel(std::make_unique<LabsComboboxModel>(
                        lab, feature_entry_, default_index))
                    .SetCallback(base::BindRepeating(combobox_callback, this))

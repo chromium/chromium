@@ -5841,7 +5841,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Press to go back, context menu to see history
       </message>
       <message name="IDS_TOOLTIP_CHROMELABS_BUTTON" desc="The tooltip for the Chrome Labs button in the toolbar">
-        Experiments
+        Enable featured experiments
       </message>
       <message name="IDS_TOOLTIP_CHROMELABS_COMBOBOX" desc="The tooltip for the Chrome Labs combobox to select between experiment states">
         Select experiment state for <ph name="EXPERIMENT_NAME">$1<ex>Tab Scrolling</ex></ph>
@@ -5973,6 +5973,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_ACCNAME_BOOKMARK_FOLDER_BUTTON_ROLE_DESCRIPTION" desc="The accessible role description for bookmark folders.">
         Bookmark folder button
+      </message>
+      <message name="IDS_ACCNAME_CHROMELABS_BUTTON" desc="The accessible name for the Chrome Labs experiments button">
+        Experiments
+      </message>
+      <message name="IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_ADDED_BY_ENTERPRISE_POLICY" desc="The text read out by the screen reader when the Chrome Labs experiments button is added to the toolbar by an enterprise policy change.">
+        Enterprise policy changed. Experiments button added to toolbar. Click the button to open a dialog to enable experiments.
+      </message>
+      <message name="IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_REMOVED_BY_ENTERPRISE_POLICY" desc="The text read out by the screen reader when the Chrome Labs experiments button is removed from the toolbar by an enterprise policy change.">
+        Enterprise policy changed. Experiments button removed from toolbar.
+      </message>
+      <message name="IDS_ACCNAME_CHROMELABS_COMBOBOX" desc="The accessible name for the experiment's combobox to select between experiment states. ">
+        Select experiment state for the <ph name="EXPERIMENT_NAME">$1<ex>Tab Scrolling</ex></ph> experiment. Experiment description: <ph name="EXPERIMENT_DESCRIPTION">$2<ex>Enables tab strip to scroll left and right when full.</ex></ph>
       </message>
       <message name="IDS_ACCNAME_SEPARATOR" desc="The accessible name for a separator.">
         Separator

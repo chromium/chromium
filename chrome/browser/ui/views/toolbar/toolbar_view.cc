@@ -86,6 +86,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/native_theme/native_theme_aura.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
@@ -307,7 +308,11 @@ void ToolbarView::Init() {
           chrome_labs_prefs::kBrowserLabsEnabled,
           base::BindRepeating(&ToolbarView::OnChromeLabsPrefChanged,
                               base::Unretained(this)));
-      OnChromeLabsPrefChanged();
+      // Set the visibility for the button based on initial enterprise policy
+      // value. Only call OnChromeLabsPrefChanged if there is a change from the
+      // initial value.
+      chrome_labs_button_->SetVisible(profile_pref_service_->GetBoolean(
+          chrome_labs_prefs::kBrowserLabsEnabled));
     }
   }
 
@@ -920,6 +925,10 @@ views::View* ToolbarView::GetViewForDrop() {
 void ToolbarView::OnChromeLabsPrefChanged() {
   chrome_labs_button_->SetVisible(profile_pref_service_->GetBoolean(
       chrome_labs_prefs::kBrowserLabsEnabled));
+  GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+      chrome_labs_button_->GetVisible()
+          ? IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_ADDED_BY_ENTERPRISE_POLICY
+          : IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_REMOVED_BY_ENTERPRISE_POLICY));
 }
 
 void ToolbarView::LoadImages() {
