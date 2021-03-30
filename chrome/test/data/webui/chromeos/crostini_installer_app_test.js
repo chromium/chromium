@@ -354,7 +354,7 @@ suite('<crostini-installer-app>', () => {
     expectFalse(app.$$('#error-message').hidden);
     expectEquals(
         app.$$('#error-message').innerText,
-        'Error downloading the virtual machine. Please update your Chrome device and try again.');
+        'To finish setting up Linux, update Chrome OS and try again.');
     expectFalse(app.$$('#settings').hidden);
     expectEquals(app.$$('#settings').innerText, 'Open Settings');
   });

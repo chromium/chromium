@@ -4478,7 +4478,7 @@
     Chrome OS update required
   </message>
   <message name="IDS_CROSTINI_INSTALLER_NEED_UPDATE_ERROR" desc="Text shown in the Crostini installer dialog when the VM fails to install because the device must be updated first">
-    Error downloading the virtual machine. Please update your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> and try again.
+    To finish setting up Linux, update Chrome OS and try again.
   </message>
   <message name="IDS_CROSTINI_INSTALLER_START_CONCIERGE_ERROR" desc="Text shown in the Crostini installer dialog when the VM service fails to start">
     Error starting the virtual machine service. Please try again.
