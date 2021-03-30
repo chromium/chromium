@@ -14,15 +14,6 @@
 
 namespace spdy {
 
-template <typename KeyType>
-using SpdyHashImpl = std::hash<KeyType>;
-
-template <typename KeyType, typename ValueType, typename Hash>
-using SpdyHashMapImpl = std::unordered_map<KeyType, ValueType, Hash>;
-
-template <typename ElementType, typename Hasher, typename Eq>
-using SpdyHashSetImpl = std::unordered_set<ElementType, Hasher, Eq>;
-
 template <typename Key, typename Value, typename Hash, typename Eq>
 using SpdyLinkedHashMapImpl = quiche::SimpleLinkedHashMap<Key, Value, Hash, Eq>;
 

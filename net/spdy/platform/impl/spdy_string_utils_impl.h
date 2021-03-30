@@ -17,19 +17,6 @@
 
 namespace spdy {
 
-template <typename... Args>
-inline std::string SpdyStrCatImpl(const Args&... args) {
-  std::ostringstream oss;
-  int dummy[] = {1, (oss << args, 0)...};
-  static_cast<void>(dummy);
-  return oss.str();
-}
-
-template <typename... Args>
-inline void SpdyStrAppendImpl(std::string* output, Args... args) {
-  output->append(SpdyStrCatImpl(args...));
-}
-
 inline char SpdyHexDigitToIntImpl(char c) {
   return base::HexDigitToInt(c);
 }
@@ -45,27 +32,9 @@ inline std::string SpdyHexEncodeImpl(const char* bytes, size_t size) {
   return absl::BytesToHexString(absl::string_view(bytes, size));
 }
 
-inline std::string SpdyHexEncodeUInt32AndTrimImpl(uint32_t data) {
-  return base::StringPrintf("%x", data);
-}
-
 inline std::string SpdyHexDumpImpl(absl::string_view data) {
   return quiche::QuicheTextUtils::HexDump(data);
 }
-
-struct SpdyStringPieceCaseHashImpl {
-  size_t operator()(absl::string_view data) const {
-    std::string lower = absl::AsciiStrToLower(data);
-    absl::Hash<absl::string_view> hasher;
-    return hasher(lower);
-  }
-};
-
-struct SpdyStringPieceCaseEqImpl {
-  bool operator()(absl::string_view piece1, absl::string_view piece2) const {
-    return absl::EqualsIgnoreCase(piece1, piece2);
-  }
-};
 
 }  // namespace spdy
 

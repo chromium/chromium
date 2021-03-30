@@ -1030,8 +1030,6 @@ component("net") {
       "spdy/platform/impl/spdy_estimate_memory_usage_impl.h",
       "spdy/platform/impl/spdy_logging_impl.h",
       "spdy/platform/impl/spdy_macros_impl.h",
-      "spdy/platform/impl/spdy_mem_slice_impl.cc",
-      "spdy/platform/impl/spdy_mem_slice_impl.h",
       "spdy/platform/impl/spdy_string_utils_impl.cc",
       "spdy/platform/impl/spdy_string_utils_impl.h",
       "spdy/server_push_delegate.h",
