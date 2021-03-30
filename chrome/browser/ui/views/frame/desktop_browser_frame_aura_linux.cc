@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host_linux.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/native_browser_frame_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "ui/views/widget/widget.h"
@@ -76,4 +77,10 @@ void DesktopBrowserFrameAuraLinux::OnUseCustomChromeFrameChanged() {
                                       ? views::Widget::FrameType::kForceCustom
                                       : views::Widget::FrameType::kForceNative);
   browser_frame()->FrameTypeChanged();
+}
+
+NativeBrowserFrame* NativeBrowserFrameFactory::Create(
+    BrowserFrame* browser_frame,
+    BrowserView* browser_view) {
+  return new DesktopBrowserFrameAuraLinux(browser_frame, browser_view);
 }
