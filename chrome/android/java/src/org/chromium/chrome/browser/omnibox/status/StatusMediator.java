@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.status;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -548,56 +547,11 @@ public class StatusMediator implements PermissionDialogController.Observer {
         // If the current url text is a valid url, then swap the dse icon for a globe.
         if (!mUrlBarTextIsSearch) {
             resourceCallback.onResult(new StatusIconResource(R.drawable.ic_globe_24dp,
-                    getSecurityIconTintForSearchEngineIcon(R.drawable.ic_globe_24dp)));
-        } else if (mIsSearchEngineGoogle) {
-            if (mSearchEngineLogoUtils.shouldShowSearchLoupeEverywhere(isIncognito)) {
-                resourceCallback.onResult(new StatusIconResource(R.drawable.ic_search,
-                        getSecurityIconTintForSearchEngineIcon(R.drawable.ic_search)));
-            } else {
-                resourceCallback.onResult(
-                        new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0));
-            }
+                    ThemeUtils.getThemedToolbarIconTintRes(/* useLight= */ !mDarkTheme)));
         } else {
-            if (mSearchEngineLogoUtils.shouldShowSearchLoupeEverywhere(isIncognito)) {
-                resourceCallback.onResult(new StatusIconResource(R.drawable.ic_search,
-                        getSecurityIconTintForSearchEngineIcon(R.drawable.ic_search)));
-            } else {
-                getNonGoogleSearchEngineIconBitmap(
-                        statusIconResource -> { resourceCallback.onResult(statusIconResource); });
-            }
+            mSearchEngineLogoUtils.getSearchEngineLogo(mResources, mDarkTheme,
+                    mProfileSupplier.get(), mTemplateUrlServiceSupplier.get(), resourceCallback);
         }
-    }
-
-    /** @return The non-Google search engine icon {@link Bitmap}. */
-    private void getNonGoogleSearchEngineIconBitmap(final Callback<StatusIconResource> callback) {
-        mSearchEngineLogoUtils.getSearchEngineLogoFavicon(
-                mProfileSupplier.get(), mResources, (favicon) -> {
-                    if (favicon == null || mShouldCancelCustomFavicon) {
-                        callback.onResult(new StatusIconResource(R.drawable.ic_search,
-                                getSecurityIconTintForSearchEngineIcon(R.drawable.ic_search)));
-                        return;
-                    }
-
-                    callback.onResult(new StatusIconResource(mSearchEngineLogoUrl, favicon, 0));
-                }, mTemplateUrlServiceSupplier.get());
-    }
-
-    /**
-     * Get the icon tint for the given search engine icon resource.
-     * @param icon The icon resource for the search engine icon.
-     * @return The tint resource for the given parameters.
-     */
-    @VisibleForTesting
-    int getSecurityIconTintForSearchEngineIcon(int icon) {
-        int tint;
-        if (icon == 0 || icon == R.drawable.ic_logo_googleg_20dp) {
-            tint = 0;
-        } else {
-            tint = mDarkTheme ? R.color.default_icon_color_secondary_tint_list
-                              : ThemeUtils.getThemedToolbarIconTintRes(!mDarkTheme);
-        }
-
-        return tint;
     }
 
     /** Return the resource id for the accessibility description or 0 if none apply. */

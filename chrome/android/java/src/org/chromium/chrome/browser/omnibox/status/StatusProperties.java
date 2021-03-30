@@ -36,7 +36,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 public class StatusProperties {
     // TODO(wylieb): Investigate the case where we only want to swap the tint (if any).
     /** Encapsulates an icon and tint to allow atomic drawable updates for StatusView. */
-    static class StatusIconResource {
+    public static class StatusIconResource {
         private @DrawableRes Integer mIconRes;
         private @ColorRes int mTint;
         private String mIconIdentifier;
@@ -46,19 +46,19 @@ public class StatusProperties {
                 StatusView.IconTransitionType.CROSSFADE;
 
         /** Constructor for a custom drawable. */
-        StatusIconResource(Drawable drawable) {
+        public StatusIconResource(Drawable drawable) {
             mDrawable = drawable;
         }
 
         /** Constructor for a custom bitmap. */
-        StatusIconResource(String iconIdentifier, Bitmap bitmap, @ColorRes int tint) {
+        public StatusIconResource(String iconIdentifier, Bitmap bitmap, @ColorRes int tint) {
             mIconIdentifier = iconIdentifier;
             mBitmap = bitmap;
             mTint = tint;
         }
 
         /** Constructor for an Android resource. */
-        StatusIconResource(@DrawableRes int iconRes, @ColorRes int tint) {
+        public StatusIconResource(@DrawableRes int iconRes, @ColorRes int tint) {
             mIconRes = iconRes;
             mTint = tint;
         }

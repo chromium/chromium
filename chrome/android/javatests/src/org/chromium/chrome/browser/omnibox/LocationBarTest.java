@@ -15,12 +15,12 @@ import static junit.framework.Assert.assertFalse;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -192,14 +193,16 @@ public class LocationBarTest {
                     .when(mTemplateUrlService)
                     .getDefaultSearchEngineTemplateUrl();
 
-            // Return null to fallback to the search loupe behavior.
-            Answer bitmapAnswer = (invocation) -> {
-                ((Callback<Bitmap>) invocation.getArgument(2)).onResult(null);
+            Answer logoAnswer = (invocation) -> {
+                ((Callback<StatusIconResource>) invocation.getArgument(4))
+                        .onResult(new StatusIconResource(
+                                isGoogle ? R.drawable.ic_logo_googleg_20dp : R.drawable.ic_search,
+                                0));
                 return null;
             };
-            doAnswer(bitmapAnswer)
+            doAnswer(logoAnswer)
                     .when(mSearchEngineLogoUtils)
-                    .getSearchEngineLogoFavicon(any(), any(), any(), any());
+                    .getSearchEngineLogo(any(), anyBoolean(), any(), any(), any());
         });
     }
 

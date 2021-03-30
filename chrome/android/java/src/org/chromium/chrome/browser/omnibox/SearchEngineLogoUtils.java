@@ -10,6 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -20,7 +21,9 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -204,26 +207,42 @@ public class SearchEngineLogoUtils {
      * Get the search engine logo favicon. This can return a null bitmap under certain
      * circumstances, such as: no logo url found, network/cache error, etc.
      *
-     * @param profile The current profile.
      * @param resources Provides access to Android resources.
+     * @param inNightMode Whether the device is currently in night mode, used to tint icons.
+     * @param profile The current profile. When null, falls back to locally-provided icons.
+     * @param templateUrlService The current templateUrlService. When null, falls back to
+     *         locally-provided icons.
      * @param callback How the bitmap will be returned to the caller.
      */
-    public void getSearchEngineLogoFavicon(Profile profile, Resources resources,
-            Callback<Bitmap> callback, TemplateUrlService templateUrlService) {
+    public void getSearchEngineLogo(@NonNull Resources resources, boolean inNightMode,
+            @Nullable Profile profile, @Nullable TemplateUrlService templateUrlService,
+            @NonNull Callback<StatusIconResource> callback) {
+        // If either of the nullable dependencies are null, fallback to the search loupe. If
+        // templateUrlService is available and the default search engine is Google, serve that
+        // locally.
+        if (profile == null || templateUrlService == null) {
+            callback.onResult(getSearchLoupeResource(inNightMode));
+            return;
+        } else if (templateUrlService.isDefaultSearchEngineGoogle()) {
+            callback.onResult(new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0));
+            return;
+        }
+
+        // If all of the nullable dependencies are present and the search engine is non-Google,
+        // then go to the network to fetch the icon.
         recordEvent(Events.FETCH_NON_GOOGLE_LOGO_REQUEST);
         if (mFaviconHelper == null) mFaviconHelper = new FaviconHelper();
 
         String logoUrl = getSearchLogoUrl(templateUrlService);
         if (logoUrl == null) {
-            callback.onResult(null);
+            callback.onResult(getSearchLoupeResource(inNightMode));
             recordEvent(Events.FETCH_FAILED_NULL_URL);
             return;
         }
 
         // Return a cached copy if it's available.
-        if (sCachedComposedBackground != null
-                && sCachedComposedBackgroundLogoUrl.equals(getSearchLogoUrl(templateUrlService))) {
-            callback.onResult(sCachedComposedBackground);
+        if (sCachedComposedBackground != null && sCachedComposedBackgroundLogoUrl.equals(logoUrl)) {
+            callback.onResult(new StatusIconResource(logoUrl, sCachedComposedBackground, 0));
             recordEvent(Events.FETCH_SUCCESS_CACHE_HIT);
             return;
         }
@@ -232,7 +251,7 @@ public class SearchEngineLogoUtils {
         boolean willCallbackBeCalled = mFaviconHelper.getLocalFaviconImageForURL(
                 profile, logoUrl, logoSizePixels, (image, iconUrl) -> {
                     if (image == null) {
-                        callback.onResult(image);
+                        callback.onResult(getSearchLoupeResource(inNightMode));
                         recordEvent(Events.FETCH_FAILED_RETURNED_BITMAP_NULL);
                         return;
                     }
@@ -241,9 +260,16 @@ public class SearchEngineLogoUtils {
                     recordEvent(Events.FETCH_SUCCESS);
                 });
         if (!willCallbackBeCalled) {
-            callback.onResult(null);
+            callback.onResult(getSearchLoupeResource(inNightMode));
             recordEvent(Events.FETCH_FAILED_FAVICON_HELPER_ERROR);
         }
+    }
+
+    @VisibleForTesting
+    StatusIconResource getSearchLoupeResource(boolean inNightMode) {
+        return new StatusIconResource(R.drawable.ic_search,
+                inNightMode ? R.color.default_icon_color_secondary_tint_list
+                            : ThemeUtils.getThemedToolbarIconTintRes(/* useLight= */ true));
     }
 
     /**
@@ -259,8 +285,8 @@ public class SearchEngineLogoUtils {
      * @param resources Android resources object used to access dimensions.
      * @param callback The client callback to receive the processed logo.
      */
-    private void processReturnedLogo(
-            String logoUrl, Bitmap image, Resources resources, Callback<Bitmap> callback) {
+    private void processReturnedLogo(String logoUrl, Bitmap image, Resources resources,
+            Callback<StatusIconResource> callback) {
         // Scale the logo up to the desired size.
         int logoSizePixels = getSearchEngineLogoSizePixels(resources);
         Bitmap scaledIcon =
@@ -290,7 +316,7 @@ public class SearchEngineLogoUtils {
         sCachedComposedBackground = composedIcon;
         sCachedComposedBackgroundLogoUrl = logoUrl;
 
-        callback.onResult(sCachedComposedBackground);
+        callback.onResult(new StatusIconResource(logoUrl, sCachedComposedBackground, 0));
     }
 
     /**
