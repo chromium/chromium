@@ -443,6 +443,8 @@ Polymer({
    * Shows confirmation dialog for starting Demo mode
    */
   showDemoModeConfirmationDialog() {
+    // Ensure the ChromeVox hint dialog is closed.
+    this.closeChromeVoxHint_();
     this.$.demoModeConfirmationDialog.showDialog();
   },
 

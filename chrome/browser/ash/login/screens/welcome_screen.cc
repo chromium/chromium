@@ -87,9 +87,6 @@ constexpr const char kUserActionActivateRemoraRequisition[] =
 constexpr const char kUserActionEditDeviceRequisition[] =
     "editDeviceRequisition";
 
-constexpr base::TimeDelta kChromeVoxHintTimerDuration =
-    base::TimeDelta::FromSeconds(20);
-
 struct WelcomeScreenA11yUserAction {
   const char* name_;
   WelcomeScreen::A11yUserAction uma_name_;
@@ -362,17 +359,17 @@ void WelcomeScreen::ShowImpl() {
 
   demo_mode_detector_ = std::make_unique<DemoModeDetector>(
       base::DefaultTickClock::GetInstance(), this);
-  if (view_) {
+  chromevox_hint_detector_ = std::make_unique<ChromeVoxHintDetector>(
+      base::DefaultTickClock::GetInstance(), this);
+  if (view_)
     view_->Show();
-    StartChromeVoxHintTimer();
-  }
 }
 
 void WelcomeScreen::HideImpl() {
   if (view_)
     view_->Hide();
   demo_mode_detector_.reset();
-  CancelChromeVoxHintTimer();
+  CancelChromeVoxHintIdleDetection();
 }
 
 void WelcomeScreen::OnUserAction(const std::string& action_id) {
@@ -402,7 +399,7 @@ void WelcomeScreen::OnUserAction(const std::string& action_id) {
     return;
   }
   if (action_id == kUserActionCancelChromeVoxHint) {
-    CancelChromeVoxHintTimer();
+    CancelChromeVoxHintIdleDetection();
     return;
   }
 
@@ -512,7 +509,6 @@ void WelcomeScreen::InputMethodChanged(
 
 void WelcomeScreen::OnContinueButtonPressed() {
   demo_mode_detector_.reset();
-  CancelChromeVoxHintTimer();
   exit_callback_.Run(Result::NEXT);
 }
 
@@ -582,43 +578,21 @@ void WelcomeScreen::NotifyLocaleChange() {
   ash::LocaleUpdateController::Get()->OnLocaleChanged();
 }
 
-void WelcomeScreen::StartChromeVoxHintTimer() {
-  if (!features::IsOobeChromeVoxHintEnabled() ||
-      chromeos::switches::IsOOBEChromeVoxHintTimerDisabledForTesting()) {
-    return;
-  }
-
-  // This is done so that developers and testers don't repeatedly receive
-  // the hint when flashing.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSystemDevMode) &&
-      !chromeos::switches::IsOOBEChromeVoxHintEnabledForDevMode()) {
-    return;
-  }
-
-  if (chromevox_hint_timer_activated_)
-    return;
-
-  // This timer should only be started once.
-  chromevox_hint_timer_activated_ = true;
-  chromevox_hint_timer_.Start(FROM_HERE, kChromeVoxHintTimerDuration, this,
-                              &WelcomeScreen::GiveChromeVoxHint);
+void WelcomeScreen::CancelChromeVoxHintIdleDetection() {
+  chromevox_hint_detector_.reset();
 }
 
-void WelcomeScreen::CancelChromeVoxHintTimer() {
-  chromevox_hint_timer_.Stop();
-  chromevox_hint_timer_cancelled_for_testing_ = true;
-}
-
-void WelcomeScreen::GiveChromeVoxHint() {
+void WelcomeScreen::OnShouldGiveChromeVoxHint() {
   if (is_hidden())
     return;
-  if (view_)
+  if (view_) {
     view_->GiveChromeVoxHint();
+    chromevox_hint_detector_.reset();
+  }
 }
 
-void WelcomeScreen::GiveChromeVoxHintForTesting() {
-  GiveChromeVoxHint();
+ChromeVoxHintDetector* WelcomeScreen::GetChromeVoxHintDetectorForTesting() {
+  return chromevox_hint_detector_.get();
 }
 
 }  // namespace chromeos
