@@ -362,7 +362,8 @@ void OriginTrialContext::AddForceEnabledTrials(
   for (const auto& trial_name : trial_names) {
     DCHECK(origin_trials::IsTrialValid(trial_name));
     is_valid |=
-        EnableTrialFromName(trial_name, /*expiry_time=*/base::Time::Max());
+        EnableTrialFromName(trial_name, /*expiry_time=*/base::Time::Max()) ==
+        OriginTrialStatus::kEnabled;
   }
 
   if (is_valid) {
@@ -396,11 +397,12 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   return true;
 }
 
-bool OriginTrialContext::EnableTrialFromName(const String& trial_name,
-                                             base::Time expiry_time) {
+OriginTrialStatus OriginTrialContext::EnableTrialFromName(
+    const String& trial_name,
+    base::Time expiry_time) {
   if (!CanEnableTrialFromName(trial_name)) {
     DVLOG(1) << "EnableTrialFromName: cannot enable trial " << trial_name;
-    return false;
+    return OriginTrialStatus::kTrialNotAllowed;
   }
 
   bool did_enable_feature = false;
@@ -429,7 +431,8 @@ bool OriginTrialContext::EnableTrialFromName(const String& trial_name,
         feature_expiry_times_.Set(implied_feature, expiry_time);
     }
   }
-  return did_enable_feature;
+  return did_enable_feature ? OriginTrialStatus::kEnabled
+                            : OriginTrialStatus::kOSNotSupported;
 }
 
 OriginTrialTokenStatus OriginTrialContext::ValidateTokenResult(
@@ -471,7 +474,7 @@ bool OriginTrialContext::EnableTrialFromToken(
     bool is_script_origin_secure,
     const String& token) {
   DCHECK(!token.IsEmpty());
-  bool valid = false;
+  OriginTrialStatus feature_status = OriginTrialStatus::kValidTokenNotProvided;
   StringUTF8Adaptor token_string(token);
   url::Origin script_url_origin;
   if (script_origin)
@@ -490,12 +493,14 @@ bool OriginTrialContext::EnableTrialFromToken(
       status = ValidateTokenResult(trial_name, is_origin_secure,
                                    is_script_origin_secure,
                                    parsed_token.is_third_party());
-      if (status == OriginTrialTokenStatus::kSuccess)
-        valid = EnableTrialFromName(trial_name, parsed_token.expiry_time());
+      if (status == OriginTrialTokenStatus::kSuccess) {
+        feature_status =
+            EnableTrialFromName(trial_name, parsed_token.expiry_time());
+      }
     }
   }
   RecordTokenValidationResultHistogram(status);
-  return valid;
+  return feature_status == OriginTrialStatus::kEnabled;
 }
 
 void OriginTrialContext::Trace(Visitor* visitor) const {

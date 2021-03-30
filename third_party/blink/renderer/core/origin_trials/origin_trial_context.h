@@ -20,6 +20,13 @@ class ExecutionContext;
 class ScriptState;
 enum class OriginTrialTokenStatus;
 
+enum class OriginTrialStatus {
+  kEnabled = 0,
+  kValidTokenNotProvided = 1,
+  kOSNotSupported = 2,
+  kTrialNotAllowed = 3,
+};
+
 // The Origin Trials Framework provides limited access to experimental features,
 // on a per-origin basis (origin trials). This class provides the implementation
 // to check if the experimental feature should be enabled for the current
@@ -139,7 +146,8 @@ class CORE_EXPORT OriginTrialContext final
 
   // Enable features by trial name. Returns true or false to indicate whether
   // some features are enabled as the result.
-  bool EnableTrialFromName(const String& trial_name, base::Time expiry_time);
+  OriginTrialStatus EnableTrialFromName(const String& trial_name,
+                                        base::Time expiry_time);
 
   // Validate the trial token. If valid, the trial named in the token is
   // added to the list of enabled trials. Returns true or false to indicate if
