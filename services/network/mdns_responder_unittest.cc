@@ -38,6 +38,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::AnyNumber;
+using ::testing::AtLeast;
 using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -923,9 +924,10 @@ TEST_F(MdnsResponderTest, ResponderHostDoesCleanUpAfterMojoConnectionError) {
 }
 
 // Test that the host generates a Mojo connection error when no socket handler
-// is successfully started.
+// is successfully started, and subsequent retry attempts are throttled.
 TEST_F(MdnsResponderTest, ClosesBindingWhenNoSocketHanlderStarted) {
-  base::HistogramTester tester;
+  // Expect only one attempt to create sockets before start throttling prevents
+  // further attempts.
   EXPECT_CALL(failing_socket_factory_, CreateSockets(_)).WillOnce(Return());
   Reset(true /* use_failing_socket_factory */);
   RunUntilNoTasksRemain();
@@ -933,11 +935,54 @@ TEST_F(MdnsResponderTest, ClosesBindingWhenNoSocketHanlderStarted) {
   EXPECT_FALSE(client_[0].is_bound());
   EXPECT_FALSE(client_[1].is_bound());
 
-  tester.ExpectBucketCount(kServiceErrorHistogram,
-                           ServiceError::kFailToStartManager, 1);
-  tester.ExpectBucketCount(kServiceErrorHistogram,
-                           ServiceError::kFailToCreateResponder, 2);
-  tester.ExpectTotalCount(kServiceErrorHistogram, 3);
+  // Little extra fudge around throttle delays as it is not essential for it to
+  // be precise, and don't need the test to be too restrictive.
+  const base::TimeDelta kThrottleFudge = base::TimeDelta::FromMilliseconds(2);
+
+  // Expect socket creation to not be attempted again too soon.
+  EXPECT_CALL(failing_socket_factory_, CreateSockets(_)).Times(0);
+  RunFor(MdnsResponderManager::kManagerStartThrottleDelay - kThrottleFudge);
+  CreateMdnsResponders();
+  RunUntilNoTasksRemain();
+  EXPECT_FALSE(client_[0].is_bound());
+  EXPECT_FALSE(client_[1].is_bound());
+
+  // Expect no change for subsequent responder creation attempts if socket
+  // creation still fails.
+  EXPECT_CALL(failing_socket_factory_, CreateSockets(_)).WillOnce(Return());
+  RunFor(2 * kThrottleFudge);
+  CreateMdnsResponders();
+  RunUntilNoTasksRemain();
+  EXPECT_FALSE(client_[0].is_bound());
+  EXPECT_FALSE(client_[1].is_bound());
+
+  // Expect socket creation to not be attempted again too soon.
+  EXPECT_CALL(failing_socket_factory_, CreateSockets(_)).Times(0);
+  RunFor(MdnsResponderManager::kManagerStartThrottleDelay - kThrottleFudge);
+  CreateMdnsResponders();
+  RunUntilNoTasksRemain();
+  EXPECT_FALSE(client_[0].is_bound());
+  EXPECT_FALSE(client_[1].is_bound());
+
+  // Simulate socket creation fixing itself, and expect responder creation
+  // should be able to succeed through retry.
+  EXPECT_CALL(failing_socket_factory_, CreateSockets(_))
+      .WillOnce(
+          Invoke(&socket_factory_, &net::MockMDnsSocketFactory::CreateSockets));
+  RunFor(2 * kThrottleFudge);
+  CreateMdnsResponders();
+  RunUntilNoTasksRemain();
+  EXPECT_TRUE(client_[0].is_bound());
+  EXPECT_TRUE(client_[1].is_bound());
+
+  // After success, new responders can be created without repeating socket
+  // creation.
+  EXPECT_CALL(failing_socket_factory_, CreateSockets(_)).Times(0);
+  RunFor(MdnsResponderManager::kManagerStartThrottleDelay + kThrottleFudge);
+  mojo::Remote<mojom::MdnsResponder> responder;
+  host_manager_->CreateMdnsResponder(responder.BindNewPipeAndPassReceiver());
+  RunUntilNoTasksRemain();
+  EXPECT_TRUE(responder.is_bound());
 }
 
 // Test that an announcement is retried after send failure.

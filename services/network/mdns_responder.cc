@@ -24,6 +24,7 @@
 #include "base/sys_byteorder.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/address_family.h"
 #include "net/base/io_buffer.h"
@@ -811,6 +812,9 @@ void MdnsResponderManager::SocketHandler::ResponseScheduler::
 MdnsResponseSendOption::MdnsResponseSendOption() = default;
 MdnsResponseSendOption::~MdnsResponseSendOption() = default;
 
+// static
+constexpr base::TimeDelta MdnsResponderManager::kManagerStartThrottleDelay;
+
 MdnsResponderManager::MdnsResponderManager() : MdnsResponderManager(nullptr) {}
 
 MdnsResponderManager::MdnsResponderManager(
@@ -821,7 +825,7 @@ MdnsResponderManager::MdnsResponderManager(
     owned_socket_factory_ = net::MDnsSocketFactory::CreateDefault();
     socket_factory_ = owned_socket_factory_.get();
   }
-  Start();
+  StartIfNeeded();
 }
 
 MdnsResponderManager::~MdnsResponderManager() {
@@ -835,9 +839,24 @@ MdnsResponderManager::~MdnsResponderManager() {
   responders_.clear();
 }
 
-void MdnsResponderManager::Start() {
+void MdnsResponderManager::StartIfNeeded() {
+  if (start_result_ == SocketHandlerStartResult::ALL_SUCCESS ||
+      start_result_ == SocketHandlerStartResult::PARTIAL_SUCCESS) {
+    // Start not needed.
+    return;
+  }
+
+  if (!throttled_start_end_.is_null() &&
+      tick_clock_->NowTicks() < throttled_start_end_) {
+    // Attempts are throttled. Noop for now.
+    DCHECK(start_result_ == SocketHandlerStartResult::ALL_FAILURE);
+    return;
+  }
+  throttled_start_end_ = base::TimeTicks();
+
   VLOG(1) << "Starting mDNS responder manager.";
-  DCHECK(start_result_ == SocketHandlerStartResult::UNSPECIFIED);
+  DCHECK(start_result_ == SocketHandlerStartResult::UNSPECIFIED ||
+         start_result_ == SocketHandlerStartResult::ALL_FAILURE);
   DCHECK(socket_handler_by_id_.empty());
   std::vector<std::unique_ptr<net::DatagramServerSocket>> sockets;
   // Create and return only bound sockets.
@@ -867,6 +886,7 @@ void MdnsResponderManager::Start() {
   size_t num_started_socket_handlers = socket_handler_by_id_.size();
   if (socket_handler_by_id_.empty()) {
     start_result_ = SocketHandlerStartResult::ALL_FAILURE;
+    throttled_start_end_ = tick_clock_->NowTicks() + kManagerStartThrottleDelay;
     LOG(ERROR) << "mDNS responder manager failed to start.";
     ReportServiceError(MdnsResponderServiceError::kFailToStartManager);
     return;
@@ -882,6 +902,7 @@ void MdnsResponderManager::Start() {
 
 void MdnsResponderManager::CreateMdnsResponder(
     mojo::PendingReceiver<mojom::MdnsResponder> receiver) {
+  StartIfNeeded();
   if (start_result_ == SocketHandlerStartResult::UNSPECIFIED ||
       start_result_ == SocketHandlerStartResult::ALL_FAILURE) {
     LOG(ERROR) << "The mDNS responder manager is not started yet.";
@@ -925,6 +946,7 @@ void MdnsResponderManager::SetNameGeneratorForTesting(
 
 void MdnsResponderManager::SetTickClockForTesting(
     const base::TickClock* tick_clock) {
+  tick_clock_ = tick_clock;
   for (auto& id_handler_pair : socket_handler_by_id_) {
     id_handler_pair.second->SetTickClockForTesting(tick_clock);
   }
@@ -1000,7 +1022,8 @@ void MdnsResponderManager::OnSocketHandlerReadError(uint16_t socket_handler_id,
         << "All socket handlers failed. Restarting the mDNS responder manager.";
     ReportServiceError(MdnsResponderServiceError::kFatalSocketHandlerError);
     start_result_ = MdnsResponderManager::SocketHandlerStartResult::UNSPECIFIED;
-    Start();
+    DCHECK(throttled_start_end_.is_null());
+    StartIfNeeded();
   }
 }
 

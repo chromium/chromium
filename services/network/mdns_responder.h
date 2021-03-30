@@ -16,15 +16,13 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_response.h"
 #include "services/network/public/mojom/mdns_responder.mojom.h"
-
-namespace base {
-class TickClock;
-}  // namespace base
 
 namespace net {
 class IOBufferWithSize;
@@ -140,6 +138,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) MdnsResponderManager {
     kMaxValue = kConflictingNameResolution,
   };
 
+  // Delay between throttled attempts to start the `MdnsResponderManager`.
+  constexpr static base::TimeDelta kManagerStartThrottleDelay =
+      base::TimeDelta::FromSeconds(1);
+
   MdnsResponderManager();
   explicit MdnsResponderManager(net::MDnsSocketFactory* socket_factory);
   ~MdnsResponderManager();
@@ -219,8 +221,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) MdnsResponderManager {
   // net::MdnsConnection::SocketHandler.
   class SocketHandler;
 
-  // Initializes socket handlers and sets |start_result_|;
-  void Start();
+  // Initializes socket handlers and sets `start_result_`. Safe to call multiple
+  // times after success or failure (and will noop after success). As a
+  // protection against spammy network usage this will also noop if called too
+  // soon after the last failure.
+  void StartIfNeeded();
   // Dispatches a parsed query from a socket handler to each responder instance.
   void OnMdnsQueryReceived(const net::DnsQuery& query,
                            uint16_t recv_socket_handler_id);
@@ -252,6 +257,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) MdnsResponderManager {
 
   std::set<std::unique_ptr<MdnsResponder>, base::UniquePtrComparator>
       responders_;
+
+  const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
+
+  // If not `base::TimeTicks()`, represents the end of the throttling period for
+  // calls to `StartIfNeeded()`.
+  base::TimeTicks throttled_start_end_;
 
   base::WeakPtrFactory<MdnsResponderManager> weak_factory_{this};
 
