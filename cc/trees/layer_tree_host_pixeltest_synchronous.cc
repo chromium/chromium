@@ -56,6 +56,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(viz::GetGpuRendererTypes()),
                          ::testing::PrintToStringParamName());
 
+// viz::GetGpuRendererTypes() can return an empty list on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    LayerTreeHostSynchronousPixelTest);
+
 TEST_P(LayerTreeHostSynchronousPixelTest, OneContentLayerZeroCopy) {
   set_raster_type(TestRasterType::kZeroCopy);
   DoContentLayerTest();
