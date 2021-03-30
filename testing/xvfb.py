@@ -344,12 +344,10 @@ def _get_display_from_weston(weston_proc_pid):
   function. See the bug for further details.
   """
 
-  # Try 10 times as it is not known when Weston spawn child desktop shell
-  # process.
-  # TODO(crbug.com/1189400): Decrease this back to a lower number once we
-  # determine what a realistic maximum time is for Weston to start.
-  for i in range(100):
-    print('Attempt number %d checking for Weston process display' % i)
+  # Try 100 times as it is not known when Weston spawn child desktop shell
+  # process. The most seen so far is ~50 checks/~2.5 seconds, but startup
+  # is usually almost instantaneous.
+  for _ in range(100):
     # gives weston time to start or fail.
     time.sleep(.05)
     # Take the parent process.
