@@ -39,6 +39,7 @@ content::WebUIDataSource* CreateAndSetupWebUIDataSource(Profile* profile) {
   source->AddString("relatedTabGroupsAndBookmarksSectionHeader",
                     u"From tab groups and bookmarks");
   source->AddString("tabGroupTileCaption", u"Recent tab group");
+  source->AddString("relatedSearchesSectionHeader", u"Try searching for");
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kMemoriesResources, kMemoriesResourcesSize),

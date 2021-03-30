@@ -44,6 +44,7 @@ js_library("memory_card") {
     ":memory_tile",
     ":page_favicon",
     ":page_thumbnail",
+    ":search_query",
     ":top_visit",
     ":utils",
     "//components/memories/core:mojo_bindings_webui_js",
@@ -75,6 +76,15 @@ js_library("page_thumbnail") {
     "//mojo/public/mojom/base:base_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//url/mojom:url_mojom_origin_webui_js",
+  ]
+}
+
+js_library("search_query") {
+  deps = [
+    ":utils",
+    "//components/memories/core:mojo_bindings_webui_js",
+    "//mojo/public/mojom/base:base_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
@@ -113,6 +123,7 @@ html_to_js("web_components_local") {
     "memory_tile.js",
     "page_favicon.js",
     "page_thumbnail.js",
+    "search_query.js",
     "shared_vars.js",
     "top_visit.js",
     "visit_row.js",
@@ -151,6 +162,7 @@ preprocess_if_expr("preprocess_gen") {
     "memory_tile.js",
     "page_favicon.js",
     "page_thumbnail.js",
+    "search_query.js",
     "shared_vars.js",
     "top_visit.js",
     "visit_row.js",
