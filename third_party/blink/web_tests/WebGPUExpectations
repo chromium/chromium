@@ -76,12 +76,12 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureTo
 
 # Fails on Windows for non-zero first/firstInstance.
 # Parameters listed here are also needed for test splits. Can't mark draw:* as Failure but split via draw:arguments:first=0;*
-crbug.com/dawn/720 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:first=0;count=0;* [ Failure ]
-crbug.com/dawn/720 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:first=0;count=3;* [ Failure ]
-crbug.com/dawn/720 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:first=0;count=6;* [ Failure ]
-crbug.com/dawn/720 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:first=3;count=0;* [ Failure ]
-crbug.com/dawn/720 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:first=3;count=3;* [ Failure ]
-crbug.com/dawn/720 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:first=3;count=6;* [ Failure ]
+crbug.com/dawn/720 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:first=0;count=0;* [ Failure Slow ]
+crbug.com/dawn/720 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:first=0;count=3;* [ Failure Slow ]
+crbug.com/dawn/720 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:first=0;count=6;* [ Failure Slow ]
+crbug.com/dawn/720 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:first=3;count=0;* [ Failure Slow ]
+crbug.com/dawn/720 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:first=3;count=3;* [ Failure Slow ]
+crbug.com/dawn/720 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:first=3;count=6;* [ Failure Slow ]
 
 # indirect=true;base_vertex=9;* fails on Mac Intel.
 # Parameters listed here are also needed for test splits. Can't mark draw:* as Failure but split via draw:arguments:first=0;*
