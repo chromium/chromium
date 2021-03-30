@@ -42,7 +42,9 @@ cr-link-row {
     <template id="mainMenuButtonTemplate" is="dom-repeat"
         items="[[ buttonData_ ]]" as="data">
       <cr-link-row class="hr" on-click="onButtonClicked_"
-          label="[[ getMsg(data.title) ]]"></cr-link-row>
+          label="[[ getMsg(data.title) ]]"
+          hidden$="[[ shouldHideButton_(data.medium, medium) ]]">
+      </cr-link-row>
     </template>
   </div>
 </div>

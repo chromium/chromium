@@ -54,7 +54,8 @@ export let LessonData;
  * Defines a type for data used to generate main menu buttons.
  * @typedef {{
  *    title: string,
- *    curriculum: Curriculum
+ *    curriculum: Curriculum,
+ *    medium: InteractionMedium,
  * }}
  */
 export let MainMenuButtonData;

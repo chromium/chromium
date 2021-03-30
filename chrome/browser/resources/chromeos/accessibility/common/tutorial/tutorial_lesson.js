@@ -14,6 +14,8 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {InteractionMedium} from './constants.js';
 import {Localization} from './localization.js';
 
 export const TutorialLesson = Polymer({
@@ -284,5 +286,19 @@ export const TutorialLesson = Polymer({
       const msgId = element.getAttribute('msgid');
       element.textContent = this.getMsg(msgId);
     }
-  }
+  },
+
+  /**
+   * @private
+   * @return {string}
+   */
+  computeTitleDescription_() {
+    if (this.medium === InteractionMedium.KEYBOARD) {
+      return this.getMsg('tutorial_lesson_title_description');
+    }
+
+    // Automatically return the description for touch, since the only supported
+    // interaction mediums are touch and keyboard.
+    return this.getMsg('tutorial_touch_lesson_title_description');
+  },
 });

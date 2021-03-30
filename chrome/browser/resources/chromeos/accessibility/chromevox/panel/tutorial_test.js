@@ -685,16 +685,50 @@ TEST_F('ChromeVoxTutorialTest', 'StartStopInteractiveMode', function() {
 // Tests that gestures can be used in the tutorial to navigate.
 TEST_F('ChromeVoxTutorialTest', 'Gestures', function() {
   const mockFeedback = this.createMockFeedback();
+  const GestureType = chrome.accessibilityPrivate.Gesture;
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
     const tutorial = this.getTutorial();
     mockFeedback.expectSpeech('ChromeVox tutorial')
-        .call(this.doGesture('swipeRight1'))
+        .call(this.doGesture(GestureType.SWIPE_RIGHT1))
         .expectSpeech('Quick orientation', 'Link')
-        .call(this.doGesture('swipeRight1'))
+        .call(this.doGesture(GestureType.SWIPE_RIGHT1))
         .expectSpeech('Essential keys', 'Link')
-        .call(this.doGesture('swipeLeft1'))
+        .call(this.doGesture(GestureType.SWIPE_LEFT1))
         .expectSpeech('Quick orientation', 'Link')
+        .replay();
+  });
+});
+
+// Tests that touch orientation loads properly. Tests string content, but does
+// not test interactivity of lessons.
+TEST_F('ChromeVoxTutorialTest', 'TouchOrientation', function() {
+  const mockFeedback = this.createMockFeedback();
+  const GestureType = chrome.accessibilityPrivate.Gesture;
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getTutorial();
+    mockFeedback.expectSpeech('ChromeVox tutorial')
+        .call(() => {
+          tutorial.curriculum = 'touch_orientation';
+          tutorial.medium = 'touch';
+          tutorial.showLesson_(0);
+          this.assertActiveLessonIndex(0);
+          this.assertActiveScreen('lesson');
+        })
+        .expectSpeech('ChromeVox touch tutorial')
+        .call(this.doGesture(GestureType.SWIPE_RIGHT1))
+        .expectSpeech(/Welcome to the ChromeVox tutorial/)
+        .call(() => {
+          tutorial.showNextLesson();
+        })
+        .expectSpeech('Activate an item')
+        .call(this.doGesture(GestureType.SWIPE_RIGHT1))
+        .expectSpeech(/To continue, double-tap now/)
+        .call(() => {
+          tutorial.showNextLesson();
+        })
+        .expectSpeech('Move to the next or previous item')
         .replay();
   });
 });

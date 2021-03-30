@@ -66,26 +66,37 @@ Polymer({
         {
           title: 'tutorial_quick_orientation_title',
           curriculum: Curriculum.QUICK_ORIENTATION,
+          medium: InteractionMedium.KEYBOARD,
         },
         {
           title: 'tutorial_essential_keys_title',
           curriculum: Curriculum.ESSENTIAL_KEYS,
+          medium: InteractionMedium.KEYBOARD,
         },
         {
           title: 'tutorial_navigation_title',
           curriculum: Curriculum.NAVIGATION,
+          medium: InteractionMedium.KEYBOARD,
         },
         {
           title: 'tutorial_command_references_title',
           curriculum: Curriculum.COMMAND_REFERENCES,
+          medium: InteractionMedium.KEYBOARD,
         },
         {
           title: 'tutorial_sounds_and_settings_title',
           curriculum: Curriculum.SOUNDS_AND_SETTINGS,
+          medium: InteractionMedium.KEYBOARD,
         },
         {
           title: 'tutorial_resources_title',
           curriculum: Curriculum.RESOURCES,
+          medium: InteractionMedium.KEYBOARD,
+        },
+        {
+          title: 'tutorial_touch_orientation_title',
+          curriculum: Curriculum.TOUCH_ORIENTATION,
+          medium: InteractionMedium.TOUCH,
         }
       ]
     },
@@ -683,4 +694,32 @@ Polymer({
       learnMoreLesson.contentDiv.appendChild(br);
     }
   },
+
+  /**
+   * @private
+   * @return {string}
+   */
+  computeMainMenuHeaderDescription_() {
+    if (this.medium === InteractionMedium.KEYBOARD) {
+      return 'tutorial_main_menu_header_description';
+    }
+
+    // Automatically return the description for touch, since the only supported
+    // interaction mediums are touch and keyboard.
+    return 'tutorial_touch_main_menu_header_description';
+  },
+
+  /**
+   * @private
+   * @return {string}
+   */
+  computeLessonMenuHeaderDescription_() {
+    if (this.medium === InteractionMedium.KEYBOARD) {
+      return 'tutorial_lesson_menu_header_description';
+    }
+
+    // Automatically return the description for touch, since the only supported
+    // interaction mediums are touch and keyboard.
+    return 'tutorial_touch_lesson_menu_header_description';
+  }
 });

@@ -20,16 +20,17 @@
 
 <main-menu
     header_="tutorial_main_menu_header"
-    header-description_="tutorial_main_menu_header_description"
+    header-description_="[[ computeMainMenuHeaderDescription_() ]]"
     button-data_="[[ mainMenuButtonData ]]"
     active-screen="[[ activeScreen ]]"
+    medium="[[ medium ]]"
     on-button-clicked="onMainMenuButtonClicked_">
 </main-menu>
 
 <lesson-menu
     curriculum="[[ curriculum ]]"
     num-lessons="[[ numLessons ]]"
-    header-description_="tutorial_lesson_menu_header_description"
+    header-description_="[[ computeLessonMenuHeaderDescription_() ]]"
     button-data_="[[ computeLessonMenuButtonData_() ]]"
     active-screen="[[ activeScreen ]]"
     on-button-clicked="onLessonMenuButtonClicked_">

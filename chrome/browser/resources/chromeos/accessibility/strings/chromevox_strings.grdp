@@ -3099,6 +3099,9 @@
   <message desc="The title displayed for the resources lesson set." name="IDS_CHROMEVOX_TUTORIAL_RESOURCES_TITLE">
     Resources
   </message>
+  <message desc="The title displayed for the touch orientation lesson set." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_TITLE">
+    Touch orientation
+  </message>
   <message desc="The label for the button that restarts the quick orientation in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_RESTART_QUICK_ORIENTATION_BUTTON">
     Restart quick orientation
   </message>
@@ -3126,11 +3129,20 @@
   <message desc="Spoken to give supplemental information when focusing the main menu header in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_MAIN_MENU_HEADER_DESCRIPTION" is_accessibility_with_no_ui="true">
     Press Search + Right Arrow, or Search + Left Arrow to browse topics
   </message>
+  <message desc="Spoken to give supplemental information when focusing the main menu header in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_MAIN_MENU_HEADER_DESCRIPTION" is_accessibility_with_no_ui="true">
+    Swipe left or right with one finger to browse topics
+  </message>
   <message desc="Spoken to give supplemental information when focusing the lesson menu header in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_LESSON_MENU_HEADER_DESCRIPTION" is_accessibility_with_no_ui="true">
     Press Search + Right Arrow, or Search + Left Arrow to browse lessons for this topic
   </message>
+  <message desc="Spoken to give supplemental information when focusing the lesson menu header in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_LESSON_MENU_HEADER_DESCRIPTION" is_accessibility_with_no_ui="true">
+    Swipe left or right with one finger to browse lessons for this topic
+  </message>
   <message desc="Spoken to give supplemental information when focusing lesson titles in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_LESSON_TITLE_DESCRIPTION" is_accessibility_with_no_ui="true">
     Press Search + Right Arrow, or Search + Left Arrow to navigate this lesson
+  </message>
+  <message desc="Spoken to give supplemental information when focusing the main menu header in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_LESSON_TITLE_DESCRIPTION" is_accessibility_with_no_ui="true">
+    Swipe left or right with one finger to navigate this lesson
   </message>
   <message desc="Text content for the 'Welcome to ChromeVox!' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_INTRO_TEXT">
     Welcome to the ChromeVox tutorial. To exit this tutorial at any time, press the Escape key on the top left corner of the keyboard. To turn off ChromeVox, hold Control and Alt, and press Z. When you're ready, use the spacebar to move to the next lesson.

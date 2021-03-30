@@ -14,7 +14,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Curriculum, MainMenuButtonData, Screen} from './constants.js';
+import {Curriculum, InteractionMedium, MainMenuButtonData, Screen} from './constants.js';
 import {Localization} from './localization.js';
 
 export const MainMenu = Polymer({
@@ -51,6 +51,16 @@ export const MainMenu = Polymer({
    */
   shouldHideMainMenu(activeScreen) {
     return activeScreen !== Screen.MAIN_MENU;
+  },
+
+  /**
+   * @param {InteractionMedium} buttonMedium
+   * @param {InteractionMedium} activeMedium
+   * @return {boolean}
+   * @private
+   */
+  shouldHideButton_(buttonMedium, activeMedium) {
+    return buttonMedium !== activeMedium;
   },
 
   /**
