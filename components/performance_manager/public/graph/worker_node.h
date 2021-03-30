@@ -127,10 +127,14 @@ class WorkerNodeObserver {
 
   // Node lifetime notifications.
 
-  // Called when a |worker_node| is added to the graph.
+  // Called when a |worker_node| is added to the graph. Observers must not make
+  // any property changes or cause re-entrant notifications during the scope of
+  // this call. Instead, make property changes via a separate posted task.
   virtual void OnWorkerNodeAdded(const WorkerNode* worker_node) = 0;
 
-  // Called before a |worker_node| is removed from the graph.
+  // Called before a |worker_node| is removed from the graph. Observers must not
+  // make any property changes or cause re-entrant notifications during the
+  // scope of this call.
   virtual void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) = 0;
 
   // Notifications of property changes.

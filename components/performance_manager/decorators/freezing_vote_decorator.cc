@@ -30,6 +30,7 @@ void FreezingVoteDecorator::OnVoteSubmitted(
     freezing::FreezingVoterId voter_id,
     const PageNode* page_node,
     const freezing::FreezingVote& vote) {
+  DCHECK_EQ(NodeState::kActiveInGraph, page_node->GetNodeState());
   PageNodeImpl::FromNode(page_node)->set_freezing_vote(vote);
 }
 
@@ -37,12 +38,17 @@ void FreezingVoteDecorator::OnVoteChanged(
     freezing::FreezingVoterId voter_id,
     const PageNode* page_node,
     const freezing::FreezingVote& new_vote) {
+  DCHECK_EQ(NodeState::kActiveInGraph, page_node->GetNodeState());
   PageNodeImpl::FromNode(page_node)->set_freezing_vote(new_vote);
 }
 
 void FreezingVoteDecorator::OnVoteInvalidated(
     freezing::FreezingVoterId voter_id,
     const PageNode* page_node) {
+  // Don't change votes for pages that are being removed from the graph. This
+  // causes recursive notifications and useless policy dispatches.
+  if (page_node->GetNodeState() == NodeState::kLeavingGraph)
+    return;
   PageNodeImpl::FromNode(page_node)->set_freezing_vote(base::nullopt);
 }
 

@@ -40,6 +40,7 @@ class DummyNode : public NodeBase, public Node {
 
   // Node implementation:
   Graph* GetGraph() const override { return graph(); }
+  NodeState GetNodeState() const override { return NodeState::kActiveInGraph; }
   uintptr_t GetImplType() const override {
     static const uintptr_t kImplType = reinterpret_cast<uintptr_t>(&kImplType);
     return kImplType;

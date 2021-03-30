@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "base/macros.h"
+#include "components/performance_manager/public/graph/node_state.h"
 
 namespace performance_manager {
 
@@ -23,6 +24,9 @@ class Node {
 
   // Returns the graph to which this node belongs.
   virtual Graph* GetGraph() const = 0;
+
+  // Returns the state of this node.
+  virtual NodeState GetNodeState() const = 0;
 
   // The following functions are implementation detail and should not need to be
   // used by external clients. They provide the ability to safely downcast to

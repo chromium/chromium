@@ -37,10 +37,15 @@ class SystemNodeObserver {
 
   // Node lifetime notifications.
 
-  // Called when the |system_node| is added to the graph.
+  // Called when the |system_node| is added to the graph. Observers must not
+  // make any property changes or cause re-entrant notifications during the
+  // scope of this call. Instead, make property changes via a separate posted
+  // task.
   virtual void OnSystemNodeAdded(const SystemNode* system_node) = 0;
 
-  // Called before the |system_node| is removed from the graph.
+  // Called before the |system_node| is removed from the graph. Observers must
+  // not make any property changes or cause re-entrant notifications during the
+  // scope of this call.
   virtual void OnBeforeSystemNodeRemoved(const SystemNode* system_node) = 0;
 
   // Called when a new set of process memory metrics is available.

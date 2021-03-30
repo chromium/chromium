@@ -129,6 +129,7 @@ static_library("performance_manager") {
     "public/graph/node_data_describer_registry.h",
     "public/graph/node_data_describer_util.cc",
     "public/graph/node_data_describer_util.h",
+    "public/graph/node_state.h",
     "public/graph/page_node.h",
     "public/graph/policies/background_tab_loading_policy.h",
     "public/graph/policies/tab_loading_frame_navigation_policy.h",

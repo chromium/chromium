@@ -20,6 +20,7 @@ NodeBase::~NodeBase() {
 
   // The node must have been removed from the graph before destruction.
   DCHECK(!graph_);
+  DCHECK_EQ(NodeState::kNotInGraph, GetNodeState());
 }
 
 // static
@@ -34,24 +35,42 @@ NodeBase* NodeBase::FromNode(Node* node) {
   return reinterpret_cast<NodeBase*>(const_cast<void*>(node->GetImpl()));
 }
 
+bool NodeBase::CanSetProperty() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetNodeState() == NodeState::kInitializing;
+}
+
+bool NodeBase::CanSetAndNotifyProperty() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetNodeState() == NodeState::kActiveInGraph;
+}
+
 void NodeBase::JoinGraph(GraphImpl* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!graph_);
   DCHECK(graph->NodeInGraph(this));
-
+  DCHECK_EQ(NodeState::kNotInGraph, GetNodeState());
   graph_ = graph;
+}
+
+void NodeBase::OnJoiningGraph() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(NodeState::kInitializing, GetNodeState());
+  // This is overridden by node impls.
+}
+
+void NodeBase::OnBeforeLeavingGraph() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(NodeState::kActiveInGraph, GetNodeState());
+  // This is overridden by node impls.
 }
 
 void NodeBase::LeaveGraph() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(graph_);
   DCHECK(graph_->NodeInGraph(this));
-
+  DCHECK_EQ(NodeState::kLeavingGraph, GetNodeState());
   graph_ = nullptr;
 }
-
-void NodeBase::OnJoiningGraph() {}
-
-void NodeBase::OnBeforeLeavingGraph() {}
 
 }  // namespace performance_manager

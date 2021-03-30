@@ -575,7 +575,7 @@ void FrameNodeImpl::OnJoiningGraph() {
   // page node must be accessed. OnFrameNodeAdded() has not been called yet for
   // this frame, so it is important to avoid sending a notification for this
   // property change.
-  visibility_.Set(GetInitialFrameVisibility());
+  visibility_.Set(this, GetInitialFrameVisibility());
 
   // Wire this up to the other nodes in the graph.
   if (parent_frame_node_)
