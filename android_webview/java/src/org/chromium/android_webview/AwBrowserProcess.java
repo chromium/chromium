@@ -303,7 +303,7 @@ public final class AwBrowserProcess {
                 List<Map<String, String>> crashesInfoList =
                         getCrashKeysForCrashFiles(minidumpFiles, crashesInfoMap);
                 service.transmitCrashes(
-                        (ParcelFileDescriptor[]) minidumpFds.toArray(), crashesInfoList);
+                        minidumpFds.toArray(new ParcelFileDescriptor[0]), crashesInfoList);
             } catch (RemoteException e) {
                 // TODO(gsennton): add a UMA metric here to ensure we aren't losing
                 // too many minidumps because of this.
