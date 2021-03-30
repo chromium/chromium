@@ -60,7 +60,8 @@ PepperTCPServerSocketMessageFilter::PepperTCPServerSocketMessageFilter(
     BrowserPpapiHostImpl* host,
     PP_Instance instance,
     bool private_api)
-    : ppapi_host_(host->GetPpapiHost()),
+    : host_(host),
+      ppapi_host_(host->GetPpapiHost()),
       factory_(factory),
       instance_(instance),
       state_(STATE_BEFORE_LISTENING),
@@ -347,6 +348,14 @@ void PepperTCPServerSocketMessageFilter::OnAcceptCompletedOnIOThread(
     PP_NetAddress_Private pp_local_addr,
     PP_NetAddress_Private pp_remote_addr) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (!host_->IsValidInstance(instance_)) {
+    // The instance has been removed while Accept was in progress. This object
+    // should be destroyed and cleaned up after we release the reference we're
+    // holding as a part of this function running so we just return without
+    // doing anything.
+    return;
+  }
 
   // |factory_| is guaranteed to be non-NULL here. Only those instances created
   // in CONNECTED state have a NULL |factory_|, while getting here requires
