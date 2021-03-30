@@ -6,7 +6,9 @@
 
 #include <vector>
 
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -811,4 +813,44 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
   tab_strip()->SelectTab(tab_strip()->tab_at(0), GetDummyEvent());
   EXPECT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group));
+}
+
+// Tests IDC_SELECT_TAB_0, IDC_SELECT_NEXT_TAB, IDC_SELECT_PREVIOUS_TAB and
+// IDC_SELECT_LAST_TAB. The tab navigation accelerators should ignore tabs in
+// collapsed groups.
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, TabGroupTabNavigationAccelerators) {
+  // Create five tabs.
+  for (int i = 0; i < 4; i++)
+    AppendTab();
+
+  ASSERT_EQ(5, tab_strip_model()->count());
+
+  // Add the first, second, and last tab into their own collapsed groups.
+  tab_groups::TabGroupId group1 = tab_strip_model()->AddToNewGroup({0});
+  tab_groups::TabGroupId group2 = tab_strip_model()->AddToNewGroup({1});
+  tab_groups::TabGroupId group3 = tab_strip_model()->AddToNewGroup({4});
+  tab_strip()->controller()->ToggleTabGroupCollapsedState(group1);
+  tab_strip()->controller()->ToggleTabGroupCollapsedState(group2);
+  tab_strip()->controller()->ToggleTabGroupCollapsedState(group3);
+
+  // Select the fourth tab.
+  tab_strip_model()->ActivateTabAt(3);
+
+  CommandUpdater* updater = browser()->command_controller();
+
+  // Navigate to the first tab using an accelerator.
+  updater->ExecuteCommand(IDC_SELECT_TAB_0);
+  ASSERT_EQ(2, tab_strip_model()->active_index());
+
+  // Navigate back to the first tab using the previous accelerators.
+  updater->ExecuteCommand(IDC_SELECT_PREVIOUS_TAB);
+  ASSERT_EQ(3, tab_strip_model()->active_index());
+
+  // Navigate to the second tab using the next accelerators.
+  updater->ExecuteCommand(IDC_SELECT_NEXT_TAB);
+  ASSERT_EQ(2, tab_strip_model()->active_index());
+
+  // Navigate to the last tab using the select last accelerator.
+  updater->ExecuteCommand(IDC_SELECT_LAST_TAB);
+  ASSERT_EQ(3, tab_strip_model()->active_index());
 }

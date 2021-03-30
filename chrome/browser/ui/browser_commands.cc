@@ -765,16 +765,29 @@ void MoveTabPrevious(Browser* browser) {
 void SelectNumberedTab(Browser* browser,
                        int index,
                        TabStripModel::UserGestureDetails gesture_detail) {
-  if (index < browser->tab_strip_model()->count()) {
-    base::RecordAction(UserMetricsAction("SelectNumberedTab"));
-    browser->tab_strip_model()->ActivateTabAt(index, gesture_detail);
+  int visible_count = 0;
+  for (int i = 0; i < browser->tab_strip_model()->count(); i++) {
+    if (browser->tab_strip_model()->IsTabCollapsed(i)) {
+      continue;
+    }
+    if (visible_count == index) {
+      base::RecordAction(UserMetricsAction("SelectNumberedTab"));
+      browser->tab_strip_model()->ActivateTabAt(i, gesture_detail);
+      break;
+    }
+    visible_count += 1;
   }
 }
 
 void SelectLastTab(Browser* browser,
                    TabStripModel::UserGestureDetails gesture_detail) {
-  base::RecordAction(UserMetricsAction("SelectLastTab"));
-  browser->tab_strip_model()->SelectLastTab(gesture_detail);
+  for (int i = browser->tab_strip_model()->count() - 1; i >= 0; i--) {
+    if (!browser->tab_strip_model()->IsTabCollapsed(i)) {
+      base::RecordAction(UserMetricsAction("SelectLastTab"));
+      browser->tab_strip_model()->ActivateTabAt(i, gesture_detail);
+      break;
+    }
+  }
 }
 
 void DuplicateTab(Browser* browser) {
