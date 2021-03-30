@@ -1874,6 +1874,14 @@ are declared in tools/grit/grit_rule.gni.
           Dangerous download blocked
         </message>
       </if>
+
+      <if expr="chromeos">
+        <message name="IDS_PROMPT_SEND_TO_SAFEBROWSING_DOWNLOAD_TITLE"
+                 desc="In the download notification, a title of message shown indicating that the file may be malicious and Safe Browsing recommends sending the file to Google">
+          Scan file before opening?
+        </message>
+      </if>
+
       <message name="IDS_CONFIRM_KEEP_DANGEROUS_DOWNLOAD_TITLE"
                desc="Title for the confirmation dialog asking whether the user really meant to keep a dangerous download">
         Confirm download

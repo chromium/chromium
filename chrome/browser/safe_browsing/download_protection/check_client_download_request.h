@@ -79,6 +79,8 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
 
   bool IsAllowlistedByPolicy() const override;
 
+  bool IsUnderAdvancedProtection() const;
+
   // The DownloadItem we are checking. Will be NULL if the request has been
   // canceled. Must be accessed only on UI thread.
   download::DownloadItem* item_;

@@ -276,14 +276,7 @@ void CheckClientDownloadRequest::NotifyRequestFinished(
   item_->RemoveObserver(this);
 }
 
-bool CheckClientDownloadRequest::ShouldPromptForDeepScanning(
-    DownloadCheckResultReason reason) const {
-  if (reason != REASON_DOWNLOAD_UNCOMMON)
-    return false;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return false;
-#else
+bool CheckClientDownloadRequest::IsUnderAdvancedProtection() const {
   Profile* profile = Profile::FromBrowserContext(GetBrowserContext());
   if (!profile)
     return false;
@@ -292,6 +285,20 @@ bool CheckClientDownloadRequest::ShouldPromptForDeepScanning(
   if (!advanced_protection_status_manager)
     return false;
   return advanced_protection_status_manager->IsUnderAdvancedProtection();
+}
+
+bool CheckClientDownloadRequest::ShouldPromptForDeepScanning(
+    DownloadCheckResultReason reason) const {
+  if (reason != REASON_DOWNLOAD_UNCOMMON)
+    return false;
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kPromptEsbForDeepScanning))
+    return IsUnderAdvancedProtection();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return false;
+#else
+  return IsUnderAdvancedProtection();
 #endif
 }
 
