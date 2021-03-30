@@ -249,7 +249,7 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
   // Overridden from DataDeviceDelegate:
   void OnDataDeviceDestroying(DataDevice* device) override { delete this; }
   bool CanAcceptDataEventsForSurface(Surface* surface) const override {
-    return surface &&
+    return surface && GetSurfaceResource(surface) &&
            wl_resource_get_client(GetSurfaceResource(surface)) == client_;
   }
   DataOffer* OnDataOffer() override {
