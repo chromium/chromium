@@ -404,6 +404,7 @@ class TrustDomainCache {
     auto cache_iter = trust_status_cache_.find(cert_hash);
     if (cache_iter == trust_status_cache_.end()) {
       // Cert does not have trust settings in this domain, return UNSPECIFIED.
+      UpdateUserData(0, debug_data, TrustStoreMac::TrustImplType::kDomainCache);
       return TrustStatus::UNSPECIFIED;
     }
 

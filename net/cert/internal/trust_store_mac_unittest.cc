@@ -222,20 +222,13 @@ TEST_P(TrustStoreMacImplTest, MultiRootNotTrusted) {
     DebugData debug_data;
     trust_store.GetTrust(cert.get(), &trust, &debug_data);
     EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
-    if (trust_impl == TrustStoreMac::TrustImplType::kDomainCache) {
-      // For TrustImplDomainCache, certs without trust settings should not add
-      // debug info to debug_data.
-      EXPECT_FALSE(TrustStoreMac::ResultDebugData::Get(&debug_data));
-    } else {
-      // TrustImplNoCache and TrustImpleMRUCache always set debug info, the
-      // combined_trust_debug_info should be 0 since no trust records should
-      // exist for these test certs.
-      const TrustStoreMac::ResultDebugData* trust_debug_data =
-          TrustStoreMac::ResultDebugData::Get(&debug_data);
-      ASSERT_TRUE(trust_debug_data);
-      EXPECT_EQ(0, trust_debug_data->combined_trust_debug_info());
-      EXPECT_EQ(trust_impl, trust_debug_data->trust_impl());
-    }
+    // The combined_trust_debug_info should be 0 since no trust records
+    // should exist for these test certs.
+    const TrustStoreMac::ResultDebugData* trust_debug_data =
+        TrustStoreMac::ResultDebugData::Get(&debug_data);
+    ASSERT_TRUE(trust_debug_data);
+    EXPECT_EQ(0, trust_debug_data->combined_trust_debug_info());
+    EXPECT_EQ(trust_impl, trust_debug_data->trust_impl());
     if (is_known_root_test_order == TEST_IS_KNOWN_ROOT_AFTER)
       EXPECT_FALSE(trust_store.IsKnownRoot(cert.get()));
   }
@@ -359,17 +352,16 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
            (trust_result == kSecTrustResultUnspecified)) &&
           (SecTrustGetCertificateCount(trust) == 1);
       EXPECT_EQ(expected_trust_anchor, is_trust_anchor);
+      auto* trust_debug_data = TrustStoreMac::ResultDebugData::Get(&debug_data);
+      ASSERT_TRUE(trust_debug_data);
       if (is_trust_anchor) {
-        auto* trust_debug_data =
-            TrustStoreMac::ResultDebugData::Get(&debug_data);
-        ASSERT_TRUE(trust_debug_data);
         // Since this test queries the real trust store, can't know exactly
-        // what bits should be set in the trust debug info, but it should at
-        // least have something set.
+        // what bits should be set in the trust debug info, but if it's trusted
+        // it should at least have something set.
         EXPECT_NE(0, trust_debug_data->combined_trust_debug_info());
-        // The impl that was used should be specified in the debug data.
-        EXPECT_EQ(trust_impl, trust_debug_data->trust_impl());
       }
+      // The impl that was used should be specified in the debug data.
+      EXPECT_EQ(trust_impl, trust_debug_data->trust_impl());
     }
 
     if (is_known_root_test_order == TEST_IS_KNOWN_ROOT_AFTER) {
@@ -386,17 +378,13 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
     DebugData debug_data2;
     trust_store.GetTrust(cert, &cert_trust2, &debug_data2);
     EXPECT_EQ(cert_trust.type, cert_trust2.type);
-    if (cert_trust2.IsTrustAnchor()) {
-      auto* trust_debug_data = TrustStoreMac::ResultDebugData::Get(&debug_data);
-      ASSERT_TRUE(trust_debug_data);
-      auto* trust_debug_data2 =
-          TrustStoreMac::ResultDebugData::Get(&debug_data2);
-      ASSERT_TRUE(trust_debug_data2);
-      EXPECT_EQ(trust_debug_data->combined_trust_debug_info(),
-                trust_debug_data2->combined_trust_debug_info());
-      EXPECT_EQ(trust_debug_data->trust_impl(),
-                trust_debug_data2->trust_impl());
-    }
+    auto* trust_debug_data = TrustStoreMac::ResultDebugData::Get(&debug_data);
+    ASSERT_TRUE(trust_debug_data);
+    auto* trust_debug_data2 = TrustStoreMac::ResultDebugData::Get(&debug_data2);
+    ASSERT_TRUE(trust_debug_data2);
+    EXPECT_EQ(trust_debug_data->combined_trust_debug_info(),
+              trust_debug_data2->combined_trust_debug_info());
+    EXPECT_EQ(trust_debug_data->trust_impl(), trust_debug_data2->trust_impl());
   }
 }
 
