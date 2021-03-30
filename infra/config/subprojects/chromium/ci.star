@@ -2997,6 +2997,24 @@ ci.fyi_builder(
         short_name = "rel",
     ),
     notifies = ["cr-fuchsia"],
+    properties = {
+        # The format of these properties is defined at archive/properties.proto
+        "$build/archive": {
+            "cipd_archive_datas": [
+                {
+                    "yaml_files": [
+                        "gen/fuchsia/cipd/castrunner/castrunner.yaml",
+                    ],
+                    "refs": [
+                        "{%channel%}",
+                    ],
+                    "tags": {
+                        "version": "{%version%}",
+                    },
+                },
+            ],
+        },
+    },
 )
 
 ci.fyi_builder(

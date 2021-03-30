@@ -452,6 +452,7 @@
     "gn_args": {
       "is_component_build": false,
       "is_debug": false,
+      "is_official_build": true,
       "target_os": "fuchsia",
       "use_goma": true
     }
