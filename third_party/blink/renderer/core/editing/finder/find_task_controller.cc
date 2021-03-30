@@ -99,7 +99,7 @@ class FindTaskController::FindTask final : public GarbageCollected<FindTask> {
     document->UpdateStyleAndLayout(DocumentUpdateReason::kFindInPage);
 
     int match_count = 0;
-    bool full_range_searched = false;
+    bool full_range_searched = true;
     PositionInFlatTree next_task_start_position;
 
     blink::FindOptions find_options =
@@ -134,10 +134,11 @@ class FindTaskController::FindTask final : public GarbageCollected<FindTask> {
       // processed. Now we move to the next block if there's any,
       // otherwise we should stop.
       search_start = buffer.PositionAfterBlock();
-      if (search_start.IsNull()) {
+      if (search_start.IsNull() || search_start >= search_end) {
         full_range_searched = true;
         break;
       }
+      full_range_searched = false;
       next_task_start_position = search_start;
       auto time_elapsed = base::TimeTicks::Now() - start_time;
       if (time_elapsed > kFindTaskTimeAllotment)

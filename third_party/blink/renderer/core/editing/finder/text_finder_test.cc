@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
+#include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_list.h"
 #include "third_party/blink/renderer/core/dom/range.h"
@@ -929,6 +930,22 @@ TEST_F(TextFinderTest, FindTextAcrossCommentNode) {
   EXPECT_TRUE(GetTextFinder().Find(identifier, search_text, *find_options,
                                    wrap_within_frame));
   EXPECT_TRUE(GetTextFinder().ActiveMatch());
+}
+
+// http://crbug.com/1192487
+TEST_F(TextFinderTest, CommentAfterDoucmentElement) {
+  GetDocument().body()->setInnerHTML("abc");
+  GetDocument().appendChild(Comment::Create(GetDocument(), "xyz"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  int identifier = 0;
+  auto find_options = mojom::blink::FindOptions::New();
+  find_options->run_synchronously_for_testing = true;
+
+  GetTextFinder().ResetMatchCount();
+  GetTextFinder().StartScopingStringMatches(identifier, "a", *find_options);
+  EXPECT_EQ(1, GetTextFinder().TotalMatchCount());
+  EXPECT_FALSE(GetTextFinder().ScopingInProgress());
 }
 
 }  // namespace blink
