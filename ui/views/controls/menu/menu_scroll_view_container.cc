@@ -301,13 +301,9 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
   bubble_border_ = nullptr;
 
   const MenuConfig& menu_config = MenuConfig::instance();
-  const ui::NativeTheme* native_theme = GetNativeTheme();
-  bool use_outer_border =
-      menu_config.use_outer_border ||
-      (native_theme && native_theme->UserHasContrastPreference());
   corner_radius_ = menu_config.CornerRadiusForMenu(
       content_view_->GetMenuItem()->GetMenuController());
-  int padding = use_outer_border && corner_radius_ > 0
+  int padding = menu_config.use_outer_border && corner_radius_ > 0
                     ? kBorderPaddingDueToRoundedCorners
                     : 0;
 
@@ -320,7 +316,7 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
 
   int bottom_inset = GetFootnote() ? 0 : vertical_inset;
 
-  if (use_outer_border) {
+  if (menu_config.use_outer_border) {
     SkColor color = GetNativeTheme()
                         ? GetNativeTheme()->GetSystemColor(
                               ui::NativeTheme::kColorId_MenuBorderColor)
