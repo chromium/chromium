@@ -17,6 +17,8 @@ goog.require('EventSourceState');
 goog.require('LocaleOutputHelper');
 goog.require('LogStore');
 goog.require('NavBraille');
+goog.require('OutputFormatToken');
+goog.require('OutputFormatTree');
 goog.require('OutputRulesStr');
 goog.require('PhoneticData');
 goog.require('Spannable');
@@ -658,7 +660,7 @@ Output = class {
    * verbalized; can specify pitch, rate, language, etc.
    * @param {!{
    *    node: AutomationNode,
-   *    outputFormat: (string|!Object),
+   *    outputFormat: (string|!OutputFormatTree),
    *    outputBuffer: !Array<Spannable>,
    *    outputRuleString: !OutputRulesStr,
    *    opt_prevNode: (!AutomationNode|undefined),
@@ -674,30 +676,24 @@ Output = class {
     const prevNode = params['opt_prevNode'];
     let speechProps = params['opt_speechProps'];
 
-    let tokens = [];
+    let formatTrees = [];
     const args = null;
 
     // Hacky way to support args.
     if (typeof (format) === 'string') {
       format = format.replace(/([,:])\s+/gm, '$1');
-      tokens = format.split(' ');
-      // Ignore empty tokens.
-      tokens.filter(token => !!token);
+      const words = format.split(' ');
+      // Ignore empty strings.
+      words.filter(word => !!word);
+
+      formatTrees = words.map(word => OutputFormatTree.buildFromString(word));
     } else {
-      tokens = format ? [format] : [];
+      formatTrees = format ? [format] : [];
     }
 
-    tokens.forEach(function(token) {
-      // Parse the token.
-      let tree;
-      if (typeof (token) === 'string') {
-        tree = this.createParseTree_(token);
-      } else {
-        tree = token;
-      }
-
+    formatTrees.forEach(function(tree) {
       // Obtain the operator token.
-      token = tree.value;
+      let token = tree.value;
 
       // Set suffix options.
       const options = {};
@@ -909,7 +905,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param options {Object}
    * @param ruleStr {!OutputRuleStr}
@@ -946,7 +942,7 @@ Output = class {
   /**
    * @param node {AutomationNode}
    * @param prevNode {!AutomationNode|undefined}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param options {Object}
    * @param ruleStr {!OutputRuleStr}
@@ -976,7 +972,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param options {Object}
    * @param ruleStr {!OutputRuleStr}
@@ -993,7 +989,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param options {Object}
    * @param ruleStr {!OutputRuleStr}
@@ -1016,7 +1012,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param options {Object}
    * @param ruleStr {!OutputRuleStr}
@@ -1033,7 +1029,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param options {Object}
    * @param ruleStr {!OutputRuleStr}
@@ -1060,8 +1056,8 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
-   * @param tree {Object}
+   * @param token {!OutputFormatToken}
+   * @param tree {!OutputFormatTree}
    * @param buff {!Array<Spannable>}
    * @param options {Object}
    * @param ruleStr {!OutputRuleStr}
@@ -1093,7 +1089,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param ruleStr {!OutputRuleStr}
    */
@@ -1112,7 +1108,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param ruleStr {!OutputRuleStr}
    */
@@ -1131,7 +1127,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param ruleStr {!OutputRuleStr}
    */
@@ -1150,7 +1146,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param ruleStr {!OutputRuleStr}
    */
@@ -1173,8 +1169,8 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
-   * @param tree {Object}
+   * @param token {!OutputFormatToken}
+   * @param tree {!OutputFormatTree}
    * @param buff {!Array<Spannable>}
    * @param ruleStr {!OutputRuleStr}
    */
@@ -1199,7 +1195,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param ruleStr {!OutputRuleStr}
    */
@@ -1244,7 +1240,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param options {Object}
    * @param ruleStr {!OutputRuleStr}
@@ -1265,7 +1261,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param options {Object}
    * @param ruleStr {!OutputRuleStr}
@@ -1293,7 +1289,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param options {Object}
    * @param ruleStr {!OutputRuleStr}
@@ -1314,7 +1310,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param options {Object}
    * @param ruleStr {!OutputRuleStr}
@@ -1332,7 +1328,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param options {Object}
    * @param ruleStr {!OutputRuleStr}
@@ -1367,8 +1363,8 @@ Output = class {
   /**
    * @param node {AutomationNode}
    * @param prevNode {!AutomationNode|undefined}
-   * @param token {Object}
-   * @param tree {Object}
+   * @param token {!OutputFormatToken}
+   * @param tree {!OutputFormatTree}
    * @param buff {!Array<Spannable>}
    * @param options {Object}
    * @param ruleStr {!OutputRuleStr}
@@ -1418,7 +1414,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param options {Object}
    * @param ruleStr {!OutputRuleStr}
@@ -1462,7 +1458,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param options {Object}
    * @param ruleStr {!OutputRuleStr}
@@ -1479,7 +1475,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param options {Object}
    * @param ruleStr {!OutputRuleStr}
@@ -1506,7 +1502,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param ruleStr {!OutputRuleStr}
    */
@@ -1528,7 +1524,7 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
+   * @param token {!OutputFormatToken}
    * @param buff {!Array<Spannable>}
    * @param ruleStr {!OutputRuleStr}
    */
@@ -1550,8 +1546,8 @@ Output = class {
 
   /**
    * @param node {AutomationNode}
-   * @param token {Object}
-   * @param tree {Object}
+   * @param token {!OutputFormatToken}
+   * @param tree {!OutputFormatTree}
    * @param buff {!Array<Spannable>}
    * @param options {Object}
    * @param ruleStr {!OutputRuleStr}
@@ -1614,7 +1610,7 @@ Output = class {
   }
 
   /**
-   * @param {Object} tree
+   * @param {!OutputFormatTree} tree
    * @return {!Set}
    * @private
    */
@@ -2243,49 +2239,6 @@ Output = class {
     }
 
     buff.push(spannableToAdd);
-  }
-
-  /**
-   * Parses the token containing a custom function and returns a tree.
-   * @param {string} inputStr
-   * @return {Object}
-   * @private
-   */
-  createParseTree_(inputStr) {
-    const root = {value: ''};
-    let currentNode = root;
-    let index = 0;
-    let braceNesting = 0;
-    while (index < inputStr.length) {
-      if (inputStr[index] === '(') {
-        currentNode.firstChild = {value: ''};
-        currentNode.firstChild.parent = currentNode;
-        currentNode = currentNode.firstChild;
-      } else if (inputStr[index] === ')') {
-        currentNode = currentNode.parent;
-      } else if (inputStr[index] === '{') {
-        braceNesting++;
-        currentNode.value += inputStr[index];
-      } else if (inputStr[index] === '}') {
-        braceNesting--;
-        currentNode.value += inputStr[index];
-      } else if (inputStr[index] === ',' && braceNesting === 0) {
-        currentNode.nextSibling = {value: ''};
-        currentNode.nextSibling.parent = currentNode.parent;
-        currentNode = currentNode.nextSibling;
-      } else if (inputStr[index] === ' ' || inputStr[index] === '\n') {
-        // Ignored.
-      } else {
-        currentNode.value += inputStr[index];
-      }
-      index++;
-    }
-
-    if (currentNode !== root) {
-      throw 'Unbalanced parenthesis: ' + inputStr;
-    }
-
-    return root;
   }
 
   /**

@@ -1,0 +1,71 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview Parses the output format.
+ */
+
+goog.provide('OutputFormatToken');
+goog.provide('OutputFormatTree');
+
+goog.scope(function() {
+/** @typedef {string} */
+let OutputFormatToken;
+
+OutputFormatTree = class {
+  /** @private */
+  constructor() {
+    /** @public {!OutputFormatToken} */
+    this.value = /* @type {!OutputFormatToken} */ ('');
+    /** @public {OutputFormatTree|undefined} */
+    this.firstChild;
+    /** @public {OutputFormatTree|undefined} */
+    this.nextSibling;
+    /** @public {OutputFormatTree|undefined} */
+    this.parent;
+  }
+
+  /**
+   * Parses the token containing a custom function and returns a tree.
+   * @param {string} inputStr
+   * @return {!OutputFormatTree}
+   */
+  static buildFromString(inputStr) {
+    const root = new OutputFormatTree();
+    let currentNode = root;
+    let index = 0;
+    let braceNesting = 0;
+    while (index < inputStr.length) {
+      if (inputStr[index] === '(') {
+        currentNode.firstChild = new OutputFormatTree();
+        currentNode.firstChild.parent = currentNode;
+        currentNode = currentNode.firstChild;
+      } else if (inputStr[index] === ')') {
+        currentNode = currentNode.parent;
+      } else if (inputStr[index] === '{') {
+        braceNesting++;
+        currentNode.value += inputStr[index];
+      } else if (inputStr[index] === '}') {
+        braceNesting--;
+        currentNode.value += inputStr[index];
+      } else if (inputStr[index] === ',' && braceNesting === 0) {
+        currentNode.nextSibling = new OutputFormatTree();
+        currentNode.nextSibling.parent = currentNode.parent;
+        currentNode = currentNode.nextSibling;
+      } else if (inputStr[index] === ' ' || inputStr[index] === '\n') {
+        // Ignored.
+      } else {
+        currentNode.value += inputStr[index];
+      }
+      index++;
+    }
+
+    if (currentNode !== root) {
+      throw 'Unbalanced parenthesis: ' + inputStr;
+    }
+
+    return root;
+  }
+};
+});  // goog.scope

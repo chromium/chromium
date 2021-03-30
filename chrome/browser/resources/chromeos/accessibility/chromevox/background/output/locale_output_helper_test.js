@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
+GEN_INCLUDE(['../../testing/chromevox_next_e2e_test_base.js']);
 
 /**
  * Test fixture for LocaleOutputHelper.
@@ -224,28 +224,26 @@ TEST_F(
       });
     });
 
-TEST_F(
-    'ChromeVoxLocaleOutputHelperTest', 'ButtonAndLinkDocTest', function() {
-      const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedTree(this.buttonAndLinkDoc, function(root) {
-        localStorage['languageSwitching'] = 'true';
-        this.setAvailableVoices();
-        mockFeedback
-            .call(doCmd('jumpToTop'))
-            // Use the author-provided language of 'es'.
-            .expectSpeechWithLocale(
-                'es', 'español: This is a paragraph, written in English.')
-            .call(doCmd('nextObject'))
-            .expectSpeechWithLocale(
-                'es', 'This is a button, written in English.')
-            .expectSpeechWithLocale(
-                undefined, 'Button', 'Press Search+Space to activate')
-            .call(doCmd('nextObject'))
-            .expectSpeechWithLocale('es', 'Este es un enlace.')
-            .expectSpeechWithLocale(undefined, 'Link');
-        mockFeedback.replay();
-      });
-    });
+TEST_F('ChromeVoxLocaleOutputHelperTest', 'ButtonAndLinkDocTest', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.buttonAndLinkDoc, function(root) {
+    localStorage['languageSwitching'] = 'true';
+    this.setAvailableVoices();
+    mockFeedback
+        .call(doCmd('jumpToTop'))
+        // Use the author-provided language of 'es'.
+        .expectSpeechWithLocale(
+            'es', 'español: This is a paragraph, written in English.')
+        .call(doCmd('nextObject'))
+        .expectSpeechWithLocale('es', 'This is a button, written in English.')
+        .expectSpeechWithLocale(
+            undefined, 'Button', 'Press Search+Space to activate')
+        .call(doCmd('nextObject'))
+        .expectSpeechWithLocale('es', 'Este es un enlace.')
+        .expectSpeechWithLocale(undefined, 'Link');
+    mockFeedback.replay();
+  });
+});
 
 
 TEST_F(
