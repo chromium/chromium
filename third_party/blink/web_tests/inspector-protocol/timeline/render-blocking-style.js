@@ -1,6 +1,6 @@
 (async function(testRunner) {
   // The number includes the 2 imported CSS files
-  const numberOfURLs = 9;
+  const numberOfURLs = 10;
 
   // Test traces
   var {page, session, dp} = await testRunner.startHTML(`
@@ -16,9 +16,16 @@
   session.evaluate(`
     (function performActions() {
       // Add a dynamic style with DOM API
-      const link = document.createElement("link");
+      let link = document.createElement("link");
       link.href = "../resources/style.css?dynamicDOM";
       link.rel = "stylesheet";
+      document.head.appendChild(link);
+
+      // Add a style preload with DOM API
+      link = document.createElement("link");
+      link.href = "../resources/style.css?preload";
+      link.rel = "preload";
+      link.as = "style";
       document.head.appendChild(link);
 
       // Add a dynamic style with document.write

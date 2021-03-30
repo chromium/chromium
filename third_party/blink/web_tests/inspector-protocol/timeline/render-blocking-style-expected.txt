@@ -10,4 +10,5 @@ style.css?dynamicInnerHTML: dynamically_injected_non_blocking
 style.css?dynamicInnerHTMLPrint: non_blocking
 style.css?imported: blocking
 style.css?imported_print: non_blocking
+style.css?preload: non_blocking
 

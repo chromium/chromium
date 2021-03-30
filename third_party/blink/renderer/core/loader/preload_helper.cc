@@ -325,6 +325,8 @@ Resource* PreloadHelper::PreloadIfNeeded(
   options.parser_disposition = parser_disposition;
   FetchParameters link_fetch_params(std::move(resource_request), options);
   link_fetch_params.SetCharset(document.Encoding());
+  link_fetch_params.SetRenderBlockingBehavior(
+      RenderBlockingBehavior::kNonBlocking);
 
   if (params.cross_origin != kCrossOriginAttributeNotSet) {
     link_fetch_params.SetCrossOriginAccessControl(
