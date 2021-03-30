@@ -12,8 +12,11 @@
 #include "base/guid.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/visibility_timer_tab_helper.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
 #include "chrome/browser/webshare/prepare_subdirectory_task.h"
 #include "chrome/browser/webshare/share_service_impl.h"
@@ -61,6 +64,27 @@ SharingServiceOperation::~SharingServiceOperation() = default;
 void SharingServiceOperation::Share(
     blink::mojom::ShareService::ShareCallback callback) {
   callback_ = std::move(callback);
+
+  Profile* const profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  DCHECK(profile);
+
+  // File sharing is denied in incognito, as files are written to disk.
+  // To prevent sites from using that to detect whether incognito mode is
+  // active, we deny after a random time delay, to simulate a user cancelling
+  // the share.
+  if (profile->IsIncognitoProfile() && !shared_files_.empty()) {
+    // Random number of seconds in the range [1.0, 2.0).
+    double delay_seconds = 1.0 + 1.0 * base::RandDouble();
+    VisibilityTimerTabHelper::CreateForWebContents(web_contents());
+    VisibilityTimerTabHelper::FromWebContents(web_contents())
+        ->PostTaskAfterVisibleDelay(
+            FROM_HERE,
+            base::BindOnce(std::move(callback_),
+                           blink::mojom::ShareError::CANCELED),
+            base::TimeDelta::FromSecondsD(delay_seconds));
+    return;
+  }
 
   if (shared_files_.size() == 0) {
     GetSharePickerCallback().Run(

@@ -42,6 +42,10 @@ source_set("unit_tests") {
     sources += [ "prepare_directory_task_unittest.cc" ]
   }
 
+  if (is_mac) {
+    sources += [ "mac/sharing_service_operation_unittest.cc" ]
+  }
+
   deps = [
     "//base/test:test_support",
     "//build:chromeos_buildflags",
