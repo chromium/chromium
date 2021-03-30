@@ -1579,6 +1579,9 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
     // PrefService is ready, check whether we need to force a VPN connection.
     always_on_vpn_manager_ =
         std::make_unique<arc::AlwaysOnVpnManager>(profile->GetPrefs());
+
+    secure_dns_manager_ = std::make_unique<net::SecureDnsManager>(
+        g_browser_process->local_state());
   }
 
   UpdateEasyUnlockKeys(user_context_);
@@ -2226,6 +2229,7 @@ void UserSessionManager::Shutdown() {
   release_notes_notification_.reset();
   password_service_voted_.reset();
   password_was_saved_ = false;
+  secure_dns_manager_.reset();
 }
 
 void UserSessionManager::SetSwitchesForUser(

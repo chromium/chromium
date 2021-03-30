@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/signin/oauth2_login_manager.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
+#include "chrome/browser/ash/net/secure_dns_manager.h"
 #include "chrome/browser/chromeos/base/locale_util.h"
 #include "chrome/browser/chromeos/child_accounts/child_policy_observer.h"
 #include "chrome/browser/chromeos/eol_notification.h"
@@ -623,6 +624,8 @@ class UserSessionManager
   base::RepeatingClosure attempt_restart_closure_;
 
   std::unique_ptr<arc::AlwaysOnVpnManager> always_on_vpn_manager_;
+
+  std::unique_ptr<net::SecureDnsManager> secure_dns_manager_;
 
   std::unique_ptr<ChildPolicyObserver> child_policy_observer_;
 
