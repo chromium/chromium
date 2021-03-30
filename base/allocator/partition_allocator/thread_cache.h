@@ -267,6 +267,8 @@ class BASE_EXPORT ThreadCache {
   void ClearBucket(Bucket& bucket, size_t limit);
   ALWAYS_INLINE void PutInBucket(Bucket& bucket, void* slot_start);
   void ResetForTesting();
+  // Releases the entire freelist starting at |head| to the root.
+  void FreeAfter(PartitionFreelistEntry* head);
   static void SetGlobalLimits(PartitionRoot<ThreadSafe>* root,
                               float multiplier);
 
@@ -325,6 +327,7 @@ class BASE_EXPORT ThreadCache {
                            DynamicCountPerBucketMultipleThreads);
   FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, DynamicSizeThreshold);
   FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, DynamicSizeThresholdPurge);
+  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, ClearFromTail);
 };
 
 ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* slot_start,

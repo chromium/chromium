@@ -679,6 +679,31 @@ TEST_F(ThreadCacheTest, DynamicSizeThresholdPurge) {
   EXPECT_EQ(0u, tcache->buckets_[index].count);
 }
 
+TEST_F(ThreadCacheTest, ClearFromTail) {
+  auto count_items = [](ThreadCache* tcache, size_t index) {
+    uint8_t count = 0;
+    auto* head = tcache->buckets_[index].freelist_head;
+    while (head) {
+      head = head->GetNext();
+      count++;
+    }
+    return count;
+  };
+
+  auto* tcache = g_root->thread_cache_for_testing();
+  size_t index = FillThreadCacheAndReturnIndex(kSmallSize, 10);
+  ASSERT_GE(count_items(tcache, index), 10);
+  void* head = tcache->buckets_[index].freelist_head;
+
+  for (size_t limit : {8, 3, 1}) {
+    tcache->ClearBucket(tcache->buckets_[index], limit);
+    EXPECT_EQ(head, static_cast<void*>(tcache->buckets_[index].freelist_head));
+    EXPECT_EQ(count_items(tcache, index), limit);
+  }
+  tcache->ClearBucket(tcache->buckets_[index], 0);
+  EXPECT_EQ(nullptr, static_cast<void*>(tcache->buckets_[index].freelist_head));
+}
+
 }  // namespace internal
 }  // namespace base
 

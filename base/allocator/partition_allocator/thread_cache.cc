@@ -502,22 +502,37 @@ void ThreadCache::FillBucket(size_t bucket_index) {
 
 void ThreadCache::ClearBucket(ThreadCache::Bucket& bucket, size_t limit) {
   // Avoids acquiring the lock needlessly.
-  if (!bucket.count)
+  if (!bucket.count || bucket.count <= limit)
     return;
 
-  // Acquire the lock once for the bucket. Allocations from the same bucket are
-  // likely to be hitting the same cache lines in the central allocator, and
-  // lock acquisitions can be expensive.
-  internal::ScopedGuard<internal::ThreadSafe> guard(root_->lock_);
-  while (bucket.count > limit) {
-    auto* entry = bucket.freelist_head;
-    PA_DCHECK(entry);
-    bucket.freelist_head = entry->GetNext();
-
-    root_->RawFreeLocked(entry);
-    bucket.count--;
+  if (limit == 0) {
+    FreeAfter(bucket.freelist_head);
+    bucket.freelist_head = nullptr;
+  } else {
+    // Free the *end* of the list, not the head, since the head contains the
+    // most recently touched memory.
+    auto* head = bucket.freelist_head;
+    size_t items = 1;  // Cannot free the freelist head.
+    while (items < limit) {
+      head = head->GetNext();
+      items++;
+    }
+    FreeAfter(head->GetNext());
+    head->SetNext(nullptr);
   }
-  PA_DCHECK(bucket.count == limit);
+  bucket.count = limit;
+}
+
+void ThreadCache::FreeAfter(PartitionFreelistEntry* head) {
+  // Acquire the lock once. Deallocation from the same bucket are likely to be
+  // hitting the same cache lines in the central allocator, and lock
+  // acquisitions can be expensive.
+  internal::ScopedGuard<internal::ThreadSafe> guard(root_->lock_);
+  while (head) {
+    void* ptr = head;
+    head = head->GetNext();
+    root_->RawFreeLocked(ptr);
+  }
 }
 
 void ThreadCache::ResetForTesting() {
