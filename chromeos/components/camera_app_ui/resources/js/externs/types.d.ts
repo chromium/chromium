@@ -30,10 +30,6 @@ declare namespace cros.mojom {
   export type StreamType = any;
 }
 
-// TODO(b/172340451): Remove this once we fully removed the legacy Chrome app
-// support.
-declare var chrome: any;
-
 // TODO(b/172340451): Install @types/w3c-image-capture in third_party/node to
 // get the correct types.
 type PhotoSettings = any;

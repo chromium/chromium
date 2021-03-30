@@ -113,32 +113,3 @@ export function assertBoolean(value, optMessage) {
   }
   return /** @type {boolean} */ (value);
 }
-
-/**
- * Wraps a function with completion callback as a Promise.
- * @param {function(...?): ?} func The last parameter of the function should be
- *     a completion callback.
- * @return {function(...?): !Promise}
- */
-export function promisify(func) {
-  return (...args) => new Promise(
-             (resolve, reject) => func(...args, (val) => {
-               if (chrome && chrome.runtime && chrome.runtime.lastError) {
-                 reject(new Error(chrome.runtime.lastError.message));
-               } else {
-                 resolve(val);
-               }
-             }));
-}
-
-/**
- * Wraps a function with completion callback and error callback as a Promise.
- * @param {function(...?): ?} func The last two parameters of the function
- *     should be a completion callback and an error callback.
- * @return {function(...?): !Promise}
- */
-export function promisifyWithError(func) {
-  return (...args) => new Promise(
-             (resolve, reject) => func(
-                 ...args, (val) => resolve(val), (error) => reject(error)));
-}

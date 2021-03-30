@@ -44,8 +44,7 @@ import {WaitableEvent} from './waitable_event.js';
 
 /**
  * The app window instance which is used for communication with Tast tests. For
- * non-test sessions or test sessions but using the legacy communication
- * solution (chrome.runtime), it should be null.
+ * non-test sessions, it should be null.
  * @type {?AppWindow}
  */
 const appWindow = window['appWindow'];
