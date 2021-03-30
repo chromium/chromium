@@ -176,6 +176,11 @@ if (build_with_chromium) {
       "test_data_chromium.cc",
     ]
     deps += [ "//base/test:test_support" ]
+
+    if (is_fuchsia) {
+      additional_manifest_fragments =
+          [ "//build/config/fuchsia/test/network_capabilities.test-cmx" ]
+    }
   }
 
   test("boringssl_ssl_tests") {

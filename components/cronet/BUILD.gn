@@ -161,6 +161,11 @@ if (is_android) {
     if ((is_linux || is_chromeos) && !is_component_build) {
       public_configs = [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
     }
+
+    if (is_fuchsia) {
+      additional_manifest_fragments =
+          [ "//build/config/fuchsia/test/network_capabilities.test-cmx" ]
+    }
   }
 
   test("cronet_unittests") {
