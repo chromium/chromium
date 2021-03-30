@@ -2272,7 +2272,8 @@ TEST_F(NearbySharingServiceImplTest,
       .WillOnce(testing::Invoke([&run_loop_2](const ShareTarget& share_target,
                                               TransferMetadata metadata) {
         EXPECT_TRUE(metadata.is_final_status());
-        EXPECT_EQ(TransferMetadata::Status::kFailed, metadata.status());
+        EXPECT_EQ(TransferMetadata::Status::kUnexpectedDisconnection,
+                  metadata.status());
         run_loop_2.Quit();
       }));
 
@@ -2781,7 +2782,8 @@ TEST_F(NearbySharingServiceImplTest,
       .WillOnce(testing::Invoke(
           [&](const ShareTarget& share_target, TransferMetadata metadata) {
             EXPECT_TRUE(metadata.is_final_status());
-            EXPECT_EQ(TransferMetadata::Status::kFailed, metadata.status());
+            EXPECT_EQ(TransferMetadata::Status::kIncompletePayloads,
+                      metadata.status());
 
             ASSERT_TRUE(share_target.has_attachments());
             EXPECT_EQ(1u, share_target.file_attachments.size());
@@ -3321,10 +3323,11 @@ TEST_F(NearbySharingServiceImplTest, SendText_FailedToConnect) {
       DiscoverShareTarget(transfer_callback, discovery_callback);
 
   base::RunLoop run_loop;
-  ExpectTransferUpdates(transfer_callback, target,
-                        {TransferMetadata::Status::kConnecting,
-                         TransferMetadata::Status::kFailed},
-                        run_loop.QuitClosure());
+  ExpectTransferUpdates(
+      transfer_callback, target,
+      {TransferMetadata::Status::kConnecting,
+       TransferMetadata::Status::kFailedToInitiateOutgoingConnection},
+      run_loop.QuitClosure());
 
   EXPECT_EQ(
       NearbySharingServiceImpl::StatusCodes::kOk,
@@ -3341,10 +3344,11 @@ TEST_F(NearbySharingServiceImplTest, SendText_FailedKeyVerification) {
       DiscoverShareTarget(transfer_callback, discovery_callback);
 
   base::RunLoop run_loop;
-  ExpectTransferUpdates(transfer_callback, target,
-                        {TransferMetadata::Status::kConnecting,
-                         TransferMetadata::Status::kFailed},
-                        run_loop.QuitClosure());
+  ExpectTransferUpdates(
+      transfer_callback, target,
+      {TransferMetadata::Status::kConnecting,
+       TransferMetadata::Status::kPairedKeyVerificationFailed},
+      run_loop.QuitClosure());
 
   SetUpKeyVerification(/*is_incoming=*/false,
                        sharing::mojom::PairedKeyResultFrame_Status::kFail);

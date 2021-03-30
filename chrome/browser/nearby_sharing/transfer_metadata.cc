@@ -20,8 +20,25 @@ bool TransferMetadata::IsFinalStatus(Status status) {
     case Status::kNotEnoughSpace:
     case Status::kUnsupportedAttachmentType:
     case Status::kExternalProviderLaunched:
+    case Status::kDecodeAdvertisementFailed:
+    case Status::kMissingTransferUpdateCallback:
+    case Status::kMissingShareTarget:
+    case Status::kMissingEndpointId:
+    case Status::kMissingPayloads:
+    case Status::kPairedKeyVerificationFailed:
+    case Status::kInvalidIntroductionFrame:
+    case Status::kIncompletePayloads:
+    case Status::kFailedToCreateShareTarget:
+    case Status::kFailedToInitiateOutgoingConnection:
+    case Status::kFailedToReadOutgoingConnectionResponse:
+    case Status::kUnexpectedDisconnection:
       return true;
-    default:
+    case Status::kUnknown:
+    case Status::kConnecting:
+    case Status::kAwaitingLocalConfirmation:
+    case Status::kAwaitingRemoteAcceptance:
+    case Status::kInProgress:
+    case Status::kMediaDownloading:
       return false;
   }
 }
@@ -61,6 +78,30 @@ std::string TransferMetadata::StatusToString(Status status) {
       return "kUnsupportedAttachmentType";
     case Status::kExternalProviderLaunched:
       return "kExternalProviderLaunched";
+    case Status::kDecodeAdvertisementFailed:
+      return "kDecodeAdvertisementFailed";
+    case Status::kMissingTransferUpdateCallback:
+      return "kMissingTransferUpdateCallback";
+    case Status::kMissingShareTarget:
+      return "kMissingShareTarget";
+    case Status::kMissingEndpointId:
+      return "kMissingEndpointId";
+    case Status::kMissingPayloads:
+      return "kMissingPayloads";
+    case Status::kPairedKeyVerificationFailed:
+      return "kPairedKeyVerificationFailed";
+    case Status::kInvalidIntroductionFrame:
+      return "kInvalidIntroductionFrame";
+    case Status::kIncompletePayloads:
+      return "kIncompletePayloads";
+    case Status::kFailedToCreateShareTarget:
+      return "kFailedToCreateShareTarget";
+    case Status::kFailedToInitiateOutgoingConnection:
+      return "kFailedToInitiateOutgoingConnection";
+    case Status::kFailedToReadOutgoingConnectionResponse:
+      return "kFailedToReadOutgoingConnectionResponse";
+    case Status::kUnexpectedDisconnection:
+      return "kUnexpectedDisconnection";
   }
 }
 
@@ -97,6 +138,33 @@ nearby_share::mojom::TransferStatus TransferMetadata::StatusToMojo(
       return nearby_share::mojom::TransferStatus::kNotEnoughSpace;
     case Status::kUnsupportedAttachmentType:
       return nearby_share::mojom::TransferStatus::kUnsupportedAttachmentType;
+    case Status::kDecodeAdvertisementFailed:
+      return nearby_share::mojom::TransferStatus::kDecodeAdvertisementFailed;
+    case Status::kMissingTransferUpdateCallback:
+      return nearby_share::mojom::TransferStatus::
+          kMissingTransferUpdateCallback;
+    case Status::kMissingShareTarget:
+      return nearby_share::mojom::TransferStatus::kMissingShareTarget;
+    case Status::kMissingEndpointId:
+      return nearby_share::mojom::TransferStatus::kMissingEndpointId;
+    case Status::kMissingPayloads:
+      return nearby_share::mojom::TransferStatus::kMissingPayloads;
+    case Status::kPairedKeyVerificationFailed:
+      return nearby_share::mojom::TransferStatus::kPairedKeyVerificationFailed;
+    case Status::kInvalidIntroductionFrame:
+      return nearby_share::mojom::TransferStatus::kInvalidIntroductionFrame;
+    case Status::kIncompletePayloads:
+      return nearby_share::mojom::TransferStatus::kIncompletePayloads;
+    case Status::kFailedToCreateShareTarget:
+      return nearby_share::mojom::TransferStatus::kFailedToCreateShareTarget;
+    case Status::kFailedToInitiateOutgoingConnection:
+      return nearby_share::mojom::TransferStatus::
+          kFailedToInitiateOutgoingConnection;
+    case Status::kFailedToReadOutgoingConnectionResponse:
+      return nearby_share::mojom::TransferStatus::
+          kFailedToReadOutgoingConnectionResponse;
+    case Status::kUnexpectedDisconnection:
+      return nearby_share::mojom::TransferStatus::kUnexpectedDisconnection;
     case Status::kMediaDownloading:
     case Status::kExternalProviderLaunched:
       // These statuses are not used anywhere.

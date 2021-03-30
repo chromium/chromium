@@ -380,6 +380,9 @@ class NearbySharingServiceImpl
                 StatusCodesCallback status_codes_callback,
                 bool is_initiator_of_cancellation);
 
+  void AbortAndCloseConnectionIfNecessary(const TransferMetadata::Status status,
+                                          const ShareTarget& share_target);
+
   Profile* profile_;
   std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager_;
   chromeos::nearby::NearbyProcessManager* process_manager_;

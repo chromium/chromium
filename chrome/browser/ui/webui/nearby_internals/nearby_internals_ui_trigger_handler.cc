@@ -134,9 +134,33 @@ std::string TransferUpdateMetaDataToString(
     case TransferMetadata::Status::kUnsupportedAttachmentType:
       return "Transfer status: Unsupported Attachment Type";
     case TransferMetadata::Status::kExternalProviderLaunched:
-      return "'Transfer status: External Provider Launched";
+      return "Transfer status: External Provider Launched";
     case TransferMetadata::Status::kConnecting:
-      return "'Transfer status: Connecting";
+      return "Transfer status: Connecting";
+    case TransferMetadata::Status::kDecodeAdvertisementFailed:
+      return "Transfer status: Decode Advertistement Failed";
+    case TransferMetadata::Status::kMissingTransferUpdateCallback:
+      return "Transfer status: Missing Transfer Update Callback";
+    case TransferMetadata::Status::kMissingShareTarget:
+      return "Transfer status: Missing Share Target";
+    case TransferMetadata::Status::kMissingEndpointId:
+      return "Transfer status: Missing Endpoint Id";
+    case TransferMetadata::Status::kMissingPayloads:
+      return "Transfer status: Missing Payloads";
+    case TransferMetadata::Status::kPairedKeyVerificationFailed:
+      return "Transfer status: Paired Key Verification Failed";
+    case TransferMetadata::Status::kInvalidIntroductionFrame:
+      return "Transfer status: Invalid Introduction Frame";
+    case TransferMetadata::Status::kIncompletePayloads:
+      return "Transfer status: Incomplete Payloads";
+    case TransferMetadata::Status::kFailedToCreateShareTarget:
+      return "Transfer status: Failed To Create Share Target";
+    case TransferMetadata::Status::kFailedToInitiateOutgoingConnection:
+      return "Transfer status: Failed To Initiate Outgoing Connection";
+    case TransferMetadata::Status::kFailedToReadOutgoingConnectionResponse:
+      return "Transfer status: Failed To Read Outgoing Connection Response.";
+    case TransferMetadata::Status::kUnexpectedDisconnection:
+      return "Transfer status: Unexpected Disconnection";
   }
 }
 

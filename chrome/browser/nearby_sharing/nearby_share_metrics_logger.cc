@@ -44,7 +44,19 @@ enum class TransferFinalStatus {
   kMediaUnavailable = 7,
   kNotEnoughSpace = 8,
   kUnsupportedAttachmentType = 9,
-  kMaxValue = kUnsupportedAttachmentType
+  kDecodeAdvertisementFailed = 10,
+  kMissingTransferUpdateCallback = 11,
+  kMissingShareTarget = 12,
+  kMissingEndpointId = 13,
+  kMissingPayloads = 14,
+  kPairedKeyVerificationFailed = 15,
+  kInvalidIntroductionFrame = 16,
+  kIncompletePayloads = 17,
+  kFailedToCreateShareTarget = 18,
+  kFailedToInitiateOutgoingConnection = 19,
+  kFailedToReadOutgoingConnectionResponse = 20,
+  kUnexpectedDisconnection = 21,
+  kMaxValue = kUnexpectedDisconnection
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -160,6 +172,30 @@ TransferFinalStatus TransferMetadataStatusToTransferFinalStatus(
       return TransferFinalStatus::kNotEnoughSpace;
     case TransferMetadata::Status::kUnsupportedAttachmentType:
       return TransferFinalStatus::kUnsupportedAttachmentType;
+    case TransferMetadata::Status::kDecodeAdvertisementFailed:
+      return TransferFinalStatus::kDecodeAdvertisementFailed;
+    case TransferMetadata::Status::kMissingTransferUpdateCallback:
+      return TransferFinalStatus::kMissingTransferUpdateCallback;
+    case TransferMetadata::Status::kMissingShareTarget:
+      return TransferFinalStatus::kMissingShareTarget;
+    case TransferMetadata::Status::kMissingEndpointId:
+      return TransferFinalStatus::kMissingEndpointId;
+    case TransferMetadata::Status::kMissingPayloads:
+      return TransferFinalStatus::kMissingPayloads;
+    case TransferMetadata::Status::kPairedKeyVerificationFailed:
+      return TransferFinalStatus::kPairedKeyVerificationFailed;
+    case TransferMetadata::Status::kInvalidIntroductionFrame:
+      return TransferFinalStatus::kInvalidIntroductionFrame;
+    case TransferMetadata::Status::kIncompletePayloads:
+      return TransferFinalStatus::kIncompletePayloads;
+    case TransferMetadata::Status::kFailedToCreateShareTarget:
+      return TransferFinalStatus::kFailedToCreateShareTarget;
+    case TransferMetadata::Status::kFailedToInitiateOutgoingConnection:
+      return TransferFinalStatus::kFailedToInitiateOutgoingConnection;
+    case TransferMetadata::Status::kFailedToReadOutgoingConnectionResponse:
+      return TransferFinalStatus::kFailedToReadOutgoingConnectionResponse;
+    case TransferMetadata::Status::kUnexpectedDisconnection:
+      return TransferFinalStatus::kUnexpectedDisconnection;
     case TransferMetadata::Status::kUnknown:
     case TransferMetadata::Status::kConnecting:
     case TransferMetadata::Status::kAwaitingLocalConfirmation:

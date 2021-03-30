@@ -641,11 +641,25 @@ void NearbyNotificationManager::OnTransferUpdate(
     case TransferMetadata::Status::kFailed:
     case TransferMetadata::Status::kNotEnoughSpace:
     case TransferMetadata::Status::kUnsupportedAttachmentType:
+    case TransferMetadata::Status::kDecodeAdvertisementFailed:
+    case TransferMetadata::Status::kMissingTransferUpdateCallback:
+    case TransferMetadata::Status::kMissingShareTarget:
+    case TransferMetadata::Status::kMissingEndpointId:
+    case TransferMetadata::Status::kMissingPayloads:
+    case TransferMetadata::Status::kPairedKeyVerificationFailed:
+    case TransferMetadata::Status::kInvalidIntroductionFrame:
+    case TransferMetadata::Status::kIncompletePayloads:
+    case TransferMetadata::Status::kFailedToCreateShareTarget:
+    case TransferMetadata::Status::kFailedToInitiateOutgoingConnection:
+    case TransferMetadata::Status::kFailedToReadOutgoingConnectionResponse:
+    case TransferMetadata::Status::kUnexpectedDisconnection:
       ShowFailure(share_target, transfer_metadata);
       break;
-    default:
-      if (transfer_metadata.is_final_status())
-        ShowFailure(share_target, transfer_metadata);
+    case TransferMetadata::Status::kUnknown:
+    case TransferMetadata::Status::kConnecting:
+    case TransferMetadata::Status::kMediaUnavailable:
+    case TransferMetadata::Status::kMediaDownloading:
+      // Ignore
       break;
   }
 

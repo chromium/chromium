@@ -50,6 +50,33 @@ base::Optional<nearby_share::mojom::TransferStatus> GetTransferStatus(
       return nearby_share::mojom::TransferStatus::kConnecting;
     case TransferMetadata::Status::kCancelled:
       return nearby_share::mojom::TransferStatus::kCancelled;
+    case TransferMetadata::Status::kDecodeAdvertisementFailed:
+      return nearby_share::mojom::TransferStatus::kDecodeAdvertisementFailed;
+    case TransferMetadata::Status::kMissingTransferUpdateCallback:
+      return nearby_share::mojom::TransferStatus::
+          kMissingTransferUpdateCallback;
+    case TransferMetadata::Status::kMissingShareTarget:
+      return nearby_share::mojom::TransferStatus::kMissingShareTarget;
+    case TransferMetadata::Status::kMissingEndpointId:
+      return nearby_share::mojom::TransferStatus::kMissingEndpointId;
+    case TransferMetadata::Status::kMissingPayloads:
+      return nearby_share::mojom::TransferStatus::kMissingPayloads;
+    case TransferMetadata::Status::kPairedKeyVerificationFailed:
+      return nearby_share::mojom::TransferStatus::kPairedKeyVerificationFailed;
+    case TransferMetadata::Status::kInvalidIntroductionFrame:
+      return nearby_share::mojom::TransferStatus::kInvalidIntroductionFrame;
+    case TransferMetadata::Status::kIncompletePayloads:
+      return nearby_share::mojom::TransferStatus::kIncompletePayloads;
+    case TransferMetadata::Status::kFailedToCreateShareTarget:
+      return nearby_share::mojom::TransferStatus::kFailedToCreateShareTarget;
+    case TransferMetadata::Status::kFailedToInitiateOutgoingConnection:
+      return nearby_share::mojom::TransferStatus::
+          kFailedToInitiateOutgoingConnection;
+    case TransferMetadata::Status::kFailedToReadOutgoingConnectionResponse:
+      return nearby_share::mojom::TransferStatus::
+          kFailedToReadOutgoingConnectionResponse;
+    case TransferMetadata::Status::kUnexpectedDisconnection:
+      return nearby_share::mojom::TransferStatus::kUnexpectedDisconnection;
     case TransferMetadata::Status::kMediaDownloading:
     case TransferMetadata::Status::kExternalProviderLaunched:
       // Ignore all other transfer status updates.

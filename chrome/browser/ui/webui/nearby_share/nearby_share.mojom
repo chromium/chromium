@@ -93,6 +93,30 @@ enum TransferStatus {
   kNotEnoughSpace,
   // The file type is not supported for sharing.
   kUnsupportedAttachmentType,
+  // The advertisement failed to decode.
+  kDecodeAdvertisementFailed,
+  // The share target doesn't have a transfer update callback.
+  kMissingTransferUpdateCallback,
+  // Could not find the appropriate share target.
+  kMissingShareTarget,
+  // Could not find the appropriate endpoint id.
+  kMissingEndpointId,
+  // The transfer doesn't have any payloads.
+  kMissingPayloads,
+  // The Paired Key Verification step failed.
+  kPairedKeyVerificationFailed,
+  // The introduction frame is invalid.
+  kInvalidIntroductionFrame,
+  // The completed transfer didn't complete all expected payloads.
+  kIncompletePayloads,
+  // Could not create a share target for transfer.
+  kFailedToCreateShareTarget,
+  // The outgoing connection failed to initiate.
+  kFailedToInitiateOutgoingConnection,
+  // The outgoing connection response couldn't be read.
+  kFailedToReadOutgoingConnectionResponse,
+  // The connection unexpectedly disconnected.
+  kUnexpectedDisconnection,
 };
 
 // Metadata associated with the current transfer.
