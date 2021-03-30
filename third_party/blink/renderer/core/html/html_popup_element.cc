@@ -13,11 +13,12 @@
 namespace blink {
 
 HTMLPopupElement::HTMLPopupElement(Document& document)
-    : HTMLElement(html_names::kPopupTag, document), open_(false) {
+    : HTMLElement(html_names::kPopupTag, document),
+      open_(false),
+      invoker_(nullptr) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
   UseCounter::Count(document, WebFeature::kPopupElement);
 }
-
 
 void HTMLPopupElement::MarkStyleDirty() {
   SetNeedsStyleRecalc(kLocalStyleChange,
@@ -35,6 +36,7 @@ void HTMLPopupElement::hide() {
   GetDocument().HideAllPopupsUntil(this);
   PopPopupElement(this);
   open_ = false;
+  invoker_ = nullptr;
   PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
   MarkStyleDirty();
   ScheduleHideEvent();
@@ -44,6 +46,12 @@ void HTMLPopupElement::ScheduleHideEvent() {
   Event* event = Event::Create(event_type_names::kHide);
   event->SetTarget(this);
   GetDocument().EnqueueAnimationFrameEvent(event);
+}
+
+void HTMLPopupElement::Invoke(Element* invoker) {
+  DCHECK(invoker);
+  invoker_ = invoker;
+  show();
 }
 
 void HTMLPopupElement::show() {
@@ -88,35 +96,26 @@ Element* HTMLPopupElement::AnchorElement() const {
   return nullptr;
 }
 
-typedef HeapHashMap<Member<const Element>, Member<const HTMLPopupElement>>
-    ElementToPopupMap;
 const HTMLPopupElement* HTMLPopupElement::NearestOpenAncestralPopup(
     Node* start_node) {
-  DCHECK(start_node);
-  // We need to walk up from the start node to see if there
-  // is a parent popup, or the anchor for a popup, or an invoking
-  // element (which has the "popup" attribute). There can be
-  // multiple popups for a single anchor element, and there can
-  // be multiple invoking elements for each popup, but we will
-  // stop on any of them.
-
-  // Since there can be multiple popups for a single anchor element, just store
-  // the popup that is highest (last) on the popup stack for each anchor.
-  ElementToPopupMap anchors;
+  if (!start_node)
+    return nullptr;
+  // We need to walk up from the start node to see if there is a parent popup,
+  // or the anchor for a popup, or an invoking element (which has the "popup"
+  // attribute). There can be multiple popups for a single anchor element, and
+  // an anchor for one popup can also be an invoker for a different popup, but
+  // we will stop on any of them. Therefore, just store the popup that is
+  // highest (last) on the popup stack for each anchor and/or invoker.
+  HeapHashMap<Member<const Element>, Member<const HTMLPopupElement>>
+      anchors_and_invokers;
   Document& document = start_node->GetDocument();
   for (auto popup : document.PopupElementStack()) {
     if (const auto* anchor = popup->AnchorElement())
-      anchors.Set(anchor, popup);
+      anchors_and_invokers.Set(anchor, popup);
+    if (const auto* invoker = popup->invoker_.Get())
+      anchors_and_invokers.Set(invoker, popup);
   }
-  // Each popup can be invoked by multiple elements through the "popup"
-  // attribute. We need to build a list of all such elements for all open
-  // popups.
-  ElementToPopupMap invokers;
-  for (auto popup : document.PopupElementStack()) {
-    for (auto invoker : popup->invokers_)
-      invokers.Set(invoker, popup);
-  }
-  // TODO(masonfreed) Should this be a flat tree parent traversal?
+  // TODO(masonf) Should this be a flat tree parent traversal?
   for (Node* current_node = start_node; current_node;
        current_node = current_node->ParentOrShadowHostNode()) {
     // Parent popup element (or the start_node itself, if <popup>).
@@ -125,28 +124,21 @@ const HTMLPopupElement* HTMLPopupElement::NearestOpenAncestralPopup(
         return popup;
     }
     if (Element* current_element = DynamicTo<Element>(current_node)) {
-      // Anchor element for an open popup.
-      if (anchors.Contains(current_element))
-        return anchors.at(current_element);
-      // Invoking element
-      if (invokers.Contains(current_element))
-        return invokers.at(current_element);
+      if (anchors_and_invokers.Contains(current_element))
+        return anchors_and_invokers.at(current_element);
     }
   }
 
   // If the starting element is a popup, we need to check for ancestors
-  // of its anchor and invoking elements also.
+  // of its anchor and invoking element also.
   if (const auto* start_popup = DynamicTo<HTMLPopupElement>(start_node)) {
-    auto* anchor_ancestor =
-        start_popup->AnchorElement()
-            ? NearestOpenAncestralPopup(start_popup->AnchorElement())
-            : nullptr;
-    if (anchor_ancestor)
+    if (auto* anchor_ancestor =
+            NearestOpenAncestralPopup(start_popup->AnchorElement())) {
       return anchor_ancestor;
-    for (auto invoker : start_popup->invokers_) {
-      if (auto* invoker_ancestor = NearestOpenAncestralPopup(invoker)) {
-        return invoker_ancestor;
-      }
+    }
+    if (auto* invoker_ancestor =
+            NearestOpenAncestralPopup(start_popup->invoker_)) {
+      return invoker_ancestor;
     }
   }
   return nullptr;
@@ -173,22 +165,8 @@ void HTMLPopupElement::HandleLightDismiss(const Event& event) {
   }
 }
 
-void HTMLPopupElement::AddInvoker(Element* invoker) {
-  // TODO(masonfreed) This needs to be called anywhere
-  // invokers might change, e.g. when attributes are added
-  // or removed from invoking elements, or when DOM tree
-  // mutations occur that change the resolved idrefs.
-  DCHECK(invoker);
-  invokers_.insert(invoker);
-}
-
-void HTMLPopupElement::RemoveInvoker(Element* invoker) {
-  DCHECK(invoker);
-  invokers_.erase(invoker);
-}
-
 void HTMLPopupElement::Trace(Visitor* visitor) const {
-  visitor->Trace(invokers_);
+  visitor->Trace(invoker_);
   HTMLElement::Trace(visitor);
 }
 

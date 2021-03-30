@@ -115,7 +115,7 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
     Element* popupElement =
         GetDocument().getElementById(getAttribute(html_names::kPopupAttr));
     if (popupElement && IsA<HTMLPopupElement>(popupElement)) {
-      To<HTMLPopupElement>(popupElement)->show();
+      To<HTMLPopupElement>(popupElement)->Invoke(this);
     }
     if (!IsDisabledFormControl()) {
       if (Form() && type_ == SUBMIT) {
