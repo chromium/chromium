@@ -12,6 +12,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace page_load_metrics {
+
 namespace {
 
 // Scales the rect by the web content's render widget host's device scale
@@ -27,9 +29,8 @@ gfx::Rect ScaleRectByDeviceScaleFactor(const gfx::Rect& rect,
 void NavigateAndWaitForTimingEvent(
     content::WebContents* web_contents,
     const GURL& url,
-    page_load_metrics::PageLoadMetricsTestWaiter::TimingField event) {
-  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
-      web_contents);
+    PageLoadMetricsTestWaiter::TimingField event) {
+  auto waiter = std::make_unique<PageLoadMetricsTestWaiter>(web_contents);
   waiter->AddPageExpectation(event);
 
   EXPECT_TRUE(content::NavigateToURL(web_contents, url));
@@ -44,11 +45,10 @@ int GetDocumentHeight(content::WebContents* web_contents) {
   return EvalJs(web_contents, "document.body.scrollHeight").ExtractInt();
 }
 
-void CreateAndWaitForIframeAtRect(
-    content::WebContents* web_contents,
-    page_load_metrics::PageLoadMetricsTestWaiter* waiter,
-    const GURL& url,
-    const gfx::Rect& rect) {
+void CreateAndWaitForIframeAtRect(content::WebContents* web_contents,
+                                  PageLoadMetricsTestWaiter* waiter,
+                                  const GURL& url,
+                                  const gfx::Rect& rect) {
   // The intersections returned by the renderer are scaled to the device's
   // scale factor.
   gfx::Rect scaled_rect = ScaleRectByDeviceScaleFactor(rect, web_contents);
@@ -71,16 +71,16 @@ void CreateAndWaitForIframeAtRect(
 // contentful paint.
 void NavigateAndWaitForFirstContentfulPaint(content::WebContents* web_contents,
                                             const GURL& url) {
-  NavigateAndWaitForTimingEvent(web_contents, url,
-                                page_load_metrics::PageLoadMetricsTestWaiter::
-                                    TimingField::kFirstContentfulPaint);
+  NavigateAndWaitForTimingEvent(
+      web_contents, url,
+      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
 }
 
 void NavigateAndWaitForFirstMeaningfulPaint(content::WebContents* web_contents,
                                             const GURL& url) {
-  NavigateAndWaitForTimingEvent(web_contents, url,
-                                page_load_metrics::PageLoadMetricsTestWaiter::
-                                    TimingField::kFirstMeaningfulPaint);
+  NavigateAndWaitForTimingEvent(
+      web_contents, url,
+      PageLoadMetricsTestWaiter::TimingField::kFirstMeaningfulPaint);
 }
 
 // Create a large sticky ad in |web_contents| and trigger a series of actions
@@ -129,3 +129,5 @@ void TriggerAndDetectOverlayPopupAd(content::WebContents* web_contents) {
                   web_contents, "", "", content::EXECUTE_SCRIPT_NO_USER_GESTURE)
                   .error.empty());
 }
+
+}  // namespace page_load_metrics

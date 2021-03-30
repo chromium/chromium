@@ -7,7 +7,7 @@
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_data_utils.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 
-namespace ad_metrics {
+namespace page_load_metrics {
 
 AggregateFrameData::AggregateFrameData() = default;
 AggregateFrameData::~AggregateFrameData() = default;
@@ -25,7 +25,7 @@ void AggregateFrameData::UpdateCpuUsage(base::TimeTicks update_time,
 }
 
 void AggregateFrameData::ProcessResourceLoadInFrame(
-    const page_load_metrics::mojom::ResourceDataUpdatePtr& resource,
+    const mojom::ResourceDataUpdatePtr& resource,
     bool is_main_frame) {
   resource_data_.ProcessResourceLoad(resource);
   if (is_main_frame)
@@ -40,4 +40,4 @@ void AggregateFrameData::AdjustAdBytes(int64_t unaccounted_ad_bytes,
     main_frame_resource_data_.AdjustAdBytes(unaccounted_ad_bytes, mime_type);
 }
 
-}  // namespace ad_metrics
+}  // namespace page_load_metrics

@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTest,
   content::WebContents* web_contents =
       chrome_test_utils::GetActiveWebContents(this);
 
-  NavigateAndWaitForFirstMeaningfulPaint(web_contents, url);
+  page_load_metrics::NavigateAndWaitForFirstMeaningfulPaint(web_contents, url);
 
   // Reload the page. Since we haven't seen any ad violations, expect that the
   // ad script is loaded and that the subresource filter UI doesn't show up.
@@ -96,9 +96,9 @@ IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTest,
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/ads_observer/large_scrollable_page_with_adiframe_writer.html");
 
-  NavigateAndWaitForFirstMeaningfulPaint(web_contents, url);
+  page_load_metrics::NavigateAndWaitForFirstMeaningfulPaint(web_contents, url);
 
-  TriggerAndDetectOverlayPopupAd(web_contents);
+  page_load_metrics::TriggerAndDetectOverlayPopupAd(web_contents);
 
   // Reload the page. Since we are enforcing ad blocking on ads violations,
   // expect that the ad script is not loaded and that the subresource filter UI
@@ -143,9 +143,9 @@ IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTestWithoutEnforcement,
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/ads_observer/large_scrollable_page_with_adiframe_writer.html");
 
-  NavigateAndWaitForFirstMeaningfulPaint(web_contents, url);
+  page_load_metrics::NavigateAndWaitForFirstMeaningfulPaint(web_contents, url);
 
-  TriggerAndDetectOverlayPopupAd(web_contents);
+  page_load_metrics::TriggerAndDetectOverlayPopupAd(web_contents);
 
   // Reload the page. Since we are not enforcing ad blocking on ads violations,
   // expect that the ad script is loaded and that the subresource filter UI

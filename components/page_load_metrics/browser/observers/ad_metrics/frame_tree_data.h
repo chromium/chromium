@@ -43,7 +43,7 @@ const int kMaxPeakWindowedPercent = 50;
 
 }  // namespace heavy_ad_thresholds
 
-namespace ad_metrics {
+namespace page_load_metrics {
 
 // The origin of the ad relative to the main frame's origin.
 // Note: Logged to UMA, keep in sync with CrossOriginAdStatus in enums.xml.
@@ -126,8 +126,7 @@ enum class MediaStatus {
 // specific to the top frame in the tree.
 class FrameTreeData : public base::SupportsWeakPtr<FrameTreeData> {
  public:
-  using FrameTreeNodeId =
-      page_load_metrics::PageLoadMetricsObserver::FrameTreeNodeId;
+  using FrameTreeNodeId = PageLoadMetricsObserver::FrameTreeNodeId;
 
   // |root_frame_tree_node_id| is the root frame of the subtree that
   // FrameTreeData stores information for.
@@ -136,10 +135,9 @@ class FrameTreeData : public base::SupportsWeakPtr<FrameTreeData> {
   ~FrameTreeData();
 
   // Processes a resource load in frame, calling ResourceLoadAggregator.
-  void ProcessResourceLoadInFrame(
-      const page_load_metrics::mojom::ResourceDataUpdatePtr& resource,
-      int process_id,
-      const page_load_metrics::ResourceTracker& resource_tracker);
+  void ProcessResourceLoadInFrame(const mojom::ResourceDataUpdatePtr& resource,
+                                  int process_id,
+                                  const ResourceTracker& resource_tracker);
 
   // Adjusts ad bytes after call to ProcessResourceLoadInFrame, calling
   // ResourceLoadAggregator.
@@ -356,6 +354,6 @@ class FrameTreeData : public base::SupportsWeakPtr<FrameTreeData> {
   MemoryUsageAggregator memory_usage_;
 };
 
-}  // namespace ad_metrics
+}  // namespace page_load_metrics
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_FRAME_TREE_DATA_H_

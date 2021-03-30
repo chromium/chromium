@@ -58,8 +58,9 @@
 
 namespace {
 
-using OriginStatus = ad_metrics::OriginStatus;
-using OriginStatusWithThrottling = ad_metrics::OriginStatusWithThrottling;
+using OriginStatus = page_load_metrics::OriginStatus;
+using OriginStatusWithThrottling =
+    page_load_metrics::OriginStatusWithThrottling;
 
 using FrameTreeNodeId = int;
 
@@ -117,8 +118,8 @@ const char kHttpOkResponseHeader[] =
 // Use the maximum possible threshold so tests are deterministic.
 const int kMaxHeavyAdNetworkSize =
     heavy_ad_thresholds::kMaxNetworkBytes +
-    AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider::
-        kMaxNetworkThresholdNoiseBytes;
+    page_load_metrics::AdsPageLoadMetricsObserver::
+        HeavyAdThresholdNoiseProvider::kMaxNetworkThresholdNoiseBytes;
 
 void LoadLargeResource(net::test_server::ControllableHttpResponse* response,
                        int bytes) {
@@ -181,8 +182,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   waiter->AddMinimumCompleteResourcesExpectation(4);
   waiter->Wait();
   ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
-  histogram_tester.ExpectUniqueSample(kCrossOriginHistogramId,
-                                      ad_metrics::OriginStatus::kSame, 1);
+  histogram_tester.ExpectUniqueSample(
+      kCrossOriginHistogramId, page_load_metrics::OriginStatus::kSame, 1);
 }
 
 // Test that an empty embedded ad isn't reported at all.
@@ -212,14 +213,14 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   waiter->Wait();
 
   ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
-  histogram_tester.ExpectUniqueSample(kCrossOriginHistogramId,
-                                      ad_metrics::OriginStatus::kSame, 1);
+  histogram_tester.ExpectUniqueSample(
+      kCrossOriginHistogramId, page_load_metrics::OriginStatus::kSame, 1);
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::AdFrameLoad::kEntryName);
   EXPECT_EQ(1u, entries.size());
   ukm_recorder.ExpectEntryMetric(
       entries.front(), ukm::builders::AdFrameLoad::kStatus_CrossOriginName,
-      static_cast<int>(ad_metrics::OriginStatus::kSame));
+      static_cast<int>(page_load_metrics::OriginStatus::kSame));
 }
 
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
@@ -245,14 +246,14 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   waiter->AddMinimumCompleteResourcesExpectation(5);
   waiter->Wait();
   ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
-  histogram_tester.ExpectUniqueSample(kCrossOriginHistogramId,
-                                      ad_metrics::OriginStatus::kCross, 1);
+  histogram_tester.ExpectUniqueSample(
+      kCrossOriginHistogramId, page_load_metrics::OriginStatus::kCross, 1);
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::AdFrameLoad::kEntryName);
   EXPECT_EQ(1u, entries.size());
   ukm_recorder.ExpectEntryMetric(
       entries.front(), ukm::builders::AdFrameLoad::kStatus_CrossOriginName,
-      static_cast<int>(ad_metrics::OriginStatus::kCross));
+      static_cast<int>(page_load_metrics::OriginStatus::kCross));
 }
 
 // Verifies that the page ad density records the maximum value during
@@ -614,8 +615,8 @@ class CreativeOriginAdsPageLoadMetricsObserverBrowserTest
 
   void TestCreativeOriginStatus(
       std::unique_ptr<Frame> main_frame,
-      ad_metrics::OriginStatus expected_status,
-      base::Optional<ad_metrics::OriginStatusWithThrottling>
+      page_load_metrics::OriginStatus expected_status,
+      base::Optional<page_load_metrics::OriginStatusWithThrottling>
           expected_status_with_throttling) {
     base::HistogramTester histogram_tester;
     bool subframe_exists = main_frame->HasChild();
@@ -681,8 +682,8 @@ IN_PROC_BROWSER_TEST_F(CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
   TestCreativeOriginStatus(
       MakeFrame("a",
                 MakeFrame("a", MakeFrame("b", MakeFrame("c", nullptr), true))),
-      ad_metrics::OriginStatus::kCross,
-      ad_metrics::OriginStatusWithThrottling::kCrossAndUnthrottled);
+      page_load_metrics::OriginStatus::kCross,
+      page_load_metrics::OriginStatusWithThrottling::kCrossAndUnthrottled);
 }
 
 // Test that an ad creative with a different origin as the main page,
@@ -793,10 +794,10 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
   histogram_tester.ExpectBucketCount(
       kAdUserActivationHistogramId,
-      ad_metrics::UserActivationStatus::kReceivedActivation, 1);
+      page_load_metrics::UserActivationStatus::kReceivedActivation, 1);
   histogram_tester.ExpectBucketCount(
       kAdUserActivationHistogramId,
-      ad_metrics::UserActivationStatus::kNoActivation, 1);
+      page_load_metrics::UserActivationStatus::kNoActivation, 1);
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::AdFrameLoad::kEntryName);
   EXPECT_EQ(2u, entries.size());
@@ -1120,7 +1121,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   EXPECT_EQ(1u, entries.size());
   ukm_recorder.ExpectEntryMetric(
       entries.front(), ukm::builders::AdFrameLoad::kStatus_MediaName,
-      static_cast<int>(ad_metrics::MediaStatus::kNotPlayed));
+      static_cast<int>(page_load_metrics::MediaStatus::kNotPlayed));
 }
 
 // Flaky on all platforms, http://crbug.com/972822.
@@ -1160,7 +1161,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   EXPECT_EQ(1u, entries.size());
   ukm_recorder.ExpectEntryMetric(
       entries.front(), ukm::builders::AdFrameLoad::kStatus_MediaName,
-      static_cast<int>(ad_metrics::MediaStatus::kPlayed));
+      static_cast<int>(page_load_metrics::MediaStatus::kPlayed));
 }
 
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
@@ -1691,14 +1692,16 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   // Wait for the intervention page navigation to finish on the frame.
   error_observer.WaitForNavigationFinished();
 
-  histogram_tester.ExpectUniqueSample(kHeavyAdInterventionTypeHistogramId,
-                                      ad_metrics::HeavyAdStatus::kNetwork, 1);
+  histogram_tester.ExpectUniqueSample(
+      kHeavyAdInterventionTypeHistogramId,
+      page_load_metrics::HeavyAdStatus::kNetwork, 1);
 
   // Check that the ad frame was navigated to the intervention page.
   EXPECT_FALSE(error_observer.last_navigation_succeeded());
 
-  histogram_tester.ExpectUniqueSample(kHeavyAdInterventionTypeHistogramId,
-                                      ad_metrics::HeavyAdStatus::kNetwork, 1);
+  histogram_tester.ExpectUniqueSample(
+      kHeavyAdInterventionTypeHistogramId,
+      page_load_metrics::HeavyAdStatus::kNetwork, 1);
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kHeavyAdIntervention, 1);
@@ -1812,8 +1815,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   // be triggered at this point.
   LoadHeavyAdResourceAndWaitOrError(http_responses[0].get(), waiter.get(),
                                     /*will_block=*/true);
-  histogram_tester.ExpectUniqueSample(kHeavyAdInterventionTypeHistogramId,
-                                      ad_metrics::HeavyAdStatus::kNetwork, 1);
+  histogram_tester.ExpectUniqueSample(
+      kHeavyAdInterventionTypeHistogramId,
+      page_load_metrics::HeavyAdStatus::kNetwork, 1);
   histogram_tester.ExpectTotalCount(kAdsInterventionRecordedHistogram, 0);
   histogram_tester.ExpectBucketCount(
       "SubresourceFilter.Actions2",
@@ -1823,8 +1827,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   // not be triggered at this point.
   LoadHeavyAdResourceAndWaitOrError(http_responses[1].get(), waiter.get(),
                                     /*will_block=*/true);
-  histogram_tester.ExpectUniqueSample(kHeavyAdInterventionTypeHistogramId,
-                                      ad_metrics::HeavyAdStatus::kNetwork, 2);
+  histogram_tester.ExpectUniqueSample(
+      kHeavyAdInterventionTypeHistogramId,
+      page_load_metrics::HeavyAdStatus::kNetwork, 2);
   histogram_tester.ExpectTotalCount(kAdsInterventionRecordedHistogram, 0);
   histogram_tester.ExpectBucketCount(
       "SubresourceFilter.Actions2",
@@ -1842,8 +1847,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   // be triggered at this point.
   LoadHeavyAdResourceAndWaitOrError(http_responses[2].get(), waiter.get(),
                                     /*will_block=*/true);
-  histogram_tester.ExpectUniqueSample(kHeavyAdInterventionTypeHistogramId,
-                                      ad_metrics::HeavyAdStatus::kNetwork, 3);
+  histogram_tester.ExpectUniqueSample(
+      kHeavyAdInterventionTypeHistogramId,
+      page_load_metrics::HeavyAdStatus::kNetwork, 3);
   histogram_tester.ExpectUniqueSample(
       kAdsInterventionRecordedHistogram,
       subresource_filter::mojom::AdsViolation::kHeavyAdsInterventionAtHostLimit,
@@ -1856,8 +1862,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   // second time.
   LoadHeavyAdResourceAndWaitOrError(http_responses[3].get(), waiter.get(),
                                     /*will_block=*/false);
-  histogram_tester.ExpectUniqueSample(kHeavyAdInterventionTypeHistogramId,
-                                      ad_metrics::HeavyAdStatus::kNetwork, 3);
+  histogram_tester.ExpectUniqueSample(
+      kHeavyAdInterventionTypeHistogramId,
+      page_load_metrics::HeavyAdStatus::kNetwork, 3);
   histogram_tester.ExpectUniqueSample(
       kAdsInterventionRecordedHistogram,
       subresource_filter::mojom::AdsViolation::kHeavyAdsInterventionAtHostLimit,
@@ -2003,7 +2010,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 
   // Ensure that there is a single entry that is at least the percent specified.
   int min_percent =
-      100 * 300 / ad_metrics::PeakCpuAggregator::kWindowSize.InMilliseconds();
+      100 * 300 /
+      page_load_metrics::PeakCpuAggregator::kWindowSize.InMilliseconds();
   auto samples = histogram_tester.GetAllSamples(kPeakWindowdPercentHistogramId);
   EXPECT_EQ(1u, samples.size());
   EXPECT_EQ(1, samples.front().count);
@@ -2040,7 +2048,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   // Ensure that there is a single entry that is at least the peak windowed
   // percent of 400ms.
   int min_percent =
-      100 * 400 / ad_metrics::PeakCpuAggregator::kWindowSize.InMilliseconds();
+      100 * 400 /
+      page_load_metrics::PeakCpuAggregator::kWindowSize.InMilliseconds();
   auto samples = histogram_tester.GetAllSamples(kPeakWindowdPercentHistogramId);
   EXPECT_EQ(1u, samples.size());
   EXPECT_EQ(1, samples.front().count);
@@ -2123,7 +2132,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   // Ensure that there is a single entry that is at least the peak windowed
   // percent of 400ms.
   int min_percent =
-      100 * 300 / ad_metrics::PeakCpuAggregator::kWindowSize.InMilliseconds();
+      100 * 300 /
+      page_load_metrics::PeakCpuAggregator::kWindowSize.InMilliseconds();
   auto samples = histogram_tester.GetAllSamples(kPeakWindowdPercentHistogramId);
   EXPECT_EQ(1u, samples.size());
   EXPECT_EQ(1, samples.front().count);

@@ -8,6 +8,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace page_load_metrics {
+
 TEST(PageAdDensityTrackerTest, MultipleRects_MaxPageDensityByAreaCalculated) {
   PageAdDensityTracker tracker;
 
@@ -96,3 +98,5 @@ TEST(PageAdDensityTrackerTest, OverflowTotalAreaAndHeight) {
   EXPECT_EQ(tracker.MaxPageAdDensityByArea(), -1);
   EXPECT_EQ(tracker.MaxPageAdDensityByHeight(), -1);
 }
+
+}  // namespace page_load_metrics

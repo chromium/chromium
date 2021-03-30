@@ -7,6 +7,8 @@
 #include "base/numerics/checked_math.h"
 #include "base/optional.h"
 
+namespace page_load_metrics {
+
 namespace {
 
 // Calculates the combined length of a set of line segments. This counts
@@ -295,3 +297,5 @@ bool PageAdDensityTracker::RectEvent::operator<(const RectEvent& rhs) const {
     return lhs_y > rhs_y;
   }
 }
+
+}  // namespace page_load_metrics

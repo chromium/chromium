@@ -68,7 +68,8 @@ using content::NavigationSimulator;
 using content::RenderFrameHost;
 using content::RenderFrameHostTester;
 using content::TestNavigationThrottle;
-using page_load_metrics::OptionalMin;
+
+namespace page_load_metrics {
 
 namespace {
 
@@ -89,7 +90,7 @@ struct ExpectedFrameBytes {
 struct CreativeOriginTest {
   std::vector<std::string> urls;
   size_t creative_index;
-  ad_metrics::OriginStatus expected_origin_status;
+  OriginStatus expected_origin_status;
 };
 
 struct CreativeOriginTestWithThrottling {
@@ -98,7 +99,7 @@ struct CreativeOriginTestWithThrottling {
   std::vector<bool> throttled;
   size_t creative_index;
   bool should_paint;
-  ad_metrics::OriginStatusWithThrottling expected_origin_status;
+  OriginStatusWithThrottling expected_origin_status;
 };
 
 enum class ResourceCached { kNotCached = 0, kCachedHttp, kCachedMemory };
@@ -134,7 +135,7 @@ const int kMaxHeavyAdNetworkBytes =
 // Calls PopulateRequiredTimingFields with |first_eligible_to_paint| and
 // |first_contentful_paint| fields temporarily nullified.
 void PopulateRequiredTimingFieldsExceptFEtPAndFCP(
-    page_load_metrics::mojom::PageLoadTiming* inout_timing) {
+    mojom::PageLoadTiming* inout_timing) {
   // Save FEtP and FCP values in temp variables and then reset the fields.
   auto first_eligible_to_paint =
       inout_timing->paint_timing->first_eligible_to_paint;
@@ -185,34 +186,30 @@ class ResourceLoadingCancellingThrottle
       return;
     }
 
-    auto* observer =
-        page_load_metrics::MetricsWebContentsObserver::FromWebContents(
-            navigation_handle()->GetWebContents());
+    auto* observer = MetricsWebContentsObserver::FromWebContents(
+        navigation_handle()->GetWebContents());
     DCHECK(observer);
 
     // Load a resource for the main frame before it commits.
-    std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
-    page_load_metrics::mojom::ResourceDataUpdatePtr resource =
-        page_load_metrics::mojom::ResourceDataUpdate::New();
+    std::vector<mojom::ResourceDataUpdatePtr> resources;
+    mojom::ResourceDataUpdatePtr resource = mojom::ResourceDataUpdate::New();
     resource->received_data_length = 10 * 1024;
     resource->delta_bytes = 10 * 1024;
     resource->encoded_body_length = 10 * 1024;
-    resource->cache_type = page_load_metrics::mojom::CacheType::kNotCached;
+    resource->cache_type = mojom::CacheType::kNotCached;
     resource->is_complete = true;
     resource->is_primary_frame_resource = true;
     resources.push_back(std::move(resource));
-    auto timing = page_load_metrics::mojom::PageLoadTimingPtr(base::in_place);
-    page_load_metrics::InitPageLoadTimingForTest(timing.get());
+    auto timing = mojom::PageLoadTimingPtr(base::in_place);
+    InitPageLoadTimingForTest(timing.get());
     observer->OnTimingUpdated(
         navigation_handle()->GetRenderFrameHost(), std::move(timing),
-        page_load_metrics::mojom::FrameMetadataPtr(base::in_place),
-        page_load_metrics::mojom::PageLoadFeaturesPtr(base::in_place),
-        resources,
-        page_load_metrics::mojom::FrameRenderDataUpdatePtr(base::in_place),
-        page_load_metrics::mojom::CpuTimingPtr(base::in_place),
-        page_load_metrics::mojom::DeferredResourceCountsPtr(base::in_place),
-        page_load_metrics::mojom::InputTimingPtr(base::in_place),
-        blink::MobileFriendliness());
+        mojom::FrameMetadataPtr(base::in_place),
+        mojom::PageLoadFeaturesPtr(base::in_place), resources,
+        mojom::FrameRenderDataUpdatePtr(base::in_place),
+        mojom::CpuTimingPtr(base::in_place),
+        mojom::DeferredResourceCountsPtr(base::in_place),
+        mojom::InputTimingPtr(base::in_place), blink::MobileFriendliness());
   }
 
   DISALLOW_COPY_AND_ASSIGN(ResourceLoadingCancellingThrottle);
@@ -454,12 +451,10 @@ class AdsPageLoadMetricsObserverTest
 
   void SetUp() override {
     SubresourceFilterTestHarness::SetUp();
-    tester_ =
-        std::make_unique<page_load_metrics::PageLoadMetricsObserverTester>(
-            web_contents(), this,
-            base::BindRepeating(
-                &AdsPageLoadMetricsObserverTest::RegisterObservers,
-                base::Unretained(this)));
+    tester_ = std::make_unique<PageLoadMetricsObserverTester>(
+        web_contents(), this,
+        base::BindRepeating(&AdsPageLoadMetricsObserverTest::RegisterObservers,
+                            base::Unretained(this)));
     ConfigureAsSubresourceFilterOnlyURL(GURL(kAdUrl));
 
     // Run all sites in dry run mode, so that AdTagging works as expected. In
@@ -486,7 +481,7 @@ class AdsPageLoadMetricsObserverTest
 
   void OnCpuTimingUpdate(RenderFrameHost* render_frame_host,
                          base::TimeDelta cpu_time_spent) {
-    page_load_metrics::mojom::CpuTiming cpu_timing(cpu_time_spent);
+    mojom::CpuTiming cpu_timing(cpu_time_spent);
     tester_->SimulateCpuTimingUpdate(cpu_timing, render_frame_host);
   }
 
@@ -531,9 +526,8 @@ class AdsPageLoadMetricsObserverTest
                           int resource_size_in_kbyte,
                           std::string mime_type = "",
                           bool is_ad_resource = false) {
-    std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
-    page_load_metrics::mojom::ResourceDataUpdatePtr resource =
-        page_load_metrics::mojom::ResourceDataUpdate::New();
+    std::vector<mojom::ResourceDataUpdatePtr> resources;
+    mojom::ResourceDataUpdatePtr resource = mojom::ResourceDataUpdate::New();
     resource->received_data_length =
         static_cast<bool>(resource_cached) ? 0 : resource_size_in_kbyte << 10;
     resource->delta_bytes = resource->received_data_length;
@@ -542,13 +536,13 @@ class AdsPageLoadMetricsObserverTest
     resource->is_complete = true;
     switch (resource_cached) {
       case ResourceCached::kNotCached:
-        resource->cache_type = page_load_metrics::mojom::CacheType::kNotCached;
+        resource->cache_type = mojom::CacheType::kNotCached;
         break;
       case ResourceCached::kCachedHttp:
-        resource->cache_type = page_load_metrics::mojom::CacheType::kHttp;
+        resource->cache_type = mojom::CacheType::kHttp;
         break;
       case ResourceCached::kCachedMemory:
-        resource->cache_type = page_load_metrics::mojom::CacheType::kMemory;
+        resource->cache_type = mojom::CacheType::kMemory;
         break;
     }
     resource->mime_type = mime_type;
@@ -569,7 +563,7 @@ class AdsPageLoadMetricsObserverTest
       RenderFrameHost* frame,
       base::Optional<base::TimeDelta> first_eligible_to_paint,
       base::Optional<base::TimeDelta> first_contentful_paint) {
-    page_load_metrics::InitPageLoadTimingForTest(&timing_);
+    InitPageLoadTimingForTest(&timing_);
     timing_.navigation_start = base::Time::Now();
     timing_.parse_timing->parse_start = kParseStartTime;
     timing_.paint_timing->first_eligible_to_paint = first_eligible_to_paint;
@@ -730,9 +724,7 @@ class AdsPageLoadMetricsObserverTest
         creative_origin_test.expected_origin_status, 1);
   }
 
-  page_load_metrics::PageLoadMetricsObserverTester* tester() {
-    return tester_.get();
-  }
+  PageLoadMetricsObserverTester* tester() { return tester_.get(); }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
@@ -811,12 +803,12 @@ class AdsPageLoadMetricsObserverTest
       std::vector<std::unique_ptr<content::NavigationThrottle>>* throttles)
       override {
     if (navigation_handle->IsInMainFrame()) {
-      throttles->push_back(page_load_metrics::MetricsNavigationThrottle::Create(
-          navigation_handle));
+      throttles->push_back(
+          MetricsNavigationThrottle::Create(navigation_handle));
     }
   }
 
-  void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) {
+  void RegisterObservers(PageLoadTracker* tracker) {
     auto observer = std::make_unique<AdsPageLoadMetricsObserver>(
         /*heavy_ad_service=*/nullptr,
         base::BindRepeating([]() { return std::string("en-US"); }),
@@ -839,9 +831,9 @@ class AdsPageLoadMetricsObserverTest
   std::unique_ptr<heavy_ad_intervention::HeavyAdBlocklist> test_blocklist_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
-  std::unique_ptr<page_load_metrics::PageLoadMetricsObserverTester> tester_;
+  std::unique_ptr<PageLoadMetricsObserverTester> tester_;
   FrameRemoteTester frame_remote_tester_;
-  page_load_metrics::mojom::PageLoadTiming timing_;
+  mojom::PageLoadTiming timing_;
 
   // The clock used by the ui::ScopedVisibilityTracker, assigned if non-null.
   std::unique_ptr<base::SimpleTestTickClock> clock_;
@@ -1003,14 +995,14 @@ TEST_F(AdsPageLoadMetricsObserverTest, AdsOriginStatusMetrics) {
                        ResourceCached::kNotCached, 10);
     // Trigger histograms by navigating away, then test them.
     NavigateFrame(kAdUrl, main_frame);
-    histograms.ExpectUniqueSample(kCrossOriginHistogramId,
-                                  ad_metrics::OriginStatus::kCross, 1);
+    histograms.ExpectUniqueSample(kCrossOriginHistogramId, OriginStatus::kCross,
+                                  1);
     auto entries =
         ukm_recorder.GetEntriesByName(ukm::builders::AdFrameLoad::kEntryName);
     EXPECT_EQ(1u, entries.size());
     ukm_recorder.ExpectEntryMetric(
         entries.front(), ukm::builders::AdFrameLoad::kStatus_CrossOriginName,
-        static_cast<int64_t>(ad_metrics::OriginStatus::kCross));
+        static_cast<int64_t>(OriginStatus::kCross));
   }
 
   // Add a non-ad subframe and an ad subframe and make sure the total count
@@ -1026,14 +1018,14 @@ TEST_F(AdsPageLoadMetricsObserverTest, AdsOriginStatusMetrics) {
                        ResourceCached::kNotCached, 10);
     // Trigger histograms by navigating away, then test them.
     NavigateFrame(kAdUrl, main_frame);
-    histograms.ExpectUniqueSample(kCrossOriginHistogramId,
-                                  ad_metrics::OriginStatus::kCross, 1);
+    histograms.ExpectUniqueSample(kCrossOriginHistogramId, OriginStatus::kCross,
+                                  1);
     auto entries =
         ukm_recorder.GetEntriesByName(ukm::builders::AdFrameLoad::kEntryName);
     EXPECT_EQ(1u, entries.size());
     ukm_recorder.ExpectEntryMetric(
         entries.front(), ukm::builders::AdFrameLoad::kStatus_CrossOriginName,
-        static_cast<int64_t>(ad_metrics::OriginStatus::kCross));
+        static_cast<int64_t>(OriginStatus::kCross));
   }
 
   // Add an ad subframe in the same origin as the parent frame and make sure it
@@ -1048,14 +1040,14 @@ TEST_F(AdsPageLoadMetricsObserverTest, AdsOriginStatusMetrics) {
                        ResourceCached::kNotCached, 10);
     // Trigger histograms by navigating away, then test them.
     NavigateFrame(kAdUrl, main_frame);
-    histograms.ExpectUniqueSample(kCrossOriginHistogramId,
-                                  ad_metrics::OriginStatus::kSame, 1);
+    histograms.ExpectUniqueSample(kCrossOriginHistogramId, OriginStatus::kSame,
+                                  1);
     auto entries =
         ukm_recorder.GetEntriesByName(ukm::builders::AdFrameLoad::kEntryName);
     EXPECT_EQ(1u, entries.size());
     ukm_recorder.ExpectEntryMetric(
         entries.front(), ukm::builders::AdFrameLoad::kStatus_CrossOriginName,
-        static_cast<int64_t>(ad_metrics::OriginStatus::kSame));
+        static_cast<int64_t>(OriginStatus::kSame));
   }
 }
 
@@ -1523,8 +1515,8 @@ TEST_F(AdsPageLoadMetricsObserverTest, AdPageLoadUKM) {
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
-  page_load_metrics::mojom::PageLoadTiming timing;
-  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  mojom::PageLoadTiming timing;
+  InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::Now();
   timing.parse_timing->parse_start = base::TimeDelta::FromMilliseconds(10);
   timing.response_start = base::TimeDelta::FromSeconds(0);
@@ -1806,7 +1798,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsOnActivation) {
 // status of the frame in the ad frame tree that has its first contentful paint
 // occur first.
 TEST_F(AdsPageLoadMetricsObserverTest, CreativeOriginStatus) {
-  using OriginStatus = ad_metrics::OriginStatus;
+  using OriginStatus = OriginStatus;
 
   // Each CreativeOriginTest struct lists the urls of the frames in the frame
   // tree, from main frame to leaf ad frame, along with the index of the ad
@@ -1853,7 +1845,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, CreativeOriginStatus) {
 // first contentful paint occur first, with throttling status determined by
 // whether or not at least one frame in the ad frame tree was unthrottled.
 TEST_F(AdsPageLoadMetricsObserverTest, CreativeOriginStatusWithThrottling) {
-  using OriginStatusWithThrottling = ad_metrics::OriginStatusWithThrottling;
+  using OriginStatusWithThrottling = OriginStatusWithThrottling;
 
   // Each CreativeOriginTestWithThrottling struct lists the urls of the frames
   // in the frame tree, from main frame to leaf ad frame, and a corresponding
@@ -2041,7 +2033,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdFeatureOff_UMARecorded) {
   // Navigate again to trigger histograms.
   NavigateFrame(kNonAdUrl, main_frame);
 
-  using HeavyAdStatus = ad_metrics::HeavyAdStatus;
+  using HeavyAdStatus = HeavyAdStatus;
   histogram_tester().ExpectTotalCount(
       SuffixedHistogram("HeavyAds.ComputedTypeWithThresholdNoise"), 4);
   histogram_tester().ExpectBucketCount(
@@ -2108,8 +2100,8 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdNetworkUsage_InterventionFired) {
 
   waiter.WaitForError();
   histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("HeavyAds.InterventionType2"),
-      ad_metrics::HeavyAdStatus::kNetwork, 1);
+      SuffixedHistogram("HeavyAds.InterventionType2"), HeavyAdStatus::kNetwork,
+      1);
   EXPECT_EQ(rfh_tester->GetHeavyAdIssueCount(
                 RenderFrameHostTester::HeavyAdIssueType::kNetworkTotal),
             1);
@@ -2258,8 +2250,8 @@ TEST_F(AdsPageLoadMetricsObserverTest,
 
   waiter.WaitForError();
   histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("HeavyAds.InterventionType2"),
-      ad_metrics::HeavyAdStatus::kNetwork, 1);
+      SuffixedHistogram("HeavyAds.InterventionType2"), HeavyAdStatus::kNetwork,
+      1);
   EXPECT_EQ(rfh_tester->GetHeavyAdIssueCount(
                 RenderFrameHostTester::HeavyAdIssueType::kNetworkTotal),
             1);
@@ -2302,7 +2294,7 @@ TEST_F(AdsPageLoadMetricsObserverTest,
 
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("HeavyAds.ComputedTypeWithThresholdNoise"),
-      ad_metrics::HeavyAdStatus::kNone, 1);
+      HeavyAdStatus::kNone, 1);
 }
 
 TEST_F(AdsPageLoadMetricsObserverTest,
@@ -2343,8 +2335,8 @@ TEST_F(AdsPageLoadMetricsObserverTest,
       "4800491902992384?utm_source=devtools";
   EXPECT_TRUE(HasInterventionReportsAfterFlush(ad_frame));
   histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("HeavyAds.InterventionType2"),
-      ad_metrics::HeavyAdStatus::kTotalCpu, 1);
+      SuffixedHistogram("HeavyAds.InterventionType2"), HeavyAdStatus::kTotalCpu,
+      1);
   EXPECT_EQ(kReportOnlyMessage, PopLastInterventionReportMessage());
   EXPECT_EQ(rfh_tester->GetHeavyAdIssueCount(
                 RenderFrameHostTester::HeavyAdIssueType::kCpuTotal),
@@ -2358,7 +2350,7 @@ TEST_F(AdsPageLoadMetricsObserverTest,
 
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("HeavyAds.ComputedTypeWithThresholdNoise"),
-      ad_metrics::HeavyAdStatus::kTotalCpu, 1);
+      HeavyAdStatus::kTotalCpu, 1);
 }
 
 TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdTotalCpuUsage_InterventionFired) {
@@ -2393,8 +2385,8 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdTotalCpuUsage_InterventionFired) {
   EXPECT_TRUE(HasInterventionReportsAfterFlush(ad_frame));
   waiter.WaitForError();
   histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("HeavyAds.InterventionType2"),
-      ad_metrics::HeavyAdStatus::kTotalCpu, 1);
+      SuffixedHistogram("HeavyAds.InterventionType2"), HeavyAdStatus::kTotalCpu,
+      1);
   EXPECT_EQ(rfh_tester->GetHeavyAdIssueCount(
                 RenderFrameHostTester::HeavyAdIssueType::kCpuTotal),
             1);
@@ -2434,8 +2426,8 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdPeakCpuUsage_InterventionFired) {
   EXPECT_TRUE(HasInterventionReportsAfterFlush(ad_frame));
   waiter.WaitForError();
   histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("HeavyAds.InterventionType2"),
-      ad_metrics::HeavyAdStatus::kPeakCpu, 1);
+      SuffixedHistogram("HeavyAds.InterventionType2"), HeavyAdStatus::kPeakCpu,
+      1);
   EXPECT_EQ(rfh_tester->GetHeavyAdIssueCount(
                 RenderFrameHostTester::HeavyAdIssueType::kCpuPeak),
             1);
@@ -2492,7 +2484,7 @@ TEST_F(AdsPageLoadMetricsObserverTest,
 
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("HeavyAds.ComputedTypeWithThresholdNoise"),
-      ad_metrics::HeavyAdStatus::kNone, 1);
+      HeavyAdStatus::kNone, 1);
 }
 
 // Tests that each configurable unload policy allows the intervention to trigger
@@ -2626,7 +2618,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdPageReload_MetricsRecorded) {
 
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("HeavyAds.ComputedTypeWithThresholdNoise"),
-      ad_metrics::HeavyAdStatus::kNetwork, 1);
+      HeavyAdStatus::kNetwork, 1);
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("HeavyAds.UserDidReload"), true, 1);
 }
@@ -2756,8 +2748,8 @@ TEST_F(AdsPageLoadMetricsObserverTest,
   EXPECT_TRUE(HasInterventionReportsAfterFlush(ad_frame));
   waiter.WaitForError();
   histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("HeavyAds.InterventionType2"),
-      ad_metrics::HeavyAdStatus::kNetwork, 1);
+      SuffixedHistogram("HeavyAds.InterventionType2"), HeavyAdStatus::kNetwork,
+      1);
   EXPECT_EQ(rfh_tester->GetHeavyAdIssueCount(
                 RenderFrameHostTester::HeavyAdIssueType::kNetworkTotal),
             1);
@@ -2794,8 +2786,8 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdBlocklist_InterventionReported) {
   EXPECT_TRUE(HasInterventionReportsAfterFlush(ad_frame));
   waiter.WaitForError();
   histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("HeavyAds.InterventionType2"),
-      ad_metrics::HeavyAdStatus::kNetwork, 1);
+      SuffixedHistogram("HeavyAds.InterventionType2"), HeavyAdStatus::kNetwork,
+      1);
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("HeavyAds.DisallowedByBlocklist"), false, 1);
 
@@ -2846,8 +2838,8 @@ TEST_F(AdsPageLoadMetricsObserverTest,
   // pipe.
   EXPECT_FALSE(waiter.LastPageWasErrorPage());
   histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("HeavyAds.InterventionType2"),
-      ad_metrics::HeavyAdStatus::kNetwork, 1);
+      SuffixedHistogram("HeavyAds.InterventionType2"), HeavyAdStatus::kNetwork,
+      1);
   EXPECT_EQ(rfh_tester->GetHeavyAdIssueCount(
                 RenderFrameHostTester::HeavyAdIssueType::kNetworkTotal),
             1);
@@ -2996,7 +2988,7 @@ class AdsMemoryMeasurementTest : public AdsPageLoadMetricsObserverTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kV8PerFrameMemoryMonitoring);
+        ::features::kV8PerFrameMemoryMonitoring);
     AdsPageLoadMetricsObserverTest::SetUp();
   }
 
@@ -3135,3 +3127,5 @@ TEST_F(AdsMemoryMeasurementTest, MainFrame_MaxMemoryBytesRecorded) {
                                         1);
   histogram_tester().ExpectUniqueSample(kMemoryUpdateCountHistogramId, 3, 1);
 }
+
+}  // namespace page_load_metrics

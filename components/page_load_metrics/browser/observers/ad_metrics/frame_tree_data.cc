@@ -21,6 +21,8 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
 
+namespace page_load_metrics {
+
 namespace {
 
 // A frame with area less than kMinimumVisibleFrameArea is not considered
@@ -30,11 +32,9 @@ const int kMinimumVisibleFrameArea = 25;
 // Controls what types of heavy ads will be unloaded by the intervention.
 const base::FeatureParam<int> kHeavyAdUnloadPolicyParam = {
     &heavy_ad_intervention::features::kHeavyAdIntervention, "kUnloadPolicy",
-    static_cast<int>(ad_metrics::HeavyAdUnloadPolicy::kAll)};
+    static_cast<int>(HeavyAdUnloadPolicy::kAll)};
 
 }  // namespace
-
-namespace ad_metrics {
 
 FrameTreeData::FrameTreeData(FrameTreeNodeId root_frame_tree_node_id,
                              int heavy_ad_network_threshold_noise)
@@ -241,9 +241,9 @@ void FrameTreeData::UpdateForNavigation(
 }
 
 void FrameTreeData::ProcessResourceLoadInFrame(
-    const page_load_metrics::mojom::ResourceDataUpdatePtr& resource,
+    const mojom::ResourceDataUpdatePtr& resource,
     int process_id,
-    const page_load_metrics::ResourceTracker& resource_tracker) {
+    const ResourceTracker& resource_tracker) {
   content::GlobalRequestID global_id(process_id, resource->request_id);
   if (!resource_tracker.HasPreviousUpdateForResource(global_id))
     num_resources_++;
@@ -313,4 +313,4 @@ HeavyAdAction FrameTreeData::MaybeTriggerHeavyAdIntervention() {
   return HeavyAdAction::kUnload;
 }
 
-}  // namespace ad_metrics
+}  // namespace page_load_metrics

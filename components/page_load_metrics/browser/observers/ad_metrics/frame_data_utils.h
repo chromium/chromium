@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
 
-namespace ad_metrics {
+namespace page_load_metrics {
 
 // Whether or not the ad frame has a display: none styling.
 enum FrameVisibility {
@@ -39,8 +39,7 @@ class ResourceLoadAggregator {
   ~ResourceLoadAggregator();
 
   // Updates the number of bytes loaded in the frame given a resource load.
-  void ProcessResourceLoad(
-      const page_load_metrics::mojom::ResourceDataUpdatePtr& resource);
+  void ProcessResourceLoad(const mojom::ResourceDataUpdatePtr& resource);
 
   // Adds additional bytes to the ad resource byte counts. This
   // is used to notify the frame that some bytes were tagged as ad bytes after
@@ -53,7 +52,7 @@ class ResourceLoadAggregator {
   // TODO(crbug.com/1136068): This is used well out of the scope of the
   // AdsPageLoadMetricsObserver and should sit in a common directory.
   static ResourceMimeType GetResourceMimeType(
-      const page_load_metrics::mojom::ResourceDataUpdatePtr& resource);
+      const mojom::ResourceDataUpdatePtr& resource);
 
   // Accessors for the various data stored in the class.
 
@@ -141,6 +140,6 @@ class MemoryUsageAggregator {
   uint64_t current_bytes_used_ = 0UL;
 };
 
-}  // namespace ad_metrics
+}  // namespace page_load_metrics
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_FRAME_DATA_UTILS_H_

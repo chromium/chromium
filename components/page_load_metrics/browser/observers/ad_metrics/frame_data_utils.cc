@@ -9,14 +9,14 @@
 #include "net/base/mime_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 
-namespace ad_metrics {
+namespace page_load_metrics {
 
 ResourceLoadAggregator::ResourceLoadAggregator() = default;
 ResourceLoadAggregator::~ResourceLoadAggregator() = default;
 
 // static
 ResourceMimeType ResourceLoadAggregator::GetResourceMimeType(
-    const page_load_metrics::mojom::ResourceDataUpdatePtr& resource) {
+    const mojom::ResourceDataUpdatePtr& resource) {
   if (blink::IsSupportedImageMimeType(resource->mime_type))
     return ResourceMimeType::kImage;
   if (blink::IsSupportedJavascriptMimeType(resource->mime_type))
@@ -39,13 +39,13 @@ ResourceMimeType ResourceLoadAggregator::GetResourceMimeType(
 }
 
 void ResourceLoadAggregator::ProcessResourceLoad(
-    const page_load_metrics::mojom::ResourceDataUpdatePtr& resource) {
+    const mojom::ResourceDataUpdatePtr& resource) {
   bytes_ += resource->delta_bytes;
   network_bytes_ += resource->delta_bytes;
 
   // Report cached resource body bytes to overall frame bytes.
   if (resource->is_complete &&
-      resource->cache_type != page_load_metrics::mojom::CacheType::kNotCached) {
+      resource->cache_type != mojom::CacheType::kNotCached) {
     bytes_ += resource->encoded_body_length;
   }
 
@@ -54,7 +54,7 @@ void ResourceLoadAggregator::ProcessResourceLoad(
     ad_bytes_ += resource->delta_bytes;
     // Report cached resource body bytes to overall frame bytes.
     if (resource->is_complete &&
-        resource->cache_type != page_load_metrics::mojom::CacheType::kNotCached)
+        resource->cache_type != mojom::CacheType::kNotCached)
       ad_bytes_ += resource->encoded_body_length;
 
     ResourceMimeType mime_type = GetResourceMimeType(resource);
@@ -98,4 +98,4 @@ void MemoryUsageAggregator::UpdateUsage(int64_t delta_bytes) {
     max_bytes_used_ = current_bytes_used_;
 }
 
-}  // namespace ad_metrics
+}  // namespace page_load_metrics

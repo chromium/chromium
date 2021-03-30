@@ -60,7 +60,8 @@ IN_PROC_BROWSER_TEST_F(LargeStickyAdViolationBrowserTest,
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/ads_observer/large_scrollable_page_with_adiframe_writer.html");
 
-  NavigateAndWaitForFirstContentfulPaint(web_contents(), url);
+  page_load_metrics::NavigateAndWaitForFirstContentfulPaint(web_contents(),
+                                                            url);
 
   // Reload the page. Since we haven't seen any ad violations, expect that the
   // ad script is loaded and that the subresource filter UI doesn't show up.
@@ -82,9 +83,10 @@ IN_PROC_BROWSER_TEST_F(LargeStickyAdViolationBrowserTest,
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/ads_observer/large_scrollable_page_with_adiframe_writer.html");
 
-  NavigateAndWaitForFirstContentfulPaint(web_contents(), url);
+  page_load_metrics::NavigateAndWaitForFirstContentfulPaint(web_contents(),
+                                                            url);
 
-  TriggerAndDetectLargeStickyAd(web_contents());
+  page_load_metrics::TriggerAndDetectLargeStickyAd(web_contents());
 
   // Reload the page. Since we are enforcing ad blocking on ads violations,
   // expect that the ad script is not loaded and that the subresource filter UI
@@ -126,9 +128,10 @@ IN_PROC_BROWSER_TEST_F(LargeStickyAdViolationBrowserTestWithoutEnforcement,
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/ads_observer/large_scrollable_page_with_adiframe_writer.html");
 
-  NavigateAndWaitForFirstContentfulPaint(web_contents(), url);
+  page_load_metrics::NavigateAndWaitForFirstContentfulPaint(web_contents(),
+                                                            url);
 
-  TriggerAndDetectLargeStickyAd(web_contents());
+  page_load_metrics::TriggerAndDetectLargeStickyAd(web_contents());
 
   // Reload the page. Since we are not enforcing ad blocking on ads violations,
   // expect that the ad script is loaded and that the subresource filter UI

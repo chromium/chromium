@@ -30,24 +30,26 @@
 #include "net/http/http_response_info.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 
-namespace features {
-extern const base::Feature kRestrictedNavigationAdTagging;
-}
-
 namespace heavy_ad_intervention {
 class HeavyAdBlocklist;
 class HeavyAdService;
 }  // namespace heavy_ad_intervention
 
+namespace page_load_metrics {
+
+namespace features {
+extern const base::Feature kRestrictedNavigationAdTagging;
+}
+
 // This observer labels each sub-frame as an ad or not, and keeps track of
 // relevant per-frame and whole-page byte statistics.
 class AdsPageLoadMetricsObserver
-    : public page_load_metrics::PageLoadMetricsObserver,
+    : public PageLoadMetricsObserver,
       public subresource_filter::SubresourceFilterObserver {
  public:
-  using AggregateFrameData = ad_metrics::AggregateFrameData;
-  using FrameTreeData = ad_metrics::FrameTreeData;
-  using ResourceMimeType = ad_metrics::ResourceMimeType;
+  using AggregateFrameData = AggregateFrameData;
+  using FrameTreeData = FrameTreeData;
+  using ResourceMimeType = ResourceMimeType;
   using ApplicationLocaleGetter = base::RepeatingCallback<std::string()>;
 
   // Helper class that generates a random amount of noise to apply to thresholds
@@ -95,30 +97,26 @@ class AdsPageLoadMetricsObserver
       heavy_ad_intervention::HeavyAdBlocklist* blocklist = nullptr);
   ~AdsPageLoadMetricsObserver() override;
 
-  // page_load_metrics::PageLoadMetricsObserver
+  // PageLoadMetricsObserver
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                         const GURL& currently_committed_url,
                         bool started_in_foreground) override;
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
                          ukm::SourceId source_id) override;
-  void OnTimingUpdate(
-      content::RenderFrameHost* subframe_rfh,
-      const page_load_metrics::mojom::PageLoadTiming& timing) override;
-  void OnCpuTimingUpdate(
-      content::RenderFrameHost* subframe_rfh,
-      const page_load_metrics::mojom::CpuTiming& timing) override;
+  void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
+                      const mojom::PageLoadTiming& timing) override;
+  void OnCpuTimingUpdate(content::RenderFrameHost* subframe_rfh,
+                         const mojom::CpuTiming& timing) override;
   void ReadyToCommitNextNavigation(
       content::NavigationHandle* navigation_handle) override;
   void OnDidFinishSubFrameNavigation(
       content::NavigationHandle* navigation_handle) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
-      const page_load_metrics::mojom::PageLoadTiming& timing) override;
-  void OnComplete(
-      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+      const mojom::PageLoadTiming& timing) override;
+  void OnComplete(const mojom::PageLoadTiming& timing) override;
   void OnResourceDataUseObserved(
       content::RenderFrameHost* rfh,
-      const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
-          resources) override;
+      const std::vector<mojom::ResourceDataUpdatePtr>& resources) override;
   void FrameReceivedFirstUserActivation(content::RenderFrameHost* rfh) override;
   void FrameDisplayStateChanged(content::RenderFrameHost* render_frame_host,
                                 bool is_display_none) override;
@@ -129,8 +127,7 @@ class AdsPageLoadMetricsObserver
       content::RenderFrameHost* render_frame_host) override;
   void OnFrameIntersectionUpdate(
       content::RenderFrameHost* render_frame_host,
-      const page_load_metrics::mojom::FrameIntersectionUpdate&
-          intersection_update) override;
+      const mojom::FrameIntersectionUpdate& intersection_update) override;
   void OnFrameDeleted(int frame_tree_node_id) override;
 
   void SetHeavyAdThresholdNoiseProviderForTesting(
@@ -138,11 +135,10 @@ class AdsPageLoadMetricsObserver
     heavy_ad_threshold_noise_provider_ = std::move(noise_provider);
   }
 
-  void OnV8MemoryChanged(const std::vector<page_load_metrics::MemoryUpdate>&
-                             memory_updates) override;
+  void OnV8MemoryChanged(
+      const std::vector<MemoryUpdate>& memory_updates) override;
 
-  void UpdateAggregateMemoryUsage(int64_t bytes,
-                                  ad_metrics::FrameVisibility visibility);
+  void UpdateAggregateMemoryUsage(int64_t bytes, FrameVisibility visibility);
 
   void CleanupDeletedFrame(FrameTreeNodeId id,
                            FrameTreeData* frame_data,
@@ -199,23 +195,19 @@ class AdsPageLoadMetricsObserver
 
   // Gets the number of bytes that we may have not attributed to ad
   // resources due to the resource being reported as an ad late.
-  int GetUnaccountedAdBytes(
-      int process_id,
-      const page_load_metrics::mojom::ResourceDataUpdatePtr& resource) const;
+  int GetUnaccountedAdBytes(int process_id,
+                            const mojom::ResourceDataUpdatePtr& resource) const;
 
   // Updates page level counters for resource loads.
-  void ProcessResourceForPage(
-      int process_id,
-      const page_load_metrics::mojom::ResourceDataUpdatePtr& resource);
-  void ProcessResourceForFrame(
-      content::RenderFrameHost* render_frame_host,
-      const page_load_metrics::mojom::ResourceDataUpdatePtr& resource);
+  void ProcessResourceForPage(int process_id,
+                              const mojom::ResourceDataUpdatePtr& resource);
+  void ProcessResourceForFrame(content::RenderFrameHost* render_frame_host,
+                               const mojom::ResourceDataUpdatePtr& resource);
 
   void RecordPageResourceTotalHistograms(ukm::SourceId source_id);
   void RecordHistograms(ukm::SourceId source_id);
   void RecordAggregateHistogramsForCpuUsage();
-  void RecordAggregateHistogramsForAdTagging(
-      ad_metrics::FrameVisibility visibility);
+  void RecordAggregateHistogramsForAdTagging(FrameVisibility visibility);
   void RecordAggregateHistogramsForHeavyAds();
 
   // Should be called on all frames prior to recording any aggregate histograms.
@@ -269,7 +261,7 @@ class AdsPageLoadMetricsObserver
   // When the observer receives report of a document resource loading for a
   // sub-frame before the sub-frame commit occurs, hold onto the resource
   // request info (delay it) until the sub-frame commits.
-  std::map<FrameTreeNodeId, page_load_metrics::mojom::ResourceDataUpdatePtr>
+  std::map<FrameTreeNodeId, mojom::ResourceDataUpdatePtr>
       ongoing_navigation_resources_;
 
   // Per-frame memory usage by V8 in bytes. Memory data is stored for each frame
@@ -337,5 +329,7 @@ class AdsPageLoadMetricsObserver
 
   DISALLOW_COPY_AND_ASSIGN(AdsPageLoadMetricsObserver);
 };
+
+}  // namespace page_load_metrics
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_ADS_PAGE_LOAD_METRICS_OBSERVER_H_

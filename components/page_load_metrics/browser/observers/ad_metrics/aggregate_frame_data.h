@@ -10,7 +10,7 @@
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_data_utils.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
 
-namespace ad_metrics {
+namespace page_load_metrics {
 
 // AggregateFrameData stores information in aggregate for all the frames during
 // a navigation.  It contains specific information on various types of frames
@@ -21,9 +21,8 @@ class AggregateFrameData {
   AggregateFrameData();
   ~AggregateFrameData();
 
-  void ProcessResourceLoadInFrame(
-      const page_load_metrics::mojom::ResourceDataUpdatePtr& resource,
-      bool is_main_frame);
+  void ProcessResourceLoadInFrame(const mojom::ResourceDataUpdatePtr& resource,
+                                  bool is_main_frame);
 
   // Adjusts the overall page and potentially main frame ad bytes.
   void AdjustAdBytes(int64_t unaccounted_ad_bytes,
@@ -121,6 +120,6 @@ class AggregateFrameData {
   PeakCpuAggregator non_ad_peak_cpu_;
 };
 
-}  // namespace ad_metrics
+}  // namespace page_load_metrics
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_AGGREGATE_FRAME_DATA_H_

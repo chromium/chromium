@@ -11,6 +11,8 @@
 #include "base/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace page_load_metrics {
+
 // Tracks the ad density of a page through the page's lifecycle.
 // It has the following usage:
 //    1. Set subframe and mainframe rects using subframe and mainframe rect
@@ -92,5 +94,7 @@ class PageAdDensityTracker {
 
   base::Optional<gfx::Rect> last_main_frame_size_;
 };
+
+}  // namespace page_load_metrics
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_PAGE_AD_DENSITY_TRACKER_H_"

@@ -68,12 +68,13 @@ class PageLoadMetricsEmbedder
     tracker->AddObserver(std::make_unique<PageLoadMetricsObserverImpl>());
 
     if (!IsPrerendering()) {
-      std::unique_ptr<AdsPageLoadMetricsObserver> ads_observer =
-          AdsPageLoadMetricsObserver::CreateIfNeeded(
-              tracker->GetWebContents(),
-              HeavyAdServiceFactory::GetForBrowserContext(
-                  tracker->GetWebContents()->GetBrowserContext()),
-              base::BindRepeating(&i18n::GetApplicationLocale));
+      std::unique_ptr<page_load_metrics::AdsPageLoadMetricsObserver>
+          ads_observer =
+              page_load_metrics::AdsPageLoadMetricsObserver::CreateIfNeeded(
+                  tracker->GetWebContents(),
+                  HeavyAdServiceFactory::GetForBrowserContext(
+                      tracker->GetWebContents()->GetBrowserContext()),
+                  base::BindRepeating(&i18n::GetApplicationLocale));
       if (ads_observer)
         tracker->AddObserver(std::move(ads_observer));
     }

@@ -136,12 +136,13 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
     tracker->AddObserver(std::make_unique<TabRestorePageLoadMetricsObserver>());
     tracker->AddObserver(
         std::make_unique<DataSaverSiteBreakdownMetricsObserver>());
-    std::unique_ptr<AdsPageLoadMetricsObserver> ads_observer =
-        AdsPageLoadMetricsObserver::CreateIfNeeded(
-            tracker->GetWebContents(),
-            HeavyAdServiceFactory::GetForBrowserContext(
-                tracker->GetWebContents()->GetBrowserContext()),
-            base::BindRepeating(&GetApplicationLocale));
+    std::unique_ptr<page_load_metrics::AdsPageLoadMetricsObserver>
+        ads_observer =
+            page_load_metrics::AdsPageLoadMetricsObserver::CreateIfNeeded(
+                tracker->GetWebContents(),
+                HeavyAdServiceFactory::GetForBrowserContext(
+                    tracker->GetWebContents()->GetBrowserContext()),
+                base::BindRepeating(&GetApplicationLocale));
     if (ads_observer)
       tracker->AddObserver(std::move(ads_observer));
 
