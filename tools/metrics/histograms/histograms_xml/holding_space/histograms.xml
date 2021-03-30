@@ -21,6 +21,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="HoldingSpaceItemAction">
+  <variant name="Copy" summary="The user copied the item."/>
+  <variant name="Drag" summary="The user dragged the item."/>
+  <variant name="Launch" summary="The user launched the item."/>
+  <variant name="Pin" summary="The user pinned the item."/>
+  <variant name="Remove" summary="The user removed the item."/>
+  <variant name="ShowInFolder"
+      summary="The user showed the item in its folder."/>
+  <variant name="Unpin" summary="The user unpinned the item."/>
+</variants>
+
+<variants name="HoldingSpaceItemType">
+  <variant name="All" summary="Includes all item types."/>
+  <variant name="Download" summary="Items backed by a download file."/>
+  <variant name="NearbyShare" summary="Items backed by a nearby shared file."/>
+  <variant name="PinnedFile" summary="Items pinned explicitly by the user."/>
+  <variant name="ScreenRecording"
+      summary="Items backed by a screen recording file."/>
+  <variant name="Screenshot" summary="Items backed by a screenshot file."/>
+</variants>
+
 <histogram name="HoldingSpace.Animation.BubbleResize.Smoothness" units="%"
     expires_after="2021-09-24">
   <owner>dmblack@google.com</owner>
@@ -65,18 +86,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="HoldingSpace.Item.Action"
-    enum="HoldingSpaceItemType" expires_after="2021-09-24">
-<!-- Name completed by histogram_suffixes name="HoldingSpaceItemAction" -->
-
-  <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
-  <summary>
-    Records the type of item in holding space UI for which an action was taken
-    at the moment the action is performed.
-  </summary>
-</histogram>
-
 <histogram name="HoldingSpace.Item.Action.All" enum="HoldingSpaceItemAction"
     expires_after="2021-09-24">
   <owner>dmblack@google.com</owner>
@@ -87,16 +96,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="HoldingSpace.Item.Count" units="count"
+<histogram name="HoldingSpace.Item.Action.{action}" enum="HoldingSpaceItemType"
     expires_after="2021-09-24">
-<!-- Name completed by histogram_suffixes name="HoldingSpaceItemType" -->
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the type of item in holding space UI for which an action was taken
+    at the moment the action is performed. {action}
+  </summary>
+  <token key="action" variants="HoldingSpaceItemAction"/>
+</histogram>
 
+<histogram name="HoldingSpace.Item.Action.{action}.Extension"
+    enum="HoldingSpaceExtension" expires_after="2021-09-24">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the extension of an item in holding space UI for which an action was
+    taken at the moment the action is performed. {action}
+  </summary>
+  <token key="action" variants="HoldingSpaceItemAction"/>
+</histogram>
+
+<histogram name="HoldingSpace.Item.Count.{type}" units="items"
+    expires_after="2021-09-24">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
     Records the count of all visible items of a specific type in holding space
-    at the moment holding space UI is shown.
+    at the moment holding space UI is shown. {type}
   </summary>
+  <token key="type" variants="HoldingSpaceItemType"/>
 </histogram>
 
 <histogram name="HoldingSpace.Item.FailureToLaunch" enum="HoldingSpaceItemType"
@@ -151,31 +181,5 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 </histograms>
-
-<histogram_suffixes_list>
-
-<histogram_suffixes name="HoldingSpaceItemAction" separator=".">
-  <suffix name="Copy" label="The user copied the item."/>
-  <suffix name="Drag" label="The user dragged the item."/>
-  <suffix name="Launch" label="The user launched the item."/>
-  <suffix name="Pin" label="The user pinned the item."/>
-  <suffix name="Remove" label="The user removed the item."/>
-  <suffix name="ShowInFolder" label="The user showed the item in its folder."/>
-  <suffix name="Unpin" label="The user unpinned the item."/>
-  <affected-histogram name="HoldingSpace.Item.Action"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="HoldingSpaceItemType" separator=".">
-  <suffix name="All" label="Includes all item types."/>
-  <suffix name="Download" label="Items backed by a download file."/>
-  <suffix name="NearbyShare" label="Items backed by a nearby shared file."/>
-  <suffix name="PinnedFile" label="Items pinned explicitly by the user."/>
-  <suffix name="ScreenRecording"
-      label="Items backed by a screen recording file."/>
-  <suffix name="Screenshot" label="Items backed by a screenshot file."/>
-  <affected-histogram name="HoldingSpace.Item.Count"/>
-</histogram_suffixes>
-
-</histogram_suffixes_list>
 
 </histogram-configuration>

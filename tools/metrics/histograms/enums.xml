@@ -38186,6 +38186,86 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="0" label="kClick"/>
 </enum>
 
+<enum name="HoldingSpaceExtension">
+  <int value="0" label="kEmptyExtension"/>
+  <int value="1" label="kOtherExtension"/>
+  <int value="2" label="RESERVED"/>
+  <int value="3" label="RESERVED"/>
+  <int value="4" label="RESERVED"/>
+  <int value="5" label=".3ga"/>
+  <int value="6" label=".3gp"/>
+  <int value="7" label=".aac"/>
+  <int value="8" label=".alac"/>
+  <int value="9" label=".arw"/>
+  <int value="10" label=".asf"/>
+  <int value="11" label=".avi"/>
+  <int value="12" label=".bmp"/>
+  <int value="13" label=".cr2"/>
+  <int value="14" label=".crdownload"/>
+  <int value="15" label=".crx"/>
+  <int value="16" label=".csv"/>
+  <int value="17" label=".dmg"/>
+  <int value="18" label=".dng"/>
+  <int value="19" label=".doc"/>
+  <int value="20" label=".docx"/>
+  <int value="21" label=".exe"/>
+  <int value="22" label=".flac"/>
+  <int value="23" label=".gdoc"/>
+  <int value="24" label=".gif"/>
+  <int value="25" label=".gsheet"/>
+  <int value="26" label=".gslides"/>
+  <int value="27" label=".htm"/>
+  <int value="28" label=".html"/>
+  <int value="29" label=".jar"/>
+  <int value="30" label=".jpeg"/>
+  <int value="31" label=".jpg"/>
+  <int value="32" label=".log"/>
+  <int value="33" label=".m3u"/>
+  <int value="34" label=".m3u8"/>
+  <int value="35" label=".m4a"/>
+  <int value="36" label=".m4v"/>
+  <int value="37" label=".mhtml"/>
+  <int value="38" label=".mid"/>
+  <int value="39" label=".mkv"/>
+  <int value="40" label=".mov"/>
+  <int value="41" label=".mp3"/>
+  <int value="42" label=".mp4"/>
+  <int value="43" label=".mpg"/>
+  <int value="44" label=".nef"/>
+  <int value="45" label=".nrw"/>
+  <int value="46" label=".odf"/>
+  <int value="47" label=".odp"/>
+  <int value="48" label=".ods"/>
+  <int value="49" label=".odt"/>
+  <int value="50" label=".oga"/>
+  <int value="51" label=".ogg"/>
+  <int value="52" label=".ogv"/>
+  <int value="53" label=".orf"/>
+  <int value="54" label=".pdf"/>
+  <int value="55" label=".png"/>
+  <int value="56" label=".ppt"/>
+  <int value="57" label=".pptx"/>
+  <int value="58" label=".ps"/>
+  <int value="59" label=".ra"/>
+  <int value="60" label=".raf"/>
+  <int value="61" label=".ram"/>
+  <int value="62" label=".rar"/>
+  <int value="63" label=".rm"/>
+  <int value="64" label=".rtf"/>
+  <int value="65" label=".rw2"/>
+  <int value="66" label=".tini"/>
+  <int value="67" label=".torrent"/>
+  <int value="68" label=".txt"/>
+  <int value="69" label=".wav"/>
+  <int value="70" label=".webm"/>
+  <int value="71" label=".webp"/>
+  <int value="72" label=".wma"/>
+  <int value="73" label=".wmv"/>
+  <int value="74" label=".xls"/>
+  <int value="75" label=".xlsx"/>
+  <int value="76" label=".zip"/>
+</enum>
+
 <enum name="HoldingSpaceFilesAppChipAction">
   <int value="0" label="kClick"/>
 </enum>
