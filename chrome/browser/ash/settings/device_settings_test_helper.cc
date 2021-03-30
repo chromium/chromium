@@ -16,6 +16,8 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "content/public/browser/browser_thread.h"
@@ -57,6 +59,8 @@ void DeviceSettingsTestBase::SetUp() {
   device_settings_service_ = std::make_unique<DeviceSettingsService>();
   dbus_setter_ = chromeos::DBusThreadManager::GetSetterForTesting();
   chromeos::CryptohomeClient::InitializeFake();
+  chromeos::UserDataAuthClient::InitializeFake();
+  chromeos::CryptohomeMiscClient::InitializeFake();
   PowerManagerClient::InitializeFake();
   chromeos::TpmManagerClient::InitializeFake();
   OwnerSettingsServiceAshFactory::SetDeviceSettingsServiceForTesting(
@@ -83,7 +87,9 @@ void DeviceSettingsTestBase::TearDown() {
   device_settings_service_.reset();
   chromeos::TpmManagerClient::Shutdown();
   PowerManagerClient::Shutdown();
+  chromeos::CryptohomeMiscClient::Shutdown();
   chromeos::CryptohomeClient::Shutdown();
+  chromeos::UserDataAuthClient::Shutdown();
   chromeos::DBusThreadManager::Shutdown();
   device_policy_.reset();
   base::RunLoop().RunUntilIdle();
