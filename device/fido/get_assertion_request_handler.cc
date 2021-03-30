@@ -422,7 +422,7 @@ void GetAssertionRequestHandler::FillHasRecognizedPlatformCredential(
       touch_id_authenticator &&
       touch_id_authenticator->HasCredentialForGetAssertionRequest(request_);
   std::vector<PublicKeyCredentialUserEntity> credential_users;
-  if (has_credential) {
+  if (has_credential && request_.allow_list.empty()) {
     credential_users =
         touch_id_authenticator->GetResidentCredentialUsersForRequest(request_);
   }
