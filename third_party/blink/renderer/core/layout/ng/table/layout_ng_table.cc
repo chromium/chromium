@@ -269,18 +269,10 @@ void LayoutNGTable::AddVisualEffectOverflow() {
     if (const NGTableBorders* collapsed_borders =
             fragment->TableCollapsedBorders()) {
       PhysicalRect borders_overflow = PhysicalBorderBoxRect();
-      NGBoxStrut table_borders = collapsed_borders->TableBorder();
-      auto visual_inline_strut =
-          collapsed_borders->GetCollapsedBorderVisualInlineStrut();
-      // Expand by difference between visual and layout border width.
-      table_borders.inline_start =
-          visual_inline_strut.first - table_borders.inline_start;
-      table_borders.inline_end =
-          visual_inline_strut.second - table_borders.inline_end;
-      table_borders.block_start = LayoutUnit();
-      table_borders.block_end = LayoutUnit();
+      NGBoxStrut visual_size_diff =
+          collapsed_borders->GetCollapsedBorderVisualSizeDiff();
       borders_overflow.Expand(
-          table_borders.ConvertToPhysical(StyleRef().GetWritingDirection()));
+          visual_size_diff.ConvertToPhysical(StyleRef().GetWritingDirection()));
       AddSelfVisualOverflow(borders_overflow);
     }
   }

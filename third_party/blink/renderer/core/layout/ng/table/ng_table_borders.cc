@@ -487,6 +487,19 @@ void NGTableBorders::ComputeCollapsedTableBorderPadding(
   cached_table_border_ = borders;
 }
 
+NGBoxStrut NGTableBorders::GetCollapsedBorderVisualSizeDiff() const {
+  if (!is_collapsed_)
+    return NGBoxStrut();
+  // Inline sizes expand by difference between visual and
+  // layout border width.
+  NGBoxStrut visual_diff;
+  visual_diff.inline_start =
+      collapsed_visual_inline_start_ - cached_table_border_->inline_start;
+  visual_diff.inline_end =
+      collapsed_visual_inline_end_ - cached_table_border_->inline_end;
+  return visual_diff;
+}
+
 NGBoxStrut NGTableBorders::CellBorder(
     const NGBlockNode& cell,
     wtf_size_t row,

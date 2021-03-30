@@ -48,6 +48,8 @@ class CORE_EXPORT NGLayoutOverflowCalculator {
   void AddItems(const NGFragmentItems&);
   void AddItems(const NGFragmentItemsBuilder::ItemWithOffsetList&);
 
+  void AddTableCollapsedBorders(const NGTableBorders&);
+
  private:
   template <typename Items>
   void AddItemsInternal(const Items& items);

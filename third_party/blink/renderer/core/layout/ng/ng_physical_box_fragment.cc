@@ -124,6 +124,8 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
                                              writing_direction, physical_size,
                                              box_fragment->Size()));
     }
+    if (builder->table_collapsed_borders_)
+      calculator.AddTableCollapsedBorders(*builder->table_collapsed_borders_);
 
     layout_overflow = calculator.Result(inflow_bounds);
   }

@@ -204,11 +204,7 @@ class NGTableBorders : public RefCounted<NGTableBorders> {
   // visual overflow rect use different borders.
   // Border rect uses inline start/end of the first row.
   // Visual rect uses largest inline start/end of the entire table.
-  std::pair<LayoutUnit, LayoutUnit> GetCollapsedBorderVisualInlineStrut()
-      const {
-    return std::make_pair(collapsed_visual_inline_start_,
-                          collapsed_visual_inline_end_);
-  }
+  NGBoxStrut GetCollapsedBorderVisualSizeDiff() const;
 
   NGBoxStrut CellBorder(const NGBlockNode& cell,
                         wtf_size_t row,
