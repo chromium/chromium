@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ash/app_list/app_list_export.h"
+#include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_interaction_model_observer.h"
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
@@ -29,7 +29,7 @@ class UiElementContainerView;
 // AppListAssistantMainStage is the child of AssistantMainView responsible for
 // displaying the Assistant interaction to the user. This includes visual
 // affordances for the query, response, as well as suggestions.
-class APP_LIST_EXPORT AppListAssistantMainStage
+class ASH_EXPORT AppListAssistantMainStage
     : public views::View,
       public views::ViewObserver,
       public AssistantControllerObserver,

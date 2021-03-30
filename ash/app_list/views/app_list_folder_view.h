@@ -30,10 +30,10 @@ class AppListModel;
 class FolderHeaderView;
 class PageSwitcher;
 
-class APP_LIST_EXPORT AppListFolderView : public views::View,
-                                          public FolderHeaderViewDelegate,
-                                          public AppListModelObserver,
-                                          public AppsGridViewFolderDelegate {
+class ASH_EXPORT AppListFolderView : public views::View,
+                                     public FolderHeaderViewDelegate,
+                                     public AppListModelObserver,
+                                     public AppsGridViewFolderDelegate {
  public:
   METADATA_HEADER(AppListFolderView);
 

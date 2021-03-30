@@ -7,11 +7,11 @@
 
 #include <stddef.h>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/views/search_result_base_view.h"
+#include "ash/ash_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
@@ -25,9 +25,9 @@ namespace ash {
 // selected. There can be one result within one SearchResultContainerView
 // selected at a time; moving off the end of one container view selects the
 // first element of the next container view, and vice versa
-class APP_LIST_EXPORT SearchResultContainerView : public views::View,
-                                                  public views::ViewObserver,
-                                                  public ui::ListModelObserver {
+class ASH_EXPORT SearchResultContainerView : public views::View,
+                                             public views::ViewObserver,
+                                             public ui::ListModelObserver {
  public:
   class Delegate {
    public:

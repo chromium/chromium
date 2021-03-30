@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ash/app_list/app_list_export.h"
+#include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
@@ -20,9 +20,9 @@ class AssistantDialogPlate;
 class AppListAssistantMainStage;
 class AssistantViewDelegate;
 
-class APP_LIST_EXPORT AssistantMainView : public views::View,
-                                          public AssistantControllerObserver,
-                                          public AssistantUiModelObserver {
+class ASH_EXPORT AssistantMainView : public views::View,
+                                     public AssistantControllerObserver,
+                                     public AssistantUiModelObserver {
  public:
   explicit AssistantMainView(AssistantViewDelegate* delegate);
   ~AssistantMainView() override;

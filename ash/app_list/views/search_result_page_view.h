@@ -9,13 +9,13 @@
 #include <utility>
 #include <vector>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/model/search/search_box_model_observer.h"
 #include "ash/app_list/views/app_list_page.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_result_container_view.h"
+#include "ash/ash_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -36,7 +36,7 @@ class SearchResultPageAnchoredDialog;
 class ViewShadow;
 
 // The search results page for the app list.
-class APP_LIST_EXPORT SearchResultPageView
+class ASH_EXPORT SearchResultPageView
     : public AppListPage,
       public SearchResultContainerView::Delegate,
       public SearchBoxModelObserver {

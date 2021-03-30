@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_menu/app_menu_model_adapter.h"
+#include "ash/ash_export.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/menu/menu_types.h"
@@ -20,7 +20,7 @@ namespace ash {
 
 // A class wrapping menu operations for apps in AppListView. Responsible for
 // building, running, and recording histograms.
-class APP_LIST_EXPORT AppListMenuModelAdapter : public AppMenuModelAdapter {
+class ASH_EXPORT AppListMenuModelAdapter : public AppMenuModelAdapter {
  public:
   // The kinds of apps which show menus. This enum is used to record
   // metrics, if a new value is added make sure to modify

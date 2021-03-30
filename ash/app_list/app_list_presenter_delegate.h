@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "ash/app_list/app_list_export.h"
+#include "ash/ash_export.h"
 #include "base/optional.h"
 
 namespace aura {
@@ -24,7 +24,7 @@ enum class AppListViewState;
 // Delegate of the app list presenter which allows customizing its behavior.
 // The design of this interface was heavily influenced by the needs of Ash's
 // app list implementation (see ash::AppListPresenterDelegateImpl).
-class APP_LIST_EXPORT AppListPresenterDelegate {
+class ASH_EXPORT AppListPresenterDelegate {
  public:
   virtual ~AppListPresenterDelegate() {}
 

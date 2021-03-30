@@ -5,8 +5,8 @@
 #ifndef ASH_APP_LIST_VIEWS_APP_LIST_PAGE_H_
 #define ASH_APP_LIST_VIEWS_APP_LIST_PAGE_H_
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/ash_export.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "ui/views/view.h"
@@ -15,7 +15,7 @@ namespace ash {
 
 class ContentsView;
 
-class APP_LIST_EXPORT AppListPage : public views::View {
+class ASH_EXPORT AppListPage : public views::View {
  public:
   AppListPage();
   ~AppListPage() override;

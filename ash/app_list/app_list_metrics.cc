@@ -118,10 +118,9 @@ void RecordPageSwitcherSource(AppListPageSwitcherSource source,
   }
 }
 
-APP_LIST_EXPORT void RecordSearchResultOpenSource(
-    const SearchResult* result,
-    const AppListModel* model,
-    const SearchModel* search_model) {
+void RecordSearchResultOpenSource(const SearchResult* result,
+                                  const AppListModel* model,
+                                  const SearchModel* search_model) {
   // Record the search metric if the SearchResult is not a suggested app.
   if (result->is_recommendation())
     return;

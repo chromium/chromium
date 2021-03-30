@@ -23,7 +23,7 @@ namespace ash {
 class AppListViewDelegate;
 
 // Displays a list of SearchResultTileItemView.
-class APP_LIST_EXPORT SearchResultTileItemListView
+class ASH_EXPORT SearchResultTileItemListView
     : public SearchResultContainerView {
  public:
   SearchResultTileItemListView(views::Textfield* search_box,

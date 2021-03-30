@@ -10,8 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/model/app_list_item_observer.h"
+#include "ash/ash_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -34,10 +34,10 @@ class AppListMenuModelAdapter;
 class AppListViewDelegate;
 class AppsGridView;
 
-class APP_LIST_EXPORT AppListItemView : public views::Button,
-                                        public views::ContextMenuController,
-                                        public AppListItemObserver,
-                                        public ui::ImplicitAnimationObserver {
+class ASH_EXPORT AppListItemView : public views::Button,
+                                   public views::ContextMenuController,
+                                   public AppListItemObserver,
+                                   public ui::ImplicitAnimationObserver {
  public:
   METADATA_HEADER(AppListItemView);
 

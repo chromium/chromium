@@ -10,9 +10,9 @@
 #include <utility>
 #include <vector>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/search/search_model.h"
+#include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/compiler_specific.h"
@@ -51,8 +51,8 @@ class SearchResultPageView;
 // one of which can be active at a given time. ContentsView provides the user
 // interface for switching between launcher pages, and animates the transition
 // between them.
-class APP_LIST_EXPORT ContentsView : public views::View,
-                                     public PaginationModelObserver {
+class ASH_EXPORT ContentsView : public views::View,
+                                public PaginationModelObserver {
  public:
   // Used to SetActiveState without animations.
   class ScopedSetActiveStateAnimationDisabler {

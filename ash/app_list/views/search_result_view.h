@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/views/app_list_menu_model_adapter.h"
 #include "ash/app_list/views/search_result_actions_view_delegate.h"
 #include "ash/app_list/views/search_result_base_view.h"
+#include "ash/ash_export.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -38,10 +38,9 @@ class SearchResult;
 class SearchResultListView;
 
 // SearchResultView displays a SearchResult.
-class APP_LIST_EXPORT SearchResultView
-    : public SearchResultBaseView,
-      public views::ContextMenuController,
-      public SearchResultActionsViewDelegate {
+class ASH_EXPORT SearchResultView : public SearchResultBaseView,
+                                    public views::ContextMenuController,
+                                    public SearchResultActionsViewDelegate {
  public:
   // Internal class name.
   static const char kViewClassName[];

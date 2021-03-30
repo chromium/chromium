@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/model/app_list_item_observer.h"
+#include "ash/ash_export.h"
 #include "base/macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -24,9 +24,9 @@ class FolderHeaderViewTest;
 }
 
 // FolderHeaderView contains an editable folder name field.
-class APP_LIST_EXPORT FolderHeaderView : public views::View,
-                                         public views::TextfieldController,
-                                         public AppListItemObserver {
+class ASH_EXPORT FolderHeaderView : public views::View,
+                                    public views::TextfieldController,
+                                    public AppListItemObserver {
  public:
   explicit FolderHeaderView(FolderHeaderViewDelegate* delegate);
   ~FolderHeaderView() override;

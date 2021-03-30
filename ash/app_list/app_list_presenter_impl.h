@@ -9,10 +9,10 @@
 
 #include <memory>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_presenter_delegate.h"
 #include "ash/app_list/views/app_list_view.h"
+#include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback.h"
@@ -32,7 +32,7 @@ enum class AppListViewState;
 // Manages app list UI. Creates AppListView and schedules showing/hiding
 // animation. While the UI is visible, it monitors things such as app list
 // activation state to auto dismiss the UI.
-class APP_LIST_EXPORT AppListPresenterImpl
+class ASH_EXPORT AppListPresenterImpl
     : public PaginationModelObserver,
       public aura::client::FocusChangeObserver,
       public ui::ImplicitAnimationObserver,

@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_view_delegate.h"
+#include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
@@ -64,8 +64,8 @@ constexpr int kAppListThresholdDenominator = 3;
 // and hosts a AppsGridView and passes AppListModel to it for display.
 // TODO(newcomer|weidongg): Organize the cc file to match the order of
 // definitions in this header.
-class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
-                                    public aura::WindowObserver {
+class ASH_EXPORT AppListView : public views::WidgetDelegateView,
+                               public aura::WindowObserver {
  public:
   class TestApi {
    public:

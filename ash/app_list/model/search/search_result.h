@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/app_list/model/app_list_model_export.h"
+#include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/callback.h"
 #include "base/macros.h"
@@ -32,7 +32,7 @@ class SearchResultObserver;
 // SearchResult consists of an icon, title text and details text. Title and
 // details text can have tagged ranges that are displayed differently from
 // default style.
-class APP_LIST_MODEL_EXPORT SearchResult {
+class ASH_EXPORT SearchResult {
  public:
   using ResultType = ash::AppListSearchResultType;
   using DisplayType = ash::SearchResultDisplayType;

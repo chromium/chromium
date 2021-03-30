@@ -12,7 +12,7 @@
 #include <string>
 #include <utility>
 
-#include "ash/app_list/model/app_list_model_export.h"
+#include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/macros.h"
@@ -30,7 +30,7 @@ class AppListModel;
 
 // AppListItem provides icon and title to be shown in a AppListItemView
 // and action to be executed when the AppListItemView is activated.
-class APP_LIST_MODEL_EXPORT AppListItem {
+class ASH_EXPORT AppListItem {
  public:
   using AppListItemMetadata = ash::AppListItemMetadata;
 

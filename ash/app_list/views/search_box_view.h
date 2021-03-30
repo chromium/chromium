@@ -7,9 +7,9 @@
 
 #include <vector>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_box_model_observer.h"
+#include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/search_box/search_box_view_base.h"
 
@@ -29,8 +29,8 @@ class SearchModel;
 // that controls what icon to display, what placeholder text to use for
 // Textfield. The text and selection model part could be set to change the
 // contents and selection model of the Textfield.
-class APP_LIST_EXPORT SearchBoxView : public SearchBoxViewBase,
-                                      public SearchBoxModelObserver {
+class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
+                                 public SearchBoxModelObserver {
  public:
   SearchBoxView(SearchBoxViewDelegate* delegate,
                 AppListViewDelegate* view_delegate,

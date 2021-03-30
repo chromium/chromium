@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "ash/app_list/app_list_export.h"
+#include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_interaction_model_observer.h"
 #include "ash/assistant/model/assistant_query_history.h"
 #include "ash/assistant/model/assistant_ui_model_observer.h"
@@ -42,7 +42,7 @@ class MicView;
 // AssistantDialogPlate provides a textfield for use with the keyboard input
 // modality, and a MicView which serves to toggle voice interaction as
 // appropriate for use with the voice input modality.
-class APP_LIST_EXPORT AssistantDialogPlate
+class ASH_EXPORT AssistantDialogPlate
     : public views::View,
       public views::TextfieldController,
       public AssistantControllerObserver,

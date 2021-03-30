@@ -239,6 +239,8 @@ component("ash") {
     "ambient/util/ambient_util.cc",
     "ambient/util/ambient_util.h",
     "animation/animation_change_type.h",
+
+    # TODO(https://crbug.com/942564): Move into //ash/app_list/BUILD.gn.
     "app_list/app_list_color_provider_impl.cc",
     "app_list/app_list_color_provider_impl.h",
     "app_list/app_list_controller_impl.cc",
@@ -1957,7 +1959,10 @@ component("ash") {
     "//ui/base/idle",
   ]
 
-  allow_circular_includes_from = [ "//ash/assistant/ui" ]
+  allow_circular_includes_from = [
+    "//ash/app_list",
+    "//ash/assistant/ui",
+  ]
 
   if (enable_cros_ambient_mode_backend) {
     sources += [
@@ -2048,6 +2053,8 @@ test("ash_unittests") {
     "ambient/ui/ambient_container_view_unittest.cc",
     "ambient/ui/media_string_view_unittest.cc",
     "ambient/ui/photo_view_unittest.cc",
+
+    # TODO(https://crbug.com/942564): Move into //ash/app_list/BUILD.gn.
     "app_list/app_list_controller_impl_unittest.cc",
     "app_list/app_list_metrics_unittest.cc",
     "app_list/app_list_presenter_delegate_unittest.cc",

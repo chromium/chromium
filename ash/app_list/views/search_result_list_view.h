@@ -25,7 +25,7 @@ class AppListViewDelegate;
 
 // SearchResultListView displays SearchResultList with a list of
 // SearchResultView.
-class APP_LIST_EXPORT SearchResultListView : public SearchResultContainerView {
+class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
  public:
   SearchResultListView(AppListMainView* main_view,
                        AppListViewDelegate* view_delegate);

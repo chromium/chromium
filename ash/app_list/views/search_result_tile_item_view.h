@@ -8,9 +8,9 @@
 #include <memory>
 #include <vector>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/views/app_list_menu_model_adapter.h"
 #include "ash/app_list/views/search_result_base_view.h"
+#include "ash/ash_export.h"
 #include "base/macros.h"
 #include "ui/views/context_menu_controller.h"
 
@@ -30,7 +30,7 @@ class SearchResult;
 
 // A tile view that displays a search result. It hosts view for search result
 // that has SearchResult::DisplayType DISPLAY_TILE or DISPLAY_RECOMMENDATION.
-class APP_LIST_EXPORT SearchResultTileItemView
+class ASH_EXPORT SearchResultTileItemView
     : public SearchResultBaseView,
       public views::ContextMenuController {
  public:

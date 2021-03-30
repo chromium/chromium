@@ -14,11 +14,11 @@
 #include <tuple>
 #include <vector>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/app_list_model_observer.h"
 #include "ash/app_list/paged_view_structure.h"
 #include "ash/app_list/views/app_list_view.h"
+#include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/compiler_specific.h"
@@ -57,7 +57,7 @@ class PulsingBlockView;
 class GhostImageView;
 
 // Represents the index to an item view in the grid.
-struct APP_LIST_EXPORT GridIndex {
+struct ASH_EXPORT GridIndex {
   GridIndex() = default;
   GridIndex(int page, int slot) : page(page), slot(slot) {}
 
@@ -77,12 +77,12 @@ struct APP_LIST_EXPORT GridIndex {
 };
 
 // AppsGridView displays a grid for AppListItemList sub model.
-class APP_LIST_EXPORT AppsGridView : public views::View,
-                                     public AppListItemListObserver,
-                                     public PaginationModelObserver,
-                                     public AppListModelObserver,
-                                     public ui::ImplicitAnimationObserver,
-                                     public views::BoundsAnimatorObserver {
+class ASH_EXPORT AppsGridView : public views::View,
+                                public AppListItemListObserver,
+                                public PaginationModelObserver,
+                                public AppListModelObserver,
+                                public ui::ImplicitAnimationObserver,
+                                public views::BoundsAnimatorObserver {
  public:
   enum Pointer {
     NONE,

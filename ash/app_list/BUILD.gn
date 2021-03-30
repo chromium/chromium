@@ -7,9 +7,8 @@ import("//testing/test.gni")
 
 assert(is_chromeos)
 
-component("app_list") {
+source_set("app_list") {
   sources = [
-    "app_list_export.h",
     "app_list_metrics.cc",
     "app_list_metrics.h",
     "app_list_presenter_delegate.h",
@@ -18,6 +17,30 @@ component("app_list") {
     "app_list_util.cc",
     "app_list_util.h",
     "app_list_view_delegate.h",
+    "model/app_list_folder_item.cc",
+    "model/app_list_folder_item.h",
+    "model/app_list_item.cc",
+    "model/app_list_item.h",
+    "model/app_list_item_list.cc",
+    "model/app_list_item_list.h",
+    "model/app_list_item_list_observer.cc",
+    "model/app_list_item_list_observer.h",
+    "model/app_list_item_observer.cc",
+    "model/app_list_item_observer.h",
+    "model/app_list_model.cc",
+    "model/app_list_model.h",
+    "model/app_list_model_observer.cc",
+    "model/app_list_model_observer.h",
+    "model/folder_image.cc",
+    "model/folder_image.h",
+    "model/search/search_box_model.cc",
+    "model/search/search_box_model.h",
+    "model/search/search_box_model_observer.h",
+    "model/search/search_model.cc",
+    "model/search/search_model.h",
+    "model/search/search_result.cc",
+    "model/search/search_result.h",
+    "model/search/search_result_observer.h",
     "paged_view_structure.cc",
     "paged_view_structure.h",
     "views/app_list_drag_and_drop_host.h",
@@ -100,7 +123,8 @@ component("app_list") {
     "views/top_icon_animation_view.h",
   ]
 
-  defines = [ "APP_LIST_IMPLEMENTATION" ]
+  # Needed because this source_set implements part of the "ash" component.
+  defines = [ "ASH_IMPLEMENTATION" ]
 
   deps = [
     "//ash/app_list/resources",
@@ -147,8 +171,6 @@ component("app_list") {
 
   # TODO(hejq): Remove this once app_list is migrated. http://crbug.com/733662
   public_deps = [
-    "//ash/app_list/model:app_list_model",
-    "//ash/app_list/model:search_model",
     "//ash/public/cpp",
     "//base",
     "//mojo/public/cpp/bindings",
@@ -161,7 +183,7 @@ component("app_list") {
   ]
 }
 
-static_library("test_support") {
+source_set("test_support") {
   testonly = true
 
   sources = [

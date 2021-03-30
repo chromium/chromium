@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/views/app_list_page.h"
+#include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
@@ -24,9 +24,9 @@ class AssistantViewDelegate;
 class ViewShadow;
 
 // The Assistant page for the app list.
-class APP_LIST_EXPORT AssistantPageView : public AppListPage,
-                                          public AssistantControllerObserver,
-                                          public AssistantUiModelObserver {
+class ASH_EXPORT AssistantPageView : public AppListPage,
+                                     public AssistantControllerObserver,
+                                     public AssistantUiModelObserver {
  public:
   explicit AssistantPageView(AssistantViewDelegate* assistant_view_delegate);
   ~AssistantPageView() override;

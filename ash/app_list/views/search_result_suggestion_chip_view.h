@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/views/search_result_base_view.h"
+#include "ash/ash_export.h"
 #include "base/macros.h"
 
 namespace views {
@@ -24,8 +24,7 @@ namespace ash {
 class AppListViewDelegate;
 
 // A chip view that displays a search result.
-class APP_LIST_EXPORT SearchResultSuggestionChipView
-    : public SearchResultBaseView {
+class ASH_EXPORT SearchResultSuggestionChipView : public SearchResultBaseView {
  public:
   explicit SearchResultSuggestionChipView(AppListViewDelegate* view_delegate);
   SearchResultSuggestionChipView(const SearchResultSuggestionChipView&) =

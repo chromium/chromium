@@ -13,7 +13,7 @@
 
 #include "ash/app_list/model/app_list_item_list.h"
 #include "ash/app_list/model/app_list_item_list_observer.h"
-#include "ash/app_list/model/app_list_model_export.h"
+#include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
@@ -31,7 +31,7 @@ class AppListModelObserver;
 // NOTE: Currently this class observes |top_level_item_list_|. The View code may
 // move entries in the item list directly (but can not add or remove them) and
 // the model needs to notify its observers when this occurs.
-class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
+class ASH_EXPORT AppListModel : public AppListItemListObserver {
  public:
   AppListModel();
   ~AppListModel() override;
