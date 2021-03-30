@@ -60,8 +60,8 @@ class PermissionsApiTestWithContextType
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PermissionsApiTest, PermissionsFail) {
-  ASSERT_TRUE(RunExtensionTest("permissions/disabled")) << message_;
+IN_PROC_BROWSER_TEST_P(PermissionsApiTestWithContextType, PermissionsFail) {
+  ASSERT_TRUE(RunTest("permissions/disabled")) << message_;
 
   // Since the experimental APIs require a flag, this will fail even though
   // it's enabled.
@@ -76,13 +76,13 @@ IN_PROC_BROWSER_TEST_F(ExperimentalApiTest, PermissionsSucceed) {
   ASSERT_TRUE(RunExtensionTest("permissions/enabled")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(PermissionsApiTest, ExperimentalPermissionsFail) {
+IN_PROC_BROWSER_TEST_P(PermissionsApiTestWithContextType,
+                       ExperimentalPermissionsFail) {
   // At the time this test is being created, there is no experimental
   // function that will not be graduating soon, and does not require a
   // tab id as an argument.  So, we need the tab permission to get
   // a tab id.
-  ASSERT_TRUE(RunExtensionTest("permissions/experimental_disabled"))
-      << message_;
+  ASSERT_TRUE(RunTest("permissions/experimental_disabled")) << message_;
 }
 
 // TODO(crbug/1065399): Flaky on ChromeOS and Linux non-dbg builds.
@@ -164,10 +164,11 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, OptionalPermissionsDeny) {
 
 // Tests that the permissions.request function must be called from within a
 // user gesture.
-IN_PROC_BROWSER_TEST_F(PermissionsApiTest, OptionalPermissionsGesture) {
+IN_PROC_BROWSER_TEST_P(PermissionsApiTestWithContextType,
+                       OptionalPermissionsGesture) {
   PermissionsRequestFunction::SetIgnoreUserGestureForTests(false);
   ASSERT_TRUE(StartEmbeddedTestServer());
-  EXPECT_TRUE(RunExtensionTest("permissions/optional_gesture")) << message_;
+  EXPECT_TRUE(RunTest("permissions/optional_gesture")) << message_;
 }
 
 // Tests that the user gesture is retained in the permissions.request function
@@ -240,10 +241,10 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, FileLoad) {
 
 // Test requesting, querying, and removing host permissions for host
 // permissions that are a subset of the optional permissions.
-IN_PROC_BROWSER_TEST_F(PermissionsApiTest, HostSubsets) {
+IN_PROC_BROWSER_TEST_P(PermissionsApiTestWithContextType, HostSubsets) {
   PermissionsRequestFunction::SetAutoConfirmForTests(true);
   PermissionsRequestFunction::SetIgnoreUserGestureForTests(true);
-  EXPECT_TRUE(RunExtensionTest("permissions/host_subsets")) << message_;
+  EXPECT_TRUE(RunTest("permissions/host_subsets")) << message_;
 }
 
 // Tests that requesting an optional permission from a background page, with
