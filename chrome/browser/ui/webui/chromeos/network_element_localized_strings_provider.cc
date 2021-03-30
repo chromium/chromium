@@ -136,6 +136,8 @@ void AddOncLocalizedStrings(content::WebUIDataSource* html_source) {
       {"OncCellular-APN-Password", IDS_ONC_CELLULAR_APN_PASSWORD},
       {"OncCellular-APN-Username", IDS_ONC_CELLULAR_APN_USERNAME},
       {"OncCellular-APN-Attach", IDS_ONC_CELLULAR_APN_ATTACH},
+      {"OncCellular-APN-Attach_TooltipText",
+       IDS_ONC_CELLULAR_APN_ATTACH_TOOLTIP_TEXT},
       {"OncCellular-ActivationState", IDS_ONC_CELLULAR_ACTIVATION_STATE},
       {"OncCellular-ActivationState_Activated",
        IDS_ONC_CELLULAR_ACTIVATION_STATE_ACTIVATED},

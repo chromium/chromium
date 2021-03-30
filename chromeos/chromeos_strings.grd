@@ -1050,6 +1050,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_ONC_CELLULAR_APN_ATTACH" desc="ONC Property label for APN-Attach APN that is required by some cellular network providers in order to connect">
         Attach APN
       </message>
+      <message name="IDS_ONC_CELLULAR_APN_ATTACH_TOOLTIP_TEXT" desc="Text for help tooltip present in the Attach APN setting row informing users that the associated toggle may be required by some cellular network providers in order to connect">
+        Your carrier may require this option to connect to their network. Contact your carrier for details.
+      </message>
       <message name="IDS_ONC_CELLULAR_SERVING_OPERATOR_NAME" desc="ONC Property label for Cellular.ServingOperator.Name">
         Operator
       </message>
