@@ -11,6 +11,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/signin/ios/browser/features.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #include "components/sync/driver/sync_service.h"
@@ -266,12 +267,14 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   }
   [model addItem:self.accountItem
       toSectionWithIdentifier:IdentitySectionIdentifier];
-  TableViewImageItem* manageGoogleAccount =
-      [[TableViewImageItem alloc] initWithType:ManageGoogleAccountItemType];
-  manageGoogleAccount.title =
-      GetNSString(IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE);
-  [model addItem:manageGoogleAccount
-      toSectionWithIdentifier:IdentitySectionIdentifier];
+  if (signin::IsSSOEditingEnabled()) {
+    TableViewImageItem* manageGoogleAccount =
+        [[TableViewImageItem alloc] initWithType:ManageGoogleAccountItemType];
+    manageGoogleAccount.title =
+        GetNSString(IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE);
+    [model addItem:manageGoogleAccount
+        toSectionWithIdentifier:IdentitySectionIdentifier];
+  }
 }
 
 // Creates, removes or updates the identity section as needed. And notifies the

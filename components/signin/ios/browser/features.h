@@ -32,6 +32,12 @@ extern const char kDelayThresholdMinutesToUpdateGaiaCookie[];
 // Feature controlling whether to use full username in sign-in notifications.
 extern const base::Feature kSigninNotificationInfobarUsernameInTitle;
 
+// This feature disable SSO editing.
+extern const base::Feature kDisableSSOEditing;
+
+// Returns true if SSO editing is enabled.
+bool IsSSOEditingEnabled();
+
 }  // namespace signin
 
 #endif  // COMPONENTS_SIGNIN_IOS_BROWSER_FEATURES_H_
