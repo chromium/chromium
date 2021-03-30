@@ -37,11 +37,6 @@ interface DocumentCoordinationUnit {
   // untagged as an ad, providing the new status.
   SetIsAdFrame(bool is_ad_frame);
 
-  // Called when the intersection between this frame and the viewport changes.
-  // The viewport is the rectangular area of the top-level document that is
-  // visible. This is used to drive the frame prioritization logic.
-  SetViewportIntersection(gfx.mojom.Rect viewport_intersection);
-
   // Event signals.
 
   // Called when the associated frame has caused a non-persistent notification

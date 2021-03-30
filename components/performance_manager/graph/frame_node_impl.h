@@ -84,7 +84,6 @@ class FrameNodeImpl
   void SetNetworkAlmostIdle() override;
   void SetLifecycleState(LifecycleState state) override;
   void SetHasNonEmptyBeforeUnload(bool has_nonempty_beforeunload) override;
-  void SetViewportIntersection(const gfx::Rect& viewport_intersection) override;
   void SetIsAdFrame(bool is_ad_frame) override;
   void SetHadFormInteraction() override;
   void OnNonPersistentNotificationCreated() override;
@@ -132,6 +131,7 @@ class FrameNodeImpl
   void SetIsHoldingWebLock(bool is_holding_weblock);
   void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
   void SetIsAudible(bool is_audible);
+  void SetViewportIntersection(const gfx::Rect& viewport_intersection);
   void SetVisibility(Visibility visibility);
 
   // Invoked when a navigation is committed in the frame.

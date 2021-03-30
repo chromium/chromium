@@ -4010,34 +4010,6 @@ void LocalFrameView::NotifyFrameRectsChangedIfNeeded() {
   }
 }
 
-void LocalFrameView::SetViewportIntersection(
-    const mojom::blink::ViewportIntersectionState& intersection_state) {
-  // The viewport intersection of the main frame is not tracked.
-  DCHECK(!GetFrame().IsMainFrame());
-
-  if (auto* document_resource_coordinator =
-          frame_->GetDocument()->GetResourceCoordinator()) {
-    gfx::RectF transform_rect =
-        gfx::RectF(gfx::Rect(intersection_state.viewport_intersection));
-
-    // The viewport intersection in the child frame's coordinate system is
-    // transformed into the intersection in the viewport's coordinate system.
-    intersection_state.main_frame_transform.TransformRect(&transform_rect);
-
-    // Get rid of the possible floating point values for x and y of the
-    // resulting rectangle.
-    IntRect rect = EnclosingIntRect(
-        FloatRect(transform_rect.x(), transform_rect.y(),
-                  transform_rect.width(), transform_rect.height()));
-
-    // Return <0, 0, 0, 0> if there is no area.
-    if (rect.IsEmpty())
-      rect.SetLocation(IntPoint(0, 0));
-
-    document_resource_coordinator->SetViewportIntersection(rect);
-  }
-}
-
 PhysicalOffset LocalFrameView::ViewportToFrame(
     const PhysicalOffset& point_in_viewport) const {
   PhysicalOffset point_in_root_frame = PhysicalOffset::FromFloatPointRound(

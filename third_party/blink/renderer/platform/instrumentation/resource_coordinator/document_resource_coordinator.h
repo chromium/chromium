@@ -34,7 +34,6 @@ class PLATFORM_EXPORT DocumentResourceCoordinator final {
   void SetNetworkAlmostIdle();
   void SetLifecycleState(performance_manager::mojom::LifecycleState);
   void SetHasNonEmptyBeforeUnload(bool has_nonempty_beforeunload);
-  void SetViewportIntersection(const gfx::Rect& viewport_intersection);
   void SetIsAdFrame(bool is_ad_frame);
   void OnNonPersistentNotificationCreated();
   void SetHadFormInteraction();
