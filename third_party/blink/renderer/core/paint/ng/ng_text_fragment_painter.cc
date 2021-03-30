@@ -185,7 +185,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
       selection_recorder.emplace(selection->State(), selection_rect,
                                  paint_info.context.GetPaintController(),
                                  cursor_.Current().ResolvedDirection(),
-                                 style.GetWritingMode());
+                                 style.GetWritingMode(),
+                                 *cursor_.Current().GetLayoutObject());
     }
   }
 

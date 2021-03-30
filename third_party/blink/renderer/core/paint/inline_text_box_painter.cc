@@ -197,9 +197,9 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
                 .MapRect(static_cast<FloatRect>(selection_rect));
         selection_rect = PhysicalRect::EnclosingRect(rotated_selection);
       }
-      selection_recorder.emplace(selection_state, selection_rect,
-                                 context.GetPaintController(), direction,
-                                 style_to_use.GetWritingMode());
+      selection_recorder.emplace(
+          selection_state, selection_rect, context.GetPaintController(),
+          direction, style_to_use.GetWritingMode(), InlineLayoutObject());
     }
   }
 

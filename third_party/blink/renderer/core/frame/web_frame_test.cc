@@ -6433,20 +6433,12 @@ TEST_P(CompositedSelectionBoundsTest, SVGBasic) {
 TEST_P(CompositedSelectionBoundsTest, SVGTextWithFragments) {
   RunTest("composited_selection_bounds_svg_text_with_fragments.html");
 }
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #if !defined(OS_ANDROID)
 TEST_P(CompositedSelectionBoundsTest, Input) {
-  // This test does not yet pass in CAP due to handling of
-  // LayerSelectionBound::hidden
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
   RunTest("composited_selection_bounds_input.html");
 }
 TEST_P(CompositedSelectionBoundsTest, InputScrolled) {
-  // This test does not yet pass in CAP due to handling of
-  // LayerSelectionBound::hidden
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
   RunTest("composited_selection_bounds_input_scrolled.html");
 }
 #endif

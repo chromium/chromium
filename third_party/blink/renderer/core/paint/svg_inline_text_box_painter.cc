@@ -770,7 +770,8 @@ void SVGInlineTextBoxPainter::RecordSelectionBoundsForRange(
                                   ? TextDirection::kLtr
                                   : TextDirection::kRtl;
     bounds_recorder.emplace(selection_state, selection_rect, paint_controller,
-                            direction, style.GetWritingMode());
+                            direction, style.GetWritingMode(),
+                            InlineLayoutObject());
   }
 }
 

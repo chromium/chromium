@@ -188,7 +188,8 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
     const ComputedStyle& style = layout_replaced_.StyleRef();
     selection_recorder.emplace(selection_state, selection_rect,
                                local_paint_info.context.GetPaintController(),
-                               style.Direction(), style.GetWritingMode());
+                               style.Direction(), style.GetWritingMode(),
+                               layout_replaced_);
   }
 
   if (!DrawingRecorder::UseCachedDrawingIfPossible(
