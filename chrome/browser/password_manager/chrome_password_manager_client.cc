@@ -294,8 +294,10 @@ bool ChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(
     bool update_password) {
   // The save password infobar and the password bubble prompt in case of
   // "webby" URLs and do not prompt in case of "non-webby" URLS (e.g. file://).
-  if (!CanShowBubbleOnURL(web_contents()->GetLastCommittedURL()))
+  if (!CanShowBubbleOnURL(web_contents()->GetLastCommittedURL())) {
+    VLOG(0) << "Suppressed bubble " << web_contents()->GetLastCommittedURL();
     return false;
+  }
 
 #if defined(OS_ANDROID)
   if (form_to_save->IsBlocklisted())
