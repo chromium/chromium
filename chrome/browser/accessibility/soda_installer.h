@@ -46,7 +46,8 @@ class SodaInstaller {
   void InitForProfileIfAppropriate(Profile* profile);
 
   // Schedules SODA for uninstallation if no SODA client features are
-  // currently enabled.
+  // currently enabled. Should be called when client features using SODA are
+  // disabled.
   void SetUninstallTimer(PrefService* profile_prefs, PrefService* global_prefs);
 
   // Gets the directory path of the installed SODA lib bundle, or an empty path
@@ -103,6 +104,10 @@ class SodaInstaller {
   base::ObserverList<Observer> observers_;
   bool soda_binary_installed_ = false;
   bool language_installed_ = false;
+
+ private:
+  // Any new feature using SODA should add its pref here.
+  bool IsAnyFeatureUsingSodaEnabled(PrefService* prefs);
 };
 
 }  // namespace speech

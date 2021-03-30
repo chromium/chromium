@@ -38,6 +38,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/accessibility/accessibility_extension_api.h"
+#include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/ash/accessibility/accessibility_extension_loader.h"
 #include "chrome/browser/ash/accessibility/dictation.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
@@ -847,6 +848,26 @@ bool AccessibilityManager::IsDictationEnabled() const {
                          prefs::kAccessibilityDictationEnabled);
 }
 
+void AccessibilityManager::OnDictationChanged() {
+  OnAccessibilityCommonChanged(prefs::kAccessibilityDictationEnabled);
+  if (!profile_)
+    return;
+
+  // Only need to check SODA installation if offline dictation is enabled.
+  if (!::switches::IsExperimentalAccessibilityDictationOfflineEnabled())
+    return;
+
+  // Note: OnDictationChanged should not be called at start-up or it will
+  // push back SODA deletion each time start-up occurs with dictation disabled.
+  const bool enabled =
+      profile_->GetPrefs()->GetBoolean(prefs::kAccessibilityDictationEnabled);
+  if (!enabled) {
+    speech::SodaInstaller::GetInstance()->SetUninstallTimer(
+        profile_->GetPrefs(), g_browser_process->local_state());
+  }
+  // TODO(crbug.com/1173135): Initialize SODA download when enabled.
+}
+
 void AccessibilityManager::SetFocusHighlightEnabled(bool enabled) {
   if (!profile_)
     return;
@@ -1113,10 +1134,10 @@ void AccessibilityManager::SetProfile(Profile* profile) {
   // Clear all dictation state on profile change.
   dictation_.reset();
 
-  // All features supported by accessibility common.
+  // All features supported by accessibility common which don't need
+  // separate pref change handlers.
   static const char* kAccessibilityCommonFeatures[] = {
       prefs::kAccessibilityAutoclickEnabled,
-      prefs::kAccessibilityDictationEnabled,
       prefs::kAccessibilityScreenMagnifierEnabled,
       prefs::kDockedMagnifierEnabled};
 
@@ -1176,6 +1197,10 @@ void AccessibilityManager::SetProfile(Profile* profile) {
         prefs::kAccessibilitySwitchAccessEnabled,
         base::BindRepeating(&AccessibilityManager::OnSwitchAccessChanged,
                             base::Unretained(this)));
+    pref_change_registrar_->Add(
+        prefs::kAccessibilityDictationEnabled,
+        base::BindRepeating(&AccessibilityManager::OnDictationChanged,
+                            base::Unretained(this)));
 
     for (const std::string& feature : kAccessibilityCommonFeatures) {
       pref_change_registrar_->Add(
@@ -1223,6 +1248,12 @@ void AccessibilityManager::SetProfile(Profile* profile) {
 
   for (const std::string& feature : kAccessibilityCommonFeatures)
     OnAccessibilityCommonChanged(feature);
+  // Dictation is not in kAccessibilityCommonFeatures because it needs to
+  // be handled in OnDictationChanged also. OnDictationChanged will call to
+  // OnAccessibilityCommonChanged. However, OnDictationChanged shouldn't
+  // be called at start-up, so we call OnAccessibilityCommonChanged directly
+  // for dictation.
+  OnAccessibilityCommonChanged(prefs::kAccessibilityDictationEnabled);
 }
 
 void AccessibilityManager::SetProfileByUser(const user_manager::User* user) {

@@ -392,6 +392,7 @@ class AccessibilityManager
   void OnAccessibilityCommonChanged(const std::string& pref_name);
   void OnSwitchAccessChanged();
   void OnFocusChangedInPage(const content::FocusedNodeDetails& details);
+  void OnDictationChanged();
 
   void CheckBrailleState();
   void ReceiveBrailleDisplayState(
