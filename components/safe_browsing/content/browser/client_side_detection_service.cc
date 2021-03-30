@@ -16,15 +16,18 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
+#include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
@@ -275,6 +278,15 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
 
   // Record that we made a request
   AddPhishingReport(base::Time::Now());
+
+  // The following is to log this ClientPhishingRequest on any open
+  // chrome://safe-browsing pages. If no such page is open, the request is
+  // dropped and the |request| object deleted.
+  base::PostTask(
+      FROM_HERE, {content::BrowserThread::UI},
+      base::BindOnce(&WebUIInfoSingleton::AddToClientPhishingRequestsSent,
+                     base::Unretained(WebUIInfoSingleton::GetInstance()),
+                     std::move(request)));
 }
 
 void ClientSideDetectionService::HandlePhishingVerdict(
@@ -296,6 +308,13 @@ void ClientSideDetectionService::HandlePhishingVerdict(
         base::WrapUnique(new CacheState(response.phishy(), base::Time::Now()));
     is_phishing = response.phishy();
   }
+
+  base::PostTask(
+      FROM_HERE, {content::BrowserThread::UI},
+      base::BindOnce(&WebUIInfoSingleton::AddToClientPhishingResponsesReceived,
+                     base::Unretained(WebUIInfoSingleton::GetInstance()),
+                     std::make_unique<ClientPhishingResponse>(response)));
+
   if (!info->callback.is_null())
     std::move(info->callback).Run(info->phishing_url, is_phishing);
 }

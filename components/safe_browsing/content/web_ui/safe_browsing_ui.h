@@ -96,6 +96,14 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // currently open chrome://safe-browsing tab was opened.
   void GetReceivedClientDownloadResponses(const base::ListValue* args);
 
+  // Get the ClientPhishingRequests that have been collected since the oldest
+  // currently open chrome://safe-browsing tab was opened.
+  void GetSentClientPhishingRequests(const base::ListValue* args);
+
+  // Get the ClientPhishingResponses that have been collected since the oldest
+  // currently open chrome://safe-browsing tab was opened.
+  void GetReceivedClientPhishingResponses(const base::ListValue* args);
+
   // Get the ThreatDetails that have been collected since the oldest currently
   // open chrome://safe-browsing tab was opened.
   void GetSentCSBRRs(const base::ListValue* args);
@@ -157,6 +165,16 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // or more WebUI tabs are open.
   void NotifyClientDownloadResponseJsListener(
       ClientDownloadResponse* client_download_response);
+
+  // Called when any new ClientPhishingRequest messages are sent while one or
+  // more WebUI tabs are open.
+  void NotifyClientPhishingRequestJsListener(
+      ClientPhishingRequest* client_phishing_request);
+
+  // Called when any new ClientPhishingResponse messages are received while one
+  // or more WebUI tabs are open.
+  void NotifyClientPhishingResponseJsListener(
+      ClientPhishingResponse* client_phishing_response);
 
   // Get the new ThreatDetails messages sent from ThreatDetails when a ping is
   // sent, while one or more WebUI tabs are opened.
@@ -255,6 +273,22 @@ class WebUIInfoSingleton {
 
   // Clear the list of the received ClientDownloadResponse messages.
   void ClearClientDownloadResponsesReceived();
+
+  // Add the new message in |client_phishing_requests_sent_| and send it to all
+  // the open chrome://safe-browsing tabs.
+  void AddToClientPhishingRequestsSent(
+      std::unique_ptr<ClientPhishingRequest> report_request);
+
+  // Clear the list of the sent ClientPhishingRequest messages.
+  void ClearClientPhishingRequestsSent();
+
+  // Add the new message in |client_phishing_responses_received_| and send it to
+  // all the open chrome://safe-browsing tabs.
+  void AddToClientPhishingResponsesReceived(
+      std::unique_ptr<ClientPhishingResponse> response);
+
+  // Clear the list of the received ClientPhishingResponse messages.
+  void ClearClientPhishingResponsesReceived();
 
   // Add the new message in |csbrrs_sent_| and send it to all the open
   // chrome://safe-browsing tabs.
@@ -359,6 +393,20 @@ class WebUIInfoSingleton {
   const std::vector<std::unique_ptr<ClientDownloadResponse>>&
   client_download_responses_received() const {
     return client_download_responses_received_;
+  }
+
+  // Get the list of the sent ClientPhishingRequest that have been collected
+  // since the oldest currently open chrome://safe-browsing tab was opened.
+  const std::vector<std::unique_ptr<ClientPhishingRequest>>&
+  client_phishing_requests_sent() const {
+    return client_phishing_requests_sent_;
+  }
+
+  // Get the list of the sent ClientPhishingResponse that have been collected
+  // since the oldest currently open chrome://safe-browsing tab was opened.
+  const std::vector<std::unique_ptr<ClientPhishingResponse>>&
+  client_phishing_responses_received() const {
+    return client_phishing_responses_received_;
   }
 
   // Get the list of the sent CSBRR reports that have been collected since the
@@ -467,6 +515,20 @@ class WebUIInfoSingleton {
   // is not marked const.
   std::vector<std::unique_ptr<ClientDownloadResponse>>
       client_download_responses_received_;
+
+  // List of ClientPhishingRequests sent since since the oldest currently open
+  // chrome://safe-browsing tab was opened.
+  // "ClientPhishingRequests" cannot be const, due to being used by functions
+  // that call AllowJavascript(), which is not marked const.
+  std::vector<std::unique_ptr<ClientPhishingRequest>>
+      client_phishing_requests_sent_;
+
+  // List of ClientPhishingResponses received since since the oldest currently
+  // open chrome://safe-browsing tab was opened. "ClientPhishingResponse" cannot
+  // be const, due to being used by functions that call AllowJavascript(), which
+  // is not marked const.
+  std::vector<std::unique_ptr<ClientPhishingResponse>>
+      client_phishing_responses_received_;
 
   // List of CSBRRs sent since since the oldest currently open
   // chrome://safe-browsing tab was opened.

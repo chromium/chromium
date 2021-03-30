@@ -98,6 +98,7 @@ source_set("client_side_detection") {
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content",
     "//components/safe_browsing/content/common:interfaces",
+    "//components/safe_browsing/content/web_ui:web_ui",
     "//components/safe_browsing/core:client_model_proto",
     "//components/safe_browsing/core:csd_proto",
     "//components/safe_browsing/core:features",

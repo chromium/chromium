@@ -110,6 +110,38 @@ void WebUIInfoSingleton::ClearClientDownloadResponsesReceived() {
       client_download_responses_received_);
 }
 
+void WebUIInfoSingleton::AddToClientPhishingRequestsSent(
+    std::unique_ptr<ClientPhishingRequest> client_phishing_request) {
+  if (!HasListener())
+    return;
+  for (auto* webui_listener : webui_instances_)
+    webui_listener->NotifyClientPhishingRequestJsListener(
+        client_phishing_request.get());
+  client_phishing_requests_sent_.push_back(std::move(client_phishing_request));
+}
+
+void WebUIInfoSingleton::ClearClientPhishingRequestsSent() {
+  std::vector<std::unique_ptr<ClientPhishingRequest>>().swap(
+      client_phishing_requests_sent_);
+}
+
+void WebUIInfoSingleton::AddToClientPhishingResponsesReceived(
+    std::unique_ptr<ClientPhishingResponse> client_phishing_response) {
+  if (!HasListener())
+    return;
+
+  for (auto* webui_listener : webui_instances_)
+    webui_listener->NotifyClientPhishingResponseJsListener(
+        client_phishing_response.get());
+  client_phishing_responses_received_.push_back(
+      std::move(client_phishing_response));
+}
+
+void WebUIInfoSingleton::ClearClientPhishingResponsesReceived() {
+  std::vector<std::unique_ptr<ClientPhishingResponse>>().swap(
+      client_phishing_responses_received_);
+}
+
 void WebUIInfoSingleton::AddToCSBRRsSent(
     std::unique_ptr<ClientSafeBrowsingReportRequest> csbrr) {
   if (!HasListener())
@@ -330,6 +362,8 @@ void WebUIInfoSingleton::MaybeClearData() {
     ClearCSBRRsSent();
     ClearClientDownloadRequestsSent();
     ClearClientDownloadResponsesReceived();
+    ClearClientPhishingRequestsSent();
+    ClearClientPhishingResponsesReceived();
     ClearPGEvents();
     ClearPGPings();
     ClearRTLookupPings();
@@ -524,6 +558,62 @@ std::string AddFullHashCacheInfo(
 
 #endif
 
+base::Value SerializeChromeUserPopulation(
+    const ChromeUserPopulation& population) {
+  base::DictionaryValue population_dict;
+
+  std::string user_population;
+  switch (population.user_population()) {
+    case ChromeUserPopulation::UNKNOWN_USER_POPULATION:
+      user_population = "UNKNOWN_USER_POPULATION";
+      break;
+    case ChromeUserPopulation::SAFE_BROWSING:
+      user_population = "SAFE_BROWSING";
+      break;
+    case ChromeUserPopulation::EXTENDED_REPORTING:
+      user_population = "EXTENDED_REPORTING";
+      break;
+    case ChromeUserPopulation::ENHANCED_PROTECTION:
+      user_population = "ENHANCED_PROTECTION";
+      break;
+  }
+  population_dict.SetKey("user_population", base::Value(user_population));
+
+  population_dict.SetKey("is_history_sync_enabled",
+                         base::Value(population.is_history_sync_enabled()));
+
+  base::ListValue finch_list;
+  for (const std::string& finch_group : population.finch_active_groups()) {
+    finch_list.Append(base::Value(finch_group));
+  }
+  population_dict.SetKey("finch_active_groups", std::move(finch_list));
+
+  std::string management_status;
+  switch (population.profile_management_status()) {
+    case ChromeUserPopulation::UNKNOWN:
+      management_status = "UNKNOWN";
+      break;
+    case ChromeUserPopulation::UNAVAILABLE:
+      management_status = "UNAVAILABLE";
+      break;
+    case ChromeUserPopulation::NOT_MANAGED:
+      management_status = "NOT_MANAGED";
+      break;
+    case ChromeUserPopulation::ENTERPRISE_MANAGED:
+      management_status = "ENTERPRISE_MANAGED";
+      break;
+  }
+  population_dict.SetKey("profile_management_status",
+                         base::Value(management_status));
+  population_dict.SetKey(
+      "is_under_advanced_protection",
+      base::Value(population.is_under_advanced_protection()));
+  population_dict.SetKey("is_incognito",
+                         base::Value(population.is_incognito()));
+
+  return std::move(population_dict);
+}
+
 base::Value SerializeReferrer(const ReferrerChainEntry& referrer) {
   base::DictionaryValue referrer_dict;
   referrer_dict.SetKey("url", base::Value(referrer.url()));
@@ -701,6 +791,82 @@ std::string SerializeClientDownloadResponse(const ClientDownloadResponse& cdr) {
   if (cdr.has_upload()) {
     dict.SetKey("upload", base::Value(cdr.upload()));
   }
+
+  base::Value* request_tree = &dict;
+  std::string request_serialized;
+  JSONStringValueSerializer serializer(&request_serialized);
+  serializer.set_pretty_print(true);
+  serializer.Serialize(*request_tree);
+  return request_serialized;
+}
+
+std::string SerializeClientPhishingRequest(const ClientPhishingRequest& cpr) {
+  base::DictionaryValue dict;
+  if (cpr.has_url())
+    dict.SetString("url", cpr.url());
+  if (cpr.has_client_score())
+    dict.SetDouble("client_score", cpr.client_score());
+  if (cpr.has_is_phishing())
+    dict.SetBoolean("is_phishing", cpr.is_phishing());
+  if (cpr.has_model_version())
+    dict.SetInteger("model_version", cpr.model_version());
+
+  auto features = std::make_unique<base::ListValue>();
+  for (const auto& feature : cpr.feature_map()) {
+    auto dict_features = std::make_unique<base::DictionaryValue>();
+    dict_features->SetStringKey("name", feature.name());
+    dict_features->SetDoubleKey("value", feature.value());
+    features->Append(std::move(dict_features));
+  }
+  dict.SetList("feature_map", std::move(features));
+
+  auto non_model_features = std::make_unique<base::ListValue>();
+  for (const auto& feature : cpr.non_model_feature_map()) {
+    auto dict_features = std::make_unique<base::DictionaryValue>();
+    dict_features->SetStringKey("name", feature.name());
+    dict_features->SetDoubleKey("value", feature.value());
+    non_model_features->Append(std::move(dict_features));
+  }
+  dict.SetList("non_model_feature_map", std::move(non_model_features));
+
+  auto shingle_hashes = std::make_unique<base::ListValue>();
+  for (const auto& hash : cpr.shingle_hashes()) {
+    shingle_hashes->AppendInteger(hash);
+  }
+  dict.SetList("shingle_hashes", std::move(shingle_hashes));
+
+  dict.SetString("model_filename", cpr.model_filename());
+  dict.SetKey("population", SerializeChromeUserPopulation(cpr.population()));
+  if (cpr.has_screenshot_digest()) {
+    dict.SetKey("screenshot_digest", base::Value(cpr.screenshot_digest()));
+  }
+  dict.SetBoolean("phash_dimension_size", cpr.has_phash_dimension_size());
+  dict.SetBoolean("is_dom_match", cpr.is_dom_match());
+
+  auto vision_matches = std::make_unique<base::ListValue>();
+  for (const auto& match : cpr.vision_match()) {
+    auto vision_match = std::make_unique<base::DictionaryValue>();
+    vision_match->SetBoolean("matched_target_digest",
+                             match.has_matched_target_digest());
+    vision_match->SetDoubleKey("vision_matched_phash_score",
+                               match.vision_matched_phash_score());
+    vision_match->SetDoubleKey("vision_matched_emd_score",
+                               match.vision_matched_emd_score());
+    vision_matches->Append(std::move(vision_match));
+  }
+  dict.SetList("vision_match", std::move(vision_matches));
+
+  base::Value* request_tree = &dict;
+  std::string request_serialized;
+  JSONStringValueSerializer serializer(&request_serialized);
+  serializer.set_pretty_print(true);
+  serializer.Serialize(*request_tree);
+  return request_serialized;
+}
+
+std::string SerializeClientPhishingResponse(const ClientPhishingResponse& cpr) {
+  base::DictionaryValue dict;
+  dict.SetKey("phishy", base::Value(cpr.phishy()));
 
   base::Value* request_tree = &dict;
   std::string request_serialized;
@@ -996,62 +1162,6 @@ base::Value SerializePasswordReuseEvent(
   event_dict.SetKey("reused_password_type", base::Value(reused_password_type));
 
   return std::move(event_dict);
-}
-
-base::Value SerializeChromeUserPopulation(
-    const ChromeUserPopulation& population) {
-  base::DictionaryValue population_dict;
-
-  std::string user_population;
-  switch (population.user_population()) {
-    case ChromeUserPopulation::UNKNOWN_USER_POPULATION:
-      user_population = "UNKNOWN_USER_POPULATION";
-      break;
-    case ChromeUserPopulation::SAFE_BROWSING:
-      user_population = "SAFE_BROWSING";
-      break;
-    case ChromeUserPopulation::EXTENDED_REPORTING:
-      user_population = "EXTENDED_REPORTING";
-      break;
-    case ChromeUserPopulation::ENHANCED_PROTECTION:
-      user_population = "ENHANCED_PROTECTION";
-      break;
-  }
-  population_dict.SetKey("user_population", base::Value(user_population));
-
-  population_dict.SetKey("is_history_sync_enabled",
-                         base::Value(population.is_history_sync_enabled()));
-
-  base::ListValue finch_list;
-  for (const std::string& finch_group : population.finch_active_groups()) {
-    finch_list.Append(base::Value(finch_group));
-  }
-  population_dict.SetKey("finch_active_groups", std::move(finch_list));
-
-  std::string management_status;
-  switch (population.profile_management_status()) {
-    case ChromeUserPopulation::UNKNOWN:
-      management_status = "UNKNOWN";
-      break;
-    case ChromeUserPopulation::UNAVAILABLE:
-      management_status = "UNAVAILABLE";
-      break;
-    case ChromeUserPopulation::NOT_MANAGED:
-      management_status = "NOT_MANAGED";
-      break;
-    case ChromeUserPopulation::ENTERPRISE_MANAGED:
-      management_status = "ENTERPRISE_MANAGED";
-      break;
-  }
-  population_dict.SetKey("profile_management_status",
-                         base::Value(management_status));
-  population_dict.SetKey(
-      "is_under_advanced_protection",
-      base::Value(population.is_under_advanced_protection()));
-  population_dict.SetKey("is_incognito",
-                         base::Value(population.is_incognito()));
-
-  return std::move(population_dict);
 }
 
 base::Value SerializeRTThreatInfo(
@@ -1714,6 +1824,40 @@ void SafeBrowsingUIHandler::GetReceivedClientDownloadResponses(
   ResolveJavascriptCallback(base::Value(callback_id), cdrs_received);
 }
 
+void SafeBrowsingUIHandler::GetSentClientPhishingRequests(
+    const base::ListValue* args) {
+  const std::vector<std::unique_ptr<ClientPhishingRequest>>& cprs =
+      WebUIInfoSingleton::GetInstance()->client_phishing_requests_sent();
+
+  base::ListValue cprs_sent;
+
+  for (const auto& cpr : cprs) {
+    cprs_sent.Append(base::Value(SerializeClientPhishingRequest(*cpr)));
+  }
+
+  AllowJavascript();
+  std::string callback_id;
+  args->GetString(0, &callback_id);
+  ResolveJavascriptCallback(base::Value(callback_id), cprs_sent);
+}
+
+void SafeBrowsingUIHandler::GetReceivedClientPhishingResponses(
+    const base::ListValue* args) {
+  const std::vector<std::unique_ptr<ClientPhishingResponse>>& cprs =
+      WebUIInfoSingleton::GetInstance()->client_phishing_responses_received();
+
+  base::ListValue cprs_received;
+
+  for (const auto& cpr : cprs) {
+    cprs_received.Append(base::Value(SerializeClientPhishingResponse(*cpr)));
+  }
+
+  AllowJavascript();
+  std::string callback_id;
+  args->GetString(0, &callback_id);
+  ResolveJavascriptCallback(base::Value(callback_id), cprs_received);
+}
+
 void SafeBrowsingUIHandler::GetSentCSBRRs(const base::ListValue* args) {
   const std::vector<std::unique_ptr<ClientSafeBrowsingReportRequest>>& reports =
       WebUIInfoSingleton::GetInstance()->csbrrs_sent();
@@ -1933,6 +2077,22 @@ void SafeBrowsingUIHandler::NotifyClientDownloadResponseJsListener(
       base::Value(SerializeClientDownloadResponse(*client_download_response)));
 }
 
+void SafeBrowsingUIHandler::NotifyClientPhishingRequestJsListener(
+    ClientPhishingRequest* client_phishing_request) {
+  AllowJavascript();
+  FireWebUIListener(
+      "sent-client-phishing-requests-update",
+      base::Value(SerializeClientPhishingRequest(*client_phishing_request)));
+}
+
+void SafeBrowsingUIHandler::NotifyClientPhishingResponseJsListener(
+    ClientPhishingResponse* client_phishing_response) {
+  AllowJavascript();
+  FireWebUIListener(
+      "received-client-phishing-responses-update",
+      base::Value(SerializeClientPhishingResponse(*client_phishing_response)));
+}
+
 void SafeBrowsingUIHandler::NotifyCSBRRJsListener(
     ClientSafeBrowsingReportRequest* csbrr) {
   AllowJavascript();
@@ -2046,6 +2206,15 @@ void SafeBrowsingUIHandler::RegisterMessages() {
       "getReceivedClientDownloadResponses",
       base::BindRepeating(
           &SafeBrowsingUIHandler::GetReceivedClientDownloadResponses,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getSentClientPhishingRequests",
+      base::BindRepeating(&SafeBrowsingUIHandler::GetSentClientPhishingRequests,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getReceivedClientPhishingResponses",
+      base::BindRepeating(
+          &SafeBrowsingUIHandler::GetReceivedClientPhishingResponses,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getSentCSBRRs",

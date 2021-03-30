@@ -49,6 +49,27 @@ function initialize() {
         addReceivedClientDownloadResponseInfo(result);
       });
 
+  sendWithPromise('getSentClientPhishingRequests', [])
+      .then((sentClientPhishingRequests) => {
+        sentClientPhishingRequests.forEach(function(cpr) {
+          addSentClientPhishingRequestsInfo(cpr);
+        });
+      });
+  addWebUIListener('sent-client-phishing-requests-update', function(result) {
+    addSentClientPhishingRequestsInfo(result);
+  });
+
+  sendWithPromise('getReceivedClientPhishingResponses', [])
+      .then((receivedClientPhishingResponses) => {
+        receivedClientPhishingResponses.forEach(function(cpr) {
+          addReceivedClientPhishingResponseInfo(cpr);
+        });
+      });
+  addWebUIListener(
+      'received-client-phishing-responses-update', function(result) {
+        addReceivedClientPhishingResponseInfo(result);
+      });
+
   sendWithPromise('getSentCSBRRs', []).then((sentCSBRRs) => {
     sentCSBRRs.forEach(function(csbrr) {
       addSentCSBRRsInfo(csbrr);
@@ -240,6 +261,16 @@ function addSentClientDownloadRequestsInfo(result) {
 
 function addReceivedClientDownloadResponseInfo(result) {
   const logDiv = $('received-client-download-response-list');
+  appendChildWithInnerText(logDiv, result);
+}
+
+function addSentClientPhishingRequestsInfo(result) {
+  const logDiv = $('sent-client-phishing-requests-list');
+  appendChildWithInnerText(logDiv, result);
+}
+
+function addReceivedClientPhishingResponseInfo(result) {
+  const logDiv = $('received-client-phishing-response-list');
   appendChildWithInnerText(logDiv, result);
 }
 
