@@ -213,11 +213,9 @@ NearbyConnections::NearbyConnections(
     mojo::PendingReceiver<mojom::NearbyConnections> nearby_connections,
     mojom::NearbyConnectionsDependenciesPtr dependencies,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-    base::OnceClosure on_disconnect,
-    std::unique_ptr<ServiceController> service_controller)
+    base::OnceClosure on_disconnect)
     : nearby_connections_(this, std::move(nearby_connections)),
       on_disconnect_(std::move(on_disconnect)),
-      service_controller_(std::move(service_controller)),
       thread_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   nearby_connections_.set_disconnect_handler(base::BindOnce(
       &NearbyConnections::OnDisconnect, weak_ptr_factory_.GetWeakPtr(),
@@ -271,15 +269,6 @@ NearbyConnections::NearbyConnections(
   // There should only be one instance of NearbyConnections in a process.
   DCHECK(!g_instance);
   g_instance = this;
-
-  // Note: Some tests pass a value for |service_controller_|, but this value is
-  // expected to be null during normal operation.
-  if (!service_controller_) {
-    // OfflineServiceController indirectly invokes
-    // NearbyConnections::GetInstance(), so it must be initialized after
-    // |g_instance| is set.
-    service_controller_ = std::make_unique<OfflineServiceController>();
-  }
 }
 
 NearbyConnections::~NearbyConnections() {
@@ -716,6 +705,13 @@ Core* NearbyConnections::GetCore(const std::string& service_id) {
   std::unique_ptr<Core>& core = service_id_to_core_map_[service_id];
 
   if (!core) {
+    // Note: Some tests will use SetServiceControllerForTesting to set a
+    // |service_controller| instance, but this value is expected to be null for
+    // the first GetCore() call during normal operation.
+    if (!service_controller_) {
+      service_controller_ = std::make_unique<OfflineServiceController>();
+    }
+
     core = std::make_unique<Core>([&]() {
       // Core expects to take ownership of the pointer provided, but since we
       // share a single ServiceController among all Core objects created, we
@@ -727,6 +723,11 @@ Core* NearbyConnections::GetCore(const std::string& service_id) {
   }
 
   return core.get();
+}
+
+void NearbyConnections::SetServiceControllerForTesting(
+    std::unique_ptr<ServiceController> service_controller) {
+  service_controller_ = std::move(service_controller);
 }
 
 }  // namespace connections

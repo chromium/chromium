@@ -52,8 +52,7 @@ class NearbyConnections : public mojom::NearbyConnections {
       mojo::PendingReceiver<mojom::NearbyConnections> nearby_connections,
       mojom::NearbyConnectionsDependenciesPtr dependencies,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-      base::OnceClosure on_disconnect,
-      std::unique_ptr<ServiceController> service_controller = nullptr);
+      base::OnceClosure on_disconnect);
 
   NearbyConnections(const NearbyConnections&) = delete;
   NearbyConnections& operator=(const NearbyConnections&) = delete;
@@ -153,6 +152,9 @@ class NearbyConnections : public mojom::NearbyConnections {
 
   // Returns the task runner for the thread that created |this|.
   scoped_refptr<base::SingleThreadTaskRunner> GetThreadTaskRunner();
+
+  void SetServiceControllerForTesting(
+      std::unique_ptr<ServiceController> service_controller);
 
  private:
   // These values are used for metrics. Entries should not be renumbered and

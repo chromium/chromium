@@ -202,7 +202,8 @@ class NearbyConnectionsTest : public testing::Test {
         remote_.BindNewPipeAndPassReceiver(), std::move(dependencies),
         /*io_task_runner=*/nullptr,
         base::BindOnce(&NearbyConnectionsTest::OnDisconnect,
-                       base::Unretained(this)),
+                       base::Unretained(this)));
+    nearby_connections_->SetServiceControllerForTesting(
         std::move(service_controller));
   }
 
