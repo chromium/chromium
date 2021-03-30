@@ -9,7 +9,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
@@ -179,6 +181,11 @@ TEST_P(PrerenderProcessorTest, CancelOnDestruction) {
   remote->Start(std::move(attributes));
   remote.FlushForTesting();
   EXPECT_TRUE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
+
+  // The test assumes `render_frame_host` to be deleted. Disable the
+  // back-forward cache to ensure that it doesn't get preserved in the cache.
+  DisableBackForwardCacheForTesting(GetWebContents(),
+                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
 
   // Navigate the primary page to a cross-site URL that induces destruction of
   // the render frame host.
