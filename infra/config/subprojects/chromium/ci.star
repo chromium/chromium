@@ -539,7 +539,7 @@ ci.android_builder(
     tree_closing = True,
     experiments = {
         # TODO(crbug.com/1143122): remove this.
-        "luci.swarming.use_rbe_cas": 20,
+        "luci.swarming.use_rbe_cas": 50,
     },
 )
 
