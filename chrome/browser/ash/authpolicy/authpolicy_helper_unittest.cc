@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/userdataauth/fake_install_attributes_client.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,7 +60,7 @@ TEST(AuthPolicyHelper, JoinFollowedByRefreshDevicePolicy) {
   chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes;
 
   auto* mock_client = new MockAuthPolicyClient;
-  chromeos::CryptohomeClient::InitializeFake();
+  chromeos::InstallAttributesClient::InitializeFake();
 
   AuthPolicyHelper helper;
   helper.set_dm_token(kDMToken);
@@ -73,7 +74,7 @@ TEST(AuthPolicyHelper, JoinFollowedByRefreshDevicePolicy) {
                       }));
   mock_client->CheckExpectations();
 
-  chromeos::CryptohomeClient::Shutdown();
+  chromeos::InstallAttributesClient::Shutdown();
   chromeos::AuthPolicyClient::Shutdown();
 }
 
